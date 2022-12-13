@@ -646,7 +646,7 @@ class DataBaseOperations:
                 cur.execute(query)
                 print(f'Added columns to table {table}')
 
-    def run_free_request(self, request):
+    def run_free_request(self, request, output_text=None):
 
         logs.write_log(f"scraping_db: function: run_free_request")
 
@@ -654,11 +654,14 @@ class DataBaseOperations:
             self.connect_db()
         cur = self.con.cursor()
 
+        if not output_text:
+            output_text = 'free_request has got'
+
         query = request
         with self.con:
             try:
                 cur.execute(query)
-                print('got')
+                print(output_text)
             except Exception as e:
                 print(e)
             pass
@@ -802,7 +805,7 @@ class DataBaseOperations:
         results_dict['company'] = self.clear_title_or_body(results_dict['company'])
 
         list_prof = profession['profession']
-        print('\n\nНюанс в 805 строке scarping db\n\n')
+        # print('\n\nНюанс в 805 строке scarping db\n\n')
 
         if type(list_prof) is set and 'no_sort' not in list_prof:
             list_prof.add('no_sort')

@@ -1,4 +1,3 @@
-
 pattern = {
 
     'vacancy': {
@@ -15,7 +14,8 @@ pattern = {
                 "в поиске новых карьерных", "в поиске работы", "Шукаю віддалену роботу", "Шукаю роботу","Шукаю працу","у пошуках працы",
                 "Шукаю свою першу роботу", "Я соискатель", "Моё резюме", "Мое резюме", "My CV", "I am looking for a job",
                 "Шукаю свою першу роботу","#resume", " Ділимося з вами дружніми Telegram каналами", "делимся резюме",
-                "проводим эфир","я оказываю","медицинская сестра", "медицинский брат")
+                "проводим эфир","я оказываю","медицинская сестра", "медицинский брат", "дефектолог","патриотическ",
+                "юрист")
     },
 
     'contacts': {
@@ -33,22 +33,48 @@ pattern = {
 
     'frontend': {
         'ma': ("веб-разработчик", "Frontend", "Front-end", "front end", " React ", " Vue ", "Angular", "Team Lead Web",
-               "Vue developer", "верстальщик","Веб-мастер", "Web-Developer"),
+               "Vue developer", "верстальщик","Веб-мастер", "Web-Developer","JavaScript"),
         'mex': ("React as a plus", "understanding of front-end", "взаимодействие с отделом frontend", "QA Automation",
                 "Test Automation Engineer", "C\+\+", "Position:Backend Engineer", "Вакансия: Senior PHP Developer",
                 "PHP Developer", "PHP backend-разработчик", "Java developer", "Senior Backend Developer",
                 "Position:IT Recruiter", "Senior C\+\+", "C\+\+","С\+\+","Senior C\+\+", "Senior C\+\+", "Backend engineer", "QA Engineer",
                 "Python Developer", 'C\+\+ Qt Developer', 'Position:Backend Engineer', "Middle Ruby Developer", "Senior Data Engineer",
-                "Вакансия: Senior PHP Developer", "Sеnior Jаvа-рaзрaбoтчик", "Вакансия: Automation QA", "Crystal/Ruby full-stack developer", "Мобильный разработчик","Flutter",
+                "Вакансия: Senior PHP Developer", "Sеnior Jаvа-рaзрaбoтчик", "Вакансия: Automation QA", "Crystal/Ruby full-stack developer",
                 "Должность: Manual QA", "Web-дизайнер (UI/UX) middle", "Laravel", 'Senior Java developer', "Backend-разработчик", "Senior Golang",
-                "Product designer","Go developer","JAVA backend","SRE-инженер", "Python Developer","Blockchain Developer","Java developer (middle, senior)","Java developer (senior)","Senior Java engineer","Java разработчика", "Senior Java developer","JAVA разработчик", "#backend","Java Developer","#QA", "Ruby on Rails", "DevOps", "Вакансия: Java Software Developer", "Ruby full-stack developer", "HCM", "на позицию DevOps", "Senior backend", "QA manual","Php developer",
+                "Product designer","Go developer","JAVA backend","SRE-инженер", "Python Developer","Blockchain Developer",
+                "Java developer (middle, senior)","Java developer (senior)","Senior Java engineer","Java разработчика",
+                "Senior Java developer","JAVA разработчик", "#backend","Java Developer","#QA", "Ruby on Rails", "DevOps",
+                "Вакансия: Java Software Developer", "Ruby full-stack developer", "HCM", "на позицию DevOps", "Senior backend",
                 "Тестировщик", "Вакансия: QA Инженер","Frontend engineer", "Senior Frontend developer", "Junior Manual QA","Golang","#QA",
-                "#AutomationQA","Test Automation Engineer", "Java developer","Java Team Lead", "Team Lead(Java)", "QA auto",
+                "#AutomationQA","Test Automation Engineer", "Java developer","Java Team Lead", "Team Lead(Java)", "QA auto", "AQA"
                 "Java developer (senior)", "Java Developer (middle)", "Senior Devops", "Web-developer", "Веб-программист",
-                "Senior PHP Developer", " .NET","C#", "React developer", "Business Development Manager","Senior Java developer"," Java-разработчик",
+                " .NET","C#", "React developer", "Business Development Manager","Senior Java developer"," Java-разработчик",
                 "Junior project manager","Нужен:  Дизайнер","Бизнес-аналитик","System Analyst","Специалист по маркетингу","Консультант",
                 "Программист 1С","Разработчик Node.js","Web Content Manager","Инженер по развитию","Sales Assistant","React Native Developer",
-                "AQA")
+                "AQA","Менеджер по продукту","разработчика React Native","Менеджер по запуску производства","IOS Developer",
+                "Дизайнер упаковки","графический дизайнер","Графический дизайнер","Senior React Native","React Native разработчик",
+                "JAVA Liferay","Customer Support Specialist","Android Developer","приложений React Native","Team Lead PHP","UX/UI Дизайнер",
+                "Архитектор воронок","Маркетолог по воронкам","backend developer","консультант","Product Owner","Business Analyst",
+                "Scala","AWS","#Java ","#Java,","контекстной рекламе","CRM-аналитик","менеджер по продажам","sales manager",
+                "Junior Project Manager","Копирайтер","копирайтер","Business Development","маркетолог","Маркетолог","Junior IT рекрутер","Analyst ",
+                "Product Manager","Growth Product Manager","Product manager","Менеджер по продажам","SMM-менеджер","Android Middle разработчик",
+                "Руководитель отдела продукта","PR IT","PHP-программист","специалист технической поддержки","Менеджер по продажам",
+                "Интернет-маркетолог","middle Android developer","Младший аналитик"," accountant"," #financier","аналитик",
+                "Аналитик","по работе с клиентами","React Native Developer","BackEnd Java-разработчик","Retention Spesialist",
+                "проектировщик сетей связи","Project Manager","юрист","системный аналитик","Системный аналитик","Python (Mıddle)",
+                "Трафик-менеджер","контекстная реклама","Художник - дизайнер","иллюстратор","Разработчик Python (Junior)",
+                "Веб-дизайнер","Graphic Designer", "Таргетолог","оптовым продажам","керамист","Оператор call-центра",
+                "Lead Generation","Junior Backend Developer","Customer Support Specialist","Data Engineer","iOS Developer",
+                "разработчик ML", "spine animator","администрирования выплат","Elixir","аналитик","продюсер","java-разработчик",
+                "Java Tech Lead","Разработчик Java (Senior)","Менеджер по продаже","Embedded developer","Менеджер WB",
+                "Менеджер по маркетплейсам","исследователь","исследователя","журналист","менеджер в","бизнес-ассистент",
+                "руководитель CRM","Product Analyst","Менеджер по развитию интернет проектов","Media Buyer","Дата-аналитик",
+                "SEO-специалист","Менеджер по контенту","Онлайн-менчендайзер","Руководитель отдела продаж","SEO специалист",
+                "Медиапланер","Linkbuilder","marketing manager","мебели","Artist","Арт-директор","контент-менеджер","Producer",
+                "редактор","Tech writer","UE4 Developer","специалист по обработке данных","ресерчер","специалист по подбору персонала",
+                "куратор по маркетингу","системный администратор","эникей","ТЗ-мейкер", "Мобильный разработчик","Flutter",
+                "QA manual","Php developer",
+                )
     },
 
     'backend': {
@@ -163,7 +189,7 @@ pattern = {
             "2D", "3D", "Motion", "motion", "Designer", "designer", "Дизайнер", "дизайнер", "UX", "UI", "UX/UI",
             "UI/UX", "Product designer", "Photoshop Manager", "character artist", "background artist",
             "environment artist", "concept artist", "layout 3d artist", "Game Designer","Геймдизайнер",
-            "game designer","иллюстратор","Web-дизайнер"),
+            "game designer","иллюстратор","Web-дизайнер","игровое"),
         'mex': ("дизайнеры", "Artec 3D", "3D scanners", "DevOps", "Web UI", "Product manager", "Product owner",
                 "из дизайнера", "из Дизайнера", "designers", "3D Unity", "3D unity", "Unity 3D",
                 "Understanding UI state", "Material UI", "до UI", "Python", "#Java", "JavaScript","Kotlin", "Swift", "Git ","Git,","Git."," C ",
@@ -267,7 +293,7 @@ pattern = {
         'ma': ("SMM", "Copyrighter", "SEO", "Marketer", "Маркетолог", "Marketing", "Менеджер по маркетингу",
                "Video Tutorial Creator", "Producer", "Lead Generation Specialist", "#leadgeneration",
                "User Acquisition", "копирайтер", "линкбилдинг","linkbuilder", "Link Builder","CRO","ASO",
-               "Media buyer","Content Manager","контент"),
+               "Media buyer","Content Manager","контент","Media Buyer"),
         'mex': ("SEO HR", "Product manager", "SEO HR", "HRBP", "Sales Manager", "Manual QA", "Product Manager", "Back-end", "Kotlin Developer",
                 "Middle Business Analyst", "PHP Developer","DevOps","C# Developer","Lead Business Analyst", "Data Scientist", "System Administrator",
                 "Project manager", "ищет веб-дизайнер", "ищем веб-дизайнер","Product Owner","CEO", "Lead Generation", "IT-specialist",
@@ -290,8 +316,9 @@ pattern = {
                 "джуниоров к сожалению пока не смотрим!", "QA Lead", "Senior QA", "Supervise junior",
                 "We do not plan to hire Junior", "middle","позиции Junior специалистов пока не актуальны", "джуниоров не смотрим",
                 "от 2-х лет","от двух лет","от 2х лет","от 2 лет", "3+ years of experience","2+ years of experience",
-                "Не менее 2-3 лет работы", "от 3-х лет", "не менее 3 лет","Senior product", "Senior Product", "senior product",
-                "2 года")
+                "Не менее 2-3 лет работы", " от 3 лет", "от 3-х лет", "не менее 3 лет","Senior product", "Senior Product", "senior product",
+                "2 года","Менторить младших разработчиков", "Senior Javascript","3+ years of experience","Senior Gameplay",
+                "3 years of professional")
     },
 
     'middle': {
