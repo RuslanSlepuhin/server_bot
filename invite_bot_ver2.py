@@ -1,7 +1,6 @@
 import asyncio
 import time
 from multiprocessing import Pool
-
 import pandas as pd
 import psycopg2
 import os
@@ -30,9 +29,9 @@ from scraping_telegramchats2 import WriteToDbMessages, main
 from sites.parsing_sites_runner import ParseSites
 from logs.logs import Logs
 from sites.scraping_hh import HHGetInformation
+import settings.os_getenv as settings
 
 logs = Logs()
-import settings.os_getenv as settings
 config = configparser.ConfigParser()
 config.read("./settings/config.ini")
 
