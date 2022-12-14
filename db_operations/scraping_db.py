@@ -256,8 +256,6 @@ class DataBaseOperations:
         if not self.con:
             self.connect_db()
 
-        print(f"\n\nstatus connection: {self.con}\n\n")
-
         cur = self.con.cursor()
 
         if not order:
