@@ -44,7 +44,7 @@ class DataBaseOperations:
             # port = config['DB_local_clone']['port']
         try:
             self.con = psycopg2.connect(
-                database=database,
+                dbname=database,
                 user=user,
                 password=password,
                 host=host,
