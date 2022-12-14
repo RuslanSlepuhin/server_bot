@@ -58,7 +58,7 @@ class DataBaseOperations:
                 port=port
             )
         except:
-            print('No connect with db')
+            print('61 line: No connect with db')
         return self.con
     #-------------participants-------------------------
     def push_to_bd_participants(self, participant, all_user_dictionary, channel_name, channel_username):
