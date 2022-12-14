@@ -4,7 +4,6 @@ __pycache__/
 ./venv/
 .git/
 .idea/
-./settings/
 ./other_operations/
 ./messages/
 ./excel/
