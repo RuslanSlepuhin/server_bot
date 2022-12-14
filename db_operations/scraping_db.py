@@ -41,14 +41,14 @@ class DataBaseOperations:
             user = config['DB_local_clone']['user']
             password = config['DB_local_clone']['password']
             host = config['DB_local_clone']['host']
-            port = config['DB_local_clone']['port']
+            # port = config['DB_local_clone']['port']
         try:
             self.con = psycopg2.connect(
                 database=database,
                 user=user,
                 password=password,
                 host=host,
-                port=port
+                # port=port
             )
         except:
             print('No connect with db')
