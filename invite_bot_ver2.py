@@ -156,11 +156,11 @@ class InviteBot:
             parsing_button2 = KeyboardButton('Subscr.statistics')
             parsing_button3 = KeyboardButton('Digest')
             parsing_button4 = KeyboardButton('Invite people')
-            parsing_button5 = KeyboardButton('Get participants')
+            # parsing_button5 = KeyboardButton('Get participants')
 
             parsing_kb.row(parsing_button1, parsing_button2)
             parsing_kb.row(parsing_button3, parsing_button4)
-            parsing_kb.add(parsing_button5)
+            # parsing_kb.add(parsing_button5)
 
             await bot_aiogram.send_message(message.chat.id, f'Привет, {message.from_user.first_name}!', reply_markup=parsing_kb)
             await bot_aiogram.send_message(1763672666, f'User {message.from_user.id} has started')
@@ -2695,8 +2695,10 @@ class InviteBot:
                 file.write('')
 
             response = DataBaseOperations(None).get_all_from_db(
-                table_name='admin_last_session'
+                table_name='admin_last_session',
+                param="""WHERE profession<>'no_sort'"""
             )
+            await bot_aiogram.send_message(message.chat.id, f"{len(response)} vacancies founded")
             show = ShowProgress(bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id})
             n=0
             length = len(response)

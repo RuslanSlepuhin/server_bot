@@ -1,3 +1,7 @@
+"""
+This pattern was made at night at 28/09/2022 with ALexander (online).
+"""
+
 pattern = {
 
     'vacancy': {
@@ -12,10 +16,20 @@ pattern = {
                 "Шукаю работу", "xodim", "Шукаю віддалену роботу", "Каналы для", "Канал для", "ВАКАНСИЯ ЗАКРЫТА",
                 "в поиске новых карьерных возможностей", "Очікування зп", "Шукаю роботу", "Открыт к новым предложениям",
                 "в поиске новых карьерных", "в поиске работы", "Шукаю віддалену роботу", "Шукаю роботу","Шукаю працу","у пошуках працы",
-                "Шукаю свою першу роботу", "Я соискатель", "Моё резюме", "Мое резюме", "My CV", "I am looking for a job",
-                "Шукаю свою першу роботу","#resume", " Ділимося з вами дружніми Telegram каналами", "делимся резюме",
+                "Шукаю свою першу роботу", "Я соискатель", "Моё резюме", "Мое резюме", "My CV", "I am looking for a job", 
+                "Шукаю свою першу роботу","#resume", " Ділимося з вами дружніми Telegram каналами", "делимся резюме", 
                 "проводим эфир","я оказываю","медицинская сестра", "медицинский брат", "дефектолог","патриотическ",
-                "юрист")
+                "юрист","менеджер по бизнес-процессам","Logistics Partner Manager","Оператор колл-центра","Прораб",
+                "Telecom Onboarding","Support Operations Manager","FarPost","Бизнес-ассистент","Операционный менеджер",
+                "Координатор Тайных Покупателей","Руководитель онлайн казино","Менеджер по работе с поставщиками",
+                "Руководитель направления проектных продаж","Оператор ПК","видеомониторинг", " Заказ канцелярии",
+                "Контроль за работой курьеров","Поиск подрядчиков","инженер-конструктор",)
+    },
+
+    'admins': {
+        'ma': ("Администратор", "администратор", "баз данных","базы данных", "Баз данных", "Базы данных",
+               "Системный Администратор Linux"),
+
     },
 
     'contacts': {
@@ -25,7 +39,7 @@ pattern = {
 
     'fullstack': {
         'ma': ("фулл-стек", "Rust", "FullStack", "Full-stack", "Full stack", "Java ", "Java-",
-               "Chief Technical Officer", " CTO", "Golang"),
+               "Chief Technical Officer", " CTO", "Golang","fullstack Web Developer","Full Stack",),
         'mex': (" UI/UX designer", "контакт до CTO", "Golang собеседований", "QA Full", "stack QA", "Kotlin",
                 "Position:Backend Engineer", "Вакансия: Разработчик Android", "Вакансия : Android Developer",
                 "Release Engineer", "Middle QA", "Вакансия: QA Engineer")
@@ -33,21 +47,21 @@ pattern = {
 
     'frontend': {
         'ma': ("веб-разработчик", "Frontend", "Front-end", "front end", " React ", " Vue ", "Angular", "Team Lead Web",
-               "Vue developer", "верстальщик","Веб-мастер", "Web-Developer","JavaScript"),
+               "Vue developer", "верстальщик","Веб-мастер", "Web-Developer","JavaScript","front-end разработчик"),
         'mex': ("React as a plus", "understanding of front-end", "взаимодействие с отделом frontend", "QA Automation",
                 "Test Automation Engineer", "C\+\+", "Position:Backend Engineer", "Вакансия: Senior PHP Developer",
                 "PHP Developer", "PHP backend-разработчик", "Java developer", "Senior Backend Developer",
-                "Position:IT Recruiter", "Senior C\+\+", "C\+\+","С\+\+","Senior C\+\+", "Senior C\+\+", "Backend engineer", "QA Engineer",
+                "Position:IT Recruiter", "Senior C\+\+", "C++","С++","Senior C++", "Senior C\+\+", "Backend engineer", "QA Engineer",
                 "Python Developer", 'C\+\+ Qt Developer', 'Position:Backend Engineer', "Middle Ruby Developer", "Senior Data Engineer",
                 "Вакансия: Senior PHP Developer", "Sеnior Jаvа-рaзрaбoтчик", "Вакансия: Automation QA", "Crystal/Ruby full-stack developer",
                 "Должность: Manual QA", "Web-дизайнер (UI/UX) middle", "Laravel", 'Senior Java developer', "Backend-разработчик", "Senior Golang",
                 "Product designer","Go developer","JAVA backend","SRE-инженер", "Python Developer","Blockchain Developer",
-                "Java developer (middle, senior)","Java developer (senior)","Senior Java engineer","Java разработчика",
-                "Senior Java developer","JAVA разработчик", "#backend","Java Developer","#QA", "Ruby on Rails", "DevOps",
+                "Java developer (middle, senior)","Java developer (senior)","Senior Java engineer","Java разработчика", 
+                "Senior Java developer","JAVA разработчик", "#backend","Java Developer","#QA", "Ruby on Rails", "DevOps", 
                 "Вакансия: Java Software Developer", "Ruby full-stack developer", "HCM", "на позицию DevOps", "Senior backend",
                 "Тестировщик", "Вакансия: QA Инженер","Frontend engineer", "Senior Frontend developer", "Junior Manual QA","Golang","#QA",
                 "#AutomationQA","Test Automation Engineer", "Java developer","Java Team Lead", "Team Lead(Java)", "QA auto", "AQA"
-                "Java developer (senior)", "Java Developer (middle)", "Senior Devops", "Web-developer", "Веб-программист",
+                "Java developer (senior)", "Java Developer (middle)", "Senior Devops", "Web-developer", "Веб-программист", 
                 " .NET","C#", "React developer", "Business Development Manager","Senior Java developer"," Java-разработчик",
                 "Junior project manager","Нужен:  Дизайнер","Бизнес-аналитик","System Analyst","Специалист по маркетингу","Консультант",
                 "Программист 1С","Разработчик Node.js","Web Content Manager","Инженер по развитию","Sales Assistant","React Native Developer",
@@ -78,10 +92,8 @@ pattern = {
     },
 
     'backend': {
-        'ma': ("Ruby", "PHP", " .NET", "NodeJS", "Python Engineer", "#ML ", "машинному обучению", "MLOps", "ML engineer",
-               "Python Developer", "Разработчик Python", "#Backend", "node.js", "Backend", "Back-end", "back end",
-               "Scala", "Java", "C\+\+", "С\+\+", "C#", " PHP", "PHP разработчик", " РНР", "Laravel", "Golang",
-               "dwh"),
+        'ma': ("#Backend", "Backend", "Back-end", "back end",),
+        # pattern['backend']['ma']=set(pattern['python']['ma']).union(set(pattern['C']['ma'])).union(set(pattern['PHP']['ma'])).union(set(pattern['Java']['ma'])).union(set(pattern['Ruby']['ma'])).union(set(pattern['Scala']['ma'])).union(set(pattern['.NET']['ma'])).union(set(pattern['NodeJS']['ma'])).union(set(pattern['Laravel']['ma'])).union(set(pattern['Golang']['ma'])).union(set(pattern['Delphi']['ma'])).union(set(pattern['ABAP']['ma'])).union(set(pattern['ML']['ma']))
         'mex': ("DevSecOps", " UI/UX designer", "@python_job_interview", "Data Engineer", "backend разработчиками",
                 "Backend QA Engineer", "тестирования backend", "тестирование backend", "QA Automation", "QA Auto",
                 "Test Automation Engineer", "опыт работы с Backend", "Manual testing", "backend ecosystem",
@@ -93,43 +105,123 @@ pattern = {
                 "Ищем верстальщика", "Middle qa", "Angular developer", "Vue developer", "Lead devops",
                 "Devops engineer", "Middle front-end", "Middle frontend", "Middle+ front-end", "Middle+ frontend",
                 "#devops", "product lead", "Ищем Frontend developer", "#resume", "UI Designer", "Designer", "UI designer",
-                "Technical writer ","Senior Frontend Developer", "Разработчик JS", "React Frontend developer", "Вакансия: Frontend engineer",
-                "разработчик на React Native", "Ведущий тестировщик", "AQA", "Senior Devops","Администратор баз данных","Javascript developer",
+                "Technical writer ","Senior Frontend Developer", "Разработчик JS", "React Frontend developer", "Вакансия: Frontend engineer", 
+                "разработчик на React Native", "Ведущий тестировщик", "AQA", "Senior Devops","Администратор баз данных","Javascript developer", 
                 "консультант техподдержки","Вакансия: Frontend ","Вакансия:  Frontend Developer","Senior Frontend Developer",
                 "Front-end разработчик"," Frontend Software Engineer","#QA", "Test Automation Engineer", "QA Auto",
-                "Junior JavaScript разработчик","Network Engineer", "#kotlin", "Network administration", "Network architect","React Native",
+                "Junior JavaScript разработчик","Network Engineer", "#kotlin", "Network administration", "Network architect","React Native", 
                 "Junior Manual QA", "Lead Frontend Developer", "Node.js", "Mobile Development")
     },
+    
+    'python': {
+        'ma': ("Senior Python developer", "Python Engineer", "#ML ", "машинному обучению", "MLOps", "ML engineer", "Python Developer",
+              "Python","Разработчик Python",),
+        'mex': (),
+        # pattern['python']['mex']=set(pattern['backend']['mex']).union(set(pattern['python']['mex2']))
+    },
 
-    # 'python': {
-    #     'ma': ("Senior Python developer", "Python Engineer", "#ML ", "машинному обучению", "MLOps", "ML engineer", "Python Developer", "Разработчик Python"),
-    #
-    # },
-    #
-    # 'C++': {
-    #     'ma': ("C\+\+", "С\+\+", "C#"),
-    # },
-    #
-    # 'PHP': {
-    #     'ma': ("PHP"," PHP", "PHP разработчик", " РНР"),
-    # },
-    #
-    # 'Java': {
-    #     'ma': ("Java ", "Java,","Java.","Java"),
-    # },
+    'C': {
+        'ma': ("C\+\+", "С\+\+", "C#"," C ","ObjectiveC",),
+        'mex2': (),
+        # pattern['С']['mex']=set(pattern['backend']['mex']).union(set(pattern['С']['mex2']))
+    },
 
+    'PHP': {
+        'ma': ("PHP"," PHP", "PHP разработчик", " РНР"),
+        'mex2': (),
+        # pattern['PHP']['mex']=set(pattern['PHP']['mex']).union(set(pattern['PHP']['mex2']))
+    },
+
+    'Java': {
+        'ma': ("Java ", "Java,","Java.","Java","#Java"),
+        'mex2': (),
+    #     pattern['Java']['mex']=set(pattern['backend']['mex']).union(set(pattern['Java']['mex2']))
+    },
+
+    'Ruby': {
+        'ma': ("Ruby", ),
+        'mex2': (),
+        # pattern['Ruby']['mex']=set(pattern['backend']['mex']).union(set(pattern['Ruby']['mex2']))
+    },
+
+    'Scala': {
+        'ma': ("Scala", ),
+        'mex2': (),
+    #     pattern['Scala']['mex']=set(pattern['backend']['mex']).union(set(pattern['Scala']['mex2']))
+    },
+
+     '.NET': {
+        'ma': (" .NET", ),
+        'mex2': (),
+    #     pattern[' .NET']['mex']=set(pattern['backend']['mex']).union(set(pattern[' .NET']['mex2']))
+    },
+
+     'NodeJS': {
+        'ma': ("NodeJS", "node.js",),
+        'mex2': (),
+    #     pattern['NodeJS']['mex']=set(pattern['backend']['mex']).union(set(pattern['NodeJS']['mex2']))
+    },
+
+     'Laravel': {
+        'ma': ("Laravel", ),
+        'mex2': (),
+    #     pattern['Laravel']['mex']=set(pattern['backend']['mex']).union(set(pattern['Laravel']['mex2']))
+    },
+
+     'Golang': {
+        'ma': ("Golang", ),
+        'mex2': (),
+    #     pattern['Golang']['mex']=set(pattern['backend']['mex']).union(set(pattern['Golang']['mex2']))
+    },
+
+     'Delphi': {
+        'ma': ("Delphi", ),
+        'mex2': (),
+    #     pattern['Delphi']['mex']=set(pattern['backend']['mex']).union(set(pattern['Delphi']['mex2']))
+    },
+
+     'ABAP': {
+        'ma': ("ABAP","ABAP developer",),
+        'mex2': (),
+    #     pattern['ABAP']['mex']=set(pattern['backend']['mex']).union(set(pattern['ABAP']['mex2']))
+    },
+
+     'ML': {
+        'ma': ("#ML ", "машинному обучению", "MLOps", "ML engineer",),
+        'mex2': (),
+    #     pattern['ML']['mex']=set(pattern['backend']['mex']).union(set(pattern['ML']['mex2']))
+    },
+
+
+    # pattern['DEV']['mex']=set(pattern['backend']['ma']).union(set(pattern['python']['ma'])).union(set(pattern['C']['ma'])).union(set(pattern['PHP']['ma'])).union(set(pattern['fullstack']['ma'])).union(set(pattern['frontend']['ma'])).union(set(pattern['Admins']['ma']))
+    
+    
+    'project':{
+        'ma': ("Руководитель интернет-проектов","Руководитель IT-проектов","Скрам мастер","Проджект менеджер",
+             "Руководитель проектов","Scrum Master","Менеджер IT проектов",
+             "Agile coach","Руководитель интернет-проектов","Руководитель IT-проектов","Руководитель ИТ-проект",
+             "Проектный Менеджер","Управляющий проект","Project-manager","project manager","Project Manager",
+             " PM.", " PM,", " PM ", "Project manager",),
+        'mex': ()
+    },
+    
+    'product':{
+        'ma': ("Senior Product-Manager","Product Manager","Продакт-менеджер","Product Owner","Product Manager",
+             "PrdM", "product manager", "product owner", "Head of Core Product","продуктолог"
+             " CPO", "Head of Product", "Product Lead", "Директор по продукту", "/CPO", " CPO",),
+        'mex': ()
+    },
+    
     #capitalize
     'pm': {
-        'ma': ("PrdM", "product manager", "product owner", "Head of Core Product", " CPO", "Head of Product",
-                "Product Lead", "Директор по продукту", "/CPO", " CPO", " PM.", " PM,", " PM ", "Project manager",
-                "Project Manager", "project manager", " РМ", "Project-manager","Менеджер IT проектов",
-                "Руководитель ИТ-проект", "Product Owner", "Product Manager", "Проектный Менеджер","Управляющий проект",
-                "Руководитель проектов"),
+        'ma': (" PM"," РМ"),
+        # pattern['pm']['ma']=set(pattern['project']['mdef']).union(set(pattern['pm']['mincl'])).union(set(pattern['product']['mdef']))
+
         'mex': ("собеседование с РМ", "Вакансия: Senior PHP Developer", "product lead", "Менеджер В2В", "Manager B2B",
                 "Senior Front-End Developer", "Senior Software Testing Engineer", "Sales manager", "Tech Lead",
                 "Android Developer", "QA Automation (Python)", "JS developer", "Senior python", "Middle UX/UI Designer",
                 "Senior .NET", "C# Engineer", "Senior QA", "QA Automation", "Senior IT Recruiter","Senior backend",
-                "WordPress developer", "Azure DevOps", "Head of Digital","вместе с product owner", "product designer",
+                "WordPress developer", "Azure DevOps", "Head of Digital","вместе с product owner", "product designer", 
                 "Взаимодействие с Product Manager","UI Designer", "UI designer", "Frontend Developer", "верстальщик",
                 "Front-end разработчик", "Веб-мастер", "Web-Developer", "Game Developer"," Web-дизайнер", "Full-Stack",
                 "Web-Analyst","Wordpress developer", "PHP-developer", "Web Developer", "Web-аналитик", "Python developer",
@@ -163,12 +255,19 @@ pattern = {
                 "full stack developer","DevOps engineer","Backend разработчик","Трафик-менеджер","контекстная реклама",
                 "Outreach Specialist","Геймдизайнер","game designer","Web-дизайнер","иллюстратор","SMM-маркетолог",
                 "Менеджер по продажам","менеджер маркетплейсов","отдела продаж", "Менеджер Wildberries", "Главный редактор",
-                "сметчик", "Арбитражник","директора по маркетингу","Mediabuyer","Медиабайер","Продюсер"
-                )
+                "сметчик", "Арбитражник","директора по маркетингу","Mediabuyer","Медиабайер","Продюсер", "Frontend Engineer",
+                "Customer Support Specialist","Artist","Event-менеджер","Оператор call-центра","интернет-маркетолог",
+                "Senior Javascript","Manual QA","Yead of Engineering","Support Agent","QA Engineer"," Node.js", 
+                "продуктовый аналитик","по подбору персонала","Quality Control Management","Head of Product Support",
+                "Системный Администратор"," CX/UX исследователь","Web-разработчик","Middle PHP","Laravel developer",
+                "Email-маркетолог","ассистент руководителя","Преподаватель IT дисциплин для детей и подростков",
+                "Рекрутер it"," Social Media Specialist","SMM специалист","SMM-проектов","Data Engineer")
     },
 
     'mobile': {
-        'ma': ("Kotlin", "Swift", "Mobile", "ios", "android", "Flutter", "React Native", "ReactNative"),
+        'ma':  ("Kotlin", "Swift", "Mobile", "ios", "android", "Flutter", "React Native", "ReactNative","iOS разработчик",
+               "Flutter Developer","Senior Android  developer","Senior ios разработчик","Android-разработчик",
+               ),
         'mex': ("Python", "T-Mobile", "Swift, is a nice to have skill", "QA Automation", "QA Auto",
                 "Test Automation Engineer", "Manual testing", "заказного mobile", "Junior QA Engineer", "PHP developer",
                 "Senior Product Designer (UX/UI)", "Release Engineer", "Вакансия: Backend Engineer", "UI/UX Designer",
@@ -189,39 +288,36 @@ pattern = {
             "2D", "3D", "Motion", "motion", "Designer", "designer", "Дизайнер", "дизайнер", "UX", "UI", "UX/UI",
             "UI/UX", "Product designer", "Photoshop Manager", "character artist", "background artist",
             "environment artist", "concept artist", "layout 3d artist", "Game Designer","Геймдизайнер",
-            "game designer","иллюстратор","Web-дизайнер","игровое"),
+            "game designer","иллюстратор","Web-дизайнер","игровое","Artist"," CX исследователь",
+            "CX/UX исследователь"),
         'mex': ("дизайнеры", "Artec 3D", "3D scanners", "DevOps", "Web UI", "Product manager", "Product owner",
                 "из дизайнера", "из Дизайнера", "designers", "3D Unity", "3D unity", "Unity 3D",
-                "Understanding UI state", "Material UI", "до UI", "Python", "#Java", "JavaScript","Kotlin", "Swift", "Git ","Git,","Git."," C ",
-                "C\+\+", "C#", "ObjectiveC", "React", "SoapUI", "Postman", "POSTMAN", "PostgreSQL", "MySQL", "iOS разработчик", "Full Stack",
-                "fullstack Web Developer", "Flutter Developer", "Senior Dealer", "Инженер-электронщик", "NodeJS", "Vue", "VueRouter", "Vuex",
-                "Marketing Manager", "Unity Dev", "C#", "SMM Specialist", "Rest Api", "SQLite", "QA Automation",
-                "Senior Android  developer", "Qa engineer", "Middle Тестировщик", "Senior ios разработчик",
-                "Android-разработчик", "Продакт-менеджер", "Аналитик DWH", "Delphi", "Business Analyst", "#automation", "#selenium", "автотесты", "автотестов", "cucumber",
-                "QA Engineer", "Angular", "bitrix", "битрикс", "менеджера по продажам", "менеджер по продажам", "специалист по тестированию",
-                "Soap", "postman","тестировщик", "json", "JSON", "Администратор", "администратор", "баз данных","базы данных", "Баз данных",
-                "Базы данных", "HRD","Консультант SAP","Content Manager", "ремонтов квартир","Ведущий аналитик","Специалист по контенту",
-                "запуск производства","керамист","Руководитель отдела маркетинга","мебели","мебельного","мужской одежды",
+                "Understanding UI state", "Material UI", "до UI", "Git ","Git,","Git.",
+                "PostgreSQL", "MySQL", "Senior Dealer", "Инженер-электронщик", "VueRouter", "Vuex",
+                "Unity Dev",  "Rest Api", "SQLite", "Оператор call-центра","Инженер-программист",
+                "Angular", "bitrix", "битрикс","Специалист по работе с клиентами","Retention Spesialist","Сметчик",
+                "json", "JSON",  "HRD","Консультант SAP","ремонтов квартир","Специалист по контенту",
+                "запуск производства","керамист","мебели","мебельного","мужской одежды",
                 "детской одежды","Business Development","Data acquisition manager","футболки","кофров", "чехлов",
-                "Проектировщик","интерьеров","Менеджер по продажам","Marketing Specialist","квартир","СММ Менеджер",
-                "Проджект менеджер","project manager","интерьера","ремонта квартир","Менеджер по маркетплейсам"
-                "SMM-специалист","Интернет-маркетолог","Менеджер по продажам","SMM-маркетолог","SMM-менеджер",
-                "Таргетолог","Менеджер маркетплейсов","Маркетолог","SMM-маркетолог","Копирайтер-редактор",
-                "отдела продаж","Копирайтер","SEO консультант","Менеджер Wildberries","PR IT", "женской одежды",
-                "Менеджер по оптовым продажам","по работе с маркетплейсами","front-end разработчик","Нужен менеджер",
-                "Руководитель контентной команды","Специалист по работе с клиентами","Retention Spesialist",
-                "Ассистент руководителя","SMMдизайнер","Главный редактор","SEO-специалист","ассистент руководителя",
-                "Сметчик","Media Buyer","Product Manager","Арбитражник","Медиабайер","Заместитель директора по маркетингу",
-                "Email маркетолог","CRM маркетолог","Email-маркетолог","CRM-маркетолог","Data Analyst","продуктовый аналитик",
-                "Директолог","Контекстолог","Специалист по рекламе","Оператор call-центра","Инженер-программист",
-                "Консультант","Трафик-менеджер","Продюсер",
+                "Проектировщик","интерьеров","Менеджер по продажам","квартир","СММ Менеджер",
+                "интерьера","ремонта квартир","Менеджер по маркетплейсам","специалист по подбору персонала", 
+                "Менеджер маркетплейсов", "Менеджер по продажам",
+                "отдела продаж","Менеджер Wildberries","PR IT", "женской одежды",
+                "Менеджер по оптовым продажам","по работе с маркетплейсами","Нужен менеджер",
+                "Ассистент руководителя","Главный редактор","ассистент руководителя",
+                "Консультант","Продюсер","Аккаунт-менеджер","Creative screenwriter","Менеджер по рекламе"
+                "подбора персонала","видеограф","копирайтер","журналист","Менеджер по развитию интернет проектов",
+                "Аналитик","JoomShopping","в команде с дизайнером","Unity developer", "контентмейкер","видеоконтентмейкер",
+                "блоггер","с командой дизайнеров","Tech Writer","Ресечер","Аналитик DWH","Авитолог","#ProductManager"
                 )
+        # pattern['designer']['mex']=set(pattern['DEV']['mex']).union(set(pattern['mobile']['ma'])).union(set(pattern['designer']['mex'])).union(set(pattern['qa']['ma'])).union(set(pattern['sales_manager']['ma'])).union(set(pattern['marketing']['ma'])).union(set(pattern['ba']['ma'])).union(set(pattern['pm']['ma'])).union(set(pattern['devops']['ma'])).union(set(pattern['analyst']['ma']))
     },
 
     # capitalize
     'hr': {
         'ma': ("Human Resources Officer", " HR", "recruter", "кадр", "human r", "head hunter", "Кадр", "HR BP",
-               "HR Бизнес-партнер", "IT Recruiter", "Recruiter", "HRD", "IT рекрутер","менеджер по подбору персонала"),
+               "HR Бизнес-партнер", "IT Recruiter", "Recruiter", "HRD", "IT рекрутер","менеджер по подбору персонала",
+               "подбора персонала"),
         'mex': ("Скрининг с HR", "я HR", "представляю кадровое агентство", "Общение с HR", "общение с HR", "HR_",
                 "HRTech", "HR департамент", "SEO HR", "HR@", "Кадровое агенство", "звонок с HR ",
                 "Пишите нашему HR-менеджеру", "HR-Link", "HR-Prime", "HR-у", "Контакт HR", "Связаться с HR",
@@ -231,7 +327,7 @@ pattern = {
                 "Вакансия: DevOps", "Data engineer", "Senior Android", "Разработчик Bitrix24", "Devops",
                 "Менеджер по продажам", "Data entry", "Senior PHP Developer", "DevOps Engineer", "Я Саша, ИТ-рекрутер",
                 "пишите в телеграмм нашему HR", "пишите нашему HR", "Mobile QA", "Front-end инженер", "Программиста игровой логики",
-                "я - HR", "Business Development Specialist", "Вакансия: Project Manager", "UI/UX Designer")
+                "я - HR", "Business Development Specialist", "Вакансия: Project Manager", "UI/UX Designer","Арт-директор")
     },
 
     # capitalize
@@ -241,18 +337,57 @@ pattern = {
             "#SA", "SOC Analyst", "Performance аналитик", "Маркетинг аналитик", "Старший аналитик", "Тимлид аналитики",
             "Data analyst", "Data Scientist", "Data Science", "DataScientist", "data analyst", "data scientist",
             "datascientist", "аналитик данных", "Machine Learning", "Product Analyst", "Системный аналитик",
-            "системный аналитик", "Системный Аналитик", "Data Modeler"),
+            "системный аналитик", "Системный Аналитик", "Data Modeler","Business Analyst","Business Analyst",
+            "Data Analyst","продуктовый аналитик","Junior Data Engineer","Data Engineer","dwh","Младший аналитик"),
         'mex': ("Business Analyst", "/BA", " BA", "бизнес аналитик", " ВА", "business analyst", "Бизнес аналитик",
                 "Senior Product Designer (UX/UI)", "Product manager", 'Senior Dealer', "Консультант",
-                "backend engineer", "Product Manager", "QA Engineer", "Product Manager", "BACKEND", "AQA",
+                "backend engineer", "Product Manager", "QA Engineer", "Product Manager", "BACKEND", "AQA", 
                 "Вакансия: Менеджер по продукту", "Backend Engineer", "Frontend Engineer", "Manual QA", "Вакансия: Project Manager",
-                "Проект-менеджер","Product Owner")
+                "Проект-менеджер","Product Owner","Data Scientist","JoomShopping","в команде с дизайнером","Unity developer", 
+                "подбора персонала","видеограф","копирайтер","журналист","Менеджер по развитию интернет проектов",
+                "Email маркетолог","CRM маркетолог","Email-маркетолог","CRM-маркетолог","видеоконтентмейкер",
+                "Директолог","Контекстолог","Специалист по рекламе","Оператор call-центра","Инженер-программист",
+                "Консультант","Трафик-менеджер","Продюсер","Аккаунт-менеджер","контекстной рекламе","Creative screenwriter",
+                "контентмейкер","Проджект менеджер","project manager","интерьера","ремонта квартир","Менеджер по маркетплейсам"
+                "SMM-специалист","Интернет-маркетолог","Менеджер по продажам","SMM-маркетолог","SMM-менеджер",
+                "Таргетолог","Менеджер маркетплейсов","Маркетолог","SMM-маркетолог","Копирайтер-редактор", 
+                "отдела продаж","Копирайтер","SEO консультант","Менеджер Wildberries","PR IT", "женской одежды",
+                "Менеджер по оптовым продажам","по работе с маркетплейсами","front-end разработчик","Нужен менеджер",
+                "Руководитель контентной команды","по работе с клиентами","Retention Spesialist",
+                "Ассистент руководителя","SMMдизайнер","Главный редактор","SEO-специалист","ассистент руководителя",
+                "Сметчик","Media Buyer","Product Manager","Арбитражник","Медиабайер","Заместитель директора по маркетингу",
+                "блоггер","SMM","с командой дизайнеров","Tech Writer","Product Owner","Ресечер",
+                "специалист по подбору персонала","Продакт-менеджер", "Delphi", "рекрутера","ищем HR",
+                "контентной","Верстальщик","Арт-директор","Full-Stack Developer","Team Lead","Senior Backend разработчик",
+                "Frontend engineer","Senior Android developer","PHP-программист","Разработчик PHP","Developer PHP",
+                "Python-разработчик","маркетолог","QA","по продажам","архитектор","по продаже мебели",
+                "kotlin developer","Load Test Engineer","Scrum Master","помощник руководителя","квартир",
+                "Team Lead PHP","front-end developer","Проектный менеджер","PR-менеджер","Product Officer",
+                "Программист 1С", "Android разработчик","Unreal Gameplay Programmer","Инженер по развитию",
+                "Sales Assistant","Embedded Developer","Product Designer","sysadmin","Frontend React",
+                "VueJS developer","Психолог","Full Stack Developer","Web-разработчик","Vue-разработчик",
+                "Frontend-разработчик","Agile coach","Инженер-программист","DevOps engineer","Node.js",
+                ".Net ","C++ developer","Support Engineer","Разработчик Python","IT Architect","Virtual Assistant",
+                "Sales Researcher","Ruby developer","Game designer","отдела продаж","Разработчик Bitrix24",
+                "Go developer","Computer Vision Engineer","SRE","DevOps специалист","C++ разработчик",
+                "E-mail маркетолог"," Java developer","Scala разработчик","UX-редактор","iOS Developer",
+                "unity программист","Руководитель интернет-проектов","Руководитель IT-проектов","CX исследователь",
+                "Flutter developer","Бизнес-ассистент","Визуализатор","Product Support","Специалист по трафику",
+                "курса Web-разработка","Руководитель CRM маркетинга","Менеджер по развитию интернет проектов",
+                "Information Security Specialist","по настройке контекстной рекламы","Fullstack разработчик",
+                "специалист отдела сопровождения слушателей","QA Automation","Куратор по маркетингу","финансист",
+                "Системный Администратор", "Frontend Developer","Скрам мастер","spine animator","менеджер WB",
+                )
     },
 
     # capitalize
     'qa': {
         'ma': ("QA Lead", "QAA", " QA", "по качеству", "тестировщик", "quality assurence", "тестер",
-               "Test Automation Engineer", "QA Automation", "QA Auto", "Manual testing", "mobile applications testing","AQA"),
+               "Test Automation Engineer", "QA Automation", "QA Auto", "Manual testing", "mobile applications testing",
+               "AQA","QA Automation", "Qa engineer", "Middle Тестировщик", "QA Engineer", "cucumber",
+               "#automation", "#selenium", "автотесты", "автотестов", "специалист по тестированию",
+                "SoapUI", "Postman", "POSTMAN","Soap", "postman","Quality Control Management",
+                ),
         'mex': ("тестировщиков", "тестировщиками", "проводить QA", " и QA", "to junior", "PHP Developer",
                 "Senior Product Designer (UX/UI)", "Администратор баз данных", "DBA", "Ios developer middle",
                 "Менеджер В2В", "Manager B2B", "Senior front-end developer", "Frontend разработчик", "#react",
@@ -265,11 +400,17 @@ pattern = {
     # capitalize
     'ba': {
         'ma': ("BI Engineer", "Бизнес-Аналитик", "#BA", " BA,", " BA ", " BA.", "Business analyst", "Business Analyst",
-               "бизнес аналитик", " ВА ", "business analyst", "Бизнес аналитик", "Бизнес-аналитик"),
+               "бизнес аналитик", " ВА ", "business analyst", "Бизнес аналитик", "Бизнес-аналитик","Ведущий аналитик",
+               "Системный аналитик"),
         'mex': ("Java Developer",)
     },
 
-    # capitalize
+    'support': {
+        'ma':("Head of Product Support",),
+        'mex': ()
+        },
+
+    # capitize
     'devops': {
         'ma': ("DevSecOps", "инженера по информационной безопасности", "DevOps", "SRE", "Site Reliability Engineer",
                "Cloud Engineer", "DBA", "Администратор баз данных", "Linux System Administrator", "Network administration",
@@ -290,35 +431,46 @@ pattern = {
     },
 
     'marketing': {
-        'ma': ("SMM", "Copyrighter", "SEO", "Marketer", "Маркетолог", "Marketing", "Менеджер по маркетингу",
-               "Video Tutorial Creator", "Producer", "Lead Generation Specialist", "#leadgeneration",
-               "User Acquisition", "копирайтер", "линкбилдинг","linkbuilder", "Link Builder","CRO","ASO",
-               "Media buyer","Content Manager","контент","Media Buyer"),
+        'ma': ("SMM", "Copyrighter", "SEO", "Marketer", "Маркетолог", "Marketing", "Менеджер по маркетингу","SMMдизайнер","Media Buyer",
+               "Video Tutorial Creator", "Producer", "Lead Generation Specialist", "#leadgeneration","Email маркетолог","Email-маркетолог",
+               "User Acquisition", "копирайтер", "линкбилдинг","linkbuilder", "Link Builder","CRO","ASO","CRM маркетолог","CRM-маркетолог",
+               "Media buyer","Content Manager","контент","Media Buyer","контекстной рекламе","Таргетолог","Руководитель контентной команды",
+               "Арбитражник","Медиабайер","Заместитель директора по маркетингу","Директолог","Контекстолог","Специалист по рекламе",
+               "Трафик-менеджер","Marketing Specialist","Маркетолог","SMM-маркетолог","Копирайтер-редактор","Копирайтер","SEO консультант",
+               "SMM-специалист","Интернет-маркетолог","SMM-маркетолог","SMM-менеджер","Marketing Manager", "Руководитель отдела маркетинга",
+               "SEO-специалист","SMM Specialist","Контент-менеджер","Менеджер маркетплейсов","Аккаунт-менеджер","Marketing Lead",
+               "SMM менеджер","SMM - specialist","Креативный продюсер", "Креативный менеджер","Авитолог"," Менеджер по рекламе",
+               "ТЗ-мейкер", "контекстной рекламы"),
         'mex': ("SEO HR", "Product manager", "SEO HR", "HRBP", "Sales Manager", "Manual QA", "Product Manager", "Back-end", "Kotlin Developer",
                 "Middle Business Analyst", "PHP Developer","DevOps","C# Developer","Lead Business Analyst", "Data Scientist", "System Administrator",
                 "Project manager", "ищет веб-дизайнер", "ищем веб-дизайнер","Product Owner","CEO", "Lead Generation", "IT-specialist",
                 "Front-end", "Product designer", "Менеджер проектов","Проект-менеджер","Full stack", "Level Designer", "Artist", "Креативный продюсер",
-                "Менеджер по продажам", "Fullstack","SRE", "Head of Digital")
+                "Менеджер по продажам", "Fullstack","SRE", "Head of Digital",) 
     },
 
     'sales_manager': {
         'ma': ("Sales manager", "sales manager", "Sales Manager", "Менеджера по продажам", "Менеджер холодных продаж",
                "Менеджер по продажам", "менеджер_отдела_продаж", "Lead Generation", "IT Sales Researcher", "#leadgeneration","User Acquisition",
-               "линкбилдинг","linkbuilder", "Link Builder","CRO", "Sales Researcher"),
+               "линкбилдинг","linkbuilder", "Link Builder","CRO", "Sales Researcher","менеджера по продажам", "менеджер по продажам",
+               "Pre-sale manager"),
         'mex': ("Python-разработчика","Системного администратора","NodeJS Developer","Project Manager"," DevOps Engineer")
     },
 
     'junior': {
-        'ma': ("trainee", "junior", "джун", "Начинающий программист", "Начинающего программист"),
+        'ma': ("trainee", "junior", "джун", "Начинающий программист","Начинающего программист", "стажер", "trainee", "internship","от 1 года"),
         'mex': ("не готовы рассматривать", "джуниоров пока не рассматриваем","Junior не рассматриваем",
                 "джуниоров к сожалению пока не рассматриваем", "джуниоров, к сожалению, пока не рассматриваем",
                 "Работать с junior", "Senior Sales Manager", "не рассматриваем Junior", "Required 5 to 7 Years",
-                "джуниоров к сожалению пока не смотрим!", "QA Lead", "Senior QA", "Supervise junior",
+                "джуниоров к сожалению пока не смотрим!", "QA Lead", "Senior QA", "Supervise junior","Senior",
                 "We do not plan to hire Junior", "middle","позиции Junior специалистов пока не актуальны", "джуниоров не смотрим",
                 "от 2-х лет","от двух лет","от 2х лет","от 2 лет", "3+ years of experience","2+ years of experience",
                 "Не менее 2-3 лет работы", " от 3 лет", "от 3-х лет", "не менее 3 лет","Senior product", "Senior Product", "senior product",
                 "2 года","Менторить младших разработчиков", "Senior Javascript","3+ years of experience","Senior Gameplay",
-                "3 years of professional")
+                "3 years of professional","Опыт работы от трёх лет","3+ years of Product Management experience",
+                "Senior Go","Senior Front-End","Senior Front-End", "не менее трех лет"," Старший программист","Senior Software Developer",
+                "Senior php developer","Team Lead","Senior Game Designer","senior developer","Senior Android Developer",
+                "Руководитель отдела","for 5+ years","for 4+ years","не менее 2-х лет","не менее 3 х лет"
+                )
     },
 
     'middle': {
@@ -355,12 +507,16 @@ pattern = {
                "Екатеринбург", "Самара", "Киев", "Kyiv"),
         'mex': ()
     },
+
     'internship': {
         'ma': ("internship", "стажировка", "trainee"),
         'mex': ()
     },
 }
 
+pattern['backend']['ma']=set(pattern['python']['ma']).union(set(pattern['C']['ma'])).union(set(pattern['PHP']['ma'])).union(set(pattern['Java']['ma'])).union(set(pattern['Ruby']['ma'])).union(set(pattern['Scala']['ma'])).union(set(pattern['.NET']['ma'])).union(set(pattern['NodeJS']['ma'])).union(set(pattern['Laravel']['ma'])).union(set(pattern['Golang']['ma'])).union(set(pattern['Delphi']['ma'])).union(set(pattern['ABAP']['ma'])).union(set(pattern['ML']['ma']))
+
+print(pattern['backend']['ma'])
 
 params = {
     'company_hiring': ('[К,к]омпан[и,i][я,и,й][^\,"\n]{1,3}[#А-ЯA-Z][a-zA-Zа-яА-Я0-9]{2,20}[^\,"\n]{1}«{0,1}[А-ЯA-Z]{0,20}[A-ZА-Яa-zа-я]{0,20}',
@@ -404,6 +560,7 @@ cities_pattern = {
 
 companies_list = [
     'Prof IT',
+    'Русьтелетех',
     'Foreshko',
     'Distate',
     'Рт Мис',
@@ -426,6 +583,7 @@ companies_list = [
     'NewsCatcher',
     'MonetizeMore',
     'Juni',
+    'Saber Interactive',
     'RapDev.io',
     'Mudflap',
     'Shaker',
@@ -1182,11 +1340,3 @@ vacancy_pattern = {
 valid_profession_list = ['marketing', 'ba', 'game', 'product', 'mobile',
                                       'pm', 'sales_manager', 'analyst', 'frontend',
                                       'designer', 'devops', 'hr', 'backend', 'qa', 'junior']
-
-contacts_pattern = "[^\n\.][a-zA-Z0-9\-_\.]+@[a-z\-]+\.[a-z]+|clc\.to\/[a-zA-Z\-]+|[\W]{1}@[a-zA-Z_]+|[0-9]{9,}+[^\n][a-zA-Zа-яА-Я]+"
-
-#--------------------------- professions -------------------------------------
-
-profession_new_pattern = {
-    "backend": "[rRPHPouby]{3,4}\W+[Dd]ev[^\n\":;\s]+|[Ии]щу[^\n]*[bB]ac[\-]?kend|[Bb]ack[\-]?end\W{1,3}[Dd]ev[^\n\"';:\s]+|[^\nа-яА-Я\s\.;]*\W?[Bb]ack[\-]?end|[Sscal]{5}\W+[Dd]ev[^\n\":;\s]+|[gG]olang\W+[Dd]ev[^\n\":;\s]+|[Pp]ython\W+[Dd]ev[^\n\":;\s]+|[Jj]ava\W+[Dd]ev[^\n\":;\s]+|[PpHh]{3}\Wпрограммист|C\#\W+[Dd]ev[^\n\":;\s]+|[Ee]mbedded|бэк[^\n]{1,7}разработчик|PHP*\W{1}[SYMFONYsymfony]{7}|PHP|[Ll]inux|[Nn]ode\.?[js]{0,2}",
-}

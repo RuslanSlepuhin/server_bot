@@ -64,7 +64,7 @@ class AlexSort2809:
             # ---------------- professions -----------------
 
             for item in self.valid_profession_list:
-                if item in ['pm', 'game', 'designer', 'hr', 'analyst', 'qa', 'ba', 'product']:
+                if item in ['pm', 'game', 'designer', 'hr', 'analyst', 'qa', 'ba' 'devops', 'product']:
                     low = False
                 else:
                     low = True
@@ -94,6 +94,10 @@ class AlexSort2809:
         result = 0
         tags = ''
         anti_tags = ''
+
+        if key == 'designer':
+            pass
+
         if low:
             vacancy = vacancy.lower()
 
@@ -104,7 +108,7 @@ class AlexSort2809:
             if low:
                 word = word.lower()
 
-            match = set(re.findall(rf"{word.lower()}", vacancy.lower()))
+            match = set(re.findall(rf"{word}", vacancy))
 
             if match:
                 result += len(match)
@@ -116,7 +120,7 @@ class AlexSort2809:
                 if low:
                     anti_word = anti_word.lower()
 
-                match = set(re.findall(rf"{anti_word.lower()}", vacancy.lower()))
+                match = set(re.findall(rf"{anti_word}", vacancy))
                 if match:
                     result = 0
                     anti_tags += f'MEX {key}={match}\n'
