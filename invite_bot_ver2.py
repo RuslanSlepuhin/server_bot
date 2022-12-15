@@ -1729,57 +1729,57 @@ class InviteBot:
                     print(f"!!!!!! error for write in ambulance: {e}:\n text = {text}")
 
 
-        # def db_connect():
-        #
-        #     con = None
-        #
-        #     logs.write_log(f"invite_bot_2: function: db_connect")
-        #
-        #     database = config['DB5new']['database']
-        #     user = config['DB5new']['user']
-        #     password = config['DB5new']['password']
-        #     host = config['DB5new']['host']
-        #     port = config['DB5new']['port']
-        #
-        #     try:
-        #         # DATABASE_URL = os.environ['https://data.heroku.com/datastores/762076fd-4f27-4e85-a78f-e3d1973c8ac6#administration']
-        #         # con = psycopg2.connect(DATABASE_URL, sslmode='require')
-        #         con = psycopg2.connect(
-        #             database=database,
-        #             user=user,
-        #             password=password,
-        #             host=host,
-        #             port=port
-        #         )
-        #     except:
-        #         print('No connect with db')
-        #     return con
-        #
-        # async def clear_invite_history(channel):
-        #
-        #     """
-        #     Clear the history in choose channel
-        #     """
-        #     logs.write_log(f"invite_bot_2: function: clear_invite_history")
-        #
-        #     history = await client(GetHistoryRequest(
-        #         peer=channel,
-        #         offset_id=0,
-        #         offset_date=None, add_offset=0,
-        #         limit=3, max_id=0, min_id=0,
-        #         hash=0))
-        #     # if not history.messages:
-        #
-        #
-        #     for message in history.messages:
-        #         print(f'\n\n{message}\n\n')
-        #         if message.action:
-        #             print(f'Message_service\n\n')
-        #             await client.delete_messages(message.peer_id.channel_id, message.id)
-        #             await client.delete_messages(channel, message.id)
-        #         else:
-        #             await client.delete_messages(channel, message.id)
-        #     await asyncio.sleep(10)
+        def db_connect():
+
+            con = None
+
+            logs.write_log(f"invite_bot_2: function: db_connect")
+
+            database = config['DB5new']['database']
+            user = config['DB5new']['user']
+            password = config['DB5new']['password']
+            host = config['DB5new']['host']
+            port = config['DB5new']['port']
+
+            try:
+                # DATABASE_URL = os.environ['https://data.heroku.com/datastores/762076fd-4f27-4e85-a78f-e3d1973c8ac6#administration']
+                # con = psycopg2.connect(DATABASE_URL, sslmode='require')
+                con = psycopg2.connect(
+                    database=database,
+                    user=user,
+                    password=password,
+                    host=host,
+                    port=port
+                )
+            except:
+                print('No connect with db')
+            return con
+
+        async def clear_invite_history(channel):
+
+            """
+            Clear the history in choose channel
+            """
+            logs.write_log(f"invite_bot_2: function: clear_invite_history")
+
+            history = await client(GetHistoryRequest(
+                peer=channel,
+                offset_id=0,
+                offset_date=None, add_offset=0,
+                limit=3, max_id=0, min_id=0,
+                hash=0))
+            # if not history.messages:
+
+
+            for message in history.messages:
+                print(f'\n\n{message}\n\n')
+                if message.action:
+                    print(f'Message_service\n\n')
+                    await client.delete_messages(message.peer_id.channel_id, message.id)
+                    await client.delete_messages(channel, message.id)
+                else:
+                    await client.delete_messages(channel, message.id)
+            await asyncio.sleep(10)
 
         async def get_time_start():
 

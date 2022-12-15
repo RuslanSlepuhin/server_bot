@@ -29,26 +29,19 @@ class DataBaseOperations:
 
         self.con = None
         config.read("./../settings/config.ini")
-        # try:
-        #     database = config['DB3']['database']
-        #     user = config['DB3']['user']
-        #     password = config['DB3']['password']
-        #     host = config['DB3']['host']
-        #     port = config['DB3']['port']
-        # except:
-        config.read("./settings/config.ini")
-
-        database = 'postgres'
-        user = 'postgres'
-        password = '00000'
-        host = '127.0.0.1'
-        port = '5432'
-
-        # database = config['DB_local_clone']['database']
-        # user = config['DB_local_clone']['user']
-        # password = config['DB_local_clone']['password']
-        # host = config['DB_local_clone']['host']
-        # port = config['DB_local_clone']['port']
+        try:
+            database = config['DB3']['database']
+            user = config['DB3']['user']
+            password = config['DB3']['password']
+            host = config['DB3']['host']
+            port = config['DB3']['port']
+        except:
+            config.read("./settings/config.ini")
+            database = config['DB_local_clone']['database']
+            user = config['DB_local_clone']['user']
+            password = config['DB_local_clone']['password']
+            host = config['DB_local_clone']['host']
+            port = config['DB_local_clone']['port']
         try:
             self.con = psycopg2.connect(
                 database=database,
@@ -58,7 +51,7 @@ class DataBaseOperations:
                 port=port
             )
         except:
-            print('61 line: No connect with db')
+            print('No connect with db')
         return self.con
     #-------------participants-------------------------
     def push_to_bd_participants(self, participant, all_user_dictionary, channel_name, channel_username):
