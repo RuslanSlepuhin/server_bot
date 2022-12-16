@@ -86,6 +86,12 @@ class HHGetInformation:
         response_dict = await self.get_info(link)
 
     async def get_info(self, link):
+
+        path = "./utils/chromedriver/chromedriver"
+        options = Options()
+        options.headless = True
+        driver = webdriver.Chrome(path, options=options)
+
         # service = Service(executable_path=ChromeDriverManager().install())
 
         # self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
