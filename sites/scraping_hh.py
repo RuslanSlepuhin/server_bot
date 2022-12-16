@@ -93,10 +93,6 @@ class HHGetInformation:
         chrome_driver_binary = "./utils/chromedriver/chromedriver"
         # self.browser = webdriver.Chrome(chrome_driver_binary, chrome_options=self.options)
 
-        self.browser = webdriver.Chrome(chrome_options=self.options, service=servise)
-
-
-
         self.browser = webdriver.Chrome(chrome_options=self.options, service=service)
 
         for word in self.search_words:
