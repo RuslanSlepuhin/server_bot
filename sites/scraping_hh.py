@@ -10,7 +10,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.service import Service as ChromeService
+
 # from bot.scraping_push_to_channels import PushChannels
 from db_operations.scraping_db import DataBaseOperations
 from patterns.pattern_Alex2809 import cities_pattern, params
