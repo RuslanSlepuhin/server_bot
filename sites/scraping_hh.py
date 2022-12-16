@@ -74,8 +74,7 @@ class HHGetInformation:
 
         self.count_message_in_one_channel = 1
 
-        self.options = Options()
-        self.options.add_argument("--headless")
+
         # self.options.add_argument("--disable-dev-shm-usage")
         # self.options.add_argument("--no-sandbox")
         # self.options.binary_location = "./google-chrome-stable-108.0.5359.124/debian/google-stable/opt/google/chrome"
@@ -87,10 +86,13 @@ class HHGetInformation:
 
     async def get_info(self, link):
 
-        path = "./utils/chromedriver/chromedriver"
-        options = Options()
-        options.headless = True
-        self.browser = webdriver.Chrome(path, options=options)
+        # self.options = Options()
+        # self.options.add_argument("--headless")
+        service = Service(executable_path="./utils/chromedriver/chromedriver")
+        # options = Options()
+        # options.headless = True
+        self.browser = webdriver.Chrome(options=options)
+
 
         # service = Service(executable_path=ChromeDriverManager().install())
 
@@ -101,8 +103,8 @@ class HHGetInformation:
         # self.browser = webdriver.Chrome(chrome_driver_binary, chrome_options=self.options)
 
         # self.browser = webdriver.Chrome(chrome_options=self.options, service=service)
-        self.browser = webdriver.Chrome(service=ChromeService(
-            ChromeDriverManager().install()))
+        # self.browser = webdriver.Chrome(service=ChromeService(
+        #     ChromeDriverManager().install()))
 
         for word in self.search_words:
 
