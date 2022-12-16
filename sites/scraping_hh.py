@@ -76,7 +76,7 @@ class HHGetInformation:
         self.options.add_argument("--headless")
         # self.options.add_argument("--disable-dev-shm-usage")
         # self.options.add_argument("--no-sandbox")
-        self.options.binary_location = "C:\\Program Files\\Chrome\\chrome64_55.0.2883.75\\chrome.exe"
+        self.options.binary_location = "/usr/bin/google-chrome"
         # self.msg = await self.bot.send_message(self.chat_id, 'https://hh.ru is starting', disable_web_page_preview=True)
 
         link = 'https://hh.ru'
