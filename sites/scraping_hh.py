@@ -88,6 +88,14 @@ class HHGetInformation:
         service = Service(executable_path=ChromeDriverManager().install())
 
         # self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
+
+        self.options.binary_location = "/google-chrome-stable-108.0.5359.124/debian/google-stable/opt/google/chrome"
+        chrome_driver_binary = "/usr/local/bin/chromedriver"
+        self.browser = webdriver.Chrome(chrome_driver_binary, chrome_options=self.options)
+
+
+
+
         self.browser = webdriver.Chrome(chrome_options=self.options, service=service)
 
         for word in self.search_words:
