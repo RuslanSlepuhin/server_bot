@@ -91,7 +91,7 @@ class HHGetInformation:
         service = Service(executable_path="./utils/chromedriver/chromedriver")
         # options = Options()
         # options.headless = True
-        self.browser = webdriver.Chrome(options=options)
+        self.browser = webdriver.Chrome(service=service)
 
 
         # service = Service(executable_path=ChromeDriverManager().install())
