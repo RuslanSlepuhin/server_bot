@@ -86,6 +86,8 @@ class HHGetInformation:
     async def get_info(self, link):
 
         self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
+        self.browser = webdriver.Chrome(chrome_options=self.options)
+
         for word in self.search_words:
 
             link = f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text='
