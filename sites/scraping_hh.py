@@ -86,7 +86,7 @@ class HHGetInformation:
     async def get_info(self, link):
 
         # self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
-        self.browser = webdriver.Chrome(chrome_options=self.options, executable_path="./chromedriver/chromedriver")
+        self.browser = webdriver.Chrome(chrome_options=self.options, executable_path=r"./chromedriver/chromedriver")
 
         for word in self.search_words:
 
