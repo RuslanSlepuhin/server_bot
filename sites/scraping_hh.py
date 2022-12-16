@@ -10,6 +10,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
+from selenium.webdriver.chrome.service import Service
 # from bot.scraping_push_to_channels import PushChannels
 from db_operations.scraping_db import DataBaseOperations
 from patterns.pattern_Alex2809 import cities_pattern, params
@@ -84,7 +85,7 @@ class HHGetInformation:
         response_dict = await self.get_info(link)
 
     async def get_info(self, link):
-        service = ChromeService(executable_path=ChromeDriverManager().install())
+        service = Service(executable_path=ChromeDriverManager().install())
 
         # self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
         self.browser = webdriver.Chrome(chrome_options=self.options, service=service)
