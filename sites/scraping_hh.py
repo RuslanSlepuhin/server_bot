@@ -86,12 +86,13 @@ class HHGetInformation:
 
     async def get_info(self, link):
 
-        # self.options = Options()
-        # self.options.add_argument("--headless")
+        self.options = Options()
+        self.options.add_argument("--no-sandbox")
         service = Service(executable_path="./utils/chromedriver/chromedriver")
         # options = Options()
         # options.headless = True
-        self.browser = webdriver.Chrome(service=service)
+
+        self.browser = webdriver.Chrome(service=service, options=options)
 
 
         # service = Service(executable_path=ChromeDriverManager().install())
