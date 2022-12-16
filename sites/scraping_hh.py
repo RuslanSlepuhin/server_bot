@@ -90,7 +90,7 @@ class HHGetInformation:
         # self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
 
         self.options.binary_location = "/google-chrome-stable-108.0.5359.124/debian/google-stable/usr/bin/google-chrome"
-        chrome_driver_binary = "/usr/local/bin/chromedriver"
+        chrome_driver_binary = "/utils/chromedriver/chromedriver"
         self.browser = webdriver.Chrome(chrome_driver_binary, chrome_options=self.options)
 
 
