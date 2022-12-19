@@ -86,7 +86,7 @@ class HHGetInformation:
 
     async def get_info(self, link):
 
-        self.browser = webdriver.Chrome(executable_path='./../utils/chromedriver/chromedriver')
+        self.browser = webdriver.Chrome(executable_path='./utils/chromedriver/chromedriver')
 
         # self.options = Options()
         # self.options.add_argument("--no-sandbox")
