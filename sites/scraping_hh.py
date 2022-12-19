@@ -90,7 +90,7 @@ class HHGetInformation:
         chromeOptions.add_argument("--headless")
         # chromeOptions.add_argument("--remote-debugging-port=9222")
         chromeOptions.add_argument('--no-sandbox')
-        chrome_options.add_argument('--disable-dev-shm-usage')
+        # chrome_options.add_argument('--disable-dev-shm-usage')
 
         self.browser = webdriver.Chrome(
             executable_path='/root/itcoty_bot/server_bot/utils/chromedriver/chromedriver',
