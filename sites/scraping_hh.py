@@ -86,21 +86,21 @@ class HHGetInformation:
 
     async def get_info(self, link):
 
+        self.browser = webdriver.Chrome(executable_path='./../utils/chromedriver/chromedriver')
+
         # self.options = Options()
         # self.options.add_argument("--no-sandbox")
-        # service = Service(executable_path=r'./utils/chromedriver.exe/chromedriver.exe')
+        # service = Service(executable_path=r'./utils/chromedriver/chromedriver')
         # options = Options()
         # options.headless = True
 
-        self.browser = webdriver.Chrome(executable_path=r'chromedriver.exe')
 
 
         # service = Service(executable_path=ChromeDriverManager().install())
 
         # self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
-        # service = Service('./utils/chromedriver.exe/chromedriver.exe.exe')
+        # service = Service('./utils/chromedriver/chromedriver')
         # self.options.binary_location = "./google-chrome-stable-108.0.5359.124/debian/google-stable/usr/bin/google-chrome"
-        chrome_driver_binary = "./utils/chromedriver.exe/chromedriver.exe"
         # self.browser = webdriver.Chrome(chrome_driver_binary, chrome_options=self.options)
 
         # self.browser = webdriver.Chrome(chrome_options=self.options, service=service)

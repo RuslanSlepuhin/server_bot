@@ -29,7 +29,7 @@ class FindJobGetInformation:
 
         # chrome_options = webdriver.ChromeOptions()
         # chrome_options.binary_location = os.environ.get('GOOGLE_CHROME_SHIM', None)
-        # self.browser = webdriver.Chrome(executable_path="chromedriver.exe", chrome_options=chrome_options)
+        # self.browser = webdriver.Chrome(executable_path="chromedriver", chrome_options=chrome_options)
 
         options = Options()
         options.add_argument("--headless")
