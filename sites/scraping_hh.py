@@ -11,7 +11,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.service import Service as ChromeService
-
+from settings.browser_settings import browser
 # from bot.scraping_push_to_channels import PushChannels
 from db_operations.scraping_db import DataBaseOperations
 from patterns.pattern_Alex2809 import cities_pattern, params
@@ -60,6 +60,7 @@ class HHGetInformation:
         if bot_dict:
             self.bot = bot_dict['bot']
             self.chat_id = bot_dict['chat_id']
+        self.browser = browser
 
 
     async def get_content(self, db_tables=None):
@@ -86,16 +87,16 @@ class HHGetInformation:
 
     async def get_info(self, link):
 
-        chromeOptions = webdriver.ChromeOptions()
-        chromeOptions.add_argument("--headless")
+        # chromeOptions = webdriver.ChromeOptions()
+        # chromeOptions.add_argument("--headless")
         # chromeOptions.add_argument("--remote-debugging-port=9222")
-        chromeOptions.add_argument('--no-sandbox')
+        # chromeOptions.add_argument('--no-sandbox')
         # chrome_options.add_argument('--disable-dev-shm-usage')
 
-        self.browser = webdriver.Chrome(
-            executable_path='/root/itcoty_bot/server_bot/utils/chromedriver/chromedriver',
-            chrome_options=chromeOptions
-        )
+        # self.browser = webdriver.Chrome(
+        #     executable_path='/root/itcoty_bot/server_bot/utils/chromedriver/chromedriver',
+        #     chrome_options=chromeOptions
+        # )
 
         # self.browser = webdriver.Chrome(
         #     executable_path='/usr/local/lib/python3.10/dist-packages (2.24.1)',
