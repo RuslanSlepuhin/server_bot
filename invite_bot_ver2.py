@@ -178,6 +178,7 @@ class InviteBot:
                                                             '/download - ❗️you get excel from admin vacancies with search tags\n'
                                                             '/ambulance - if bot gets accident in hard pushing and you think you loose the shorts\n'
                                                             '/refresh - to rewrite the professions in all vacancies throgh the new filters logic\n'
+                                                            '/get_backup_db\n'
                                                             '/add_statistics\n\n'
                                                             '❗️- it is admin options')
 
