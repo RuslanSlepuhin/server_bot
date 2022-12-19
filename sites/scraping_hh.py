@@ -92,7 +92,7 @@ class HHGetInformation:
         # options = Options()
         # options.headless = True
 
-        self.browser = webdriver.Chrome(executable_path=r'./utils/chromedriver/chromedriver.exe')
+        self.browser = webdriver.Chrome(executable_path=r'chromedriver.exe')
 
 
         # service = Service(executable_path=ChromeDriverManager().install())
