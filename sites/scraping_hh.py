@@ -87,8 +87,8 @@ class HHGetInformation:
     async def get_info(self, link):
 
         chromeOptions = webdriver.ChromeOptions()
-        chromeOptions.add_argument("--headless")
-        chromeOptions.add_argument("--remote-debugging-port=9222")
+        # chromeOptions.add_argument("--headless")
+        # chromeOptions.add_argument("--remote-debugging-port=9222")
         chromeOptions.add_argument('--no-sandbox')
 
         self.browser = webdriver.Chrome(
