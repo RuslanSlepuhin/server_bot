@@ -92,13 +92,18 @@ class HHGetInformation:
         chromeOptions.add_argument('--no-sandbox')
 
         self.browser = webdriver.Chrome(
-            executable_path='/usr/local/lib/python3.10/dist-packages (2.24.1)',
+            executable_path='/root/itcoty_bot/server_bot/utils/chromedriver/chromedriver_2',
             chrome_options=chromeOptions
         )
 
+        # self.browser = webdriver.Chrome(
+        #     executable_path='/usr/local/lib/python3.10/dist-packages (2.24.1)',
+        #     chrome_options=chromeOptions
+        # )
+
         # self.options = Options()
         # self.options.add_argument("--no-sandbox")
-        # service = Service(executable_path=r'./utils/chromedriver/chromedriver')
+        # service = Service(executable_path=r'./utils/chromedriver_2/chromedriver_2')
         # options = Options()
         # options.headless = True
 
@@ -107,7 +112,7 @@ class HHGetInformation:
         # service = Service(executable_path=ChromeDriverManager().install())
 
         # self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
-        # service = Service('./utils/chromedriver/chromedriver')
+        # service = Service('./utils/chromedriver_2/chromedriver_2')
         # self.options.binary_location = "./google-chrome-stable-108.0.5359.124/debian/google-stable/usr/bin/google-chrome"
         # self.browser = webdriver.Chrome(chrome_driver_binary, chrome_options=self.options)
 
