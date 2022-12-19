@@ -92,7 +92,7 @@ class HHGetInformation:
         chromeOptions.add_argument('--no-sandbox')
 
         self.browser = webdriver.Chrome(
-            executable_path=r'/root/itcoty_bot/server_bot/utils/chromedriver/chromedriver',
+            executable_path='/usr/local/lib/python3.10/dist-packages (2.24.1)',
             chrome_options=chromeOptions
         )
 
