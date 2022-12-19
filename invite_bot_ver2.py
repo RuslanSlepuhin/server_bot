@@ -142,6 +142,14 @@ class InviteBot:
         class Form_hh(StatesGroup):
             word = State()
 
+        class Form_check(StatesGroup):
+            title = State()
+            body = State()
+            vacancy = State()
+
+        class Form_check_link(StatesGroup):
+            link = State()
+
 
         @dp.message_handler(commands=['start'])
         async def send_welcome(message: types.Message):
@@ -179,6 +187,8 @@ class InviteBot:
                                                             '/ambulance - if bot gets accident in hard pushing and you think you loose the shorts\n'
                                                             '/refresh - to rewrite the professions in all vacancies throgh the new filters logic\n'
                                                             '/get_backup_db\n'
+                                                            '/check_link_hh\n'
+                                                            '/check_title_body\n'
                                                             '/add_statistics\n\n'
                                                             '❗️- it is admin options')
 
@@ -186,15 +196,6 @@ class InviteBot:
         async def get_logs(message: types.Message):
             path = './logs/logs.txt'
             await send_file_to_user(message, path)
-
-        @dp.message_handler(commands=['refresh'])
-        async def refresh_vacancies(message: types.Message):
-            await refresh(message)
-
-        @dp.message_handler(commands=['peerchannel'])
-        async def get_logs(message: types.Message):
-            await bot_aiogram.send_message(message.chat.id, 'Type the channel link and get channel data')
-            self.peerchannel = True
 
         @dp.message_handler(commands=['get_backup_db'])
         async def get_logs(message: types.Message):
@@ -204,6 +205,14 @@ class InviteBot:
                 caption='Take the backup from server'
             )
 
+        @dp.message_handler(commands=['refresh'])
+        async def refresh_vacancies(message: types.Message):
+            await refresh(message)
+
+        @dp.message_handler(commands=['peerchannel'])
+        async def get_logs(message: types.Message):
+            await bot_aiogram.send_message(message.chat.id, 'Type the channel link and get channel data')
+            self.peerchannel = True
 
         @dp.message_handler(commands=['download'])
         async def download(message: types.Message):
@@ -235,6 +244,56 @@ class InviteBot:
             # print(result.get(timeout=1))
 
             await state.finish()
+
+# -----------------------------------------------------------------------
+        @dp.message_handler(commands=['check_title_body'])
+        async def check_in_db(message: types.Message):
+            if message.from_user.id in self.white_admin_list:
+                await Form_check.title.set()
+                await bot_aiogram.send_message(message.chat.id, 'Text in title')
+            else:
+                await bot_aiogram.send_message(message.chat.id, '🚀 Sorry, this options available only for admin')
+
+        @dp.message_handler(state=Form_check.title)
+        async def process_api_id(message: types.Message, state: FSMContext):
+            async with state.proxy() as data:
+                data['title'] = message.text
+            await Form_check.body.set()
+            await bot_aiogram.send_message(message.chat.id, 'Text in body')
+
+        @dp.message_handler(state=Form_check.body)
+        async def process_api_id(message: types.Message, state: FSMContext):
+            async with state.proxy() as data:
+                data['body'] = message.text
+                title = data['title']
+                body = data['body']
+            await state.finish()
+            results = await search_vacancy_in_db(title, body)
+            if not results:
+                await bot_aiogram.send_message(message.chat.id, f"not found")
+            else:
+                message_for_send = ''
+                for i in results:
+                    message_for_send += f"{i}: {results[i]}"
+                await bot_aiogram.send_message(message.chat.id, f"search results:\n{results}")
+
+
+        @dp.message_handler(commands=['check_link_hh'])
+        async def check_in_db(message: types.Message):
+            if message.from_user.id in self.white_admin_list:
+                await Form_check_link.link.set()
+                await bot_aiogram.send_message(message.chat.id, 'Insert the HH link')
+            else:
+                await bot_aiogram.send_message(message.chat.id, '🚀 Sorry, this options available only for admin')
+
+        @dp.message_handler(state=Form_check_link.link)
+        async def process_api_id(message: types.Message, state: FSMContext):
+            async with state.proxy() as data:
+                data['link'] = message.text
+            link = message.text
+
+# -----------------------------------------------------------------------
+
 
         @dp.message_handler(commands=['delete_till'])
         async def download(message: types.Message):
@@ -1038,7 +1097,7 @@ class InviteBot:
                 #     channel=message.text,
                 #     all_participant=all_participant
                 # )
-#
+                self.marker = False
 
             else:
                 if message.text == 'Get participants':
@@ -2785,6 +2844,20 @@ class InviteBot:
                     await send_file_to_user(message, './other_operations/pr.txt', caption="It did not send excel so take txt logs")
                 except:
                     await bot_aiogram.send_message(message.chat.id, 'Done')
+
+        async def search_vacancy_in_db(title, body):
+            f = self.valid_profession_list
+            f.append('admin_last_session')
+            matches_list = {}
+            for i in f:
+                print(f'searching in {i}')
+                response = DataBaseOperations(None).get_all_from_db(
+                    table_name=i,
+                    param=f"""WHERE title LIKE '%{title}%' AND body LIKE '%{body}%'"""
+                )
+                if response:
+                    matches_list[i] = len(response)
+            return matches_list
 
 
         executor.start_polling(dp, skip_updates=True)
