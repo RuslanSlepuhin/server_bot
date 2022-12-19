@@ -9,8 +9,8 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 
 chromeOptions = webdriver.ChromeOptions()
 chromeOptions.add_argument("--headless")
-# chromeOptions.add_argument("--remote-debugging-port=9222")
 chromeOptions.add_argument('--no-sandbox')
+# chromeOptions.add_argument("--remote-debugging-port=9222")
 # chrome_options.add_argument('--disable-dev-shm-usage')
 
 browser = webdriver.Chrome(

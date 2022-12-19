@@ -195,6 +195,15 @@ class InviteBot:
             await bot_aiogram.send_message(message.chat.id, 'Type the channel link and get channel data')
             self.peerchannel = True
 
+        @dp.message_handler(commands=['get_backup_db'])
+        async def get_logs(message: types.Message):
+            await send_file_to_user(
+                message=message,
+                path='./db_backup/backup_from_server.backup',
+                caption='Take the backup from server'
+            )
+
+
         @dp.message_handler(commands=['download'])
         async def download(message: types.Message):
             if message.from_user.id in self.white_admin_list:

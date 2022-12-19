@@ -72,55 +72,12 @@ class HHGetInformation:
         :return:
         """
         self.db_tables = db_tables
-
         self.count_message_in_one_channel = 1
 
-
-        # self.options.add_argument("--disable-dev-shm-usage")
-        # self.options.add_argument("--no-sandbox")
-        # self.options.binary_location = "./google-chrome-stable-108.0.5359.124/debian/google-stable/opt/google/chrome"
-        # self.msg = await self.bot.send_message(self.chat_id, 'https://hh.ru is starting', disable_web_page_preview=True)
-
-        link = 'https://hh.ru'
         link = 'https://hh.ru/search/vacancy?no_magic=true&L_save_area=true&text=&excluded_text=&salary=&currency_code=RUR&experience=doesNotMatter&schedule=remote&order_by=relevance&search_period=1&items_on_page=200&page=39&hhtmFrom=vacancy_search_list'
         response_dict = await self.get_info(link)
 
     async def get_info(self, link):
-
-        # chromeOptions = webdriver.ChromeOptions()
-        # chromeOptions.add_argument("--headless")
-        # chromeOptions.add_argument("--remote-debugging-port=9222")
-        # chromeOptions.add_argument('--no-sandbox')
-        # chrome_options.add_argument('--disable-dev-shm-usage')
-
-        # self.browser = webdriver.Chrome(
-        #     executable_path='/root/itcoty_bot/server_bot/utils/chromedriver/chromedriver',
-        #     chrome_options=chromeOptions
-        # )
-
-        # self.browser = webdriver.Chrome(
-        #     executable_path='/usr/local/lib/python3.10/dist-packages (2.24.1)',
-        #     chrome_options=chromeOptions
-        # )
-
-        # self.options = Options()
-        # self.options.add_argument("--no-sandbox")
-        # service = Service(executable_path=r'./utils/chromedriver_2/chromedriver_2')
-        # options = Options()
-        # options.headless = True
-
-
-
-        # service = Service(executable_path=ChromeDriverManager().install())
-
-        # self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
-        # service = Service('./utils/chromedriver_2/chromedriver_2')
-        # self.options.binary_location = "./google-chrome-stable-108.0.5359.124/debian/google-stable/usr/bin/google-chrome"
-        # self.browser = webdriver.Chrome(chrome_driver_binary, chrome_options=self.options)
-
-        # self.browser = webdriver.Chrome(chrome_options=self.options, service=service)
-        # self.browser = webdriver.Chrome(service=ChromeService(
-        #     ChromeDriverManager().install()))
 
         for word in self.search_words:
             self.page_number = 0
