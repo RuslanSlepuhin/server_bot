@@ -91,7 +91,10 @@ class HHGetInformation:
         chromeOptions.add_argument("--remote-debugging-port=9222")
         chromeOptions.add_argument('--no-sandbox')
 
-        self.browser = webdriver.Chrome()
+        self.browser = webdriver.Chrome(
+            executable_path=r'/root/itcoty_bot/server_bot/utils/chromedriver/chromedriver',
+            chrome_options=chromeOptions
+        )
 
         # self.options = Options()
         # self.options.add_argument("--no-sandbox")
