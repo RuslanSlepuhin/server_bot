@@ -86,7 +86,15 @@ class HHGetInformation:
 
     async def get_info(self, link):
 
-        self.browser = webdriver.Chrome(executable_path='/root/itcoty_bot/server_bot/utils/chromedriver/chromedriver')
+        chromeOptions = webdriver.ChromeOptions()
+        chromeOptions.add_argument("--headless")
+        chromeOptions.add_argument("--remote-debugging-port=9222")
+        chromeOptions.add_argument('--no-sandbox')
+
+        self.browser = webdriver.Chrome(
+            executable_path='/root/itcoty_bot/server_bot/utils/chromedriver/chromedriver',
+            chrome_options=chromeOptions
+        )
 
         # self.options = Options()
         # self.options.add_argument("--no-sandbox")
