@@ -88,7 +88,7 @@ class HHGetInformation:
 
         self.options = Options()
         self.options.add_argument("--no-sandbox")
-        service = Service(executable_path="./utils/chromedriver/chromedriver")
+        service = Service(executable_path=r'./utils/chromedriver.exe/chromedriver.exe')
         # options = Options()
         # options.headless = True
 
@@ -98,9 +98,9 @@ class HHGetInformation:
         # service = Service(executable_path=ChromeDriverManager().install())
 
         # self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
-        # service = Service('./utils/chromedriver/chromedriver.exe')
+        # service = Service('./utils/chromedriver.exe/chromedriver.exe.exe')
         # self.options.binary_location = "./google-chrome-stable-108.0.5359.124/debian/google-stable/usr/bin/google-chrome"
-        chrome_driver_binary = "./utils/chromedriver/chromedriver"
+        chrome_driver_binary = "./utils/chromedriver.exe/chromedriver.exe"
         # self.browser = webdriver.Chrome(chrome_driver_binary, chrome_options=self.options)
 
         # self.browser = webdriver.Chrome(chrome_options=self.options, service=service)
