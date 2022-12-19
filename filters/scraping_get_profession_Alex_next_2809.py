@@ -46,6 +46,7 @@ class AlexSort2809:
 
                 if not self.result_dict2['vacancy']:
                     profession['profession'] = {'no_sort'}
+                    print(f"line84 {profession['profession']}")
                     print("= vacancy not found =")
                     return {'profession': profession, 'params': {}}
 
@@ -58,6 +59,8 @@ class AlexSort2809:
 
                 if not self.result_dict2['contacts']:
                     profession['profession'] = {'no_sort'}
+                    print(f"not contacts {profession['profession']}")
+
                     print("= contacts not found =")
                     return {'profession': profession, 'params': {}}
 
@@ -73,6 +76,7 @@ class AlexSort2809:
                 result = self.check_parameter(pattern=pattern_Alex2809.pattern[item], vacancy=vacancy, low=low, key=item)
                 if result['result']:
                     profession['profession'].append(result['result'])
+                    print(f"in loop: {profession['profession']}")
                 profession['tag'] += result['tags']
                 profession['anti_tag'] += result['anti_tags']
 
@@ -81,12 +85,14 @@ class AlexSort2809:
 
             if not profession['profession']:
                 profession['profession'] = ['no_sort']
+                print(f"line84 {profession['profession']}")
 
             profession['profession'] = set(profession['profession'])
 
         if get_params:
             params = self.get_params(text=vacancy, profession=profession)
 
+        print(f"FINALLY: {profession['profession']}")
         return {'profession': profession, 'params': params}
 
 
@@ -95,14 +101,8 @@ class AlexSort2809:
         tags = ''
         anti_tags = ''
 
-        if key == 'designer':
-            pass
-
         if low:
             vacancy = vacancy.lower()
-
-        if key == 'contacts':
-            pass
 
         for word in pattern['ma']:
             if low:
@@ -113,7 +113,6 @@ class AlexSort2809:
             if match:
                 result += len(match)
                 tags += f'MA {key}={match}\n'
-        pass
 
         if result:
             for anti_word in pattern['mex']:
