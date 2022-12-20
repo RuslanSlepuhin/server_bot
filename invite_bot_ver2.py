@@ -735,7 +735,7 @@ class InviteBot:
                             last_admin_channel_id += 1
                             DataBaseOperations(None).push_to_admin_temporary(composed_message_dict)
                             self.quantity_entered_to_admin_channel += 1
-                            await asyncio.sleep(random.randrange(2, 3))
+                            await asyncio.sleep(random.randrange(3, 4))
                         except Exception as e:
                             await bot_aiogram.send_message(callback.message.chat.id, f"It hasn't been pushed to admin_channel : {e}")
                             await write_to_logs_error(
@@ -836,7 +836,7 @@ class InviteBot:
                             # response_dict = await compose_for_push_to_db(response, profession)
                             # if False in response_dict.values():
                             await bot_aiogram.send_message(int(config['My_channels'][f'{profession}_channel']), vacancy['message'])
-                            await asyncio.sleep(random.randrange(2, 3))
+                            await asyncio.sleep(random.randrange(3, 4))
                             # else:
                             #     print('It has been got True from db')
                         # ------------------- end of  pushing to prof channel full message -----------------
@@ -1768,7 +1768,7 @@ class InviteBot:
                                                            disable_web_page_preview=True)
                             print(n_count, 'print shorts')
                             n_count += 1
-                            await asyncio.sleep(random.randrange(1, 3))
+                            await asyncio.sleep(random.randrange(3, 4))
 
                         except Exception as e:
                             await bot_aiogram.send_message(config['My_channels']['temporary_channel'], f'It did not send to {profession}. Please, do it manually', parse_mode='html')
@@ -2537,7 +2537,7 @@ class InviteBot:
                 await bot_aiogram.send_message(int(config['My_channels']['agregator_channel']), vacancy['message'],
                                                parse_mode='html',
                                                disable_notification=True)
-                await asyncio.sleep(random.randrange(1, 2))
+                await asyncio.sleep(random.randrange(3, 4))
                 self.last_id_message_agregator += 1
 
                 # 3. writing id agregator in vacancy in admin last session because it has been sent to agregator
