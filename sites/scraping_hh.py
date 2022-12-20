@@ -10,7 +10,6 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
-from selenium.webdriver.chrome.service import Service as ChromeService
 from settings.browser_settings import browser
 # from bot.scraping_push_to_channels import PushChannels
 from db_operations.scraping_db import DataBaseOperations
@@ -72,6 +71,7 @@ class HHGetInformation:
         :return:
         """
         self.db_tables = db_tables
+
         self.count_message_in_one_channel = 1
 
         link = 'https://hh.ru/search/vacancy?no_magic=true&L_save_area=true&text=&excluded_text=&salary=&currency_code=RUR&experience=doesNotMatter&schedule=remote&order_by=relevance&search_period=1&items_on_page=200&page=39&hhtmFrom=vacancy_search_list'
@@ -79,13 +79,16 @@ class HHGetInformation:
 
     async def get_info(self, link):
 
+        # self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
         for word in self.search_words:
             self.page_number = 0
             link = f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text='
             print('page link: ', link)
             await self.bot.send_message(self.chat_id, f"The link for checking:\n{link}")
-            self.browser.get(link)
-
+            try:
+                self.browser.get(link)
+            except Exception as e:
+                print('bot could not to get the link', e)
             # last_number = self.browser.find_element(By.XPATH, "/html/body/div[5]/div/div[3]/div[1]/div/div[3]/div[2]/div[2]/div/div[5]/div")
             # self.last_number = last_number.size['height']
 
@@ -99,8 +102,7 @@ class HHGetInformation:
             till = 13
             for self.page_number in range(1, till):
                 try:
-                    self.browser.get(
-                        f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text=&page={self.page_number}&hhtmFrom=vacancy_search_list')
+                    self.browser.get(f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text=&page={self.page_number}&hhtmFrom=vacancy_search_list')
                     self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                     await self.get_link_message(self.browser.page_source, word)
                 except:
@@ -133,8 +135,7 @@ class HHGetInformation:
 
         list_links = soup.find_all('a', class_='serp-item__title')
         print(f'\nПо слову {word} найдено {len(list_links)} вакансий\n')
-        self.current_message = await self.bot.send_message(self.chat_id,
-                                                           f'По слову {word} найдено {len(list_links)} вакансий на странице {self.page_number + 1}')
+        self.current_message = await self.bot.send_message(self.chat_id, f'По слову {word} найдено {len(list_links)} вакансий на странице {self.page_number+1}')
 
         # -------------------- check what is current session --------------
 
@@ -350,7 +351,7 @@ class HHGetInformation:
             #     print(f"\n{self.count_message_in_one_channel} from_channel hh.ru search {word}")
             #     self.count_message_in_one_channel += 1
 
-        # ----------------------- the statistics output ---------------------------
+        #----------------------- the statistics output ---------------------------
         self.written_vacancies = 0
         self.rejected_vacancies = 0
 
@@ -382,8 +383,7 @@ class HHGetInformation:
     def clean_company_name(self, text):
         text = re.sub('Прямой работодатель', '', text)
         text = re.sub(r'[(]{1} [a-zA-Z0-9\W\.]{1,30} [)]{1}', '', text)
-        text = re.sub(r'Аккаунт зарегистрирован с (публичной почты|email) \*@[a-z.]*[, не email компании!]{0,1}', '',
-                      text)
+        text = re.sub(r'Аккаунт зарегистрирован с (публичной почты|email) \*@[a-z.]*[, не email компании!]{0,1}', '', text)
         text = text.replace(f'\n', '')
         return text
 
@@ -401,9 +401,9 @@ class HHGetInformation:
 
         df = pd.DataFrame(
             {
-                'hiring': hiring,
-                'access_hash': link,
-                'contacts': contacts,
+            'hiring': hiring,
+            'access_hash': link,
+            'contacts': contacts,
             }
         )
 
@@ -416,7 +416,7 @@ class HHGetInformation:
 
         companies = set(companies)
 
-        db = DataBaseOperations(con=None)
+        db=DataBaseOperations(con=None)
         db.write_to_db_companies(companies)
 
     async def get_content_from_link(self, i, links, word):
@@ -435,13 +435,13 @@ class HHGetInformation:
 
         # get title --------------------------
         title = vacancy
-        print('title = ', title)
+        print('title = ',title)
 
         # get body --------------------------
         body = soup.find('div', class_='vacancy-section').get_text()
         body = body.replace('\n\n', '\n')
         body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
-        print('body = ', body)
+        print('body = ',body)
 
         # get tags --------------------------
         tags = ''
@@ -452,7 +452,7 @@ class HHGetInformation:
             tags = tags[0:-2]
         except:
             pass
-        print('tags = ', tags)
+        print('tags = ',tags)
 
         english = ''
         if re.findall(r'[Аа]нглийский', tags) or re.findall(r'[Ee]nglish', tags):
@@ -463,7 +463,7 @@ class HHGetInformation:
             city = soup.find('a', class_='bloko-link bloko-link_kind-tertiary bloko-link_disable-visited').get_text()
         except:
             city = ''
-        print('city = ', city)
+        print('city = ',city)
 
         # get company --------------------------
         try:
@@ -471,21 +471,21 @@ class HHGetInformation:
             company = company.replace('\xa0', ' ')
         except:
             company = ''
-        print('company = ', company)
+        print('company = ',company)
 
         # get salary --------------------------
         try:
             salary = soup.find('span', class_='bloko-header-section-2 bloko-header-section-2_lite').get_text()
         except:
             salary = ''
-        print('salary = ', salary)
+        print('salary = ',salary)
 
         # get experience --------------------------
         try:
             experience = soup.find('p', class_='vacancy-description-list-item').find('span').get_text()
         except:
             experience = ''
-        print('experience = ', experience)
+        print('experience = ',experience)
 
         # get job type and remote --------------------------
         raw_content_2 = soup.findAll('p', class_='vacancy-description-list-item')
@@ -546,14 +546,14 @@ class HHGetInformation:
                     english_additional += f"{i} "
 
         if english and ('upper' in english_additional or 'b1' in english_additional or 'b2' in english_additional \
-                        or 'internediate' in english_additional or 'pre' in english_additional):
+                or 'internediate' in english_additional or 'pre' in english_additional):
             english = english_additional
         elif not english and english_additional:
             english = english_additional
 
         DataBaseOperations(None).write_to_db_companies([company])
 
-        # -------------------- compose one writting for ione vacancy ----------------
+        #-------------------- compose one writting for ione vacancy ----------------
 
         results_dict = {
             'chat_name': 'https://hh.ru/',
@@ -566,11 +566,11 @@ class HHGetInformation:
             'english': english,
             'relocation': relocation,
             'job_type': job_type,
-            'city': city,
-            'salary': salary,
-            'experience': '',
-            'time_of_public': date,
-            'contacts': contacts,
+            'city':city,
+            'salary':salary,
+            'experience':'',
+            'time_of_public':date,
+            'contacts':contacts,
             'session': self.current_session
         }
 
@@ -599,7 +599,8 @@ class HHGetInformation:
             # self.rejected_vacancies += 1
             self.written_vacancies += 1
 
-        if len(f"{self.current_message}\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}") < 4096:
+
+        if len(f"{self.current_message}\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}")< 4096:
             self.current_message = await self.bot.edit_message_text(
                 f'{self.current_message.text}\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}',
                 self.current_message.chat.id,
@@ -608,15 +609,11 @@ class HHGetInformation:
             )
             pass
         else:
-            self.current_message = await self.bot.send_message(self.chat_id,
-                                                               f"{self.count_message_in_one_channel}. {vacancy}\n{additional_message}")
+            self.current_message = await self.bot.send_message(self.chat_id, f"{self.count_message_in_one_channel}. {vacancy}\n{additional_message}")
             pass
         print(f"\n{self.count_message_in_one_channel} from_channel hh.ru search {word}")
         self.count_message_in_one_channel += 1
-    # loop = asyncio.new_event_loop()
-    # loop.run_until_complete(HHGetInformation(bot_dict={}).get_content())
-
-
-
+# loop = asyncio.new_event_loop()
+# loop.run_until_complete(HHGetInformation(bot_dict={}).get_content())
 
 
