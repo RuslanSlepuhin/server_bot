@@ -233,6 +233,7 @@ class InviteBot:
             async with state.proxy() as data:
                 data['word'] = message.text
                 search_word = message.text
+            await state.finish()
             hh = HHGetInformation(
                 search_word=search_word,
                 bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id}
@@ -243,7 +244,6 @@ class InviteBot:
             # result = pool.apply_async(hh.get_content, ())
             # print(result.get(timeout=1))
 
-            await state.finish()
 
 # -----------------------------------------------------------------------
         @dp.message_handler(commands=['check_title_body'])
