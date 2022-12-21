@@ -55,6 +55,7 @@ class WriteToDbMessages():
         self.current_session = ''
         self.message = None
         self.percent = 0
+        self.current_message = ''
 
     async def dump_all_participants(self, channel):
 
@@ -153,7 +154,7 @@ class WriteToDbMessages():
         total_count_limit = limit_msg  # значение 0 = все сообщения
         history = None
 
-        await self.bot_dict['bot'].send_message(self.bot_dict['chat_id'], f'<em>channel {channel}</em>', parse_mode='html', disable_web_page_preview = True)
+        self.current_message = await self.bot_dict['bot'].send_message(self.bot_dict['chat_id'], f'<em>channel {channel}</em>', parse_mode='html', disable_web_page_preview = True)
 
         # data = await self.client.get_entity('https://t.me/fake_adminka')
         # print(data)
@@ -329,7 +330,7 @@ class WriteToDbMessages():
         else:
             await self.send_fulls(all=True, one_profession=one_profession)  # 2. for send last full messages from db
 
-        await self.bot_dict['bot'].send_message(self.bot_dict['chat_id'], 'DONE')
+        await self.bot_dict['bot'].send_message(self.bot_dict['chat_id'], 'Telegram channels parsing: DONE')
 
     async def send_sorts(self):
 

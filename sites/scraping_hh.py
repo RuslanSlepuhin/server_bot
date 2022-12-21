@@ -84,7 +84,7 @@ class HHGetInformation:
             self.page_number = 0
             link = f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text='
             print('page link: ', link)
-            await self.bot.send_message(self.chat_id, f"The link for checking:\n{link}")
+            # await self.bot.send_message(self.chat_id, f"The link for checking:\n{link}")
             try:
                 self.browser.get(link)
             except Exception as e:
@@ -103,7 +103,7 @@ class HHGetInformation:
                         break
                 except:
                     break
-        await self.bot.send_message(self.chat_id, 'Done!')
+        await self.bot.send_message(self.chat_id, 'hh.ru parsing: Done!', disable_web_page_preview=True)
         self.browser.quit()
 
     async def get_link_message(self, raw_content, word):
@@ -114,7 +114,7 @@ class HHGetInformation:
         list_links = soup.find_all('a', class_='serp-item__title')
         if list_links:
             print(f'\nПо слову {word} найдено {len(list_links)} вакансий\n')
-            self.current_message = await self.bot.send_message(self.chat_id, f'По слову {word} найдено {len(list_links)} вакансий на странице {self.page_number+1}')
+            self.current_message = await self.bot.send_message(self.chat_id, f'hh.ru:\nПо слову {word} найдено {len(list_links)} вакансий на странице {self.page_number+1}', disable_web_page_preview=True)
 
             # -------------------- check what is current session --------------
 
@@ -393,7 +393,8 @@ class HHGetInformation:
                 f'{self.current_message.text}\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}',
                 self.current_message.chat.id,
                 self.current_message.message_id,
-                parse_mode='html'
+                parse_mode='html',
+                disable_web_page_preview=True
             )
             pass
         else:
