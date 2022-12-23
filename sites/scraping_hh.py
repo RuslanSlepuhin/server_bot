@@ -89,8 +89,10 @@ class HHGetInformation:
                 self.browser.get(link)
             except Exception as e:
                 print('bot could not to get the link', e)
-
-            self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            try:
+                self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            except:
+                pass
             await self.get_link_message(self.browser.page_source, word)
 
             till = 13
