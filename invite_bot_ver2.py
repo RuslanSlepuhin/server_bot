@@ -30,6 +30,7 @@ from sites.parsing_sites_runner import ParseSites
 from logs.logs import Logs
 from sites.scraping_hh import HHGetInformation
 from progress.progress import ShowProgress
+import socks
 
 logs = Logs()
 import settings.os_getenv as settings
@@ -53,8 +54,9 @@ password = 0
 con = None
 
 print(f'Bot started at {datetime.now()}')
+proxy = (socks.SOCKS5, '142.44.241.192', '7497')
 
-client = TelegramClient(username, int(api_id), api_hash)
+client = TelegramClient(username, int(api_id), api_hash, proxy=proxy)
 client.start()
 logs.write_log(f'\n------------------ restart --------------------')
 
