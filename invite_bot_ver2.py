@@ -54,9 +54,9 @@ password = 0
 con = None
 
 print(f'Bot started at {datetime.now()}')
-proxy = (socks.SOCKS5, '142.44.241.192', '7497')
+# proxy = (socks.SOCKS5, '142.44.241.192', '7497')
 
-client = TelegramClient(username, int(api_id), api_hash, proxy=proxy)
+client = TelegramClient(username, int(api_id), api_hash)
 client.start()
 logs.write_log(f'\n------------------ restart --------------------')
 
