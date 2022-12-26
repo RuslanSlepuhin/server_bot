@@ -7,13 +7,19 @@ from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.service import Service as ChromeService
 
 
-chromeOptions = webdriver.ChromeOptions()
-chromeOptions.add_argument("--headless")
-chromeOptions.add_argument('--no-sandbox')
-# chromeOptions.add_argument("--remote-debugging-port=9222")
-chromeOptions.add_argument('--disable-dev-shm-usage')
+# chromeOptions = webdriver.ChromeOptions()
+# chromeOptions.add_argument("--headless")
+# chromeOptions.add_argument('--no-sandbox')
+# # chromeOptions.add_argument("--remote-debugging-port=9222")
+# chromeOptions.add_argument('--disable-dev-shm-usage')
+#
+# browser = webdriver.Chrome(
+#     executable_path='/root/itcoty_bot/server_bot/utils/chromedriver/chromedriver',
+#     chrome_options=chromeOptions
+# )
 
-browser = webdriver.Chrome(
-    executable_path='/root/itcoty_bot/server_bot/utils/chromedriver/chromedriver',
-    chrome_options=chromeOptions
-)
+options = Options()
+options.add_argument('headless')
+options.add_argument('--no-sandbox')
+options.add_argument('window-size=1920x935')
+browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
