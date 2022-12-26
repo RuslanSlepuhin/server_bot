@@ -217,6 +217,7 @@ class HHGetInformation:
         links.append(vacancy_url)
 
         self.browser.get(vacancy_url)
+        await asincio.sleep(5)
 
         soup = BeautifulSoup(self.browser.page_source, 'lxml')
 
