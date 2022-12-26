@@ -11,7 +11,7 @@ chromeOptions = webdriver.ChromeOptions()
 chromeOptions.add_argument("--headless")
 chromeOptions.add_argument('--no-sandbox')
 # chromeOptions.add_argument("--remote-debugging-port=9222")
-chrome_options.add_argument('--disable-dev-shm-usage')
+chromeOptions.add_argument('--disable-dev-shm-usage')
 
 browser = webdriver.Chrome(
     executable_path='/root/itcoty_bot/server_bot/utils/chromedriver/chromedriver',
