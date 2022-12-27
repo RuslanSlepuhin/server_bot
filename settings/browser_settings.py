@@ -4,12 +4,12 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 
 options = Options()
-# options.headless = True
-# options.no_sandbox = True
-options.add_argument('--headless')
-options.add_argument('--no-sandbox')
-options.add_argument("--disable-dev-shm-usage")
-options.add_argument("--window-size=1920x1080")
+options.headless = True
+options.no_sandbox = True
+# options.add_argument('--headless')
+# options.add_argument('--no-sandbox')
+# options.add_argument("--disable-dev-shm-usage")
+# options.add_argument("--window-size=1920x1080")
 # options.add_argument('window-size=1920x935')
 # chromeOptions.add_argument('window-size=1920x935')
 # chromeOptions.add_argument("--remote-debugging-port=9222")
