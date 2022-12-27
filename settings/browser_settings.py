@@ -23,7 +23,7 @@ options.no_sandbox = True
 # )
 browser = webdriver.Firefox(
     executable_path='./settings/firefox_driver/geckodriver',
-    chrome_options=options
+    options=options
 )
 
 # options = Options()
