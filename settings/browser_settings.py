@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.service import Service as ChromeService
 
 
-options = webdriver.options()
+options = Options()
 options.headless = True
 options.no_sandbox = True
 # chromeOptions.add_argument('window-size=1920x935')
