@@ -69,8 +69,8 @@ class HHGetInformation:
         :param db_tables:
         :return:
         """
-        self.browser.delete_all_cookies()
-        print('all cookies have deleted')
+        # self.browser.delete_all_cookies()
+        # print('all cookies have deleted')
         self.db_tables = db_tables
 
         self.count_message_in_one_channel = 1
