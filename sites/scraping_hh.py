@@ -75,6 +75,7 @@ class HHGetInformation:
 
         link = 'https://hh.ru/search/vacancy?no_magic=true&L_save_area=true&text=&excluded_text=&salary=&currency_code=RUR&experience=doesNotMatter&schedule=remote&order_by=relevance&search_period=1&items_on_page=200&page=39&hhtmFrom=vacancy_search_list'
         response_dict = await self.get_info(link)
+        self.browser.delete_all_cookies()
 
     async def get_info(self, link):
 
