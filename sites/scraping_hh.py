@@ -217,6 +217,7 @@ class HHGetInformation:
         links.append(vacancy_url)
 
         print('self.broswer.get(vacancy_url)')
+        self.bot.send_message(message.chat.id, vacancy_url, disable_web_page_preview=True)
         self.browser.get(vacancy_url)
         # self.browser.get('https://google.com')
         self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
