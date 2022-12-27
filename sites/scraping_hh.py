@@ -217,8 +217,8 @@ class HHGetInformation:
         links.append(vacancy_url)
 
         print('self.broswer.get(vacancy_url)')
-        # self.browser.get(vacancy_url)
-        self.browser.get('https://google.com')
+        self.browser.get(vacancy_url)
+        # self.browser.get('https://google.com')
         self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
         print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
