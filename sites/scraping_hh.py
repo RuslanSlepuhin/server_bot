@@ -219,6 +219,7 @@ class HHGetInformation:
         print('self.broswer.get(vacancy_url)')
         # self.browser.get(vacancy_url)
         self.browser.get('https://google.com')
+        self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
         print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
         soup = BeautifulSoup(self.browser.page_source, 'lxml')
