@@ -26,7 +26,6 @@ options.headless = True
 # options.add_argument('window-size=1920x935')
 # browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 browser = webdriver.Firefox(
-    executable_path=r'/root/itcoty_bot/server_bot/settings/firefox_driver/geckodriver',
     options=options
 )
 
