@@ -83,7 +83,7 @@ class HHGetInformation:
         for word in self.search_words:
             self.page_number = 0
             link = f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text='
-            self.bot.send_message(self.chat_id, link, disable_web_page_preview=True)
+            await self.bot.send_message(self.chat_id, link, disable_web_page_preview=True)
 
             print('page link: ', link)
             # await self.bot.send_message(self.chat_id, f"The link for checking:\n{link}")
@@ -101,7 +101,7 @@ class HHGetInformation:
             till = 13
             for self.page_number in range(1, till):
                 try:
-                    self.bot.send_message(self.chat_id, f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text=&page={self.page_number}&hhtmFrom=vacancy_search_list',
+                    await self.bot.send_message(self.chat_id, f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text=&page={self.page_number}&hhtmFrom=vacancy_search_list',
                                           disable_web_page_preview=True)
                     self.browser.get(f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text=&page={self.page_number}&hhtmFrom=vacancy_search_list')
                     self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -221,7 +221,7 @@ class HHGetInformation:
         links.append(vacancy_url)
 
         print('self.broswer.get(vacancy_url)')
-        self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
+        await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
         self.browser.get(vacancy_url)
         # self.browser.get('https://google.com')
         self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
