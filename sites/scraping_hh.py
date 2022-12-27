@@ -92,7 +92,7 @@ class HHGetInformation:
                 print('bot could not to get the link', e)
 
             try:
-                self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                await self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             except:
                 pass
             await self.get_link_message(self.browser.page_source, word)
@@ -103,7 +103,7 @@ class HHGetInformation:
                     await self.bot.send_message(self.chat_id, f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text=&page={self.page_number}&hhtmFrom=vacancy_search_list',
                                           disable_web_page_preview=True)
                     await self.browser.get(f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text=&page={self.page_number}&hhtmFrom=vacancy_search_list')
-                    self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                    await self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                     vacancy_exists_on_page = await self.get_link_message(self.browser.page_source, word)
                     if not vacancy_exists_on_page:
                         break
@@ -224,7 +224,7 @@ class HHGetInformation:
         self.browser = browser
         await self.browser.get(vacancy_url)
         # self.browser.get('https://google.com')
-        self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        await self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
         print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
         soup = BeautifulSoup(self.browser.page_source, 'lxml')
