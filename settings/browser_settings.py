@@ -8,7 +8,7 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 
 
 chromeOptions = webdriver.ChromeOptions()
-# chromeOptions.add_argument("--headless")
+chromeOptions.add_argument("--headless")
 chromeOptions.add_argument('--no-sandbox')
 # chromeOptions.add_argument('window-size=1920x935')
 
