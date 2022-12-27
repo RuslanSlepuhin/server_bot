@@ -223,7 +223,7 @@ class HHGetInformation:
         links.append(vacancy_url)
 
         print('self.broswer.get(vacancy_url)')
-        await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
+        # await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
         self.browser = browser
         self.browser.get(vacancy_url)
         # self.browser.get('https://google.com')
