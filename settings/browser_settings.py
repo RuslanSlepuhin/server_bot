@@ -22,7 +22,7 @@ options.no_sandbox = True
 #     chrome_options=chromeOptions
 # )
 browser = webdriver.Firefox(
-    executable_path='/root/itcoty_bot/server_bot/settings/firefox_driver/geckodriver',
+    executable_path=r'/root/itcoty_bot/server_bot/settings/firefox_driver/geckodriver',
     options=options,
 )
 
