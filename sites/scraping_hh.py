@@ -120,7 +120,7 @@ class HHGetInformation:
         soup = BeautifulSoup(raw_content, 'lxml')
 
         list_links = soup.find_all('a', class_='serp-item__title')
-        await self.bot.send_message(self.chat_id, list_links)
+        # await self.bot.send_message(self.chat_id, list_links)
         if list_links:
             print(f'\nПо слову {word} найдено {len(list_links)} вакансий\n')
             self.current_message = await self.bot.send_message(self.chat_id, f'hh.ru:\nПо слову {word} найдено {len(list_links)} вакансий на странице {self.page_number+1}', disable_web_page_preview=True)
