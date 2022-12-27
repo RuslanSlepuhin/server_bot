@@ -23,6 +23,7 @@ options.no_sandbox = True
 # )
 options = Options()
 options.headless = True
+options.no_sandbox = True
 # options.add_argument('window-size=1920x935')
 # browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 browser = webdriver.Firefox(
