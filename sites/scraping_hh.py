@@ -216,10 +216,12 @@ class HHGetInformation:
         print('vacancy_url = ', vacancy_url)
         links.append(vacancy_url)
 
+        print('self.broswer.get(vacancy_url)')
         self.browser.get(vacancy_url)
-        await asyncio.sleep(3)
 
+        print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
         soup = BeautifulSoup(self.browser.page_source, 'lxml')
+        print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
 
         # get vacancy ------------------------
         vacancy = soup.find('div', class_='vacancy-title').find('span').get_text()
