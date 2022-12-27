@@ -16,11 +16,11 @@ options.add_argument("--window-size=1920x1080")
 # chromeOptions.add_argument('--disable-dev-shm-usage')
 # browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-# browser = webdriver.Firefox(
-#     executable_path='/root/itcoty_bot/server_bot/settings/firefox_driver/geckodriver',
-#     options=options
-# )
-browser = webdriver.Chrome(
-    executable_path='/root/itcoty_bot/server_bot/utils/chromedriver/chromedriver',
+browser = webdriver.Firefox(
+    executable_path='/root/itcoty_bot/server_bot/settings/firefox_driver/geckodriver',
     options=options
 )
+# browser = webdriver.Chrome(
+#     executable_path='/root/itcoty_bot/server_bot/utils/chromedriver/chromedriver',
+#     options=options
+# )
