@@ -10,12 +10,11 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
-from settings.browser_settings import browser
-# from bot.scraping_push_to_channels import PushChannels
 from db_operations.scraping_db import DataBaseOperations
 from patterns.pattern_Alex2809 import cities_pattern, params
 from filters.scraping_get_profession_Alex_next_2809 import AlexSort2809
 from sites.write_each_vacancy_to_db import write_each_vacancy
+from settings.browser_settings import browser
 
 class HHGetInformation:
 
@@ -222,6 +221,7 @@ class HHGetInformation:
 
         print('self.broswer.get(vacancy_url)')
         await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
+        self.browser = browser
         self.browser.get(vacancy_url)
         # self.browser.get('https://google.com')
         self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
