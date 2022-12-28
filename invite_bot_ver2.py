@@ -197,6 +197,7 @@ class InviteBot():
                                                             '/delete_till - ❗️delete old vacancy from admin DB till date\n\n'
                                                             '/magic_word - input word and get results from hh.ru\n'
                                                             '/svyazi - get data from svyazi.app\n'
+                                                            '/finder - get the data from finder.vc\n'
                                                             '/geek - get data from geek.ru\n\n'
                                                             '/download - ❗️you get excel from admin vacancies with search tags\n'
                                                             '/ambulance - if bot gets accident in hard pushing and you think you loose the shorts\n'
@@ -253,6 +254,15 @@ class InviteBot():
                 bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id}
             )
             await svyazi.get_content()
+
+        @dp.message_handler(commands=['finder'])
+        async def finder(message: types.Message):
+
+            finder = FinderGetInformation(
+                search_word=None,
+                bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id}
+            )
+            await finder.get_content()
 
         @dp.message_handler(commands=['magic_word'])
         async def magic_word(message: types.Message):
