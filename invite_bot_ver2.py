@@ -32,6 +32,7 @@ from sites.scraping_geekjob import GeekGetInformation
 from sites.scraping_hh import HHGetInformation
 from progress.progress import ShowProgress
 from sites.scraping_svyazi import SvyaziGetInformation
+from sites.scraping_finder import FindJobGetInformation
 
 logs = Logs()
 import settings.os_getenv as settings
