@@ -4,6 +4,7 @@ from sites.scraping_hh import HHGetInformation
 import configparser
 from logs.logs import Logs
 from sites.scraping_svyazi import SvyaziGetInformation
+from sites.scrapping_finder import FinderGetInformation
 
 logs = Logs()
 
@@ -24,7 +25,7 @@ class ParseSites:
         logs.write_log(f"scraping_telethon2: function: call_sites")
 
         bot_dict = {'bot': self.bot, 'chat_id': self.chat_id}
-
+        await FinderGetInformation(bot_dict).get_content()
         await GeekGetInformation(bot_dict).get_content()
         await SvyaziGetInformation(bot_dict).get_content()
         await HHGetInformation(bot_dict).get_content()
