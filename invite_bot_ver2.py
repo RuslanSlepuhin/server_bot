@@ -764,7 +764,16 @@ class InviteBot():
                             # text = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", text)
                             if len(text) > 4096:
                                 text = text[:4093] + '...'
-                            await bot_aiogram.send_message(config['My_channels']['admin_channel'], text, parse_mode='html', disable_web_page_preview=True)
+
+                            try:
+                                await bot_aiogram.send_message(config['My_channels']['admin_channel'], text, parse_mode='html', disable_web_page_preview=True)
+                            except Exception as e:
+                                if 'Flood control exceeded' in str(e):
+                                    print(f'ERROR {e},\n PLEASE AWAIT')
+                                    await asyncio.sleep(60*2)
+                                    await bot_aiogram.send_message(config['My_channels']['admin_channel'], text,
+                                                                   parse_mode='html', disable_web_page_preview=True)
+
                             last_admin_channel_id += 1
                             DataBaseOperations(None).push_to_admin_temporary(composed_message_dict)
                             self.quantity_entered_to_admin_channel += 1
