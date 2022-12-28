@@ -50,8 +50,6 @@ class HHGetInformation:
         self.page_number = 1
 
         self.current_message = None
-        # self.bot = bot_dict['bot']
-        # self.chat_id = bot_dict['chat_id']
         self.msg = None
         self.written_vacancies = 0
         self.rejected_vacancies = 0
@@ -75,22 +73,19 @@ class HHGetInformation:
 
         self.count_message_in_one_channel = 1
 
-        link = 'https://hh.ru/search/vacancy?no_magic=true&L_save_area=true&text=&excluded_text=&salary=&currency_code=RUR&experience=doesNotMatter&schedule=remote&order_by=relevance&search_period=1&items_on_page=200&page=39&hhtmFrom=vacancy_search_list'
-        response_dict = await self.get_info(link)
+        await self.get_info()
 
-    async def get_info(self, link):
+    async def get_info(self):
         self.browser = webdriver.Chrome(
             executable_path=chrome_driver_path,
             options=options
         )
-        # self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
         for word in self.search_words:
             self.page_number = 0
             link = f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text='
             await self.bot.send_message(self.chat_id, link, disable_web_page_preview=True)
 
             print('page link: ', link)
-            # await self.bot.send_message(self.chat_id, f"The link for checking:\n{link}")
             try:
                 self.browser.get(link)
             except Exception as e:
@@ -123,7 +118,6 @@ class HHGetInformation:
         soup = BeautifulSoup(raw_content, 'lxml')
 
         list_links = soup.find_all('a', class_='serp-item__title')
-        # await self.bot.send_message(self.chat_id, list_links)
         if list_links:
             print(f'\nПо слову {word} найдено {len(list_links)} вакансий\n')
             self.current_message = await self.bot.send_message(self.chat_id, f'hh.ru:\nПо слову {word} найдено {len(list_links)} вакансий на странице {self.page_number+1}', disable_web_page_preview=True)
