@@ -258,7 +258,6 @@ class InviteBot():
 
         @dp.message_handler(commands=['finder'])
         async def finder(message: types.Message):
-
             finder = FinderGetInformation(
                 search_word=None,
                 bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id}
