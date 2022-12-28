@@ -192,7 +192,7 @@ class InviteBot():
                                                             '/get_participants - ❗️get the channel follower numbers\n'
                                                             '/delete_till - ❗️delete old vacancy from admin DB till date\n\n'
                                                             '/magic_word - input word and get results from hh.ru\n'
-                                                            '/magic_geek - the data scraping from geek.ru\n\n'
+                                                            '/geek - the data scraping from geek.ru\n\n'
                                                             '/download - ❗️you get excel from admin vacancies with search tags\n'
                                                             '/ambulance - if bot gets accident in hard pushing and you think you loose the shorts\n'
                                                             '/refresh - to rewrite the professions in all vacancies throgh the new filters logic\n'
