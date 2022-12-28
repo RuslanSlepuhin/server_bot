@@ -77,8 +77,10 @@ class GeekGetInformation:
         await self.get_info()
 
     async def get_info(self):
-        self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-
+        self.browser = webdriver.Chrome(
+            executable_path=chrome_driver_path,
+            options=options
+        )
         # for word in self.search_words:
         #     self.page_number = 0
         #     link = f'https://geekjob.ru/vacancies'

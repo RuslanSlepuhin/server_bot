@@ -151,9 +151,6 @@ class InviteBot():
         class Form_hh(StatesGroup):
             word = State()
 
-        class Form_geek(StatesGroup):
-            word = State()
-
         class Form_check(StatesGroup):
             title = State()
             body = State()
