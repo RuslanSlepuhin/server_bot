@@ -14,7 +14,7 @@ from db_operations.scraping_db import DataBaseOperations
 from patterns.pattern_Alex2809 import cities_pattern, params
 from filters.scraping_get_profession_Alex_next_2809 import AlexSort2809
 from sites.write_each_vacancy_to_db import write_each_vacancy
-from settings.browser_settings import browser
+from settings.browser_settings import options, chrome_driver_path
 
 class HHGetInformation:
 
@@ -58,7 +58,7 @@ class HHGetInformation:
         if bot_dict:
             self.bot = bot_dict['bot']
             self.chat_id = bot_dict['chat_id']
-        self.browser = browser
+        self.browser = None
 
 
     async def get_content(self, db_tables=None):
@@ -79,7 +79,10 @@ class HHGetInformation:
         response_dict = await self.get_info(link)
 
     async def get_info(self, link):
-
+        self.browser = webdriver.Chrome(
+            executable_path=chrome_driver_path,
+            options=options
+        )
         # self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
         for word in self.search_words:
             self.page_number = 0
