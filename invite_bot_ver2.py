@@ -28,9 +28,9 @@ from progress.progress import ShowProgress
 from scraping_telegramchats2 import WriteToDbMessages, main
 from sites.parsing_sites_runner import ParseSites
 from logs.logs import Logs
+from sites.scraping_geekjob import GeekGetInformation
 from sites.scraping_hh import HHGetInformation
 from progress.progress import ShowProgress
-import socks
 
 logs = Logs()
 import settings.os_getenv as settings
@@ -40,7 +40,7 @@ config.read("./settings/config.ini")
 api_id = settings.api_id
 api_hash = settings.api_hash
 username = settings.username
-token = settings.token
+token = settings.token_red
 
 logging.basicConfig(level=logging.INFO)
 bot_aiogram = Bot(token=token)
@@ -54,13 +54,12 @@ password = 0
 con = None
 
 print(f'Bot started at {datetime.now()}')
-# proxy = (socks.SOCKS5, '142.44.241.192', '7497')
 
 client = TelegramClient(username, int(api_id), api_hash)
 client.start()
 logs.write_log(f'\n------------------ restart --------------------')
 
-class InviteBot:
+class InviteBot():
 
     def __init__(self):
         self.chat_id = None
@@ -70,8 +69,6 @@ class InviteBot:
                                       'pm', 'sales_manager', 'analyst', 'frontend',
                                       'marketing', 'devops', 'hr', 'backend', 'qa', 'junior']
         self.markup = None
-        # self.api_id = config['Ruslan']['api_id']
-        # self.api_hash = config['Ruslan']['api_hash']
         self.api_id = api_id
         self.api_hash = api_hash
         self.current_session = ''
@@ -98,9 +95,19 @@ class InviteBot:
         self.all_participant = []
         self.channel = None
         self.db = DataBaseOperations(con=None)
+        # self.token = token
+        # self.bot_aiogram = Bot(token=token)
+        # self.storage = MemoryStorage()
+        # self.dp = Dispatcher(self.bot_aiogram, storage=self.storage)
 
 
     def main_invitebot(self):
+        # bot_aiogram = self.bot_aiogram
+        # dp = self.dp
+        # bot_aiogram = Bot(token=token)
+        # storage = MemoryStorage()
+        # dp = Dispatcher(bot_aiogram, storage=storage)
+
         async def connect_with_client(message, id_user):
 
             global client, hash_phone
@@ -142,6 +149,9 @@ class InviteBot:
             password = State()
 
         class Form_hh(StatesGroup):
+            word = State()
+
+        class Form_geek(StatesGroup):
             word = State()
 
         class Form_check(StatesGroup):
@@ -222,6 +232,15 @@ class InviteBot:
                 await get_excel_tags_from_admin(message)
             else:
                 await bot_aiogram.send_message(message.chat.id, '🚀 Sorry, this options available only for admin')
+
+        @dp.message_handler(commands=['geek'])
+        async def geek(message: types.Message):
+
+            geek = GeekGetInformation(
+                search_word=None,
+                bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id}
+            )
+            await geek.get_content()
 
         @dp.message_handler(commands=['magic_word'])
         async def magic_word(message: types.Message):
@@ -1133,28 +1152,28 @@ class InviteBot:
                     # await bot_aiogram.send_message(message.chat.id, 'Scraping is starting')
                     await asyncio.sleep(1)
 
-        # -----------------------parsing telegram channels -------------------------------------
-                    await bot_aiogram.send_message(
-                        message.chat.id,
-                        'Bot is parsing the telegram channels...',
-                        parse_mode='HTML')
-                    await main(client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id})  # run parser tg channels and write to profession's tables
-                    await bot_aiogram.send_message(
-                        message.chat.id,
-                        '...it has been successfully',
-                        parse_mode='HTML')
-                    await asyncio.sleep(2)
+        # # -----------------------parsing telegram channels -------------------------------------
+        #             await bot_aiogram.send_message(
+        #                 message.chat.id,
+        #                 'Bot is parsing the telegram channels...',
+        #                 parse_mode='HTML')
+        #             await main(client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id})  # run parser tg channels and write to profession's tables
+        #             await bot_aiogram.send_message(
+        #                 message.chat.id,
+        #                 '...it has been successfully',
+        #                 parse_mode='HTML')
+        #             await asyncio.sleep(2)
+        #
+        # # ---------------------- parsing the sites. List of them will grow ------------------------
+        #             await bot_aiogram.send_message(message.chat.id, 'Bot is parsing the sites...')
+        #             psites = ParseSites(client=client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id})
+        #             await psites.call_sites()
+        #             await bot_aiogram.send_message(message.chat.id, '...it has been successfully. Press <b>Digest</b> for the next step', parse_mode='html')
 
-        # ---------------------- parsing the sites. List of them will grow ------------------------
-                    await bot_aiogram.send_message(message.chat.id, 'Bot is parsing the sites...')
                     psites = ParseSites(client=client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id})
-                    await psites.call_sites()
-                    await bot_aiogram.send_message(message.chat.id, '...it has been successfully. Press <b>Digest</b> for the next step', parse_mode='html')
-
-                    # psites = ParseSites(client=client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id})
-                    # task1 = asyncio.create_task(main(client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id}))
-                    # task2 = asyncio.create_task(psites.call_sites())
-                    # await asyncio.gather(task1, task2)
+                    task1 = asyncio.create_task(main(client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id}))
+                    task2 = asyncio.create_task(psites.call_sites())
+                    await asyncio.gather(task1, task2)
 
 
                 #----------------------- Listening channels at last --------------------------------------
@@ -2869,4 +2888,5 @@ class InviteBot:
 
         executor.start_polling(dp, skip_updates=True)
 
-InviteBot().main_invitebot()
+bot_b = InviteBot()
+bot_b.main_invitebot()
