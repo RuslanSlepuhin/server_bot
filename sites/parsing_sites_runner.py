@@ -3,6 +3,8 @@ from sites.scraping_geekjob import GeekGetInformation
 from sites.scraping_hh import HHGetInformation
 import configparser
 from logs.logs import Logs
+from sites.scraping_svyazi import SvyaziGetInformation
+
 logs = Logs()
 
 config = configparser.ConfigParser()
@@ -23,8 +25,9 @@ class ParseSites:
 
         bot_dict = {'bot': self.bot, 'chat_id': self.chat_id}
 
-        await HHGetInformation(bot_dict).get_content()
         await GeekGetInformation(bot_dict).get_content()
+        await SvyaziGetInformation(bot_dict).get_content()
+        await HHGetInformation(bot_dict).get_content()
 
         # messages_list = await self.compose_message_for_sending(response_dict_hh, do_write_companies=True)
 

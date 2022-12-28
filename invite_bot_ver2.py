@@ -31,6 +31,7 @@ from logs.logs import Logs
 from sites.scraping_geekjob import GeekGetInformation
 from sites.scraping_hh import HHGetInformation
 from progress.progress import ShowProgress
+from sites.scraping_svyazi import SvyaziGetInformation
 
 logs = Logs()
 import settings.os_getenv as settings
@@ -40,7 +41,7 @@ config.read("./settings/config.ini")
 api_id = settings.api_id
 api_hash = settings.api_hash
 username = settings.username
-token = settings.token
+token = settings.token_red
 
 logging.basicConfig(level=logging.INFO)
 bot_aiogram = Bot(token=token)
@@ -151,6 +152,9 @@ class InviteBot():
         class Form_hh(StatesGroup):
             word = State()
 
+        class Form_geek(StatesGroup):
+            word = State()
+
         class Form_check(StatesGroup):
             title = State()
             body = State()
@@ -192,7 +196,8 @@ class InviteBot():
                                                             '/get_participants - ❗️get the channel follower numbers\n'
                                                             '/delete_till - ❗️delete old vacancy from admin DB till date\n\n'
                                                             '/magic_word - input word and get results from hh.ru\n'
-                                                            '/geek - the data scraping from geek.ru\n\n'
+                                                            '/svyazi - get data from svyazi.app\n'
+                                                            '/geek - get data from geek.ru\n\n'
                                                             '/download - ❗️you get excel from admin vacancies with search tags\n'
                                                             '/ambulance - if bot gets accident in hard pushing and you think you loose the shorts\n'
                                                             '/refresh - to rewrite the professions in all vacancies throgh the new filters logic\n'
@@ -239,6 +244,15 @@ class InviteBot():
                 bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id}
             )
             await geek.get_content()
+
+        @dp.message_handler(commands=['svyazi'])
+        async def geek(message: types.Message):
+
+            svyazi = SvyaziGetInformation(
+                search_word=None,
+                bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id}
+            )
+            await svyazi.get_content()
 
         @dp.message_handler(commands=['magic_word'])
         async def magic_word(message: types.Message):
