@@ -74,6 +74,7 @@ class HHGetInformation:
         self.count_message_in_one_channel = 1
 
         await self.get_info()
+        await self.bot.send_message(self.chat_id, 'hh.ru parsing: Done!', disable_web_page_preview=True)
         self.browser.quit()
 
     async def get_info(self):
@@ -110,7 +111,6 @@ class HHGetInformation:
                         break
                 except:
                     break
-        await self.bot.send_message(self.chat_id, 'hh.ru parsing: Done!', disable_web_page_preview=True)
 
     async def get_link_message(self, raw_content, word):
 
