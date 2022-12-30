@@ -19,6 +19,7 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
 from telethon.sync import TelegramClient
 from telethon.tl import functions
+from aiogram.utils.executor import start_polling
 from telethon.tl.functions.channels import GetParticipantsRequest
 from telethon.tl.functions.messages import GetHistoryRequest
 from telethon.tl.types import InputUser, InputChannel, ChannelParticipantsSearch, PeerChannel, PeerUser
@@ -2916,8 +2917,9 @@ class InviteBot():
                     matches_list[i] = len(response)
             return matches_list
 
+        start_polling(dp)
 
-        executor.start_polling(dp, skip_updates=True)
+        # executor.start_polling(dp, skip_updates=True)
 
-bot_b = InviteBot()
-bot_b.main_invitebot()
+def run():
+    InviteBot().main_invitebot()
