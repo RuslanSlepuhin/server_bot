@@ -30,10 +30,13 @@ def hello_world():
 def hello_world2():
     data = get_from_db()
     data = data[0]
+    print(data)
     data_dict = {
         'vacancy': {
             'id': data[0],
-            'channel': data[1],
+            'title': data[2],
+            'body': data[3],
+            'profession': data[4]
         }
     }
     return data_dict
