@@ -2,7 +2,7 @@ import configparser
 import os
 import psycopg2
 from flask import Flask
-from db_operations.scraping_db import DataBaseOperations
+# from db_operations.scraping_db import DataBaseOperations
 
 config = configparser.ConfigParser()
 config.read("./../settings/config.ini")
@@ -28,15 +28,21 @@ def hello_world():
 
 @app.route("/get")
 def hello_world2():
-    data = DataBaseOperations(con).get_all_from_db(
-        table_name='admin_last_session'
-    )
+    data = get_from_db()
     data = data[0]
     data_dict = {
         'id': data[0],
         'channel': data[1],
     }
     return data_dict
+
+def get_from_db():
+    cur = con.cursor()
+    query = "SELECT * FROM admin_last_session"
+    with con:
+        cur.execute(query)
+    response = cur.fetchall()
+    return response
 
 if __name__ == '__main__':
     app.run(host='localhost', port=int(os.environ.get('PORT', 5000)))
