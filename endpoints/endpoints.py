@@ -31,8 +31,10 @@ def hello_world2():
     data = get_from_db()
     data = data[0]
     data_dict = {
-        'id': data[0],
-        'channel': data[1],
+        'vacancy': {
+            'id': data[0],
+            'channel': data[1],
+        }
     }
     return data_dict
 
