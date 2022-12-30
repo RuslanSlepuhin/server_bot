@@ -1,9 +1,7 @@
 import configparser
 import os
-
 import psycopg2
 from flask import Flask
-
 from db_operations.scraping_db import DataBaseOperations
 
 config = configparser.ConfigParser()
