@@ -39,7 +39,7 @@ def hello_world2():
             'profession': data[4]
         }
     }
-    return data_dict
+    return json.dump(data_dict)
 
 def get_from_db():
     cur = con.cursor()
