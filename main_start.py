@@ -2,7 +2,7 @@ import asyncio
 import os
 from threading import Thread, Event
 import time
-import endpoints.endpoints
+from endpoints.endpoints import run_endpoints
 from invite_bot_ver2 import run
 from _apps.talking_bot.mvp_connect_talking_bot import talking_bot_run
 from multiprocessing import Process, Lock
@@ -31,7 +31,7 @@ def start_talking_bot_run():
 def start_endpoints():
     # ev.wait()
     print('2')
-    endpoints.endpoints.run_endpoints()
+    run_endpoints()
 
 
 
