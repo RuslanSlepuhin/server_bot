@@ -53,7 +53,7 @@ async def main_endpoints():
         response = cur.fetchall()
         return response
 
-    app.run(host='localhost', port=int(os.environ.get('PORT', 5000)))
+    app.run(host='172.16.16.4', port=int(os.environ.get('PORT', 5000)))
 
 
 def run_endpoints():
