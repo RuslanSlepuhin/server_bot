@@ -2,8 +2,9 @@ import asyncio
 import os
 from threading import Thread, Event
 import time
-from endpoints.endpoints import run_endpoints
+import endpoints.endpoints
 from invite_bot_ver2 import run
+from _apps.talking_bot.mvp_connect_talking_bot import talking_bot_run
 from multiprocessing import Process, Lock
 # ev = Event()
 
@@ -22,7 +23,7 @@ def start_bot():
 def start_endpoints():
     # ev.wait()
     print('2')
-    run_endpoints()
+    endpoints.endpoints.run_endpoints()
 
 # lock = Lock()
 #
@@ -30,8 +31,14 @@ if __name__ == "__main__":
 
     p1 = Process(target=start_endpoints, args=())
     p2 = Process(target=start_bot, args=())
+    p3 = Process(target=talking_bot_run, args=())
+
     p1.start()
     p2.start()
+    p3.start()
+
     p1.join()
     p2.join()
+    p3.join()
+
 
