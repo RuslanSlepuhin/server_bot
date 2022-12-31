@@ -2,7 +2,7 @@ import asyncio
 import os
 from threading import Thread, Event
 import time
-from _apps.endpoints import endpoints
+from endpoints.endpoints import run_endpoints
 from invite_bot_ver2 import run
 from multiprocessing import Process, Lock
 # ev = Event()
@@ -22,7 +22,7 @@ def start_bot():
 def start_endpoints():
     # ev.wait()
     print('2')
-    _apps.endpoints.endpoints.run_endpoints()
+    run_endpoints()
 
 # lock = Lock()
 #
