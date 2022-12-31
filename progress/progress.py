@@ -7,7 +7,7 @@ class ShowProgress:
 
     def __init__(self, bot_dict):
         self.percent = 0
-        self.bot = bot_dict['bot']
+        self.bot = bot_dict['_apps']
         self.chat_id = bot_dict['chat_id']
         self.message = None
 

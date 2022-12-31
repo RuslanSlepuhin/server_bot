@@ -28,7 +28,7 @@ designer_channel = config['My_channels']['designer_channel']
 # hr_channel = config['My_channels']['hr_channel']
 # others_channel = config['My_channels']['others_channel']
 alexandr_channel = config['My_channels']['alexandr_channel']
-bot = config['My_channels']['bot']
+bot = config['My_channels']['_apps']
 
 api_id = int(config['Telegram']['api_id'])
 api_hash = config['Telegram']['api_hash']

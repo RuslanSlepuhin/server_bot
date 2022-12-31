@@ -202,7 +202,7 @@ class InviteBot():
                                                             '/finder - get the data from finder.vc\n'
                                                             '/geek - get data from geek.ru\n\n'
                                                             '/download - ❗️you get excel from admin vacancies with search tags\n'
-                                                            '/ambulance - if bot gets accident in hard pushing and you think you loose the shorts\n'
+                                                            '/ambulance - if _apps gets accident in hard pushing and you think you loose the shorts\n'
                                                             '/refresh - to rewrite the professions in all vacancies throgh the new filters logic\n'
                                                             '/get_backup_db\n'
                                                             '/check_link_hh\n'
@@ -244,7 +244,7 @@ class InviteBot():
 
             geek = GeekGetInformation(
                 search_word=None,
-                bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id}
+                bot_dict={'_apps': bot_aiogram, 'chat_id': message.chat.id}
             )
             await geek.get_content()
 
@@ -253,7 +253,7 @@ class InviteBot():
 
             svyazi = SvyaziGetInformation(
                 search_word=None,
-                bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id}
+                bot_dict={'_apps': bot_aiogram, 'chat_id': message.chat.id}
             )
             await svyazi.get_content()
 
@@ -261,7 +261,7 @@ class InviteBot():
         async def finder(message: types.Message):
             finder = FinderGetInformation(
                 search_word=None,
-                bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id}
+                bot_dict={'_apps': bot_aiogram, 'chat_id': message.chat.id}
             )
             await finder.get_content()
 
@@ -280,7 +280,7 @@ class InviteBot():
             await state.finish()
             hh = HHGetInformation(
                 search_word=search_word,
-                bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id}
+                bot_dict={'_apps': bot_aiogram, 'chat_id': message.chat.id}
             )
             await hh.get_content()
 
@@ -429,7 +429,7 @@ class InviteBot():
                 wtdm = WriteToDbMessages(
                     client=client,
                     bot_dict={
-                        'bot': bot_aiogram,
+                        '_apps': bot_aiogram,
                         'chat_id': message.chat.id
                     }
                 )
@@ -995,7 +995,7 @@ class InviteBot():
                     self.current_session = await get_last_session()
                 await WriteToDbMessages(
                     client,
-                    bot_dict={'bot': bot_aiogram,
+                    bot_dict={'_apps': bot_aiogram,
                               'chat_id': callback.message.chat.id}).get_last_and_tgpublic_shorts(
                     current_session=self.current_session,
                     shorts=False, fulls_all=True, one_profession=callback.data)  # get from profession's tables and put to tg channels
@@ -1067,7 +1067,7 @@ class InviteBot():
                     self.current_session = await get_last_session()
                 await WriteToDbMessages(
                     client,
-                    bot_dict={'bot': bot_aiogram,
+                    bot_dict={'_apps': bot_aiogram,
                               'chat_id': callback.message.chat.id}).get_last_and_tgpublic_shorts(
                     current_session=self.current_session,
                     shorts=False, fulls_all=True)  # get from profession's tables and put to tg channels
@@ -1084,7 +1084,7 @@ class InviteBot():
 
                 await WriteToDbMessages(
                     client,
-                    bot_dict={'bot': bot_aiogram, 'chat_id': callback.message.chat.id}).get_last_and_tgpublic_shorts(current_session=self.current_session, shorts=False)  # get from profession's tables and put to tg channels
+                    bot_dict={'_apps': bot_aiogram, 'chat_id': callback.message.chat.id}).get_last_and_tgpublic_shorts(current_session=self.current_session, shorts=False)  # get from profession's tables and put to tg channels
 
             if callback.data == 'send_digest_shorts':
 
@@ -1097,7 +1097,7 @@ class InviteBot():
                 time_start = await get_time_start()
                 await WriteToDbMessages(
                     client,
-                    bot_dict={'bot': bot_aiogram, 'chat_id': callback.message.chat.id}).get_last_and_tgpublic_shorts(time_start, current_session=self.current_session, shorts=True)
+                    bot_dict={'_apps': bot_aiogram, 'chat_id': callback.message.chat.id}).get_last_and_tgpublic_shorts(time_start, current_session=self.current_session, shorts=True)
 
 
         @dp.message_handler(content_types=['text'])
@@ -1164,7 +1164,7 @@ class InviteBot():
                                 message.chat.id,
                                 'it is parsing subscribers...',
                                 parse_mode='HTML')
-                            await main(client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id},
+                            await main(client, bot_dict={'_apps': bot_aiogram, 'chat_id': message.chat.id},
                                        action='get_participants')
                         else:
                             await bot_aiogram.send_message(message.chat.id,
@@ -1189,7 +1189,7 @@ class InviteBot():
         #                 message.chat.id,
         #                 'Bot is parsing the telegram channels...',
         #                 parse_mode='HTML')
-        #             await main(client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id})  # run parser tg channels and write to profession's tables
+        #             await main(client, bot_dict={'_apps': bot_aiogram, 'chat_id': message.chat.id})  # run parser tg channels and write to profession's tables
         #             await bot_aiogram.send_message(
         #                 message.chat.id,
         #                 '...it has been successfully',
@@ -1198,12 +1198,12 @@ class InviteBot():
         #
         # # ---------------------- parsing the sites. List of them will grow ------------------------
         #             await bot_aiogram.send_message(message.chat.id, 'Bot is parsing the sites...')
-        #             psites = ParseSites(client=client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id})
+        #             psites = ParseSites(client=client, bot_dict={'_apps': bot_aiogram, 'chat_id': message.chat.id})
         #             await psites.call_sites()
         #             await bot_aiogram.send_message(message.chat.id, '...it has been successfully. Press <b>Digest</b> for the next step', parse_mode='html')
 
-                    psites = ParseSites(client=client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id})
-                    task1 = asyncio.create_task(main(client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id}))
+                    psites = ParseSites(client=client, bot_dict={'_apps': bot_aiogram, 'chat_id': message.chat.id})
+                    task1 = asyncio.create_task(main(client, bot_dict={'_apps': bot_aiogram, 'chat_id': message.chat.id}))
                     task2 = asyncio.create_task(psites.call_sites())
                     await asyncio.gather(task1, task2)
 
@@ -1239,15 +1239,15 @@ class InviteBot():
                         await connect_with_client(message, id_customer)
 
 
-                    # await bot.delete_message(message.chat.id, message.message_id)
+                    # await _apps.delete_message(message.chat.id, message.message_id)
                     # response = requests.get(url='https://tg-channel-parse.herokuapp.com/scrape')
-                    # await bot.send_message(message.chat.id, response.status_code)
+                    # await _apps.send_message(message.chat.id, response.status_code)
                 if message.text == 'Listen to channels':
 
                     logs.write_log(f"invite_bot_2: content_types: Listen to channels")
 
-                    # await bot.delete_message(message.chat.id, message.message_id)
-                    # await bot.send_message(message.chat.id, "Bot is listening TG channels and it will send notifications here")
+                    # await _apps.delete_message(message.chat.id, message.message_id)
+                    # await _apps.send_message(message.chat.id, "Bot is listening TG channels and it will send notifications here")
                     # ListenChats()
                     # await client.run_until_disconnected()
                     await get_subscribers_statistic(message)
@@ -1298,7 +1298,7 @@ class InviteBot():
                     # await send_excel(message)
                 else:
                     pass
-                    # await bot.send_message(message.chat.id, 'Отправьте файл')
+                    # await _apps.send_message(message.chat.id, 'Отправьте файл')
 
         async def get_separate_time(time_in):
 
@@ -1401,7 +1401,7 @@ class InviteBot():
 
                 print(f'\nLEN ALL_PARTICIPANTS IS {len(self.all_participant)}\n')
 
-                sp = ShowProgress({'bot': bot_aiogram, 'chat_id': message.chat.id})
+                sp = ShowProgress({'_apps': bot_aiogram, 'chat_id': message.chat.id})
                 current_step = 0
                 length = len(self.all_participant)
                 msg_2 = await bot_aiogram.send_message(message.chat.id, 'process 0%')
@@ -1718,7 +1718,7 @@ class InviteBot():
         async def hard_post(message, channels=None):
             status_agregator_send: bool
             statistics = {}
-            progress = ShowProgress({'bot': bot_aiogram, 'chat_id': message.chat.id})
+            progress = ShowProgress({'_apps': bot_aiogram, 'chat_id': message.chat.id})
             try:
                 await bot_aiogram.send_document(message.chat.id, "https://media.tenor.com/YIRu8WJDr6cAAAAC/dog-dogs.gif")
             except Exception as e:
@@ -1932,7 +1932,7 @@ class InviteBot():
         #     one_message = event.message.to_dict()
         #     print(one_message)
         #
-        #     await WriteToDbMessages(client=client, bot_dict={'bot': bot_aiogram, 'chat_id': self.chat_id}).operations_with_each_message(channel=event.chat.title, one_message=one_message)
+        #     await WriteToDbMessages(client=client, bot_dict={'_apps': bot_aiogram, 'chat_id': self.chat_id}).operations_with_each_message(channel=event.chat.title, one_message=one_message)
         #
         #     await client.send_message(int(config['My_channels']['bot_test']), one_message['message'][0:40])
         #     client.run_until_disconnected
@@ -2331,7 +2331,7 @@ class InviteBot():
                 except Exception as e:
                     print(f'\n***Cant get messages from admin***\n{e}\n')
                     await bot_aiogram.send_message(message.chat.id, f'\n***Cant get messages from admin***\n{e}\n')
-                    # await self.bot_dict['bot'].send_message(
+                    # await self.bot_dict['_apps'].send_message(
                     #     self.bot_dict['chat_id'],
                     #     f"Getting history:\n{str(e)}: {channel}\npause 25-30 seconds...",
                     #     parse_mode="HTML",
@@ -2426,7 +2426,7 @@ class InviteBot():
             if update_profession:
                 len_prof_list = len(prof_list)
                 if len_prof_list < 2:
-                    # print('ЖАРА в invite bot 2010')
+                    # print('ЖАРА в invite _apps 2010')
                     #
                     # # if it is not in any tables, then write to no_sort table
                     # get_response = DataBaseOperations(None).get_all_from_db(table_name='admin_last_session', param=f"""WHERE id={id_admin_last_session_table}""")
@@ -2442,7 +2442,7 @@ class InviteBot():
                     #         n +=1
                     #
                     # if n == 0:
-                    #     print('ЖАРА в invite bot 2026')
+                    #     print('ЖАРА в invite _apps 2026')
                     #     profession_list = {}
                     #     profession_list['profession'] = {'no_sort',}
                     #     DataBaseOperations(None).push_to_bd(results_dict=results_dict, profession_list=profession_list)
@@ -2609,7 +2609,7 @@ class InviteBot():
                         update_id_agregator=True, results_dict={})
                 else:
                     await bot_aiogram.send_message(message.chat.id,
-                                                   f"<b>For the developer</b>: Hey, bot didn't find this vacancy in admin_last_session",
+                                                   f"<b>For the developer</b>: Hey, _apps didn't find this vacancy in admin_last_session",
                                                    parse_mode='html')
             else:
                 # await bot_aiogram.send_message(message.chat.id, 'It has sent in agregator some time ago')
@@ -2661,7 +2661,7 @@ class InviteBot():
         async def get_excel_tags_from_admin(message):
             sp = ShowProgress(
                 bot_dict={
-                    'bot': bot_aiogram,
+                    '_apps': bot_aiogram,
                     'chat_id': message.chat.id
                 }
             )
@@ -2826,7 +2826,7 @@ class InviteBot():
                 param="""WHERE profession<>'no_sort'"""
             )
             await bot_aiogram.send_message(message.chat.id, f"{len(response)} vacancies founded")
-            show = ShowProgress(bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id})
+            show = ShowProgress(bot_dict={'_apps': bot_aiogram, 'chat_id': message.chat.id})
             n=0
             length = len(response)
             msg = await bot_aiogram.send_message(message.chat.id, 'progress 0%')

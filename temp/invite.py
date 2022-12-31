@@ -21,7 +21,7 @@ config.read("config.ini")
 # qa_channel = config['My_channels']['qa_channel']
 # hr_channel = config['My_channels']['hr_channel']
 # alexandr_channel = config['My_channels']['alexandr_channel']
-bot = config['My_channels']['bot']
+bot = config['My_channels']['_apps']
 
 api_id = int(config['TelegramRuslan']['api_id'])
 api_hash = config['TelegramRuslan']['api_hash']

@@ -54,7 +54,7 @@ class HHGetInformation:
         self.written_vacancies = 0
         self.rejected_vacancies = 0
         if bot_dict:
-            self.bot = bot_dict['bot']
+            self.bot = bot_dict['_apps']
             self.chat_id = bot_dict['chat_id']
         self.browser = None
 
@@ -91,7 +91,7 @@ class HHGetInformation:
             try:
                 self.browser.get(link)
             except Exception as e:
-                print('bot could not to get the link', e)
+                print('_apps could not to get the link', e)
 
             try:
                 self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -220,7 +220,7 @@ class HHGetInformation:
         links.append(vacancy_url)
 
         print('self.broswer.get(vacancy_url)')
-        # await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
+        # await self._apps.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
         # self.browser = browser
         self.browser.get(vacancy_url)
         # self.browser.get('https://google.com')
