@@ -27,12 +27,12 @@ class ParseSites:
         logs.write_log(f"scraping_telethon2: function: call_sites")
 
         bot_dict = {'bot': self.bot, 'chat_id': self.chat_id}
+        await HHGetInformation(bot_dict).get_content()
         await RabotaGetInformation(bot_dict).get_content()
         await HabrGetInformation(bot_dict).get_content()
         await FinderGetInformation(bot_dict).get_content()
         await GeekGetInformation(bot_dict).get_content()
         await SvyaziGetInformation(bot_dict).get_content()
-        await HHGetInformation(bot_dict).get_content()
 
         print(' -----------------------FINAL -------------------------------')
 
