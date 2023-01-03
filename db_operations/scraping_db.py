@@ -844,6 +844,7 @@ class DataBaseOperations:
                         print(f'+++++++++++++ The vacancy has been added to DB admin_last_session\n')
                     except Exception as e:
                         print(f'-------------- Didn"t push in ADMIN LAST SESSION {e}\n')
+                        print('time_of_public ', results_dict['time_of_public'])
                         pass
             else:
                 if r:

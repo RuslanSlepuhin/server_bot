@@ -1,7 +1,7 @@
 import asyncio
 import re
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 import pandas as pd
 import requests
 from selenium import webdriver
@@ -16,7 +16,7 @@ from filters.scraping_get_profession_Alex_next_2809 import AlexSort2809
 from sites.write_each_vacancy_to_db import write_each_vacancy
 from settings.browser_settings import options, chrome_driver_path
 
-class FinderGetInformation:
+class RabotaGetInformation:
 
     def __init__(self, bot_dict, search_word=None):
 
@@ -57,7 +57,6 @@ class FinderGetInformation:
             self.bot = bot_dict['bot']
             self.chat_id = bot_dict['chat_id']
         self.browser = None
-        self.url_main = 'https://finder.vc'
 
 
     async def get_content(self, db_tables=None):
@@ -82,29 +81,46 @@ class FinderGetInformation:
             executable_path=chrome_driver_path,
             options=options
         )
-        till = 13
-        for self.page_number in range(1, till):
-            try:
-                await self.bot.send_message(self.chat_id, f'https://finder.vc/vacancies?category=1&page={self.page_number}',
-                                      disable_web_page_preview=True)
-                self.browser.get(f'https://finder.vc/vacancies?category=1&page={self.page_number}')
-                self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
-                if not vacancy_exists_on_page:
-                    break
-            except:
-                break
-        await self.bot.send_message(self.chat_id, 'finder.vc parsing: Done!', disable_web_page_preview=True)
+        for word in self.search_words:
+            self.page_number = 0
+            link = f'https://rabota.by/search/vacancy?text={word}&from=suggest_post&salary=&area=16&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1'
+            await self.bot.send_message(self.chat_id, link, disable_web_page_preview=True)
 
-    async def get_link_message(self, raw_content):
+            print('page link: ', link)
+            try:
+                self.browser.get(link)
+            except Exception as e:
+                print('bot could not to get the link', e)
+
+            try:
+                self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            except:
+                pass
+            await self.get_link_message(self.browser.page_source, word)
+
+            till = 13
+            for self.page_number in range(1, till):
+                try:
+                    await self.bot.send_message(self.chat_id, f'https://rabota.by/search/vacancy?text={word}&from=suggest_post&salary=&area=16&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&page={self.page_number}&hhtmFrom=vacancy_search_list',
+                                          disable_web_page_preview=True)
+                    self.browser.get(f'https://rabota.by/search/vacancy?text={word}&from=suggest_post&salary=&area=16&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&page={self.page_number}&hhtmFrom=vacancy_search_list')
+                    self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                    vacancy_exists_on_page = await self.get_link_message(self.browser.page_source, word)
+                    if not vacancy_exists_on_page:
+                        break
+                except:
+                    break
+        await self.bot.send_message(self.chat_id, 'rabota.by parsing: Done!', disable_web_page_preview=True)
+
+    async def get_link_message(self, raw_content, word):
 
         links = []
         soup = BeautifulSoup(raw_content, 'lxml')
 
-        list_links = soup.find_all('div', class_='vacancies-page__card')
+        list_links = soup.find_all('a', class_='serp-item__title')
         if list_links:
-            print(f'\nНайдено {len(list_links)} вакансий\n')
-            self.current_message = await self.bot.send_message(self.chat_id, f'finder.vc:\nНайдено {len(list_links)} вакансий на странице {self.page_number}', disable_web_page_preview=True)
+            print(f'\nПо слову {word} найдено {len(list_links)} вакансий\n')
+            self.current_message = await self.bot.send_message(self.chat_id, f'rabota.by:\nПо слову {word} найдено {len(list_links)} вакансий на странице {self.page_number+1}', disable_web_page_preview=True)
 
             # -------------------- check what is current session --------------
 
@@ -124,7 +140,7 @@ class FinderGetInformation:
             self.rejected_vacancies = 0
 
             for i in list_links:
-                await self.get_content_from_link(i, links)
+                await self.get_content_from_link(i, links, word)
 
             #----------------------- the statistics output ---------------------------
             self.written_vacancies = 0
@@ -133,35 +149,30 @@ class FinderGetInformation:
         else:
             return False
 
-    def normalize_text(self, text):
-        text = str(text)
-        text = text.replace('<div id="vacancy-description">', '')
-        text = text.replace('<br>', f'\n').replace('<br/>', '')
-        text = text.replace('<p>', f'\n').replace('</p>', '')
-        text = text.replace('<li>', f'\n\t- ').replace('</li>', '')
-        text = text.replace('<strong>', '').replace('</strong>', '')
-        text = text.replace('<div>', '').replace('</div>', '')
-        text = text.replace('<h4>', f'\n').replace('</h4>', '')
-        text = text.replace('<ul>', '').replace('</ul>', '')
-        text = text.replace('<i>', '').replace('</i>', '')
-        text = text.replace('<ol>', '').replace('</ol>', '')
+    def normalize_date(self, date):
+        convert = {
+            'января': '01',
+            'февраля': '02',
+            'марта': '03',
+            'апреля': '04',
+            'мая': '05',
+            'июня': '06',
+            'июля': '07',
+            'августа': '08',
+            'сентября': '09',
+            'октября': '10',
+            'ноября': '11',
+            'декабря': '12',
+        }
 
-        return text
+        date = date.split(f'\xa0')
+        month = date[1]
+        day = date[0]
+        year = date[2]
 
-    def convert_date(self, date):
-        date = date.split(' ')
-        if date[1] == 'сегодня':
-            date = datetime.now()
-        elif date[1] == 'вчера':
-            date  = datetime.now()-timedelta(days=1)
-        elif date[1] == 'неделю':
-            date = datetime.now()-timedelta(days=7)
-        elif re.findall(r'д[е]{0,1}н[ьейя]{1,2}', date[2]):
-            date = datetime.now()-timedelta(days=int(date[1]))
-        elif re.findall(r'месяц[ева]{0,2}', date[2]):
-            date = datetime.now() - timedelta(days=int(date[1]*30))
+        date = datetime(int(year), int(convert[month]), int(day), 12, 00, 00)
+
         return date
-
 
     def clean_company_name(self, text):
         text = re.sub('Прямой работодатель', '', text)
@@ -202,14 +213,16 @@ class FinderGetInformation:
         db=DataBaseOperations(con=None)
         db.write_to_db_companies(companies)
 
-    async def get_content_from_link(self, i, links):
-        vacancy_url = i.find('a').get('href')
-        vacancy_url = self.url_main + vacancy_url
+    async def get_content_from_link(self, i, links, word):
+        vacancy_url = i.get('href')
+        vacancy_url = vacancy_url.split('?')[0]
+
+        # vacancy_url = re.findall(r'https:\/\/rabota.by\/vacancy\/[0-9]{6,12}', vacancy_url)[0]
         print('vacancy_url = ', vacancy_url)
         links.append(vacancy_url)
 
         print('self.broswer.get(vacancy_url)')
-        # await self._apps.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
+        # await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
         # self.browser = browser
         self.browser.get(vacancy_url)
         # self.browser.get('https://google.com')
@@ -220,92 +233,95 @@ class FinderGetInformation:
         print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
 
         # get vacancy ------------------------
-        try:
-            vacancy = soup.find('h1', class_='vacancy-info-header__title').get_text()
-        except:
-            vacancy = ''
-        print('title = ', vacancy)
+        vacancy = soup.find('div', class_='vacancy-title').find('span').get_text()
+        print('vacancy = ', vacancy)
 
         # get title --------------------------
         title = vacancy
         print('title = ',title)
 
         # get body --------------------------
+        body = soup.find('div', class_='vacancy-section').get_text()
+        body = body.replace('\n\n', '\n')
+        body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
+        print('body = ',body)
+
+        # get tags --------------------------
+        tags = ''
         try:
-            body = soup.find('div', class_='vacancy-info-body__description').get_text()
+            tags_list = soup.find('div', class_="bloko-tag-list")
+            for i in tags_list:
+                tags += f'{i.get_text()}, '
+            tags = tags[0:-2]
         except:
-            body = ''
+            pass
+        print('tags = ',tags)
 
+        english = ''
+        if re.findall(r'[Аа]нглийский', tags) or re.findall(r'[Ee]nglish', tags):
+            english = 'English'
+
+        # get city --------------------------
         try:
-            body_list = soup.find_all('div', class_="vacancy-info-body__info")
+            city = soup.find('a', class_='bloko-link bloko-link_kind-tertiary bloko-link_disable-visited').get_text()
         except:
-            body_list = []
+            city = ''
+        print('city = ',city)
 
-        if body_list:
-            body += '\n'
-            for content in body_list:
-                body += f"{content.find('div', class_='vacancy-info-body__title').get_text()}\n"
-                temporary_body_list = content.find_all('li', class_='vacancy-info-body__item')
-                for li in temporary_body_list:
-                    body += f"- {li.get_text()}\n"
-
-        print('body = ', body)
-        #
-        # # get tags --------------------------
-        # try:
-        #     description = soup.find('div', class_='vacancy-info-body__lists').get_text()
-        # except:
-        #     description = ''
-        # print('requirements = ', description)
-
-        # try:
-        #     terms = soup.find('ul', class_="vacancy-info-body__list").get_text()
-        # except:
-        #     terms = ''
-        # print('terms = ', terms)
-
+        # get company --------------------------
         try:
-            company = soup.find('a', class_='link').get_text()
+            company = soup.find('span', class_='vacancy-company-name').get_text()
+            company = company.replace('\xa0', ' ')
         except:
             company = ''
-        print('company = ', company)
+        print('company = ',company)
 
+        # get salary --------------------------
         try:
-            job_type = soup.find('div', class_="employment-label__text").get_text()
-            # body = f'\nГрафик работы: {time_job}\n' + body
-        except:
-            job_type = ''
-        print('job_type = ', job_type)
-
-        try:
-            salary = soup.find('div', class_='row-wrapper vacancy-info-header__row').get_text()
-            # experience = soup.find('div', class_='vacancy-info-header__row')
-            experience = ''
-
+            salary = soup.find('span', class_='bloko-header-section-2 bloko-header-section-2_lite').get_text()
         except:
             salary = ''
-            experience = ''
-        print('salary = ', salary)
-        print('experience = ', experience)
+        print('salary = ',salary)
 
-        time_of_public = soup.find('div', class_='vacancy-info-header__publication-date').get_text()
-        print('time_of_public = ', time_of_public)
-        time_of_public = self.convert_date(time_of_public)
-        print('time_of_public after = ', time_of_public)
+        # get experience --------------------------
+        try:
+            experience = soup.find('p', class_='vacancy-description-list-item').find('span').get_text()
+        except:
+            experience = ''
+        print('experience = ',experience)
+
+        # get job type and remote --------------------------
+        raw_content_2 = soup.findAll('p', class_='vacancy-description-list-item')
+        counter = 1
+        job_type = ''
+        for value in raw_content_2:
+            match counter:
+                case 1:
+                    experience = value.find('span').get_text()
+                case 2:
+                    job_type = str(value.get_text())
+                    print(value.get_text())
+                case 3:
+                    print(value.get_text())
+                    job_type += f'\n{value.get_text}'
+            counter += 1
+        job_type = re.sub(r'\<[a-zA-Z\s\.\-\'"=!\<_\/]+\>', " ", job_type)
+
+        if re.findall(r'удаленная работа', job_type):
+            remote = True
 
         contacts = ''
 
-        # try:
-        #     date = soup.find('p', class_="vacancy-creation-time-redesigned").get_text()
-        # except:
-        #     date = ''
-        # if date:
-        #     date = re.findall(r'[0-9]{1,2}\W[а-я]{3,}\W[0-9]{4}', date)
-        #     date = date[0]
-        #     date = self.normalize_date(date)
-        # print('date = ', date)
+        try:
+            date = soup.find('p', class_="vacancy-creation-time-redesigned").get_text()
+        except:
+            date = ''
+        if date:
+            date = re.findall(r'[0-9]{1,2}\W[а-я]{3,}\W[0-9]{4}', date)
+            date = date[0]
+            date = self.normalize_date(date)
+        print('date = ', date)
 
-        # body = f""
         # ------------------------- search relocation ----------------------------
         relocation = ''
         if re.findall(r'[Рр]елокация', body):
@@ -321,17 +337,10 @@ class FinderGetInformation:
                         city += f"{i} "
 
         # ------------------------- search english ----------------------------
-        english = ''
-        for item in params['english_level']:
-            match = re.findall(rf"{item}", body)
-            if match:
-                for i in match:
-                    english += f"{i} "
-
         english_additional = ''
         for item in params['english_level']:
             match1 = re.findall(rf"{item}", body)
-            match2 = re.findall(rf"{item}", title)
+            match2 = re.findall(rf"{item}", tags)
             if match1:
                 for i in match1:
                     english_additional += f"{i} "
@@ -350,7 +359,7 @@ class FinderGetInformation:
         #-------------------- compose one writting for ione vacancy ----------------
 
         results_dict = {
-            'chat_name': 'https://finder.vc/',
+            'chat_name': 'https://rabota.by/',
             'title': title,
             'body': body,
             'vacancy': vacancy,
@@ -360,11 +369,11 @@ class FinderGetInformation:
             'english': english,
             'relocation': relocation,
             'job_type': job_type,
-            'city': city,
-            'salary': salary,
-            'experience': experience,
-            'time_of_public': time_of_public,
-            'contacts': contacts,
+            'city':city,
+            'salary':salary,
+            'experience':'',
+            'time_of_public':date,
+            'contacts':contacts,
             'session': self.current_session
         }
 
@@ -406,10 +415,7 @@ class FinderGetInformation:
         else:
             self.current_message = await self.bot.send_message(self.chat_id, f"{self.count_message_in_one_channel}. {vacancy}\n{additional_message}")
             pass
-        print(f"\n{self.count_message_in_one_channel} from_channel finder.vc.ru search")
+        print(f"\n{self.count_message_in_one_channel} from_channel rabota.by search {word}")
         self.count_message_in_one_channel += 1
 # loop = asyncio.new_event_loop()
 # loop.run_until_complete(HHGetInformation(bot_dict={}).get_content())
-
-
-

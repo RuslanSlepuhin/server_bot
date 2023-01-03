@@ -47,7 +47,7 @@ class SvyaziGetInformation:
         self.written_vacancies = 0
         self.rejected_vacancies = 0
         if bot_dict:
-            self.bot = bot_dict['_apps']
+            self.bot = bot_dict['bot']
             self.chat_id = bot_dict['chat_id']
         self.browser = None
         self.main_url = 'https://www.svyazi.app'

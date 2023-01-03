@@ -44,7 +44,7 @@ class HHGetInformation:
             self.search_words = ['junior', 'джуниор', 'kotlin', 'product', 'mobile', 'marketing', 'аналитик',
                                  'frontend', 'designer', 'devops', 'hr', 'backend', 'qa', 'junior', 'ba']
 
-            self.search_words = ['designer']
+            self.search_words = ['designer', 'junior']
         else:
             self.search_words=[search_word]
         self.page_number = 1
@@ -54,7 +54,7 @@ class HHGetInformation:
         self.written_vacancies = 0
         self.rejected_vacancies = 0
         if bot_dict:
-            self.bot = bot_dict['_apps']
+            self.bot = bot_dict['bot']
             self.chat_id = bot_dict['chat_id']
         self.browser = None
 
