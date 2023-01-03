@@ -276,6 +276,14 @@ class InviteBot():
             )
             await finder.get_content()
 
+        @dp.message_handler(commands=['habr'])
+        async def finder(message: types.Message):
+            habr = HabrGetInformation(
+                search_word=None,
+                bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id}
+            )
+            await habr.get_content()
+
         @dp.message_handler(commands=['magic_word'])
         async def magic_word(message: types.Message):
             await Form_hh.word.set()
