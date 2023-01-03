@@ -1,5 +1,6 @@
 
 from sites.scraping_geekjob import GeekGetInformation
+from sites.scraping_habr import HabrGetInformation
 from sites.scraping_hh import HHGetInformation
 import configparser
 from logs.logs import Logs
@@ -9,14 +10,14 @@ from sites.scrapping_finder import FinderGetInformation
 logs = Logs()
 
 config = configparser.ConfigParser()
-config.read("./settings/config.ini")
+config.read("./settings_/config.ini")
 
 class ParseSites:
 
     def __init__(self, client, bot_dict):
         self.client = client
         self.current_session = ''
-        self.bot = bot_dict['_apps']
+        self.bot = bot_dict['bot']
         self.chat_id = bot_dict['chat_id']
 
 
@@ -24,7 +25,9 @@ class ParseSites:
 
         logs.write_log(f"scraping_telethon2: function: call_sites")
 
-        bot_dict = {'_apps': self.bot, 'chat_id': self.chat_id}
+        bot_dict = {'bot': self.bot, 'chat_id': self.chat_id}
+        await RabotaGetInformation(bot_dict).get_content()
+        await HabrGetInformation(bot_dict).get_content()
         await FinderGetInformation(bot_dict).get_content()
         await GeekGetInformation(bot_dict).get_content()
         await SvyaziGetInformation(bot_dict).get_content()
@@ -53,9 +56,9 @@ class ParseSites:
 #             DataBaseOperations(con=con).write_to_db_companies(set(response_dict['company']))
 #
 # # -------------------------------- compose messages --------------------------------
-#         await self._apps.send_message(self.chat_id, 'Пишет в админку')
-#         msg = await self._apps.send_message(self.chat_id, 'progress 0%')
-#         bot_dict = {'_apps': self._apps, 'chat_id': self.chat_id}
+#         await self.bot.send_message(self.chat_id, 'Пишет в админку')
+#         msg = await self.bot.send_message(self.chat_id, 'progress 0%')
+#         bot_dict = {'bot': self.bot, 'chat_id': self.chat_id}
 #         sp = ShowProgress(bot_dict)
 #
 #         last_id_agregator = await WriteToDbMessages(client=self.client, bot_dict=None).get_last_id_agregator() + 1

@@ -34,6 +34,7 @@ from sites.scraping_hh import HHGetInformation
 from progress.progress import ShowProgress
 from sites.scraping_svyazi import SvyaziGetInformation
 from sites.scrapping_finder import FinderGetInformation
+from sites.scraping_rabota import RabotaGetInformation
 
 logs = Logs()
 import settings.os_getenv as settings
@@ -200,6 +201,7 @@ class InviteBot():
                                                             '/magic_word - input word and get results from hh.ru\n'
                                                             '/svyazi - get data from svyazi.app\n'
                                                             '/finder - get the data from finder.vc\n'
+                                                            '/habr - get the data from career.habr.com\n'
                                                             '/geek - get data from geek.ru\n\n'
                                                             '/download - ❗️you get excel from admin vacancies with search tags\n'
                                                             '/ambulance - if _apps gets accident in hard pushing and you think you loose the shorts\n'
@@ -256,6 +258,15 @@ class InviteBot():
                 bot_dict={'_apps': bot_aiogram, 'chat_id': message.chat.id}
             )
             await svyazi.get_content()
+
+        @dp.message_handler(commands=['rabota'])
+        async def geek(message: types.Message):
+
+            rabota = RabotaGetInformation(
+                search_word=None,
+                bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id}
+            )
+            await rabota.get_content()
 
         @dp.message_handler(commands=['finder'])
         async def finder(message: types.Message):

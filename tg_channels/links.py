@@ -104,4 +104,14 @@ list_links = [
     'https://t.me/outstaff_us',
     'https://t.me/extyl_outstaff',
     'https://t.me/kesmaty_outstaff',
-    'https://t.me/digital_partners_chat']
+    'https://t.me/digital_partners_chat',
+    'https://t.me/zaichenkoteam',
+    'https://t.me/Mozhlyvosti',
+    'https://t.me/ua_working',
+    'https://t.me/helpukrainiansjooble',
+    'https://t.me/outjob',
+    'https://t.me/wwjobs',
+    'https://t.me/aplaywork',
+    'https://t.me/jobzilla_ua',
+    'https://t.me/workforukrainianas',
+]
