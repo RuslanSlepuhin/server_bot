@@ -82,7 +82,7 @@ class HabrGetInformation:
             executable_path=chrome_driver_path,
             options=options
         )
-        till = 13
+        till = 50
         for self.page_number in range(1, till):
             try:
                 await self.bot.send_message(self.chat_id, f'https://career.habr.com/vacancies?page={self.page_number}&sort=date&type=all',
