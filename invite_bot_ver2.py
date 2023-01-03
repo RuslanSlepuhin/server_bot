@@ -34,6 +34,7 @@ from sites.scraping_hh import HHGetInformation
 from progress.progress import ShowProgress
 from sites.scraping_svyazi import SvyaziGetInformation
 from sites.scrapping_finder import FinderGetInformation
+from sites.scraping_habr import HabrGetInformation
 # from sites.scraping_rabota import RabotaGetInformation
 
 logs = Logs()
