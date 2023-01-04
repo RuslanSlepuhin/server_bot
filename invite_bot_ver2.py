@@ -914,6 +914,7 @@ class InviteBot():
                         vacancy_from_admin = DataBaseOperations(None).get_all_from_db('admin_last_session',
                                                                                       param=f"WHERE id={id_admin_last_session_table}",
                                                                                       without_sort=True)
+                        prof_stack = vacancy_from_admin[0][4]
                         # if vacancy has sent in agregator already, it doesn't push again. And remove profess from profs or drop vacancy if there is profession alone
                         await push_vacancies_to_agregator_from_admin(
                             message=callback.message,
@@ -921,6 +922,8 @@ class InviteBot():
                             vacancy_from_admin=vacancy_from_admin,
                             response=response,
                             profession=profession,
+                            prof_stack=prof_stack,
+                            links_on_prof_channels=True,
                             id_admin_last_session_table=id_admin_last_session_table
                         )
 
@@ -1808,6 +1811,8 @@ class InviteBot():
                         composed_message['message'] = composed_message['composed_message']
                         pass
 
+                        prof_stack = vacancy[4]
+
                         try:
                             # push to the admin channel
                             await push_vacancies_to_agregator_from_admin(
@@ -1816,7 +1821,9 @@ class InviteBot():
                                 vacancy_from_admin=[vacancy],
                                 response=[vacancy],
                                 profession=profession,
+                                prof_stack=prof_stack,
                                 id_admin_last_session_table=id_admin_last_session_table,
+                                links_on_prof_channels=False,
                                 from_admin_temporary=False
                             )
                             status_agregator_send = True
@@ -2612,7 +2619,9 @@ class InviteBot():
                 vacancy_from_admin,
                 response,
                 profession,
+                prof_stack,
                 id_admin_last_session_table,
+                links_on_prof_channels=False,
                 from_admin_temporary=True
         ):
 
@@ -2635,10 +2644,25 @@ class InviteBot():
                 print('\npush vacancy in agregator\n')
                 print(f"\n{vacancy['message'][0:40]}")
 
+                if links_on_prof_channels:
+                    links_message = '\n----\nВ этом канале выводятся все собранные вакансии (агрегатор), для вашего удобства мы рекомендуем подписаться на наиболее подходящие для вас каналы (ссылки подобраны в каждом из сообщений):\n'
+                    links_message += f"<a href=\"{config['Links']['junior']}\">Канал с вакансиями для Junior IT специалистов\n</a>"
+                    prof_stack = prof_stack.split(',')
+                    for i_prof in prof_stack:
+                        i_prof = i_prof.strip()
+                        if i_prof in self.valid_profession_list:
+                            link = f"<a href=\"{config['Links'][i_prof]}\">Канал с вакансиями для {i_prof.title()} IT специалистов\n</a>"
+                            links_message += link
+                    if (len(links_message)+len(str(vacancy['message']))) <= 4096:
+                        send_message = vacancy['message'] + links_message
+                    else:
+                        send_message = vacancy['message']
+                else:
+                    send_message = vacancy['message']
+
                 # sending the raw message without fields vacancy city etc
-                await bot_aiogram.send_message(int(config['My_channels']['agregator_channel']), vacancy['message'],
-                                               parse_mode='html',
-                                               disable_notification=True)
+                # await bot_aiogram.send_message(int(config['My_channels']['agregator_channel']), vacancy['message'],
+                await bot_aiogram.send_message(int(config['My_channels']['agregator_channel']), send_message, parse_mode='html', disable_notification=True)
                 await asyncio.sleep(random.randrange(3, 4))
                 self.last_id_message_agregator += 1
 
