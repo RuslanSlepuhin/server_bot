@@ -47,7 +47,7 @@ async def main_endpoints():
 
     async def get_from_db():
         cur = con.cursor()
-        query = "SELECT * FROM admin_last_session WHERE profession LIKE '%backend, %'"
+        query = "SELECT * FROM admin_last_session WHERE profession <> 'no_sort'"
         with con:
             cur.execute(query)
         response = cur.fetchall()
