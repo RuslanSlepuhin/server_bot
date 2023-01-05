@@ -1,6 +1,7 @@
 
 import configparser
 from logs.logs import Logs
+from sites.scraping_dev import DevGetInformation
 from sites.scraping_geekjob import GeekGetInformation
 from sites.scraping_habr import HabrGetInformation
 from sites.scraping_hh import HHGetInformation
@@ -28,6 +29,8 @@ class ParseSites:
         logs.write_log(f"scraping_telethon2: function: call_sites")
 
         bot_dict = {'bot': self.bot, 'chat_id': self.chat_id}
+        
+        await DevGetInformation(bot_dict).get_content()
         await SuperJobGetInformation(bot_dict).get_content()
         await RabotaGetInformation(bot_dict).get_content()
         await HabrGetInformation(bot_dict).get_content()

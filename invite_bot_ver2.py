@@ -29,6 +29,7 @@ from progress.progress import ShowProgress
 from scraping_telegramchats2 import WriteToDbMessages, main
 from sites.parsing_sites_runner import ParseSites
 from logs.logs import Logs
+from sites.scraping_dev import DevGetInformation
 from sites.scraping_geekjob import GeekGetInformation
 from sites.scraping_hh import HHGetInformation
 from progress.progress import ShowProgress
@@ -217,6 +218,7 @@ class InviteBot():
                                                             '/habr - get the data from career.habr.com\n'
                                                             '/superjob - get the data from superjob.ru\n'
                                                             '/rabota - get the data from rabota.by\n'
+                                                            '/dev - get the data from dev.by\n'
                                                             '/geek - get data from geek.ru\n\n'
                                                             '/download - ❗️you get excel from admin vacancies with search tags\n'
                                                             '/ambulance - if bot gets accident in hard pushing and you think you loose the shorts\n'
@@ -291,6 +293,15 @@ class InviteBot():
                 bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id}
             )
             await superjob.get_content()
+
+        @dp.message_handler(commands=['dev'])
+        async def geek(message: types.Message):
+
+            dev = DevGetInformation(
+                search_word=None,
+                bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id}
+            )
+            await dev.get_content()
 
         @dp.message_handler(commands=['finder'])
         async def finder(message: types.Message):
