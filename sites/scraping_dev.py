@@ -88,22 +88,22 @@ class DevGetInformation:
             options=options
         )
 
-        # # get juniors -------------------------
-        # link = junior_link
-        # await self.bot.send_message(self.chat_id, link, disable_web_page_preview=True)
-        #
-        # print('page link: ', link)
-        # try:
-        #     self.browser.get(link)
-        # except Exception as e:
-        #     print('bot could not to get the link', e)
-        #
-        # try:
-        #     self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        # except:
-        #     pass
-        # word = 'junior'
-        # await self.get_link_message(self.browser.page_source, word)
+        # get juniors -------------------------
+        link = junior_link
+        await self.bot.send_message(self.chat_id, link, disable_web_page_preview=True)
+
+        print('page link: ', link)
+        try:
+            self.browser.get(link)
+        except Exception as e:
+            print('bot could not to get the link', e)
+
+        try:
+            self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        except:
+            pass
+        word = 'junior'
+        await self.get_link_message(self.browser.page_source, word)
         #-------------------------------------
 
         for word in self.search_words:
