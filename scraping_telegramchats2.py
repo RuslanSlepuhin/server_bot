@@ -154,7 +154,7 @@ class WriteToDbMessages():
         total_count_limit = limit_msg  # значение 0 = все сообщения
         history = None
 
-        self.current_message = await self.bot_dict['_apps'].send_message(self.bot_dict['chat_id'], f'<em>channel {channel}</em>', parse_mode='html', disable_web_page_preview = True)
+        self.current_message = await self.bot_dict['bot'].send_message(self.bot_dict['chat_id'], f'<em>channel {channel}</em>', parse_mode='html', disable_web_page_preview = True)
 
         # data = await self.client.get_entity('https://t.me/fake_adminka')
         # print(data)
@@ -168,7 +168,7 @@ class WriteToDbMessages():
                     limit=limit_msg, max_id=0, min_id=0,
                     hash=0))
             except Exception as e:
-                await self.bot_dict['_apps'].send_message(
+                await self.bot_dict['bot'].send_message(
                                         self.bot_dict['chat_id'],
                                         f"Getting history:\n{str(e)}: {channel}\npause 25-30 seconds...",
                                         parse_mode="HTML",
@@ -178,7 +178,7 @@ class WriteToDbMessages():
             # if not history.messages:
             if not history:
                 print(f'Not history for channel {channel}')
-                await self.bot_dict['_apps'].send_message(self.bot_dict['chat_id'], f'Not history for channel {channel}')
+                await self.bot_dict['bot'].send_message(self.bot_dict['chat_id'], f'Not history for channel {channel}')
                 break
             messages = history.messages
             for message in messages:
@@ -330,7 +330,7 @@ class WriteToDbMessages():
         else:
             await self.send_fulls(all=True, one_profession=one_profession)  # 2. for send last full messages from db
 
-        await self.bot_dict['_apps'].send_message(self.bot_dict['chat_id'], 'Telegram channels parsing: DONE')
+        await self.bot_dict['bot'].send_message(self.bot_dict['chat_id'], 'Telegram channels parsing: DONE')
 
     async def send_sorts(self):
 
@@ -364,7 +364,7 @@ class WriteToDbMessages():
                 # STEP4/ send this shorts in channels
                 if messages_counter > 5 or messages_counter == len(response_messages):
                     short_message = f"Вакансии для {pro}:\n\n" + short_message
-                    await self.bot_dict['_apps'].send_message(
+                    await self.bot_dict['bot'].send_message(
                         config['My_channels'][f"{pro}_channel"],
                         short_message, parse_mode='HTML',
                         disable_web_page_preview = True)
@@ -398,8 +398,8 @@ class WriteToDbMessages():
 
         # 1) choose all records with one_profession
         response_messages = DataBaseOperations(None).get_all_from_db('admin_last_session', param=param)
-        await self.bot_dict['_apps'].send_message(self.bot_dict['chat_id'], f"There are {len(response_messages)} vacancies")
-        self.message = await self.bot_dict['_apps'].send_message(self.bot_dict['chat_id'], f'progress {self.percent}%')
+        await self.bot_dict['bot'].send_message(self.bot_dict['chat_id'], f"There are {len(response_messages)} vacancies")
+        self.message = await self.bot_dict['bot'].send_message(self.bot_dict['chat_id'], f'progress {self.percent}%')
         n = 0
         for message in response_messages:
             n += 1
@@ -479,7 +479,7 @@ class WriteToDbMessages():
                 # push to agregator
                 # if profession is not no_sort than public in agregator, else public to n0_sort
                 if 'no_sort' not in response_dict and False in response_dict.values() and not sended_to_agregator:  # sended_to_agregator shows it was sended to agregator yet
-                    await self.bot_dict['_apps'].send_message(config['My_channels']['agregator_channel'], message_to_send, parse_mode='html')
+                    await self.bot_dict['bot'].send_message(config['My_channels']['agregator_channel'], message_to_send, parse_mode='html')
                     results_dict['agregator_link'] = self.last_id_agregator
 
                     # if it was sending to agregator that I give it the number agregator message for mark that as has sended already
@@ -495,10 +495,10 @@ class WriteToDbMessages():
                 for channel in response_dict:
                     if not response_dict[channel]:
                         try:
-                            await self.bot_dict['_apps'].send_message(config['My_channels'][f'{channel}_channel'],
+                            await self.bot_dict['bot'].send_message(config['My_channels'][f'{channel}_channel'],
                                                                     message_to_send, parse_mode='html')
                         except Exception as e:
-                            await self.bot_dict['_apps'].send_message(self.bot_dict['chat_id'],
+                            await self.bot_dict['bot'].send_message(self.bot_dict['chat_id'],
                                                                     f"error: channel - {channel}")  # I had the error from sending to some channel
                         print(f'Send to TG channel {channel}\n')
                         await asyncio.sleep(random.randrange(5, 17))
@@ -531,7 +531,7 @@ class WriteToDbMessages():
         if check > self.percent:
             quantity = check // 5
             self.percent = check
-            self.message = await self.bot_dict['_apps'].edit_message_text(f"progress {'|'* quantity} {self.percent}%", self.bot_dict['chat_id'], self.message.message_id)
+            self.message = await self.bot_dict['bot'].edit_message_text(f"progress {'|'* quantity} {self.percent}%", self.bot_dict['chat_id'], self.message.message_id)
 
     async def clear_not_valid_professions(self, profession):
 
