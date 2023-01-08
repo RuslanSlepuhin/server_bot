@@ -212,6 +212,7 @@ class InviteBot():
                                                             '/check_parameters - get vacancy\'s parameters\n'
                                                             '/get_participants - ❗️get the channel follower numbers\n'
                                                             '/delete_till - ❗️delete old vacancy from admin DB till date\n\n'
+                                                            '/debug\n\n'
                                                             '/magic_word - input word and get results from hh.ru\n'
                                                             '/svyazi - get data from svyazi.app\n'
                                                             '/finder - get the data from finder.vc\n'
