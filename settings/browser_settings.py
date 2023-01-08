@@ -20,4 +20,7 @@ options.add_argument('--disable-dev-shm-usage')
 #     options=options
 # )
 chrome_driver_path = '/root/itcoty_bot/server_bot/utils/chromedriver/chromedriver'
-
+# self.browser = webdriver.Chrome(
+#     executable_path=chrome_driver_path,
+#     options=options
+# )

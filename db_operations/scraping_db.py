@@ -22,6 +22,7 @@ class DataBaseOperations:
         self.con = con
         if not con:
             self.connect_db()
+        self.admin_check_file = './logs/check_file.txt'
 
     def connect_db(self):
 
@@ -29,13 +30,19 @@ class DataBaseOperations:
 
         self.con = None
         config.read("./../settings/config.ini")
-
-        config.read("./settings/config.ini")
-        database = config['DB_local_clone']['database']
-        user = config['DB_local_clone']['user']
-        password = config['DB_local_clone']['password']
-        host = config['DB_local_clone']['host']
-        port = config['DB_local_clone']['port']
+        try:
+            database = config['DB3']['database']
+            user = config['DB3']['user']
+            password = config['DB3']['password']
+            host = config['DB3']['host']
+            port = config['DB3']['port']
+        except:
+            config.read("./settings/config.ini")
+            database = config['DB_local_clone']['database']
+            user = config['DB_local_clone']['user']
+            password = config['DB_local_clone']['password']
+            host = config['DB_local_clone']['host']
+            port = config['DB_local_clone']['port']
         try:
             self.con = psycopg2.connect(
                 database=database,
@@ -1049,12 +1056,37 @@ class DataBaseOperations:
         id_admin_last_session_table = composed_message_dict['db_id']
         it_was_sending_to_agregator = composed_message_dict['it_was_sending_to_agregator']
 
+        # -------------- it is for user's check -----------------------
+        db = DataBaseOperations(None)
+        response = db.get_all_from_db(
+            table_name='admin_last_session',
+            param=f"WHERE id={id_admin_last_session_table}",
+            field="title"
+        )
+        title_temp = response[0][0]
+        # title_temp = re.sub(r"\\u[^\W]+", '', title_temp)
+
+        with open(self.admin_check_file, 'a', encoding="utf-8") as file:
+            try:
+                file.write(f"--------in function push_to_admin_temporary-------\n"
+                           f"id admin_channel = {id_admin_channel}\n"
+                           f"id_admin_last_session_table = {id_admin_last_session_table}\n"
+                           f"it was sending to agregator = {it_was_sending_to_agregator}\n"
+                           f"title = {title_temp[0:50]}\n"
+                           f"------------------------------------------------------------\n")
+            except Exception as e:
+                print(f'Error in the file writing\n{e}\n{title_temp}')
+        # ----------------------- end ----------------------------------
+
         query_check = f"""SELECT * FROM admin_temporary 
                 WHERE id_admin_channel='{id_admin_channel}' 
                 AND id_admin_last_session_table = '{id_admin_last_session_table}'"""
 
         with self.con:
-            cur.execute(query_check)
+            try:
+                cur.execute(query_check)
+            except:
+                print('It cant check un db')
 
         if not cur.fetchall():
 

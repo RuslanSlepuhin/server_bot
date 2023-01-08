@@ -36,7 +36,7 @@ senior_channel = config['My_channels']['senior_channel']
 ruslan_channel = config['My_channels']['ruslan_channel']
 
 bot = telebot.TeleBot("5484849364:AAF0fPhis-GLuQNsSdR7EbmnYa0QjTXpGdE")
-print('_apps is working...')
+print('bot is working...')
 
 
 def main():

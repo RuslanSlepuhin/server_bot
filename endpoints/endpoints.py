@@ -47,13 +47,13 @@ async def main_endpoints():
 
     async def get_from_db():
         cur = con.cursor()
-        query = "SELECT * FROM admin_last_session WHERE profession <> 'no_sort'"
+        query = "SELECT * FROM admin_last_session"
         with con:
             cur.execute(query)
         response = cur.fetchall()
         return response
 
-    app.run(host='172.16.16.4', port=int(os.environ.get('PORT', 5000)))
+    app.run(host='localhost', port=int(os.environ.get('PORT', 5000)))
 
 
 def run_endpoints():

@@ -38,8 +38,7 @@ from sites.scraping_svyazi import SvyaziGetInformation
 from sites.scrapping_finder import FinderGetInformation
 from sites.scraping_habr import HabrGetInformation
 from sites.scraping_rabota import RabotaGetInformation
-# from endpoints.endpoints import main_endpoints
-
+from filters.filter_jan_2023.filter_jan_2023 import VacancyFilter
 
 logs = Logs()
 import settings.os_getenv as settings
@@ -104,6 +103,7 @@ class InviteBot():
         self.all_participant = []
         self.channel = None
         self.db = DataBaseOperations(con=None)
+        self.admin_check_file = './logs/check_file.txt'
         # self.token = token
         # self.bot_aiogram = Bot(token=token)
         # self.storage = MemoryStorage()
@@ -228,6 +228,9 @@ class InviteBot():
                                                             '/check_title_body\n'
                                                             '/add_statistics\n\n'
                                                             '❗️- it is admin options')
+        @dp.message_handler(commands=['debug'])
+        async def get_logs(message: types.Message):
+            await debug_function()
 
         @dp.message_handler(commands=['logs', 'log'])
         async def get_logs(message: types.Message):
@@ -773,24 +776,10 @@ class InviteBot():
 
             if callback.data[0:5] == 'admin':
 
-                # a='581'
-                # message_attempt = "Дайджест\n\n"
-                # message_attempt += hlink(title="Подробнее", url="https://t.me/agrerator_channel_fake/251")
-                # message_attempt += '\n'
-                # message_attempt += 'Еще немного текста\n'
-                # message_attempt += hlink(title="Подробнее", url=f"{config['My_channels']['agregator_link']}/{a}")
-                # print(message_attempt)
-                # await write_to_logs_error(f'Rigth:\n{message_attempt}')
-                # await bot_aiogram.send_message(callback.message.chat.id, message_attempt, parse_mode='html', disable_web_page_preview=True)
-
-                pass
-
                 try:
                     DataBaseOperations(None).delete_table('admin_temporary')
                 except Exception as e:
                     print(e)
-                    # await bot_aiogram.send_message(callback.message.chat.id, f'The attempt to delete admin_temporary is wrong\n{str(e)}')
-                    # await asyncio.sleep(random.randrange(2, 3))
 
                 # delete messages for channel will be clean to take new messages
                 all_messages = await get_tg_history_messages(callback.message)
@@ -799,7 +788,6 @@ class InviteBot():
 
                 # getting the last message_id
                 last_admin_channel_id = await get_last_admin_channel_id(callback.message)
-
 
                 profession = callback.data.split('/')[1]
                 param = f"WHERE profession LIKE '%{profession}' OR profession LIKE '%{profession},%'"
@@ -833,15 +821,32 @@ class InviteBot():
 
                             try:
                                 await bot_aiogram.send_message(config['My_channels']['admin_channel'], text, parse_mode='html', disable_web_page_preview=True)
+                                last_admin_channel_id += 1
                             except Exception as e:
                                 if 'Flood control exceeded' in str(e):
-                                    print(f'ERROR {e},\n PLEASE AWAIT')
+                                    print(f'ERROR {e},\n PLEASE WAIT')
                                     await asyncio.sleep(60*2)
                                     await bot_aiogram.send_message(config['My_channels']['admin_channel'], text,
                                                                    parse_mode='html', disable_web_page_preview=True)
+                                    last_admin_channel_id += 1
 
-                            last_admin_channel_id += 1
-                            DataBaseOperations(None).push_to_admin_temporary(composed_message_dict)
+
+                            # -------------- it is for user's check -----------------------
+                            with open(self.admin_check_file, 'a', encoding="utf-8") as file:
+                                file.write(f"              NEXT                \n"
+                                           f"-------- in callback admin -------\n"
+                                           f"id admin_channel = {last_admin_channel_id}\n"
+                                           f"id_admin_last_session_table = {vacancy[0]}\n"
+                                           f"it was sending to agregator = {vacancy[19]}\n"
+                                           f"title = {vacancy[2][:50]}\n"
+                                           f"--------------------------------------------\n")
+                            # ----------------------- end ----------------------------------
+
+                            try:
+                                DataBaseOperations(None).push_to_admin_temporary(composed_message_dict)
+                            except:
+                                print('Error in push in db temporary table')
+
                             self.quantity_entered_to_admin_channel += 1
                             await asyncio.sleep(random.randrange(3, 4))
                         except Exception as e:
@@ -919,12 +924,20 @@ class InviteBot():
                                                                         param=f"WHERE id_admin_channel='{vacancy['id']}'",
                                                                         without_sort=True)
                     if response:
-
-
                         id_admin_last_session_table = int(response[0][2])
                         vacancy_from_admin = DataBaseOperations(None).get_all_from_db('admin_last_session',
                                                                                       param=f"WHERE id={id_admin_last_session_table}",
                                                                                       without_sort=True)
+                        # -------------- it is for user's check -----------------------
+                        with open(self.admin_check_file, 'a', encoding="utf-8") as file:
+                            file.write(f"              FINALLY                \n"
+                                       f"-------- in PUSH -------\n"
+                                       f"id admin_channel = {vacancy['id']}\n"
+                                       f"id_admin_last_session_table = {response[0][2]}\n"
+                                       f"it was sending to agregator = {vacancy_from_admin[0][19]}\n"
+                                       f"title = {vacancy_from_admin[0][2][:50]}\n"
+                                       f"--------------------------------------------\n")
+                        # ----------------------- end ----------------------------------
                         prof_stack = vacancy_from_admin[0][4]
                         # if vacancy has sent in agregator already, it doesn't push again. And remove profess from profs or drop vacancy if there is profession alone
                         await push_vacancies_to_agregator_from_admin(
@@ -937,8 +950,6 @@ class InviteBot():
                             links_on_prof_channels=True,
                             id_admin_last_session_table=id_admin_last_session_table
                         )
-
-                        pass
 
                         if "full" in callback.data:
                         # ---------- the unique operation block for fulls = pushing to prof channel full message ----------
@@ -964,27 +975,7 @@ class InviteBot():
                                 profession=profession
                             )
                             prof_list = vacancy_from_admin[0][4].split(',')
-
                             profession_list['profession'] = [profession,]
-
-                            # results_dict['chat_name'] = vacancy_from_admin[0][1]
-                            # results_dict['title'] = vacancy_from_admin[0][2]
-                            # results_dict['body'] = vacancy_from_admin[0][3]
-                            # results_dict['profession'] = vacancy_from_admin[0][4]
-                            # results_dict['vacancy'] = vacancy_from_admin[0][5]
-                            # results_dict['vacancy_url'] = vacancy_from_admin[0][6]
-                            # results_dict['company'] = vacancy_from_admin[0][7]
-                            # results_dict['english'] = vacancy_from_admin[0][8]
-                            # results_dict['relocation'] = vacancy_from_admin[0][9]
-                            # results_dict['job_type'] = vacancy_from_admin[0][10]
-                            # results_dict['city'] = vacancy_from_admin[0][11]
-                            # results_dict['salary'] = vacancy_from_admin[0][12]
-                            # results_dict['experience'] = vacancy_from_admin[0][13]
-                            # results_dict['contacts'] = vacancy_from_admin[0][14]
-                            # results_dict['time_of_public'] = vacancy_from_admin[0][15]
-                            # results_dict['created_at'] = vacancy_from_admin[0][16]
-                            # results_dict['agregator_link'] = vacancy_from_admin[0][17]
-                            # results_dict['session'] = vacancy_from_admin[0][18]
 
                             await update_vacancy_admin_last_session(
                                 results_dict=None,
@@ -994,11 +985,9 @@ class InviteBot():
                                 update_profession=True,
                                 update_id_agregator=False
                             )
-                        # response_dict = DataBaseOperations(None).push_to_bd(results_dict, profession_list, self.last_id_message_agregator)
                         await delete_used_vacancy_from_admin_temporary(vacancy, id_admin_last_session_table)
                     else:
                         await bot_aiogram.send_message(callback.message.chat.id, 'There is not response')
-
                     n += 1
                     await show_progress(callback.message, n, length)
 
@@ -2995,6 +2984,17 @@ class InviteBot():
                 if response:
                     matches_list[i] = len(response)
             return matches_list
+
+        async def debug_function():
+            response = DataBaseOperations(None).get_all_from_db(
+                table_name='admin_last_session',
+                param="Where profession LIKE '%frontend%'"
+            )
+            response = response[0]
+            VacancyFilter().sort_profession(
+                response[2],
+                response[3]
+            )
 
         start_polling(dp)
 

@@ -3,3 +3,4 @@ pg_dump -h localhost -U postgres -F c -f /root/itcoty_bot/server_bot/db_backup/b
 
 restore:
 pg_restore -h localhost -U postgres -F c -d postgres ./db_backup/itcoty5.backup
+

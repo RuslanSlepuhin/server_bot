@@ -1,4 +1,6 @@
 import re
+import time
+
 import psycopg2
 from filters.scraping_get_profession_Alex_next_2809 import AlexSort2809
 from db_operations.scraping_db import DataBaseOperations
@@ -34,19 +36,21 @@ con_fake = psycopg2.connect(
 )
 cur_fake = con2.cursor()
 #--------------------------------
-database_from = 'd2tmbiujurbrcr'
-user_from = 'ljgsrnphxwbfsg'
-password_from = '7546fe6db78dc036f71813646989a02f0a37d8afbe4ca1ab5cc6fa38f9125f57'
-host_from = 'ec2-54-220-255-121.eu-west-1.compute.amazonaws.com'
-port_from = '5432'
-con_from = psycopg2.connect(
-    database=database_from,
-    user=user_from,
-    password=password_from,
-    host=host_from,
-    port=port_from
-)
-cur_from = con_from.cursor()
+# database_from = 'd2tmbiujurbrcr'
+# user_from = 'ljgsrnphxwbfsg'
+# password_from = '7546fe6db78dc036f71813646989a02f0a37d8afbe4ca1ab5cc6fa38f9125f57'
+# host_from = 'ec2-54-220-255-121.eu-west-1.compute.amazonaws.com'
+# port_from = '5432'
+# con_from = psycopg2.connect(
+#     database=database_from,
+#     user=user_from,
+#     password=password_from,
+#     host=host_from,
+#     port=port_from
+# )
+# cur_from = con_from.cursor()
+con_from = None
+cur_from = None
 
 valid_profession_list = ['marketing', 'ba', 'game', 'product', 'mobile',
                                   'pm', 'sales_manager', 'analyst', 'frontend',
@@ -587,93 +591,191 @@ def create_current_session():
 # )
 
 # delete_tables(['users'])
-from filters.scraping_get_profession_Alex_next_2809 import AlexSort2809
-filter = AlexSort2809()
-db = DataBaseOperations(None)
-title_list = []
-body_list = []
-old_prof_list = []
-new_prof_list = []
-tag_list = []
-anti_tag = []
 
-with open('pr.txt', 'w') as file:
-    file.write('')
+def refresh():
+    from filters.scraping_get_profession_Alex_next_2809 import AlexSort2809
+    filter = AlexSort2809()
+    db = DataBaseOperations(None)
+    title_list = []
+    body_list = []
+    old_prof_list = []
+    new_prof_list = []
+    tag_list = []
+    anti_tag = []
 
-response = DataBaseOperations(None).get_all_from_db(
-    table_name='admin_last_session',
-    param="""WHERE chat_name LIKE '%https://hh.ru%'"""
-)
-for i in response:
-    print(i[2])
-    # print(i[3])
-    print(f'old prof [{i[4]}]')
-    title = i[2]
-    body = i[3]
+    with open('pr.txt', 'w') as file:
+        file.write('')
+
+    response = DataBaseOperations(None).get_all_from_db(
+        table_name='admin_last_session',
+        param="""WHERE chat_name LIKE '%https://hh.ru%'"""
+    )
+    for i in response:
+        print(i[2])
+        # print(i[3])
+        print(f'old prof [{i[4]}]')
+        title = i[2]
+        body = i[3]
 
 
 
-    # profession1 = filter.sort_by_profession_by_Alex(title, "", only_profession=True)
-    # profession2 = filter.sort_by_profession_by_Alex(title, body, only_profession=True)
-    profession1 = filter.sort_by_profession_by_Alex(title, "", check_contacts=False, check_vacancy=False)
-    profession2 = filter.sort_by_profession_by_Alex(title, body, check_contacts=False, check_vacancy=False)
+        # profession1 = filter.sort_by_profession_by_Alex(title, "", only_profession=True)
+        # profession2 = filter.sort_by_profession_by_Alex(title, body, only_profession=True)
+        profession1 = filter.sort_by_profession_by_Alex(title, "", check_contacts=False, check_vacancy=False)
+        profession2 = filter.sort_by_profession_by_Alex(title, body, check_contacts=False, check_vacancy=False)
 
-    print('new1', profession1['profession']['profession'])
-    print(f"{profession1['profession']['tag']}")
-    print(f"{profession1['profession']['anti_tag']}\n")
-    print('new2', profession2['profession']['profession'])
-    print(f"{profession2['profession']['tag']}")
-    print(f"{profession2['profession']['anti_tag']}")
-    print('--------------------------')
-    try:
-        with open('pr.txt', 'a+') as file:
-            file.write(
-                f"{i[2]}\nold prof [{i[4]}]\n"
-                f"___\n"
-                f"new prof1 (title only): {profession1['profession']['profession']}\n"
-                f"{profession1['profession']['tag']}\n"
-                f"{profession1['profession']['anti_tag']}\n"
-                f"___\n"
-                f"new prof2 (title+body): {profession2['profession']['profession']}\n"
-                f"{profession2['profession']['tag']}\n"
-                f"{profession2['profession']['anti_tag']}\n"
-                f"__________________________________\n\n"
+        print('new1', profession1['profession']['profession'])
+        print(f"{profession1['profession']['tag']}")
+        print(f"{profession1['profession']['anti_tag']}\n")
+        print('new2', profession2['profession']['profession'])
+        print(f"{profession2['profession']['tag']}")
+        print(f"{profession2['profession']['anti_tag']}")
+        print('--------------------------')
+        try:
+            with open('pr.txt', 'a+') as file:
+                file.write(
+                    f"{i[2]}\nold prof [{i[4]}]\n"
+                    f"___\n"
+                    f"new prof1 (title only): {profession1['profession']['profession']}\n"
+                    f"{profession1['profession']['tag']}\n"
+                    f"{profession1['profession']['anti_tag']}\n"
+                    f"___\n"
+                    f"new prof2 (title+body): {profession2['profession']['profession']}\n"
+                    f"{profession2['profession']['tag']}\n"
+                    f"{profession2['profession']['anti_tag']}\n"
+                    f"__________________________________\n\n"
 
-            )
-    except:
+                )
+        except:
+            pass
+
+        profession_str = ''
+        for prof in profession2['profession']['profession']:
+            profession_str += f"{prof}, "
+
+        title_list.append(i[2])
+        body_list.append(i[3])
+        old_prof_list.append(i[4])
+        new_prof_list.append(profession_str)
+        tag_list.append(profession2['profession']['tag'])
+        anti_tag.append(profession2['profession']['anti_tag'])
+
+        profession_str = profession_str[:-2]
+        print(profession_str, '\n________________\n\n')
         pass
 
-    profession_str = ''
-    for prof in profession2['profession']['profession']:
-        profession_str += f"{prof}, "
+        # db.run_free_request(
+        #     request=f"""UPDATE admin_last_session SET profession='{profession_str}' WHERE id={i[0]}""",
+        #     output_text='updated\n___________\n\n'
+        # )
+        pass
 
-    title_list.append(i[2])
-    body_list.append(i[3])
-    old_prof_list.append(i[4])
-    new_prof_list.append(profession_str)
-    tag_list.append(profession2['profession']['tag'])
-    anti_tag.append(profession2['profession']['anti_tag'])
+    df = pd.DataFrame(
+        {
+            'title': title_list,
+            'body': body_list,
+            'old_prof': old_prof_list,
+            'new_prof': new_prof_list,
+            'tag': tag_list,
+            'anti_tag': anti_tag
+        }
+    )
 
-    profession_str = profession_str[:-2]
-    print(profession_str, '\n________________\n\n')
-    pass
+    df.to_excel(f'./../excel/professions_rewrite.xlsx', sheet_name='Sheet1')
+    print('got it')
 
-    # db.run_free_request(
-    #     request=f"""UPDATE admin_last_session SET profession='{profession_str}' WHERE id={i[0]}""",
-    #     output_text='updated\n___________\n\n'
-    # )
-    pass
+def check_double_and_delete():
+    db = DataBaseOperations(None)
+    admin_response = db.get_all_from_db(
+        table_name='admin_last_session',
+        param="""WHERE profession<>'no_sort'"""
+    )
+    print(f"it got admin\n________________")
+    counter = 0
+    for prof in valid_profession_list:
+        # message_for_send = f"\n__________________\nit got {prof}\n__________________\n"
+        prof_response = db.get_all_from_db(
+            table_name=f"{prof}",
+            param="""WHERE DATE(created_at)>'2022-11-01'"""
+        )
+        print(f"\n__________________\nit got {prof}\n__________________")
+        for i in prof_response:
+            for j in admin_response:
+                # time.sleep(0.00005)
+                # print(i[0], prof, j[0], 'admin')
+                if str(i[2]) == str(j[2]):
+                    # print('.')
+                    if str(i[3]) == str(j[3]):
+                        admin_profs = set(j[4].split(', '))
+                        prof_profs = set(i[4].split(', '))
+                        match_profs = admin_profs.intersection(prof_profs)
+                        if match_profs:
+                            # print(f"{i[2]} == {j[2]}, {i[3]} == {j[3]}")
 
-df = pd.DataFrame(
-    {
-        'title': title_list,
-        'body': body_list,
-        'old_prof': old_prof_list,
-        'new_prof': new_prof_list,
-        'tag': tag_list,
-        'anti_tag': anti_tag
-    }
-)
+                            print(f"MATCH!! admin id {j[0]} -> prof id {i[0]}")
+                            print(f"You need delete '{prof}' in admin last session id {j[0]}")
 
-df.to_excel(f'./../excel/professions_rewrite.xlsx', sheet_name='Sheet1')
-print('got it')
+                            if len(admin_profs) > 1:
+                                new_profession = ''
+                                admin_profs.remove(prof)
+                                for i in admin_profs:
+                                    new_profession += f"{i}, "
+                                new_profession = new_profession[:-2]
+
+                                db.run_free_request(
+                                    request=f"""UPDATE admin_last_session SET profession='{new_profession}' WHERE id={j[0]}"""
+                                )
+                            else:
+                                pass
+                                # print(f"\n\nтот самый слуяай\n\n")
+                                db.run_free_request(
+                                    request=f"""DELETE FROM admin_last_session WHERE id={j[0]}"""
+                                )
+                                print('DELETED')
+                            counter += 1
+
+    print(f"There are {counter} matches")
+
+                    # if len(f"{message_for_send}MATCH!! admin id {j[0]} -> prof id {i[0]}\n") >4096:
+                    #     mfs.append(message_for_send)
+                    #     message_for_send = f"MATCH!! admin id {j[0]} -> prof id {i[0]}\n"
+                    # else:
+                    #     message_for_send += f"MATCH!! admin id {j[0]} -> prof id {i[0]}\n"
+            # mfs.append(message_for_send)
+            # for i in mfs:
+            #     print(i)
+            # mfs = []
+            # message_for_send = ''
+#
+# while True:
+#     try:
+#         check_double_and_delete()
+#     except:
+#         pass
+# DataBaseOperations(None).run_free_request(
+#     request="""UPDATE admin_last_session SET profession='ba, sales_manager' WHERE id=10429"""
+# )
+
+def check_in_db(title, body):
+    f = valid_profession_list
+    f.append('admin_last_session')
+    matches_list = {}
+    for i in valid_profession_list:
+        print(f'searching in {i}')
+        response = DataBaseOperations(None).get_all_from_db(
+            table_name=i,
+            param=f"""WHERE title LIKE '%{title}%' AND body LIKE '%{body}%'"""
+        )
+        if response:
+            matches_list[i] = len(response)
+            for j in response:
+                print(j)
+    return matches_list
+
+# title = "Бизнес-аналитик"
+# body = "В Inspector Cloud мы создаем сервисы по распознавани"
+# match_list = check_in_db(title, body)
+# for i in match_list:
+#     print(i, match_list[i])
+# # print(len(response))
+#

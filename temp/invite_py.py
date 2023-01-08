@@ -51,7 +51,7 @@ class Invite:
                     print(
                         "[!] Getting Flood Error from telegram. \n[!] Script is stopping now. \n[!] Please try again after some time.")
                 except UserPrivacyRestrictedError:
-                    print("[!] The user's privacy settings do not allow you to do this. Skipping.")
+                    print("[!] The user's privacy settings_ do not allow you to do this. Skipping.")
                 except:
                     traceback.print_exc()
                     print("[!] Unexpected Error")
