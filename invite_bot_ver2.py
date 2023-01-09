@@ -63,8 +63,8 @@ con = None
 
 print(f'Bot started at {datetime.now()}')
 
-client = TelegramClient(username, int(api_id), api_hash)
-client.start()
+# client = TelegramClient(username, int(api_id), api_hash)
+# client.start()
 logs.write_log(f'\n------------------ restart --------------------')
 
 class InviteBot():
@@ -1246,7 +1246,7 @@ class InviteBot():
         #
         # ---------------------- parsing the sites. List of them will grow ------------------------
                     await bot_aiogram.send_message(message.chat.id, 'Bot is parsing the sites...')
-                    psites = ParseSites(client=client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id})
+                    psites = ParseSites(client=self.client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id})
                     await psites.call_sites()
                     await bot_aiogram.send_message(message.chat.id, '...it has been successfully. Press <b>Digest</b> for the next step', parse_mode='html')
 
