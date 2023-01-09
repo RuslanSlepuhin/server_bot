@@ -1165,6 +1165,6 @@ class DataBaseOperations:
                     time.sleep(2)
                 else:
                     pass
-            for i in doubles_dict:
-                print(i, doubles_dict[i])
+        for i in doubles_dict:
+            print('results', i, doubles_dict[i])
 
