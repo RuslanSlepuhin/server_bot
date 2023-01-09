@@ -234,7 +234,7 @@ class InviteBot():
                                                             '/check_link_hh\n'
                                                             '/check_title_body\n'
                                                             '/add_statistics\n\n'
-                                                            'check_doubles\n\n'
+                                                            '/check_doubles_\n\n'
                                                             '❗️- it is admin options')
         @self.dp.message_handler(commands=['logs', 'log'])
         async def get_logs(message: types.Message):
@@ -263,7 +263,7 @@ class InviteBot():
                 caption='Take the backup from server'
             )
 
-        @self.dp.message_handler(commands=['check_doubles'])
+        @self.dp.message_handler(commands=['check_doubles_'])
         async def get_doubles(message: types.Message):
             self.db.check_doubles()
 
