@@ -1244,16 +1244,16 @@ class InviteBot():
         #                 parse_mode='HTML')
         #             await asyncio.sleep(2)
         #
-        # # ---------------------- parsing the sites. List of them will grow ------------------------
-        #             await bot_aiogram.send_message(message.chat.id, 'Bot is parsing the sites...')
-        #             psites = ParseSites(client=self.client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id})
-        #             await psites.call_sites()
-        #             await bot_aiogram.send_message(message.chat.id, '...it has been successfully. Press <b>Digest</b> for the next step', parse_mode='html')
-
+        # ---------------------- parsing the sites. List of them will grow ------------------------
+                    await bot_aiogram.send_message(message.chat.id, 'Bot is parsing the sites...')
                     psites = ParseSites(client=self.client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id})
-                    task1 = asyncio.create_task(main(self.client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id}))
-                    task2 = asyncio.create_task(psites.call_sites())
-                    await asyncio.gather(task1, task2)
+                    await psites.call_sites()
+                    await bot_aiogram.send_message(message.chat.id, '...it has been successfully. Press <b>Digest</b> for the next step', parse_mode='html')
+
+                    # psites = ParseSites(client=self.client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id})
+                    # task1 = asyncio.create_task(main(self.client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id}))
+                    # task2 = asyncio.create_task(psites.call_sites())
+                    # await asyncio.gather(task1, task2)
 
 
                 #----------------------- Listening channels at last --------------------------------------
