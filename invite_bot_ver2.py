@@ -3005,5 +3005,5 @@ class InviteBot():
 def run():
     InviteBot().main_invitebot()
 
-if __name__ == '__main__':
-   run()
+# if __name__ == '__main__':
+#    run()
