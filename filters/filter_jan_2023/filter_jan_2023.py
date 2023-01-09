@@ -19,9 +19,7 @@ class VacancyFilter:
 
         self.keys_result_dict = ['fullstack', 'frontend', 'qa', 'ba', 'backend', 'pm', 'mobile', 'game', 'designer',
                                  'hr', 'analyst', 'product', 'devops', 'marketing', 'sales_manager']
-        self.valid_profession_list = ['marketing', 'ba', 'game', 'product', 'mobile',
-                                      'pm', 'sales_manager', 'analyst', 'frontend',
-                                      'designer', 'devops', 'hr', 'backend', 'frontend', 'qa', 'junior']
+        self.valid_profession_list = variables.valid_professions
         self.export_pattern = q
         self.not_lower_professions = variables.not_lower_professions
         self.excel_dict = {}
