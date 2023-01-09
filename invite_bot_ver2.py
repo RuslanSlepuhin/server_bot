@@ -234,6 +234,7 @@ class InviteBot():
                                                             '/check_link_hh\n'
                                                             '/check_title_body\n'
                                                             '/add_statistics\n\n'
+                                                            'check_doubles\n\n'
                                                             '❗️- it is admin options')
         @self.dp.message_handler(commands=['logs', 'log'])
         async def get_logs(message: types.Message):
@@ -261,6 +262,10 @@ class InviteBot():
                 path='./db_backup/backup_from_server.backup',
                 caption='Take the backup from server'
             )
+
+        @self.dp.message_handler(commands=['check_doubles'])
+        async def get_doubles(message: types.Message):
+            self.db.check_doubles()
 
         @self.dp.message_handler(commands=['refresh'])
         async def refresh_vacancies(message: types.Message):
@@ -3037,6 +3042,8 @@ class InviteBot():
                     for i in sub_list:
                         print(i, sub_list[i])
                 pass
+
+
 
         start_polling(self.dp)
         # executor.start_polling(dp, skip_updates=True)

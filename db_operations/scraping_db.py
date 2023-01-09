@@ -1,6 +1,8 @@
 import configparser
 import json
 import re
+import time
+
 import pandas as pd
 import psycopg2
 from datetime import datetime
@@ -641,9 +643,8 @@ class DataBaseOperations:
             #     ADD COLUMN IF NOT EXISTS contacts VARCHAR (500),
             #     ADD COLUMN IF NOT EXISTS agregator_link VARCHAR(200);
             # """
-            query = f"""ALTER TABLE {table} 
-                ADD COLUMN IF NOT EXISTS {column};
-            """
+            query = f"""ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {column};"""
+
             with self.con:
                 cur.execute(query)
                 print(f'Added columns to table {table}')
@@ -803,11 +804,12 @@ class DataBaseOperations:
             data_list=profession['profession'],
             separator=', '
         )
-        tables_list_for_vacancy_searching = profession['profession']
-        from utils.additional_variables.additional_variables import additional_elements
-        tables_list_for_vacancy_searching = tables_list_for_vacancy_searching.union(additional_elements)
 
         if check_or_exists:
+            tables_list_for_vacancy_searching = profession['profession']
+            from utils.additional_variables.additional_variables import additional_elements
+            tables_list_for_vacancy_searching = tables_list_for_vacancy_searching.union(additional_elements)
+
             if self.check_vacancy_exists_in_db(
                     tables_list=tables_list_for_vacancy_searching,
                     title=results_dict['title'],
@@ -1138,3 +1140,32 @@ class DataBaseOperations:
 
         self.delete_table('admin_temporary')
         pass
+
+    def check_doubles(self):
+        doubles_dict = {}
+        response = self.get_all_from_db(
+            table_name='admin_last_session',
+            field='id, title, body, profession'
+        )
+        for vacancy1 in response:
+            id = vacancy1[0]
+            title = vacancy1[1]
+            body = vacancy1[2]
+            profession = vacancy1[3]
+            index_from = response.index(vacancy1)
+            print('index_from: ', index_from)
+            # time.sleep(0.3)
+
+            for next_vacancy in range(index_from + 1, len(response)):
+                print('next_vacancy: ', next_vacancy)
+                vacancy2 = response[next_vacancy]
+                if title == vacancy2[1] and body == vacancy2[2]:
+                    doubles_dict[id] = vacancy2[0]
+                    # print(id, vacancy2[0])
+                    time.sleep(3)
+                    # with open('./')
+                else:
+                    pass
+            for i in doubles_dict:
+                print(i, doubles_dict[i])
+
