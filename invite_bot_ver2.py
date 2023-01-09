@@ -2483,7 +2483,8 @@ class InviteBot():
                     #     profession_list['profession'] = {'no_sort',}
                     #     DataBaseOperations(None).push_to_bd(results_dict=results_dict, profession_list=profession_list)
                     # else:
-                    DataBaseOperations(None).delete_data(
+                    await transfer_vacancy_admin_archive(id_admin_last_session_table)
+                    self.db.delete_data(
                         table_name='admin_last_session',
                         param=f"WHERE id={id_admin_last_session_table}"
                     )
@@ -2524,6 +2525,32 @@ class InviteBot():
                 print('changed id agreg = ', response_check[0][19])
 
             # await asyncio.sleep(1)
+
+        async def transfer_vacancy_admin_archive(id_admin_last_session_table):
+            response = self.db.get_all_from_db(
+                table_name=f'{variable.admin_database}',
+                param=f"WHERE id={id_admin_last_session_table}",
+                field='chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, '
+                      'job_type, city, salary, experience, contacts, time_of_public, created_at, agregator_link, '
+                      'session, sended_to_agregator, sub'
+            )
+            if response:
+                response = response[0]
+                query = f"""INSERT INTO {variable.archive_database} (
+                        chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, 
+                        job_type, city, salary, experience, contacts, time_of_public, created_at, agregator_link, 
+                        session, sended_to_agregator, sub) 
+                                VALUES ('{response[0]}', '{response[1]}', '{response[2]}', 
+                                '{response[3]}', '{response[4]}', '{response[5]}', '{response[6]}', 
+                                '{response[7]}', '{response[8]}', '{response[9]}', 
+                                '{response[10]}', '{response[11]}', '{response[12]}', 
+                                '{response[13]}', '{response[14]}', '{response[15]}', 
+                                '{response[16]}', '{response[17]}', '{response[18]}', 
+                                '{response[19]}');"""
+                self.db.run_free_request(
+                    request=query,
+                    output_text="\nVacancy has remove from admin to archive\n"
+                )
 
         async def compose_data_and_push_to_db(vacancy_from_admin, profession):
             date = datetime.now()
@@ -2882,6 +2909,7 @@ class InviteBot():
             n=0
             length = len(response)
             msg = await self.bot_aiogram.send_message(message.chat.id, 'progress 0%')
+            response = response[100:120] #!!!!!!!!!!!!!!!!!!!!!!!!!!
             for one_vacancy in response:
                 id = one_vacancy[0]
                 title = one_vacancy[1]
@@ -3047,5 +3075,5 @@ class InviteBot():
 def run(token_in=None):
     InviteBot(token_in).main_invitebot()
 
-# if __name__ == '__main__':
-#    run()
+if __name__ == '__main__':
+   run()
