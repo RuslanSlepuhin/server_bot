@@ -1145,7 +1145,8 @@ class DataBaseOperations:
         doubles_dict = {}
         response = self.get_all_from_db(
             table_name='admin_last_session',
-            field='id, title, body, profession'
+            field='id, title, body, profession',
+            param="WHERE profession <> 'no_sort'"
         )
         for vacancy1 in response:
             id = vacancy1[0]
@@ -1169,4 +1170,23 @@ class DataBaseOperations:
             print('results', i, doubles_dict[i])
             print('-------------------------------')
         print('total: ', len(doubles_dict))
+        time.sleep(5)
 
+        for id in doubles_dict:
+            response1 = self.get_all_from_db(
+                table_name='admin_last_session',
+                param=f"WHERE id={int(id)}",
+                field='title, body'
+            )
+            response2 = self.get_all_from_db(
+                table_name='admin_last_session',
+                param=f"WHERE id={doubles_dict[int(id)]}",
+                field='title, body'
+            )
+            if response1[0] == response2[0] and response1[1] == response2[1]:
+                print('it must be deleted')
+
+                # self.delete_data(
+                #     table_name='admin_last_session',
+                #     param=f"WHERE id={id}"
+                # )
