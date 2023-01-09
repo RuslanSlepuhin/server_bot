@@ -9,6 +9,7 @@ from sites.scraping_rabota import RabotaGetInformation
 from sites.scraping_superjob import SuperJobGetInformation
 from sites.scraping_svyazi import SvyaziGetInformation
 from sites.scrapping_finder import FinderGetInformation
+from multiprocessing import Process, Lock
 
 logs = Logs()
 
