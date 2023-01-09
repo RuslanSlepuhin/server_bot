@@ -1195,3 +1195,45 @@ class DataBaseOperations:
                     param=f"WHERE id={id}"
                 )
                 n += 1
+
+    def check_double_in_professions(self):
+        response = self.get_all_from_db(
+            table_name='admin_last_session',
+            field='id, title, body, profession',
+            param="WHERE profession <> 'no_sort'"
+        )
+
+        doubles_list = []
+        logic_box = []
+
+        for vacancy in response:
+            logic_box = []
+            id = vacancy[0]
+            title = vacancy[1]
+            body = vacancy[2]
+            profession = vacancy[3].split(', ')
+
+            for table in profession:
+                response_from_table = self.get_all_from_db(
+                    table_name=table,
+                    param=f"WHERE title='{title}' and body='{body}'"
+                )
+                if response_from_table:
+                    logic_box.append(1)
+                    print(f'it exists in {table}')
+                else:
+                    logic_box.append(0)
+            if sum(logic_box) > 0:
+                doubles_list.append(id)
+
+        print('quantity messages: ', len(response))
+        print('total doubles: ', len(doubles_list))
+        time.sleep(5)
+        n = 1
+        for id in doubles_list:
+            print(f'{n}: It must be deleted - {id}')
+            # self.delete_data(
+            #     table_name='admin_last_session',
+            #     param=f"WHERE id={id}"
+            # )
+            n += 1
