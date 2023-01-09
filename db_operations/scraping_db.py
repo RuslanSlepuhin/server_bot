@@ -1183,6 +1183,8 @@ class DataBaseOperations:
                 param=f"WHERE id={doubles_dict[int(id)]}",
                 field='title, body'
             )
+            response1 = response1[0]
+            response2 = response2[0]
             if response1[0] == response2[0] and response1[1] == response2[1]:
                 print('it must be deleted')
 
