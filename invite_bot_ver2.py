@@ -2986,7 +2986,7 @@ class InviteBot():
             #                 message.chat.id,
             #                 'Bot is parsing the telegram channels...',
             #                 parse_mode='HTML')
-            await main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})  # run parser tg channels and write to profession's tables
+            # await main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})  # run parser tg channels and write to profession's tables
                         # await bot_aiogram.send_message(
             #                 message.chat.id,
             #                 '...it has been successfully',
@@ -2999,10 +2999,10 @@ class InviteBot():
             #             await psites.call_sites()
             #             await bot_aiogram.send_message(message.chat.id, '...it has been successfully. Press <b>Digest</b> for the next step', parse_mode='html')
 
-            # psites = ParseSites(client=self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})
-            # task1 = asyncio.create_task(main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}))
-            # task2 = asyncio.create_task(psites.call_sites())
-            # await asyncio.gather(task1, task2)
+            psites = ParseSites(client=self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})
+            task1 = asyncio.create_task(main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}))
+            task2 = asyncio.create_task(psites.call_sites())
+            await asyncio.gather(task1, task2)
 
         async def debug_function():
             response = DataBaseOperations(None).get_all_from_db(
