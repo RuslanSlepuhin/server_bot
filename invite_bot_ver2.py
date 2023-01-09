@@ -229,12 +229,12 @@ class InviteBot():
                                                             '/download - ❗️you get excel from admin vacancies with search tags\n'
                                                             '/ambulance - if bot gets accident in hard pushing and you think you loose the shorts\n'
                                                             '/refresh - to get the professions in excel format in all vacancies throgh the new filters logic\n'
-                                                            '/refresh_and_save_changes - the same and save changes'
+                                                            '/refresh_and_save_changes - the same and save changes\n'
                                                             '/get_backup_db\n'
                                                             '/check_link_hh\n'
                                                             '/check_title_body\n'
                                                             '/add_statistics\n\n'
-                                                            '/check_doubles_\n\n'
+                                                            'check_doubles - remove the vacancy"s doubles\n\n'
                                                             '❗️- it is admin options')
         @self.dp.message_handler(commands=['logs', 'log'])
         async def get_logs(message: types.Message):
@@ -263,7 +263,7 @@ class InviteBot():
                 caption='Take the backup from server'
             )
 
-        @self.dp.message_handler(commands=['check_doubles_'])
+        @self.dp.message_handler(commands=['check_doubles'])
         async def get_doubles(message: types.Message):
             self.db.check_doubles()
             self.db.check_double_in_professions()
