@@ -2882,7 +2882,6 @@ class InviteBot():
             n=0
             length = len(response)
             msg = await self.bot_aiogram.send_message(message.chat.id, 'progress 0%')
-            response = response[100:120] #!!!!!!!!!!!!!!!!!!!!!!!!!!
             for one_vacancy in response:
                 id = one_vacancy[0]
                 title = one_vacancy[1]
