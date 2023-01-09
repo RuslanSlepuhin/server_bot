@@ -2858,9 +2858,6 @@ class InviteBot():
             print(f"{datetime.now().strftime('%H:%M:%S')}:\n{text}")
 
         async def refresh(message):
-            from filters.scraping_get_profession_Alex_next_2809 import AlexSort2809
-            filter = AlexSort2809()
-            db = DataBaseOperations(None)
             profession = {}
             title_list = []
             body_list = []
@@ -2868,69 +2865,77 @@ class InviteBot():
             new_prof_list = []
             tag_list = []
             anti_tag = []
+            sub = []
 
             await self.bot_aiogram.send_message(message.chat.id, 'It will rewrite the professions in all vacancies through the new filter logic\nPlease wait few seconds for start')
 
-            with open('pr.txt', 'w') as file:
-                file.write('')
+            # with open('pr.txt', 'w') as file:
+            #     file.write('')
 
-            response = DataBaseOperations(None).get_all_from_db(
+            response = self.db.get_all_from_db(
                 table_name='admin_last_session',
-                param="""WHERE profession<>'no_sort'"""
+                param="""WHERE profession<>'no_sort'""",
+                field='id, title, body, vacancy, profession, chat_name'
             )
             await self.bot_aiogram.send_message(message.chat.id, f"{len(response)} vacancies founded")
             show = ShowProgress(bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})
             n=0
             length = len(response)
             msg = await self.bot_aiogram.send_message(message.chat.id, 'progress 0%')
-            for i in response:
-                print(i[2])
-                print(f'old prof [{i[4]}]')
-                title = i[2]
-                body = i[3]
+            response = response[100:120] #!!!!!!!!!!!!!!!!!!!!!!!!!!
+            for one_vacancy in response:
+                id = one_vacancy[0]
+                title = one_vacancy[1]
+                body = one_vacancy[2]
+                vacancy = one_vacancy[3]
+                old_profession = one_vacancy[4]
+                chat_name = one_vacancy[5]
 
-                if 'https://t.me' in i[1]:
-                    profession = filter.sort_by_profession_by_Alex(title, body, get_params=False)
+
+
+                if 'https://t.me' in chat_name:
+                    profession = VacancyFilter().sort_profession(
+                        title, body,
+                        get_params=False
+                    )
                 else:
-                    profession = filter.sort_by_profession_by_Alex(title, body, check_contacts=False, check_vacancy=False, get_params=False)
+                    profession = VacancyFilter().sort_profession(
+                        title, body,
+                        check_contacts=False,
+                        check_vacancy=False,
+                        get_params=False
+                    )
 
                 print('new2', profession['profession']['profession'])
                 print(f"{profession['profession']['tag']}")
                 print(f"{profession['profession']['anti_tag']}")
                 print('--------------------------')
-                try:
-                    with open('pr.txt', 'a+') as file:
-                        file.write(
-                            f"{i[2]}\nold prof [{i[4]}]\n"
-                            f"___\n"
-                            f"new prof2 (title+body): {profession['profession']['profession']}\n"
-                            f"{profession['profession']['tag']}\n"
-                            f"{profession['profession']['anti_tag']}\n"
-                            f"__________________________________\n"
-
-                        )
-                except:
-                    pass
 
                 profession_str = ''
                 for prof in profession['profession']['profession']:
                     profession_str += f"{prof}, "
+                profession_str = profession_str[:-2]
 
-                title_list.append(i[2])
-                body_list.append(i[3])
-                old_prof_list.append(i[4])
+                print('title = ', title)
+                print(f'old prof [{old_profession}]')
+                print(f'new prof [{profession_str}]')
+                print(f"subs {profession['profession']['sub']}")
+
+                title_list.append(title)
+                body_list.append(body)
+                old_prof_list.append(old_profession)
                 new_prof_list.append(profession_str)
+                sub.append(profession['profession']['sub'])
                 tag_list.append(profession['profession']['tag'])
                 anti_tag.append(profession['profession']['anti_tag'])
 
-                profession_str = profession_str[:-2]
-                print(profession_str, '\n________________\n')
+                print('\n________________\n')
                 pass
 
-                db.run_free_request(
-                    request=f"""UPDATE admin_last_session SET profession='{profession_str}' WHERE id={i[0]}""",
-                    output_text='updated\n___________\n\n'
-                )
+                # self.db.run_free_request(
+                #     request=f"""UPDATE admin_last_session SET profession='{profession_str}' WHERE id={id}""",
+                #     output_text='updated\n___________\n\n'
+                # )
                 n += 1
                 await show.show_the_progress(msg, n, length)
 
@@ -2940,11 +2945,12 @@ class InviteBot():
                     'body': body_list,
                     'old_prof': old_prof_list,
                     'new_prof': new_prof_list,
+                    'sub': sub,
                     'tag': tag_list,
                     'anti_tag': anti_tag
                 }
             )
-            path = './excel/professions_rewrite.xls'
+            path = './excel/professions_rewrite.xlsx'
 
             try:
                 df.to_excel(path, sheet_name='Sheet1')
@@ -2982,22 +2988,22 @@ class InviteBot():
             await asyncio.sleep(1)
 
             # # -----------------------parsing telegram channels -------------------------------------
-            #             await bot_aiogram.send_message(
-            #                 message.chat.id,
-            #                 'Bot is parsing the telegram channels...',
-            #                 parse_mode='HTML')
+#             await bot_aiogram.send_message(
+#                 message.chat.id,
+#                 'Bot is parsing the telegram channels...',
+#                 parse_mode='HTML')
             # await main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})  # run parser tg channels and write to profession's tables
-                        # await bot_aiogram.send_message(
-            #                 message.chat.id,
-            #                 '...it has been successfully',
-            #                 parse_mode='HTML')
-            #             await asyncio.sleep(2)
+            # await bot_aiogram.send_message(
+#                 message.chat.id,
+#                 '...it has been successfully',
+#                 parse_mode='HTML')
+#             await asyncio.sleep(2)
             #
             # # ---------------------- parsing the sites. List of them will grow ------------------------
-            #             await bot_aiogram.send_message(message.chat.id, 'Bot is parsing the sites...')
-            #             psites = ParseSites(client=self.client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id})
-            #             await psites.call_sites()
-            #             await bot_aiogram.send_message(message.chat.id, '...it has been successfully. Press <b>Digest</b> for the next step', parse_mode='html')
+#             await bot_aiogram.send_message(message.chat.id, 'Bot is parsing the sites...')
+#             psites = ParseSites(client=self.client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id})
+#             await psites.call_sites()
+#             await bot_aiogram.send_message(message.chat.id, '...it has been successfully. Press <b>Digest</b> for the next step', parse_mode='html')
 
             psites = ParseSites(client=self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})
             task1 = asyncio.create_task(main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}))
