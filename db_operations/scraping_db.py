@@ -1167,4 +1167,6 @@ class DataBaseOperations:
                     pass
         for i in doubles_dict:
             print('results', i, doubles_dict[i])
+            print('-------------------------------')
+        print('total: ', len(doubles_dict))
 
