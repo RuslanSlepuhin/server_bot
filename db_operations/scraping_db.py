@@ -7,6 +7,7 @@ from datetime import datetime
 # from filters.scraping_get_profession_Alex_Rus import AlexRusSort
 # from filters.scraping_get_profession_Alex_next_2809 import AlexSort2809
 from logs.logs import Logs
+from helper_functions import helper_functions as helper
 logs = Logs()
 
 # from scraping_send_to_bot import PushToDB
@@ -758,110 +759,101 @@ class DataBaseOperations:
             pass
         pass
 
-    def check_or_create_table_admin(self, cur):
+    def check_or_create_table_admin(self, cur=None, table_name='admin_last_session'):
 
-        logs.write_log(f"scraping_db: function: check_or_create_table_admin")
+        if not cur:
+            cur = self.con.cursor()
 
         with self.con:
+            try:
+                cur.execute(f"""CREATE TABLE IF NOT EXISTS {table_name} (
+                                id SERIAL PRIMARY KEY,
+                                chat_name VARCHAR(150),
+                                title VARCHAR(1000),
+                                body VARCHAR (6000),
+                                profession VARCHAR (30),
+                                vacancy VARCHAR (700),
+                                vacancy_url VARCHAR (150),
+                                company VARCHAR (200),
+                                english VARCHAR (100),
+                                relocation VARCHAR (100),
+                                job_type VARCHAR (700),
+                                city VARCHAR (150),
+                                salary VARCHAR (300),
+                                experience VARCHAR (700),
+                                contacts VARCHAR (500),
+                                time_of_public TIMESTAMP,
+                                created_at TIMESTAMP,
+                                agregator_link VARCHAR(200),
+                                session VARCHAR(15),
+                                sended_to_agregator VARCHAR(30),
+                                sub VARCHAR (250),  
+                                FOREIGN KEY (session) REFERENCES current_session(session)
+                                );"""
+                            )
+                print(f'table {table_name} has created or exists')
+            except Exception as e:
+                print(e)
 
-            cur.execute(f"""CREATE TABLE IF NOT EXISTS admin_last_session (
-                            id SERIAL PRIMARY KEY,
-                            chat_name VARCHAR(150),
-                            title VARCHAR(1000),
-                            body VARCHAR (6000),
-                            profession VARCHAR (30),
-                            vacancy VARCHAR (700),
-                            vacancy_url VARCHAR (150),
-                            company VARCHAR (200),
-                            english VARCHAR (100),
-                            relocation VARCHAR (100),
-                            job_type VARCHAR (700),
-                            city VARCHAR (150),
-                            salary VARCHAR (300),
-                            experience VARCHAR (700),
-                            contacts VARCHAR (500),
-                            time_of_public TIMESTAMP,
-                            created_at TIMESTAMP,
-                            agregator_link VARCHAR(200),
-                            session VARCHAR(15),
-                            sended_to_agregator VARCHAR(30),
-                            FOREIGN KEY (session) REFERENCES current_session(session)
-                            );"""
-                        )
+    def push_to_admin_table(self, results_dict, profession, check_or_exists=False, params=None):
+        results_dict['title'] = self.clear_title_or_body(results_dict['title'])
+        results_dict['body'] = self.clear_title_or_body(results_dict['body'])
+        results_dict['company'] = self.clear_title_or_body(results_dict['company'])
+        results_dict['profession'] = helper.compose_simple_list_to_str(
+            data_list=profession['profession'],
+            separator=', '
+        )
+        tables_list_for_vacancy_searching = profession['profession']
+        from utils.additional_variables.additional_variables import additional_elements
+        tables_list_for_vacancy_searching = tables_list_for_vacancy_searching.union(additional_elements)
 
-            self.con.commit()
+        if check_or_exists:
+            if self.check_vacancy_exists_in_db(
+                    tables_list=tables_list_for_vacancy_searching,
+                    title=results_dict['title'],
+                    body=results_dict['body']):
+                return True
 
-    def push_to_admin_table(self, results_dict, profession, params=None):
-        response_from_db = {}
-        logs.write_log(f"scraping_db: function: push_to_admin_table")
+        results_dict['sub'] = helper.compose_to_str_from_list(data_list=profession['sub'])
+        print('unawaited compose to str = ', results_dict['sub'])
+        if not results_dict['time_of_public']:
+            results_dict['time_of_public'] = datetime.now()
 
         if not self.con:
             self.connect_db()
         cur = self.con.cursor()
         self.check_or_create_table_admin(cur)
-        pro = ''
 
-        results_dict['title'] = self.clear_title_or_body(results_dict['title'])
-        results_dict['body'] = self.clear_title_or_body(results_dict['body'])
-        results_dict['company'] = self.clear_title_or_body(results_dict['company'])
+        new_post = f"""INSERT INTO admin_last_session (
+                            chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, job_type, 
+                            city, salary, experience, contacts, time_of_public, created_at, session, sub) 
+                                        VALUES ('{results_dict['chat_name']}', '{results_dict['title']}', '{results_dict['body']}', 
+                                        '{results_dict['profession']}', '{results_dict['vacancy']}', '{results_dict['vacancy_url']}', '{results_dict['company']}', 
+                                        '{results_dict['english']}', '{results_dict['relocation']}', '{results_dict['job_type']}', 
+                                        '{results_dict['city']}', '{results_dict['salary']}', '{results_dict['experience']}', 
+                                        '{results_dict['contacts']}', '{results_dict['time_of_public']}', '{datetime.now()}', 
+                                        '{results_dict['session']}', '{results_dict['sub']}');"""
+        with self.con:
+            try:
+                cur.execute(new_post)
+                print(f'+++++++++++++ The vacancy has been added to DB admin_last_session\n')
+            except Exception as e:
+                print(f'-------------- Didn"t push in ADMIN LAST SESSION {e}\n')
+                print('time_of_public ', results_dict['time_of_public'])
+                pass
 
-        list_prof = profession['profession']
-        # print('\n\nНюанс в 805 строке scarping db\n\n')
+        return False
 
-        if type(list_prof) is set and 'no_sort' not in list_prof:
-            list_prof.add('no_sort')
-        elif type(list_prof) is list and 'no_sort' not in list_prof:
-            list_prof.append('no_sort')
-
-        for i in list_prof:
-            # pro += f'{i}, '
-
-            # m---- get response from each prof tables and let True if exists and False if don't ---------
+    def check_vacancy_exists_in_db(self, tables_list, title, body):
+        for one_element in tables_list:
             response = self.get_all_from_db(
-                table_name=i,
-                param=f"WHERE title='{results_dict['title']}' AND body='{results_dict['body']}'"
+                table_name=f'{one_element}',
+                param=f"WHERE title='{title}' AND body = '{body}'"
             )
-            if not response:
-                pro += f'{i}, '
-            else:
-                print(f'This vacancy exists in {i} table')
-        if pro:
-            results_dict['profession'] = pro[0:-2]
-
-            # check message for exists in admin table
-            query_check = f"SELECT * FROM admin_last_session WHERE title='{results_dict['title']}' AND body = '{results_dict['body']}'"
-            with self.con:
-                cur.execute(query_check)
-                r = cur.fetchall()
-
-            if not r:
-                response_from_db = False
-                new_post = f"""INSERT INTO admin_last_session (
-                                    chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, job_type, 
-                                    city, salary, experience, contacts, time_of_public, created_at, session) 
-                                                VALUES ('{results_dict['chat_name']}', '{results_dict['title']}', '{results_dict['body']}', 
-                                                '{results_dict['profession']}', '{results_dict['vacancy']}', '{results_dict['vacancy_url']}', '{results_dict['company']}', 
-                                                '{results_dict['english']}', '{results_dict['relocation']}', '{results_dict['job_type']}', 
-                                                '{results_dict['city']}', '{results_dict['salary']}', '{results_dict['experience']}', 
-                                                '{results_dict['contacts']}', '{results_dict['time_of_public']}', '{datetime.now()}', 
-                                                '{results_dict['session']}');"""
-                with self.con:
-                    try:
-                        cur.execute(new_post)
-                        print(f'+++++++++++++ The vacancy has been added to DB admin_last_session\n')
-                    except Exception as e:
-                        print(f'-------------- Didn"t push in ADMIN LAST SESSION {e}\n')
-                        print('time_of_public ', results_dict['time_of_public'])
-                        pass
-            else:
-                if r:
-                    response_from_db = True
-                    print(f'!!!!!!!!!!! Message exists in admin_last_session\n')
-        else:
-            response_from_db = True
-            print('NO, Bro')
-
-        return response_from_db
+            if response:
+                print(f'!!!!!!!!!!! Message exists in admin_last_session\n')
+                return True
+        return False
 
 
     def push_followers_statistics(self, channel_statistic_dict:dict):
