@@ -63,8 +63,8 @@ con = None
 
 print(f'Bot started at {datetime.now()}')
 
-# client = TelegramClient(username, int(api_id), api_hash)
-# client.start()
+client = TelegramClient(username, int(api_id), api_hash)
+client.start()
 logs.write_log(f'\n------------------ restart --------------------')
 
 class InviteBot():
