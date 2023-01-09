@@ -1162,7 +1162,7 @@ class DataBaseOperations:
                 if title == vacancy2[1] and body == vacancy2[2]:
                     doubles_dict[id] = vacancy2[0]
                     print('doubles_dict: ', doubles_dict[id])
-                    time.sleep(2)
+                    # time.sleep(2)
                 else:
                     pass
         for i in doubles_dict:
