@@ -266,6 +266,7 @@ class InviteBot():
         @self.dp.message_handler(commands=['check_doubles_'])
         async def get_doubles(message: types.Message):
             self.db.check_doubles()
+            self.db.check_double_in_professions()
 
         @self.dp.message_handler(commands=['refresh'])
         async def refresh_vacancies(message: types.Message):
