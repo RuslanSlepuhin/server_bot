@@ -13,4 +13,4 @@ api_hash = config_keys['Telegram']['api_hash']
 username = config_keys['Telegram']['username']
 token = config_keys['Token']['token']
 talking_token = config_keys['Token_talking_bot']['token']
-
+token_red = config_keys['Token']['token_red']
