@@ -1,22 +1,25 @@
-from patterns.all_professions.analyst_pattern import analyst
-from patterns.all_professions.ba_pattern import ba
-from patterns.all_professions.backend_pattern import backend
-from patterns.all_professions.designer_pattern import designer
-from patterns.all_professions.detailed_designer_pattern import detailed_designer
-from patterns.all_professions.dev_pattern import dev
-from patterns.all_professions.devops_pattern import devops
-from patterns.all_professions.frontend_pattern import frontend
-from patterns.all_professions.game_pattern import game
-from patterns.all_professions.hr_pattern import hr
-from patterns.all_professions.marketing_pattern import marketing
-from patterns.all_professions.mobile_pattern import mobile
-from patterns.all_professions.non_code_manager import non_code_manager
-from patterns.all_professions.pm_pattern import pm
-from patterns.all_professions.qa_pattern import qa
-from patterns.all_professions.sales_manager_pattern import sales_manager
+from patterns.profession_collection.analyst_pattern import analyst
+from patterns.profession_collection.ba_pattern import ba
+from patterns.profession_collection.backend_pattern import backend
+from patterns.profession_collection.designer_pattern import designer
+from patterns.profession_collection.detailed_designer_pattern import detailed_designer
+from patterns.profession_collection.dev_pattern import dev
+from patterns.profession_collection.devops_pattern import devops
+from patterns.profession_collection.frontend_pattern import frontend
+from patterns.profession_collection.game_pattern import game
+from patterns.profession_collection.junior_pattern import junior
+from patterns.profession_collection.hr_pattern import hr
+from patterns.profession_collection.marketing_pattern import marketing
+from patterns.profession_collection.mobile_pattern import mobile
+from patterns.profession_collection.non_code_manager import non_code_manager
+from patterns.profession_collection.pm_pattern import pm
+from patterns.profession_collection.qa_pattern import qa
+from patterns.profession_collection.fullstack_pattern import fullstack
+from patterns.profession_collection.sales_manager_pattern import sales_manager
 from patterns.data_pattern._data_pattern import pattern
 from patterns.data_pattern._data_pattern import params
 from patterns.data_pattern._data_pattern import vacancy_pattern
+from patterns.data_pattern._data_pattern import search_companies, search_companies2
 
 export_pattern = {
     'data': {
@@ -24,7 +27,7 @@ export_pattern = {
         'contacts': pattern['contacts'],
         },
     'professions': {
-        'junior': pattern['junior'],
+        'junior': junior,
         'analyst': analyst,
         'ba': ba,
         'backend': backend,
@@ -38,7 +41,7 @@ export_pattern = {
         'pm': pm,
         'qa': qa,
         'sales_manager': sales_manager,
-        'fullstack': pattern['fullstack'],
+        'fullstack': fullstack,
     },
     'additional': {
         'dev': dev,
@@ -56,6 +59,16 @@ export_pattern = {
             'ma': '',
             'mex': '',
             'sub': vacancy_pattern,
+        },
+        'company': {
+            'ma': search_companies,
+            'mex': '',
+            'sub': ''
+        },
+        'company2': {
+            'ma': search_companies2,
+            'mex': '',
+            'sub': ''
         }
     }
 }
