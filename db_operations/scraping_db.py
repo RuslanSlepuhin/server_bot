@@ -814,6 +814,7 @@ class DataBaseOperations:
                     body=results_dict['body']):
                 return True
 
+        if
         results_dict['sub'] = helper.compose_to_str_from_list(data_list=profession['sub'])
         print('unawaited compose to str = ', results_dict['sub'])
         if not results_dict['time_of_public']:
