@@ -1186,9 +1186,10 @@ class DataBaseOperations:
             response1 = response1[0]
             response2 = response2[0]
             if response1[0] == response2[0] and response1[1] == response2[1]:
+                print('id: ', id)
                 print('it must be deleted')
-
-                # self.delete_data(
-                #     table_name='admin_last_session',
-                #     param=f"WHERE id={id}"
-                # )
+                time.sleep(2)
+                self.delete_data(
+                    table_name='admin_last_session',
+                    param=f"WHERE id={id}"
+                )
