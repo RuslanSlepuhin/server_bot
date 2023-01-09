@@ -228,7 +228,8 @@ class InviteBot():
                                                             '/geek - get data from geek.ru\n\n'
                                                             '/download - ❗️you get excel from admin vacancies with search tags\n'
                                                             '/ambulance - if bot gets accident in hard pushing and you think you loose the shorts\n'
-                                                            '/refresh - to rewrite the professions in all vacancies throgh the new filters logic\n'
+                                                            '/refresh - to get the professions in excel format in all vacancies throgh the new filters logic\n'
+                                                            '/refresh_and_save_changes - the same and save changes'
                                                             '/get_backup_db\n'
                                                             '/check_link_hh\n'
                                                             '/check_title_body\n'
@@ -264,6 +265,10 @@ class InviteBot():
         @self.dp.message_handler(commands=['refresh'])
         async def refresh_vacancies(message: types.Message):
             await refresh(message)
+
+        @self.dp.message_handler(commands=['refresh_and_save_changes'])
+        async def refresh_vacancies(message: types.Message):
+            await refresh(message, save_changes=True)
 
         @self.dp.message_handler(commands=['peerchannel'])
         async def get_logs(message: types.Message):
@@ -2441,14 +2446,6 @@ class InviteBot():
             #         all_messages.append(message.to_dict())
 
             return all_messages
-            # offset_msg = messages[len(messages) - 1].id
-            # total_messages = len(all_messages)
-            # if total_count_limit != 0 and total_messages >= total_count_limit:
-            #     break
-            #
-            # await self.process_messages(channel, all_messages)
-            # print('pause 25-35 sec.')
-            # time.sleep(random.randrange(15, 20))
 
         async def update_vacancy_admin_last_session(
                 results_dict=None,
@@ -2462,27 +2459,7 @@ class InviteBot():
             if update_profession:
                 len_prof_list = len(prof_list)
                 if len_prof_list < 2:
-                    # print('ЖАРА в invite bot 2010')
-                    #
-                    # # if it is not in any tables, then write to no_sort table
-                    # get_response = DataBaseOperations(None).get_all_from_db(table_name='admin_last_session', param=f"""WHERE id={id_admin_last_session_table}""")
-                    # title = get_response[0][2]
-                    # body = get_response[0][3]
-                    # n=0
-                    # valid_profession = self.valid_profession_list
-                    # valid_profession.append('no_sort')
-                    # for i in valid_profession:
-                    #     get_response = DataBaseOperations(None).get_all_from_db(table_name=i,
-                    #                                                             param=f"""WHERE body LIKE '%{body}%' AND title LIKE '%{title}%'""")
-                    #     if get_response:
-                    #         n +=1
-                    #
-                    # if n == 0:
-                    #     print('ЖАРА в invite bot 2026')
-                    #     profession_list = {}
-                    #     profession_list['profession'] = {'no_sort',}
-                    #     DataBaseOperations(None).push_to_bd(results_dict=results_dict, profession_list=profession_list)
-                    # else:
+
                     await transfer_vacancy_admin_archive(id_admin_last_session_table)
                     self.db.delete_data(
                         table_name='admin_last_session',
@@ -2884,7 +2861,7 @@ class InviteBot():
         async def print_log(text):
             print(f"{datetime.now().strftime('%H:%M:%S')}:\n{text}")
 
-        async def refresh(message):
+        async def refresh(message, save_changes=False):
             profession = {}
             title_list = []
             body_list = []
@@ -2896,9 +2873,6 @@ class InviteBot():
 
             await self.bot_aiogram.send_message(message.chat.id, 'It will rewrite the professions in all vacancies through the new filter logic\nPlease wait few seconds for start')
 
-            # with open('pr.txt', 'w') as file:
-            #     file.write('')
-
             response = self.db.get_all_from_db(
                 table_name='admin_last_session',
                 param="""WHERE profession<>'no_sort'""",
@@ -2909,7 +2883,6 @@ class InviteBot():
             n=0
             length = len(response)
             msg = await self.bot_aiogram.send_message(message.chat.id, 'progress 0%')
-            response = response[100:120] #!!!!!!!!!!!!!!!!!!!!!!!!!!
             for one_vacancy in response:
                 id = one_vacancy[0]
                 title = one_vacancy[1]
@@ -2917,8 +2890,6 @@ class InviteBot():
                 vacancy = one_vacancy[3]
                 old_profession = one_vacancy[4]
                 chat_name = one_vacancy[5]
-
-
 
                 if 'https://t.me' in chat_name:
                     profession = VacancyFilter().sort_profession(
@@ -2955,14 +2926,13 @@ class InviteBot():
                 sub.append(profession['profession']['sub'])
                 tag_list.append(profession['profession']['tag'])
                 anti_tag.append(profession['profession']['anti_tag'])
-
                 print('\n________________\n')
-                pass
 
-                # self.db.run_free_request(
-                #     request=f"""UPDATE admin_last_session SET profession='{profession_str}' WHERE id={id}""",
-                #     output_text='updated\n___________\n\n'
-                # )
+                if save_changes:
+                    self.db.run_free_request(
+                        request=f"""UPDATE admin_last_session SET profession='{profession_str}' WHERE id={id}""",
+                        output_text='updated\n___________\n\n'
+                    )
                 n += 1
                 await show.show_the_progress(msg, n, length)
 
