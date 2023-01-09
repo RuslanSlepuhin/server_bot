@@ -1157,13 +1157,12 @@ class DataBaseOperations:
             # time.sleep(0.3)
 
             for next_vacancy in range(index_from + 1, len(response)):
-                print('next_vacancy: ', next_vacancy)
+                # print('next_vacancy: ', next_vacancy)
                 vacancy2 = response[next_vacancy]
                 if title == vacancy2[1] and body == vacancy2[2]:
                     doubles_dict[id] = vacancy2[0]
-                    # print(id, vacancy2[0])
-                    time.sleep(3)
-                    # with open('./')
+                    print('doubles_dict: ', doubles_dict[id])
+                    time.sleep(2)
                 else:
                     pass
             for i in doubles_dict:
