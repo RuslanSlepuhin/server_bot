@@ -39,8 +39,6 @@ from sites.scrapping_finder import FinderGetInformation
 from sites.scraping_habr import HabrGetInformation
 from sites.scraping_rabota import RabotaGetInformation
 from filters.filter_jan_2023.filter_jan_2023 import VacancyFilter
-from helper_functions import helper_functions as helper
-from utils.additional_variables import additional_variables as variable
 
 logs = Logs()
 import settings.os_getenv as settings
@@ -75,7 +73,9 @@ class InviteBot():
         self.chat_id = None
         self.start_time_listen_channels = datetime.now()
         self.start_time_scraping_channels = None
-        self.valid_profession_list = variable.valid_professions
+        self.valid_profession_list = ['designer', 'ba', 'game', 'product', 'mobile',
+                                      'pm', 'sales_manager', 'analyst', 'frontend',
+                                      'marketing', 'devops', 'hr', 'backend', 'qa', 'junior']
         self.markup = None
         self.api_id = api_id
         self.api_hash = api_hash
@@ -98,7 +98,7 @@ class InviteBot():
         self.out_from_admin_channel = 0
         self.quantity_entered_to_shorts = 0
         self.participants_dict = {}
-        self.white_admin_list = variable.white_admin_list
+        self.white_admin_list = [1763672666, 556128576, 758905227, 945718420, 5755261667, 5884559465]
         self.marker = False
         self.all_participant = []
         self.channel = None
@@ -205,7 +205,7 @@ class InviteBot():
             # parsing_kb.add(parsing_button5)
 
             await self.bot_aiogram.send_message(message.chat.id, f'Привет, {message.from_user.first_name}!', reply_markup=parsing_kb)
-            await self.bot_aiogram.send_message(variable.id_owner, f'User {message.from_user.id} has started')
+            await self.bot_aiogram.send_message(1763672666, f'User {message.from_user.id} has started')
 
         @self.dp.message_handler(commands=['help'])
         async def get_logs(message: types.Message):
@@ -216,8 +216,7 @@ class InviteBot():
                                                             '/check_parameters - get vacancy\'s parameters\n'
                                                             '/get_participants - ❗️get the channel follower numbers\n'
                                                             '/delete_till - ❗️delete old vacancy from admin DB till date\n\n'
-                                                            '/debugs\n\n'
-                                                            '/developing\n\n'
+                                                            '/debug\n\n'
                                                             '/magic_word - input word and get results from hh.ru\n'
                                                             '/svyazi - get data from svyazi.app\n'
                                                             '/finder - get the data from finder.vc\n'
@@ -234,24 +233,14 @@ class InviteBot():
                                                             '/check_title_body\n'
                                                             '/add_statistics\n\n'
                                                             '❗️- it is admin options')
+        @self.dp.message_handler(commands=['debug'])
+        async def get_logs(message: types.Message):
+            await debug_function()
+
         @self.dp.message_handler(commands=['logs', 'log'])
         async def get_logs(message: types.Message):
             path = './logs/logs.txt'
             await send_file_to_user(message, path)
-
-        @self.dp.message_handler(commands=['debugs'])
-        async def get_debugs(message: types.Message):
-            await debug_function()
-
-        @self.dp.message_handler(commands=['developing'])
-        async def developing(message: types.Message):
-            self.db.check_or_create_table_admin(
-                table_name='archive'
-            )
-            self.db.append_columns(
-                table_name_list=['admin_last_session',],
-                column="sub VARCHAR (250)"
-            )
 
         @self.dp.message_handler(commands=['get_backup_db'])
         async def get_logs(message: types.Message):
@@ -2986,8 +2975,8 @@ class InviteBot():
             #                 message.chat.id,
             #                 'Bot is parsing the telegram channels...',
             #                 parse_mode='HTML')
-            await main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})  # run parser tg channels and write to profession's tables
-                        # await bot_aiogram.send_message(
+            #             await main(client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id})  # run parser tg channels and write to profession's tables
+            #             await bot_aiogram.send_message(
             #                 message.chat.id,
             #                 '...it has been successfully',
             #                 parse_mode='HTML')
@@ -2999,48 +2988,29 @@ class InviteBot():
             #             await psites.call_sites()
             #             await bot_aiogram.send_message(message.chat.id, '...it has been successfully. Press <b>Digest</b> for the next step', parse_mode='html')
 
-            # psites = ParseSites(client=self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})
-            # task1 = asyncio.create_task(main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}))
-            # task2 = asyncio.create_task(psites.call_sites())
-            # await asyncio.gather(task1, task2)
+            psites = ParseSites(client=self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})
+            task1 = asyncio.create_task(main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}))
+            task2 = asyncio.create_task(psites.call_sites())
+            await asyncio.gather(task1, task2)
 
         async def debug_function():
             response = DataBaseOperations(None).get_all_from_db(
                 table_name='admin_last_session',
-                param="Where profession <> 'no_sort'",
-                field='title, body'
+                param="Where profession LIKE '%frontend%'"
+            )
+            response = response[0]
+            VacancyFilter().sort_profession(
+                response[2],
+                response[3]
             )
 
-            for vacancy in response:
-                title = vacancy[0]
-                body = vacancy[1]
-                profession_dict = VacancyFilter().sort_profession(
-                    title,
-                    body
-                )
-                sub_str = ''
-                if list(profession_dict['profession']['profession']) != ['no_sort']:
-                    sub_str = await helper.compose_to_str_from_list(profession_dict['profession']['sub'])
-                    print('------sub_str--------')
-                    print(sub_str)
-                else:
-                    sub_str = ''
-                    print(list(profession_dict['profession']['profession']))
-                    print('NO_SORT')
-
-                if sub_str:
-                    sub_list = await helper.decompose_from_str_to_list(sub_str)
-                    print('------sub_list--------')
-                    for i in sub_list:
-                        print(i, sub_list[i])
-                pass
-
         start_polling(self.dp)
+
         # executor.start_polling(dp, skip_updates=True)
 
 
 def run(token_in=None):
     InviteBot(token_in).main_invitebot()
 
-if __name__ == '__main__':
-   run()
+# if __name__ == '__main__':
+#    run()

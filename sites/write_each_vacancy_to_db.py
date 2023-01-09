@@ -1,7 +1,11 @@
 from db_operations.scraping_db import DataBaseOperations
-from filters.scraping_get_profession_Alex_next_2809 import AlexSort2809
+# from filters.scraping_get_profession_Alex_next_2809 import AlexSort2809
+from filters.filter_jan_2023.filter_jan_2023 import VacancyFilter
+
 db = DataBaseOperations(None)
-filter = AlexSort2809()
+# filter = AlexSort2809()
+filter = VacancyFilter()
+
 
 def write_each_vacancy(results_dict):
 
@@ -12,7 +16,7 @@ def write_each_vacancy(results_dict):
     #     get_params=False,
     #     only_profession=True
     # )
-    profession = filter.sort_by_profession_by_Alex(
+    profession = filter.sort_profession(
         title=results_dict['title'],
         body=results_dict['body'],
         # companies=None,

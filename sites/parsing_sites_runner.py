@@ -9,7 +9,7 @@ from sites.scraping_rabota import RabotaGetInformation
 from sites.scraping_superjob import SuperJobGetInformation
 from sites.scraping_svyazi import SvyaziGetInformation
 from sites.scrapping_finder import FinderGetInformation
-# from multiprocessing import Process, Lock
+from multiprocessing import Process, Lock
 import asyncio
 
 logs = Logs()
@@ -51,7 +51,7 @@ class ParseSites:
         task8 = asyncio.create_task(HHGetInformation(bot_dict).get_content())
         await asyncio.gather(task1, task2, task3, task4, task5, task6, task7, task8)
 
-        # p1 = Process(target=DevGetInformation(bot_dict).get_content, args=())
+        # p1 = Process(target=asyncio.run(DevGetInformation(bot_dict).get_content), args=())
         # p2 = Process(target=SuperJobGetInformation(bot_dict).get_content, args=())
         # p3 = Process(target=RabotaGetInformation(bot_dict).get_content, args=())
         # p4 = Process(target=HabrGetInformation(bot_dict).get_content, args=())
@@ -69,7 +69,7 @@ class ParseSites:
         # p7.start()
         # p8.start()
         #
-        # p1.join()
+        p1.join()
         # p2.join()
         # p3.join()
         # p4.join()
