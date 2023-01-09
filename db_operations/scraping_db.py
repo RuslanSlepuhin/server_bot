@@ -1232,8 +1232,8 @@ class DataBaseOperations:
         n = 1
         for id in doubles_list:
             print(f'{n}: It must be deleted - {id}')
-            # self.delete_data(
-            #     table_name='admin_last_session',
-            #     param=f"WHERE id={id}"
-            # )
+            self.delete_data(
+                table_name='admin_last_session',
+                param=f"WHERE id={id}"
+            )
             n += 1
