@@ -796,7 +796,7 @@ class DataBaseOperations:
             except Exception as e:
                 print(e)
 
-    def push_to_admin_table(self, results_dict, profession, check_or_exists=False, params=None):
+    def push_to_admin_table(self, results_dict, profession, check_or_exists=True, params=None):
         results_dict['title'] = self.clear_title_or_body(results_dict['title'])
         results_dict['body'] = self.clear_title_or_body(results_dict['body'])
         results_dict['company'] = self.clear_title_or_body(results_dict['company'])
@@ -809,6 +809,7 @@ class DataBaseOperations:
             tables_list_for_vacancy_searching = profession['profession']
             from utils.additional_variables.additional_variables import additional_elements
             tables_list_for_vacancy_searching = tables_list_for_vacancy_searching.union(additional_elements)
+            print('tables_list_for_vacancy_searching: ', tables_list_for_vacancy_searching)
 
             if self.check_vacancy_exists_in_db(
                     tables_list=tables_list_for_vacancy_searching,
@@ -853,7 +854,7 @@ class DataBaseOperations:
                 param=f"WHERE title='{title}' AND body = '{body}'"
             )
             if response:
-                print(f'!!!!!!!!!!! Message exists in admin_last_session\n')
+                print(f'!!!!!!!!!!! Vacancy exists in {one_element} table\n')
                 return True
         return False
 
@@ -1152,25 +1153,20 @@ class DataBaseOperations:
             id = vacancy1[0]
             title = vacancy1[1]
             body = vacancy1[2]
-            profession = vacancy1[3]
             index_from = response.index(vacancy1)
             print('index_from: ', index_from)
-            # time.sleep(0.3)
 
             for next_vacancy in range(index_from + 1, len(response)):
-                # print('next_vacancy: ', next_vacancy)
                 vacancy2 = response[next_vacancy]
                 if title == vacancy2[1] and body == vacancy2[2]:
                     doubles_dict[id] = vacancy2[0]
                     print('doubles_dict: ', doubles_dict[id])
-                    # time.sleep(2)
                 else:
                     pass
         for i in doubles_dict:
             print('results', i, doubles_dict[i])
             print('-------------------------------')
         print('total: ', len(doubles_dict))
-        time.sleep(5)
 
         n=1
         for id in doubles_dict:
@@ -1189,12 +1185,12 @@ class DataBaseOperations:
             if response1[0] == response2[0] and response1[1] == response2[1]:
                 print(f'{n} id: ', id)
                 print('it must be deleted')
-                # time.sleep(2)
                 self.delete_data(
                     table_name='admin_last_session',
                     param=f"WHERE id={id}"
                 )
                 n += 1
+        return {'doubles': len(doubles_dict), 'vacancy_numbers': len(response)}
 
     def check_double_in_professions(self):
         response = self.get_all_from_db(
@@ -1228,7 +1224,6 @@ class DataBaseOperations:
 
         print('quantity messages: ', len(response))
         print('total doubles: ', len(doubles_list))
-        time.sleep(5)
         n = 1
         for id in doubles_list:
             print(f'{n}: It must be deleted - {id}')
@@ -1237,3 +1232,44 @@ class DataBaseOperations:
                 param=f"WHERE id={id}"
             )
             n += 1
+        return {'doubles': len(doubles_list), 'vacancy_numbers': len(response)}
+
+    def remove_completed_professions(self):
+        response = self.get_all_from_db(
+            table_name='admin_last_session',
+            field='id, title, body, profession',
+            param="WHERE profession <> 'no_sort'"
+        )
+        answer_dict = {}
+        answer_dict['messages'] = len(response)
+        answer_dict['deleted'] = 0
+        answer_dict['change_profession'] = 0
+        for vacancy in response:
+            id = vacancy[0]
+            title = vacancy[1]
+            body = vacancy[2]
+            profession = vacancy[3]
+
+            profession = helper.string_to_list(text=profession, separator=', ')
+            for table in profession:
+                table_response = self.get_all_from_db(
+                    table_name=table,
+                    param=f"WHERE title='{title}' AND body='{body}'"
+                )
+                if table_response:
+                    profession.remove(table)
+                    if not profession:
+                        self.delete_data(table_name='admin_last_session', param=f"WHERE id={id}")
+                        answer_dict['deleted'] += 1
+                    else:
+                        new_profession = helper.list_to_string(raw_list=profession, separator=', ')
+                        self.update_table(table_name='admin_last_session', param=f"WHERE id={id}", field='profession', value=new_profession)
+                        r = self.get_all_from_db(table_name='admin_last_session', param=f'WHERE id={id}', field='profession')
+                        print(r[0][0])
+                        answer_dict['change_profession'] += 1
+
+        return answer_dict
+
+    def update_table(self, table_name, param, field, value):
+        query = f"""UPDATE {table_name} SET {field}='{value}' {param}"""
+        self.run_free_request(request=query, output_text='vacancy has updated')
