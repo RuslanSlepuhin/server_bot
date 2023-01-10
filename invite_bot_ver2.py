@@ -2262,7 +2262,7 @@ class InviteBot():
                     check_profession=False,
                     check_vacancy=False,
                     get_params=True
-                )
+                )['params']
                 if results_dict['sub']:
                     sub = helper.decompose_from_str_to_list(results_dict['sub'])
                     print(sub.values())
