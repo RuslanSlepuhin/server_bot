@@ -1,4 +1,7 @@
+import time
 
+# from db_operations.scraping_db import DataBaseOperations
+# db = DataBaseOperations(None)
 
 def compose_to_str_from_list(data_list):
     sub_str = ''
@@ -22,3 +25,9 @@ def decompose_from_str_to_list(data_str):
 
 def compose_simple_list_to_str(data_list, separator):
     return f'{separator}'.join(data_list)
+
+def string_to_list(text, separator):
+    return text.split(separator)
+
+def list_to_string(raw_list, separator):
+    return separator.join(raw_list)

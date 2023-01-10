@@ -210,32 +210,42 @@ class InviteBot():
         @self.dp.message_handler(commands=['help'])
         async def get_logs(message: types.Message):
             await self.bot_aiogram.send_message(message.chat.id, '/log or /logs - get custom logs (useful for developer\n'
-                                                            # '/refresh_pattern - to get the modify pattern from DB\n'
-                                                            '/peerchannel - useful for a developer to get id channel\n'
-                                                            '/getdata - get channel data\n'
-                                                            '/check_parameters - get vacancy\'s parameters\n'
                                                             '/get_participants - ❗️get the channel follower numbers\n'
                                                             '/delete_till - ❗️delete old vacancy from admin DB till date\n\n'
-                                                            '/debugs\n\n'
-                                                            '/developing\n\n'
-                                                            '/magic_word - input word and get results from hh.ru\n'
-                                                            '/svyazi - get data from svyazi.app\n'
-                                                            '/finder - get the data from finder.vc\n'
-                                                            '/habr - get the data from career.habr.com\n'
-                                                            '/superjob - get the data from superjob.ru\n'
-                                                            '/rabota - get the data from rabota.by\n'
-                                                            '/dev - get the data from dev.by\n'
-                                                            '/geek - get data from geek.ru\n\n'
+                                                            '------------ FOR DEVELOPER: ------------\n'
+                                                            '⛔️/debugs\n'
+                                                            '⛔️/developing\n'
+                                                            # '⛔️/refresh_pattern - to get the modify pattern from DB\n'
+                                                            '⛔️/peerchannel - useful for a developer to get id channel\n'
+                                                            '⛔️/getdata - get channel data\n'
+                                                            '⛔️/check_parameters - get vacancy\'s parameters\n'
+                                                            '⛔️/get_backup_db - recieve last db backup\n'
+                                                            '⛔️/check_link_hh - doesnt work :)\n'
+                                                            '----------------------------------------------------\n\n'
+                                                            '---------------- PARSING: ----------------\n'
+                                                            '🔆/magic_word - input word and get results from hh.ru\n'
+                                                            '🔆/svyazi - get data from svyazi.app\n'
+                                                            '🔆/finder - get the data from finder.vc\n'
+                                                            '🔆/habr - get the data from career.habr.com\n'
+                                                            '🔆/superjob - get the data from superjob.ru\n'
+                                                            '🔆/rabota - get the data from rabota.by\n'
+                                                            '🔆/dev - get the data from dev.by\n'
+                                                            '🔆/geek - get data from geek.ru\n'
+                                                            '---------------------------------------------------\n\n'
                                                             '/download - ❗️you get excel from admin vacancies with search tags\n'
-                                                            '/ambulance - if bot gets accident in hard pushing and you think you loose the shorts\n'
-                                                            '/refresh - to get the professions in excel format in all vacancies throgh the new filters logic\n'
-                                                            '/refresh_and_save_changes - the same and save changes\n'
-                                                            '/get_backup_db\n'
-                                                            '/check_link_hh\n'
+                                                            '/ambulance - if bot gets accident in hard pushing and you think you loose the shorts\n\n'
+                                                            '---------------- TOOLS: ----------------\n'
+                                                            '➡️/refresh_and_save_changes - One click for the correct refresh. Includes:\n'
+                                                            '✅/refresh - to get the professions in excel format in all vacancies throgh the new filters logic (without rewriting)\n'
+                                                            '✅/check_doubles - remove the vacancy"s doubles\n'
+                                                            '✅/remove_completed_professions - remove complete professions\n'
+                                                            '---------------------------------------------------\n\n'
+                                                             '---------------- STATISTICS: ----------------\n'
                                                             '/check_title_body\n'
                                                             '/add_statistics\n\n'
-                                                            'check_doubles - remove the vacancy"s doubles\n\n'
+                                                            '---------------------------------------------------\n\n'
                                                             '❗️- it is admin options')
+
         @self.dp.message_handler(commands=['logs', 'log'])
         async def get_logs(message: types.Message):
             path = './logs/logs.txt'
@@ -265,16 +275,25 @@ class InviteBot():
 
         @self.dp.message_handler(commands=['check_doubles'])
         async def get_doubles(message: types.Message):
-            self.db.check_doubles()
-            self.db.check_double_in_professions()
+            await get_remove_doubles(message)
 
         @self.dp.message_handler(commands=['refresh'])
         async def refresh_vacancies(message: types.Message):
+            # refresh all professions
             await refresh(message)
 
-        @self.dp.message_handler(commands=['refresh_and_save_changes'])
-        async def refresh_vacancies(message: types.Message):
-            await refresh(message, save_changes=True)
+        @self.dp.message_handler(commands=['refresh_and_save_changes'])  #
+        async def refresh_vacancies_and_save(message: types.Message):
+            # refresh all professions
+            await refresh(message)
+            # remove doubles
+            await get_remove_doubles(message)
+            # remove completed professions
+            await remove_completed_professions(message)
+
+        @self.dp.message_handler(commands=['remove_completed_professions'])
+        async def remove_prof(message: types.Message):
+            await remove_completed_professions(message)
 
         @self.dp.message_handler(commands=['peerchannel'])
         async def get_logs(message: types.Message):
@@ -491,6 +510,7 @@ class InviteBot():
                             stat_dict[date][channel] += len(re.findall(r"Вакансия: ", vacancy['message']))
                 except:
                     print(f'channel {channel} has the accidence')
+                    self.bot_aiogram.send_message(message.chat.id, f'channel {channel} has the accidence')
 
                 await asyncio.sleep(3)
 
@@ -916,14 +936,10 @@ class InviteBot():
 
             elif 'PUSH' in callback.data:
                 profession_list = {}
-                results_dict = {}
-
                 self.percent = 0
                 self.message = await self.bot_aiogram.send_message(callback.message.chat.id, f'progress {self.percent}%')
                 await asyncio.sleep(random.randrange(1, 2))
 
-
-                # self.last_id_message_agregator = await get_id_agregator()
                 # to get last agregator id
                 self.last_id_message_agregator = await get_last_admin_channel_id(
                     message=callback.message,
@@ -931,22 +947,20 @@ class InviteBot():
                 )
 
                 profession = callback.data.split(' ')[-1]
+
+                # get messages from TG admin
                 history_messages = await get_tg_history_messages(callback.message)
-
                 self.out_from_admin_channel = len(history_messages)
-
-                # self.message_for_send = f'<b>Дайджест вакансий для {profession} за {datetime.now().strftime("%d.%m.%Y")}:</b>\n\n'
                 message_for_send = f'<i>Функционал дайджеста находится в состоянии альфа-тестирования, приносим свои ' \
                                    f'извинения, мы работаем над тем чтобы вы получали информацию максимально ' \
                                    f'качественную и в сжатые сроки</i>\n\n' \
                                    f'<b>Дайджест вакансий для {profession} за {datetime.now().strftime("%d.%m.%Y")}:</b>\n\n'
                 length = len(history_messages)
                 n=0
-
                 self.quantity_entered_to_shorts = 0
+
                 for vacancy in history_messages:
                     print('\npush vacancy\n')
-
                     response = DataBaseOperations(None).get_all_from_db('admin_temporary',
                                                                         param=f"WHERE id_admin_channel='{vacancy['id']}'",
                                                                         without_sort=True)
@@ -955,16 +969,16 @@ class InviteBot():
                         vacancy_from_admin = DataBaseOperations(None).get_all_from_db('admin_last_session',
                                                                                       param=f"WHERE id={id_admin_last_session_table}",
                                                                                       without_sort=True)
-                        # -------------- it is for user's check -----------------------
-                        with open(self.admin_check_file, 'a', encoding="utf-8") as file:
-                            file.write(f"              FINALLY                \n"
-                                       f"-------- in PUSH -------\n"
-                                       f"id admin_channel = {vacancy['id']}\n"
-                                       f"id_admin_last_session_table = {response[0][2]}\n"
-                                       f"it was sending to agregator = {vacancy_from_admin[0][19]}\n"
-                                       f"title = {vacancy_from_admin[0][2][:50]}\n"
-                                       f"--------------------------------------------\n")
-                        # ----------------------- end ----------------------------------
+                        # # -------------- it is for user's check -----------------------
+                        # with open(self.admin_check_file, 'a', encoding="utf-8") as file:
+                        #     file.write(f"              FINALLY                \n"
+                        #                f"-------- in PUSH -------\n"
+                        #                f"id admin_channel = {vacancy['id']}\n"
+                        #                f"id_admin_last_session_table = {response[0][2]}\n"
+                        #                f"it was sending to agregator = {vacancy_from_admin[0][19]}\n"
+                        #                f"title = {vacancy_from_admin[0][2][:50]}\n"
+                        #                f"--------------------------------------------\n")
+                        # # ----------------------- end ----------------------------------
                         prof_stack = vacancy_from_admin[0][4]
                         # if vacancy has sent in agregator already, it doesn't push again. And remove profess from profs or drop vacancy if there is profession alone
                         await push_vacancies_to_agregator_from_admin(
@@ -989,7 +1003,9 @@ class InviteBot():
                             # else:
                             #     print('It has been got True from db')
                         # ------------------- end of  pushing to prof channel full message -----------------
+
                         elif "shorts" in callback.data:
+                            # I need to get the newest vacancy
                             vacancy_from_admin = DataBaseOperations(None).get_all_from_db('admin_last_session',
                                                                                           param=f"WHERE id={id_admin_last_session_table}",
                                                                                           without_sort=True)
@@ -2208,6 +2224,7 @@ class InviteBot():
                 else:
                     pro = [message[4]]
 
+                # delete all spaces
                 for i in pro:
                     profession_list['profession'].append(i.strip())
 
@@ -2234,14 +2251,26 @@ class InviteBot():
                 results_dict['agregator_link'] = message[17]
                 results_dict['session'] = message[18]
                 sended_to_agregator = message[19]
+                results_dict['sub'] = message[20]
 
                 title = message[2]
                 body = message[3]
-                params = AlexSort2809().sort_by_profession_by_Alex(title, body, check_profession=False, check_contacts=False, check_vacancy=False)['params']
-
-
+                # params = AlexSort2809().sort_by_profession_by_Alex(title, body, check_profession=False, check_contacts=False, check_vacancy=False)['params']
+                params = VacancyFilter().sort_profession(
+                    title, body,
+                    check_contacts=False,
+                    check_profession=False,
+                    check_vacancy=False,
+                    get_params=True
+                )
+                if results_dict['sub']:
+                    sub = helper.decompose_from_str_to_list(results_dict['sub'])
+                    print(sub.values())
+                    if sub.values():
+                        pass
+                else:
+                    pass
                 # compose message_to_send
-                # message_for_send = f'Вакансия {one_profession.title()}\n'
                 message_for_send = ''
                 if results_dict['vacancy']:
                     if not full:
@@ -2258,7 +2287,6 @@ class InviteBot():
                         message_for_send += f"<a href=\"{config['My_channels']['agregator_link']}/{sended_to_agregator}\"><b>Вакансия: #{random.randrange(100, 5000)}</b>\n</a>"
                     else:
                         message_for_send += f"<b>Вакансия: #{random.randrange(100, 5000)}</b>\n"
-
 
                 if results_dict['company']:
                     message_for_send += f"Компания: {results_dict['company']}\n"
@@ -2310,15 +2338,8 @@ class InviteBot():
                         message_for_send += f"\n<b>{results_dict['title']}</b>\n"
                     message_for_send += results_dict['body']
 
-                    # message_for_send = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", message_for_send)
-
-                # else:
-                #     message_for_send += f"https://t.me/it_jobs_agregator/{sended_to_agregator}\n"
-
-                # message_for_send = message_for_send.replace('\xa0', '')
                 if len(message_for_send) > 4096:
                     message_for_send = message_for_send[0:4092] + '...'
-
 
                 return {'composed_message': message_for_send, 'db_id': message[0]}
 
@@ -3012,6 +3033,7 @@ class InviteBot():
             task1 = asyncio.create_task(main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}))
             task2 = asyncio.create_task(psites.call_sites())
             await asyncio.gather(task1, task2)
+            await self.bot_aiogram.send_message(message.chat.id, '----- PARSING HAS DONE! -----')
 
         async def debug_function():
             response = DataBaseOperations(None).get_all_from_db(
@@ -3044,7 +3066,21 @@ class InviteBot():
                         print(i, sub_list[i])
                 pass
 
+        async def get_remove_doubles(message):
+            msg = await self.bot_aiogram.send_message(message.chat.id, 'The double checking from admin db table...')
+            answer = self.db.check_doubles()
+            await msg.edit_text(f"{msg.text}\nDouble quantity: {answer['doubles']}\nfrom {answer['vacancy_numbers']}")
 
+            msg = await self.bot_aiogram.send_message(message.chat.id, 'The double checking between professional tables...')
+            answer = self.db.check_double_in_professions()
+            await msg.edit_text(f"{msg.text}\nDouble quantity: {answer['doubles']}\nfrom {answer['vacancy_numbers']}")
+
+        async def remove_completed_professions(message):
+            answer_dict = self.db.remove_completed_professions()
+            await self.bot_aiogram.send_message(
+                message.chat.id,
+                f"messages: {answer_dict['messages']}\ndeleted: {answer_dict['deleted']}\nchanged: {answer_dict['change_profession']}"
+            )
 
         start_polling(self.dp)
         # executor.start_polling(dp, skip_updates=True)
