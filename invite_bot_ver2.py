@@ -285,7 +285,7 @@ class InviteBot():
         @self.dp.message_handler(commands=['refresh_and_save_changes'])  #
         async def refresh_vacancies_and_save(message: types.Message):
             # refresh all professions
-            await refresh(message)
+            await refresh(message, save_changes=True)
             # remove doubles in admin
             await get_remove_doubles(message)
             # remove completed professions
