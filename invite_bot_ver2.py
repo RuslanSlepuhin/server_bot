@@ -286,7 +286,7 @@ class InviteBot():
         async def refresh_vacancies_and_save(message: types.Message):
             # refresh all professions
             await refresh(message)
-            # remove doubles
+            # remove doubles in admin
             await get_remove_doubles(message)
             # remove completed professions
             await remove_completed_professions(message)
@@ -3071,9 +3071,9 @@ class InviteBot():
             answer = self.db.check_doubles()
             await msg.edit_text(f"{msg.text}\nDouble quantity: {answer['doubles']}\nfrom {answer['vacancy_numbers']}")
 
-            msg = await self.bot_aiogram.send_message(message.chat.id, 'The double checking between professional tables...')
-            answer = self.db.check_double_in_professions()
-            await msg.edit_text(f"{msg.text}\nDouble quantity: {answer['doubles']}\nfrom {answer['vacancy_numbers']}")
+            # msg = await self.bot_aiogram.send_message(message.chat.id, 'The double checking between professional tables...')
+            # answer = self.db.check_double_in_professions()
+            # await msg.edit_text(f"{msg.text}\nDouble quantity: {answer['doubles']}\nfrom {answer['vacancy_numbers']}")
 
         async def remove_completed_professions(message):
             answer_dict = self.db.remove_completed_professions()
