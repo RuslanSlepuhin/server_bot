@@ -33,7 +33,8 @@ async def main_endpoints():
     @app.route("/get")
     async def hello_world2():
         data = await get_from_db()
-        data = data[0]
+        rand_index = random.randrange(0, len(data))
+        data = data[rand_index]
         print(data)
         data_dict = {
             'vacancy': {
