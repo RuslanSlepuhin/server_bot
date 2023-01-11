@@ -175,6 +175,9 @@ class InviteBot():
         class Form_geek(StatesGroup):
             word = State()
 
+        class Form_emergency_push(StatesGroup):
+            profession = State()
+
         class Form_check(StatesGroup):
             title = State()
             body = State()
@@ -226,6 +229,7 @@ class InviteBot():
                                                             '⛔️/check_link_hh - doesnt work :)\n'
                                                             '⛔️/get_participants\n'
                                                             '⛔️/get_user_data\n'
+                                                            '⛔️/emergency_push\n'
                                                             '----------------------------------------------------\n\n'
                                                             '---------------- PARSING: ----------------\n'
                                                             '🔆/magic_word - input word and get results from hh.ru\n'
@@ -251,9 +255,22 @@ class InviteBot():
                                                             '---------------------------------------------------\n\n'
                                                             '❗️- it is admin options')
 
-        # @self.dp.message_handler(commands=['logs', 'log'])
-        # async def shorts(message: types.Message):
-        #     await push_shorts(message, callback_data)
+        @self.dp.message_handler(commands=['emergency_push'])
+        async def emergency_push(message: types.Message):
+            await Form_emergency_push.profession.set()
+            await self.bot_aiogram.send_message(message.chat.id, 'Type the profession')
+
+        @self.dp.message_handler(state=Form_emergency_push.profession)
+        async def emeggency_push_profession(message: types.Message, state: FSMContext):
+            async with state.proxy() as data:
+                data['profession'] = message.text
+                profession = message.text
+            await state.finish()
+            await push_shorts(
+                message=message,
+                callback_data=f'PUSH shorts to {profession.lower()}'
+            )
+
 
         @self.dp.message_handler(commands=['logs', 'log'])
         async def get_logs(message: types.Message):
@@ -2420,7 +2437,7 @@ class InviteBot():
                 except:
                     sub_list = []
 
-                return {'composed_message': message_for_send, 'sub_list': sub_list, 'db_id': vacancy_from_admin_dict['id']}
+                return {'composed_message': message_for_send, 'sub_list': sub_list, 'db_id': vacancy_from_admin_dict['id'], 'all_subs': sub}
 
         async def get_last_admin_channel_id(message, channel=config['My_channels']['admin_channel']):
             last_admin_channel_id = None
@@ -3189,6 +3206,9 @@ class InviteBot():
             )
 
         async def push_shorts(message, callback_data):
+
+            print('callback_data ', callback_data)
+
             profession_list = {}
             self.percent = 0
             message_for_send_dict = {}
