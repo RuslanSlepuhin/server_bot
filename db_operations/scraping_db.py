@@ -2,7 +2,7 @@ import configparser
 import json
 import re
 import time
-
+from utils.additional_variables.additional_variables import admin_database
 import pandas as pd
 import psycopg2
 from datetime import datetime
@@ -796,7 +796,7 @@ class DataBaseOperations:
             except Exception as e:
                 print(e)
 
-    def push_to_admin_table(self, results_dict, profession, check_or_exists=True, params=None):
+    def push_to_admin_table(self, results_dict, profession, check_or_exists=True, table_name=admin_database, params=None):
         results_dict['title'] = self.clear_title_or_body(results_dict['title'])
         results_dict['body'] = self.clear_title_or_body(results_dict['body'])
         results_dict['company'] = self.clear_title_or_body(results_dict['company'])
@@ -827,7 +827,7 @@ class DataBaseOperations:
         cur = self.con.cursor()
         self.check_or_create_table_admin(cur)
 
-        new_post = f"""INSERT INTO admin_last_session (
+        new_post = f"""INSERT INTO {table_name} (
                             chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, job_type, 
                             city, salary, experience, contacts, time_of_public, created_at, session, sub) 
                                         VALUES ('{results_dict['chat_name']}', '{results_dict['title']}', '{results_dict['body']}', 

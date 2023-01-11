@@ -189,6 +189,10 @@ class InviteBot():
         class Form_user(StatesGroup):
             user_data = State()
 
+        class Form_clean(StatesGroup):
+            profession = State()
+            quantity_leave = State()
+
 
         @self.dp.message_handler(commands=['start'])
         async def send_welcome(message: types.Message):
@@ -231,6 +235,7 @@ class InviteBot():
                                                             '⛔️/get_user_data\n'
                                                             '⛔️/emergency_push\n'
                                                             '⛔️/get_pattern\n'
+                                                            '⛔️/clear_db_table\n'
                                                             '----------------------------------------------------\n\n'
                                                             '---------------- PARSING: ----------------\n'
                                                             '🔆/magic_word - input word and get results from hh.ru\n'
@@ -272,7 +277,6 @@ class InviteBot():
                 callback_data=f'PUSH shorts to {profession.lower()}'
             )
 
-
         @self.dp.message_handler(commands=['logs', 'log'])
         async def get_logs(message: types.Message):
             path = './logs/logs.txt'
@@ -310,8 +314,33 @@ class InviteBot():
         async def get_doubles(message: types.Message):
             await get_remove_doubles(message)
 
+        @self.dp.message_handler(commands=['clear_db_table'])
+        async def dp_clear_db_table(message: types.Message):
+            await Form_clean.profession.set()
+            await self.bot_aiogram.send_message(message.chat.id, 'Type the profession you want to delete')
 
+        # ------------------------ fill profession form ----------------------------------
+        @self.dp.message_handler(state=Form_clean.profession)
+        async def process_api_id(message: types.Message, state: FSMContext):
+            if message.text in variable.valid_professions:
+                async with state.proxy() as data:
+                    data['profession'] = message.text
+                await Form_clean.quantity_leave.set()
+                await self.bot_aiogram.send_message(message.chat.id, 'Type what is vacancy quantity you want to leave')
+            else:
+                await Form_clean.profession.set()
+                await self.bot_aiogram.send_message(message.chat.id, 'Type the profession you want to delete')
 
+        @self.dp.message_handler(state=Form_clean.quantity_leave)
+        async def process_api_id(message: types.Message, state: FSMContext):
+            async with state.proxy() as data:
+                data['quantity_leave'] = message.text
+                quantity_leave = message.text
+                profession = data['profession']
+            await state.finish()
+            await clear_db_table(
+                profession, quantity_leave
+            )
 
         @self.dp.message_handler(commands=['refresh'])
         async def refresh_vacancies(message: types.Message):
@@ -1209,47 +1238,72 @@ class InviteBot():
                 # --------- compose data from last session --------------
                 result_dict['last_session'] = {}
                 result_dict['all'] = {}
-
                 if not self.current_session:
                     self.current_session = await get_last_session()
+#------------------------------ new ------------------------------------
+                message_for_send = 'Statistics results:\n\n'
+                for one_prof in variable.valid_professions:
+                    response_all = self.db.get_all_from_db(
+                        table_name=variable.admin_database,
+                        param=f"WHERE profession LIKE '%{one_prof}, %' OR profession LIKE '%, {one_prof}%' OR profession='{one_prof}'",
+                        field='id'
+                    )
+                    result_dict['all'][one_prof] = len(response_all)
 
-                param = f"WHERE session='{self.current_session}'"
-                messages = DataBaseOperations(None).get_all_from_db('admin_last_session', param=param)
+                    response_last_session = self.db.get_all_from_db(
+                        table_name=variable.admin_database,
+                        param=f"WHERE (profession LIKE '%{one_prof}, %' OR profession LIKE '%, {one_prof}%' OR profession='{one_prof}') AND session='{self.current_session}'",
+                        field='id'
+                    )
+                    result_dict['last_session'][one_prof] = len(response_last_session)
+                    prof_dict = helper.string_to_list(
+                        text=variable.admin_table_fields,
+                        separator=', '
+                    )
+                for item in variable.valid_professions:
+                    message_for_send += f"{item}: {result_dict['last_session'][item]}/{result_dict['all'][item]}\n"
+                message_for_send += f"-----------------\nSumm: {sum(result_dict['last_session'].values())}/{sum(result_dict['all'].values())}"
+                await self.bot_aiogram.send_message(callback.message.chat.id, message_for_send, parse_mode='html', reply_markup=self.markup)
 
-                for value in self.valid_profession_list:
-                    result_dict['last_session'][value] = 0
+# -----------------------------------------------------------------------
 
-                for message in messages:
-                    professions = message[4].split(',')
-                    for pro in professions:
-                        pro = pro.strip()
-                        if pro in self.valid_profession_list:
-                            result_dict['last_session'][pro] += 1
-
-                # --------- compose data from all unapproved sessions --------------
-                messages = DataBaseOperations(None).get_all_from_db('admin_last_session')
-
-                for value in self.valid_profession_list:
-                    result_dict['all'][value] = 0
-
-                for message in messages:
-                    professions = message[4].split(',')
-                    for pro in professions:
-                        pro = pro.strip()
-                        if pro in self.valid_profession_list:
-                            result_dict['all'][pro] += 1
-
-                # ------------ compose message to output ------------------
-
-                message_to_send = f'<b><u>Statistics:</u></b>\n\nLast session ({self.current_session}) / All unapproved:\n'
-                for i in result_dict['last_session']:
-                    message_to_send += f"{i}: {result_dict['last_session'][i]}/{result_dict['all'][i]}\n"
-
-                message_to_send += f"<b>Total: {sum(result_dict['last_session'].values())}/{sum(result_dict['all'].values())}</b>"
-
-                await self.bot_aiogram.send_message(callback.message.chat.id, message_to_send, parse_mode='html', reply_markup=self.markup)
-
-                pass
+                # param = f"WHERE session='{self.current_session}'"
+                # messages = DataBaseOperations(None).get_all_from_db('admin_last_session', param=param)
+                #
+                # for value in self.valid_profession_list:
+                #     result_dict['last_session'][value] = 0
+                #
+                # for message in messages:
+                #     professions = message[4].split(',')
+                #     for pro in professions:
+                #         pro = pro.strip()
+                #         if pro in self.valid_profession_list:
+                #             result_dict['last_session'][pro] += 1
+                #
+                # # --------- compose data from all unapproved sessions --------------
+                # messages = DataBaseOperations(None).get_all_from_db('admin_last_session')
+                #
+                # for value in self.valid_profession_list:
+                #     result_dict['all'][value] = 0
+                #
+                # for message in messages:
+                #     professions = message[4].split(',')
+                #     for pro in professions:
+                #         pro = pro.strip()
+                #         if pro in self.valid_profession_list:
+                #             result_dict['all'][pro] += 1
+                #
+                # # ------------ compose message to output ------------------
+                #
+                # message_to_send = f'<b><u>Statistics:</u></b>\n\nLast session ({self.current_session}) / All unapproved:\n'
+                # for i in result_dict['last_session']:
+                #     message_to_send += f"{i}: {result_dict['last_session'][i]}/{result_dict['all'][i]}\n"
+                #
+                # message_to_send += f"<b>Total: {sum(result_dict['last_session'].values())}/{sum(result_dict['all'].values())}</b>"
+                #
+                # await self.bot_aiogram.send_message(callback.message.chat.id, message_to_send, parse_mode='html', reply_markup=self.markup)
+                #
+                # pass
 
             if callback.data == 'download_excel':
                 "function doesn't work"
@@ -2638,27 +2692,34 @@ class InviteBot():
             response = self.db.get_all_from_db(
                 table_name=f'{variable.admin_database}',
                 param=f"WHERE id={id_admin_last_session_table}",
-                field='chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, '
-                      'job_type, city, salary, experience, contacts, time_of_public, created_at, agregator_link, '
-                      'session, sended_to_agregator, sub'
+                field=variable.admin_table_fields
             )
             if response:
-                response = response[0]
+                response_dict = await helper.to_dict_from_admin_response(
+                    response=response[0],
+                    fields=variable.admin_table_fields
+                )
+
+                # response = response[0]
                 query = f"""INSERT INTO {variable.archive_database} (
                         chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, 
                         job_type, city, salary, experience, contacts, time_of_public, created_at, agregator_link, 
                         session, sended_to_agregator, sub) 
-                                VALUES ('{response[0]}', '{response[1]}', '{response[2]}', 
-                                '{response[3]}', '{response[4]}', '{response[5]}', '{response[6]}', 
-                                '{response[7]}', '{response[8]}', '{response[9]}', 
-                                '{response[10]}', '{response[11]}', '{response[12]}', 
-                                '{response[13]}', '{response[14]}', '{response[15]}', 
-                                '{response[16]}', '{response[17]}', '{response[18]}', 
-                                '{response[19]}');"""
+                                VALUES (
+                                '{response_dict['chat_name']}', '{response_dict['title']}', '{response_dict['body']}', 
+                                '{response_dict['profession']}', '{response_dict['vacancy']}', '{response_dict['vacancy_url']}', 
+                                '{response_dict['company']}', 
+                                '{response_dict['english']}', '{response_dict['relocation']}', '{response_dict['job_type']}', 
+                                '{response_dict['city']}', '{response_dict['salary']}', '{response_dict['experience']}', 
+                                '{response_dict['contacts']}', '{response_dict['time_of_public']}', '{response_dict['created_at']}', 
+                                '{response_dict['agregator_link']}', '{response_dict['session']}', '{response_dict['sended_to_agregator']}', 
+                                '{response_dict['sub']}'
+                                );"""
                 self.db.run_free_request(
                     request=query,
-                    output_text="\nVacancy has remove from admin to archive\n"
+                    output_text="\nThe vacancy has removed from admin to archive\n"
                 )
+
 
         async def compose_data_and_push_to_db(vacancy_from_admin_dict, profession, vacancy_from_admin=None):
             profession_list = {}
@@ -3391,6 +3452,44 @@ class InviteBot():
                 f'- in to shorts {self.quantity_entered_to_shorts}',
                 parse_mode='html'
             )
+
+        async def clear_db_table(profession, quantity_leave):
+            updated = 0
+            removed = 0
+            response = self.db.get_all_from_db(
+                table_name='admin_last_session',
+                param=f"WHERE profession LIKE '%{profession}, %' OR profession LIKE '%, {profession}%' OR profession='{profession}'",
+                without_sort=False,
+                field='profession, id'
+            )
+            pass
+
+            end_iterations = len(response)-int(quantity_leave)
+            for index in range(0, end_iterations):
+                prof = helper.string_to_list(
+                    text=response[index][0],
+                    separator=', '
+                )
+                prof.remove(profession)
+                if prof:
+                    new_prof = helper.list_to_string(
+                        raw_list=prof,
+                        separator=', '
+                    )
+                    self.db.update_table(
+                        table_name='admin_last_session',
+                        param=f"WHERE id={response[index][1]}",
+                        field='profession',
+                        value=new_prof
+                    )
+                    updated += 1
+                else:
+                    await transfer_vacancy_admin_archive(
+                        id_admin_last_session_table=response[index][1]
+                    )
+                    removed += 1
+
+
 
         start_polling(self.dp)
         # executor.start_polling(dp, skip_updates=True)

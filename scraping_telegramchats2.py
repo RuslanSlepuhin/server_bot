@@ -188,7 +188,11 @@ class WriteToDbMessages():
                 else:
                     all_messages.append(message.to_dict())
 
-            offset_msg = messages[len(messages) - 1].id
+            try:
+                offset_msg = messages[len(messages) - 1].id
+            except Exception as e:
+                print('192 - offset_msg = messages[len(messages) - 1].id\n', e)
+                break
             total_messages = len(all_messages)
             if (total_count_limit != 0 and total_messages >= total_count_limit) or not messages:
                 break
