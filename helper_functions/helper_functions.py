@@ -1,7 +1,5 @@
 import time
-
-# from db_operations.scraping_db import DataBaseOperations
-# db = DataBaseOperations(None)
+from patterns._export_pattern import export_pattern
 
 def compose_to_str_from_list(data_list):
     sub_str = ''
@@ -19,8 +17,13 @@ def decompose_from_str_to_list(data_str):
         i = i.split(': ')
         key = i[0]
         sub_items = i[1]
-        data_dict[key] = sub_items.split(', ')
-    pass
+        if sub_items:
+            data_dict[key] = sub_items.split(', ')
+        else:
+            data_dict[key] = []
+    # for key in data_dict:
+    #     if data_dict[key] == ['']:
+    #         data_dict[key] = []
     return data_dict
 
 def compose_simple_list_to_str(data_list, separator):
@@ -45,6 +48,47 @@ async def to_dict_from_temporary_response(response, fields):
     for i in range(0, len(fields)):
         response_dict[fields[i]] = response[i]
     return response_dict
+
+async def get_pattern(path):
+    print('\n\n---------------------------------------\n\n')
+    message = ''
+    for key in export_pattern:
+        message += f"{key}:\n"
+
+        if type(export_pattern[key]) is dict:
+            for key2 in export_pattern[key]:
+                message += f"\t{key2}:\n"
+
+                if type(export_pattern[key][key2]) is dict:
+                    for key3 in export_pattern[key][key2]:
+                        message += f"\t\t{key3}:\n"
+
+                        if type(export_pattern[key][key2][key3]) is dict and export_pattern[key][key2][key3]:
+                            for key4 in export_pattern[key][key2][key3]:
+                                message += f"\t\t\t{key4}:\n"
+
+                                if type(export_pattern[key][key2][key3][key4]) is dict:
+                                    for key5 in export_pattern[key][key2][key3][key4]:
+                                        message += f"\t\t\t\t{key5}:\n"
+
+                                        if type(export_pattern[key][key2][key3][key4][key5]) is dict:
+                                            for key6 in export_pattern[key][key2][key3][key4][key5]:
+                                                message += f"\t\t\t\t\t{key6}:\n"
+                                        else:
+                                            message += f"\t\t\t\t\t\t{export_pattern[key][key2][key3][key4][key5]}\n"
+                                else:
+                                    message += f"\t\t\t\t\t{export_pattern[key][key2][key3][key4]}\n"
+                        else:
+                            message += f"\t\t\t{export_pattern[key][key2][key3]}\n"
+                else:
+                    message += f"\t\t{export_pattern[key][key2]}\n"
+        else:
+            message += f"\t{export_pattern[key]}\n"
+
+    print(message)
+    with open(path, "w", encoding='utf-8') as file:
+        file.write(message)
+        print('Done')
 
 
 

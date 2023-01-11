@@ -89,6 +89,10 @@ drupal = {
 }
 drupal['mex'] = set(frontend['mex']).union(set(drupal['mex2']))
 
+frontend['ma']=set(vue['ma']).union(set(frontend['ma2'])).union(set(react['ma'])).union(set(angular['ma'])).\
+    union(set(django['ma'])).union(set(wordpress['ma'])).union(set(bitrix['ma'])).union(set(joomla['ma'])).\
+    union(set(drupal['ma']))
+
 frontend['sub'] = {
     'vue': vue,
     'react': react,

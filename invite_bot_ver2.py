@@ -230,6 +230,7 @@ class InviteBot():
                                                             '⛔️/get_participants\n'
                                                             '⛔️/get_user_data\n'
                                                             '⛔️/emergency_push\n'
+                                                            '⛔️/get_pattern\n'
                                                             '----------------------------------------------------\n\n'
                                                             '---------------- PARSING: ----------------\n'
                                                             '🔆/magic_word - input word and get results from hh.ru\n'
@@ -276,6 +277,12 @@ class InviteBot():
         async def get_logs(message: types.Message):
             path = './logs/logs.txt'
             await send_file_to_user(message, path)
+
+        @self.dp.message_handler(commands=['get_pattern'])
+        async def get_logs(message: types.Message):
+            path = variable.pattern_path
+            await helper.get_pattern(path)
+            await send_file_to_user(message, path, 'Please take the pattern')
 
         @self.dp.message_handler(commands=['debugs'])
         async def get_debugs(message: types.Message):

@@ -20,7 +20,7 @@ from patterns.data_pattern._data_pattern import pattern
 from patterns.data_pattern._data_pattern import params
 from patterns.data_pattern._data_pattern import vacancy_pattern
 from patterns.data_pattern._data_pattern import search_companies, search_companies2
-
+from utils.additional_variables import additional_variables as variable
 export_pattern = {
     'data': {
         'vacancy': pattern['vacancy'],
@@ -39,6 +39,7 @@ export_pattern = {
         'marketing': marketing,
         'mobile': mobile,
         'pm': pm,
+        'product': pm,
         'qa': qa,
         'sales_manager': sales_manager,
         'fullstack': fullstack,
@@ -119,16 +120,10 @@ export_pattern['professions']['mobile']['mex']=set(export_pattern['professions']
 # from sales_manager
 # from dev
 
-# for i in export_pattern:
-#     if len(i)<2:
-#         print(i, export_pattern[i])
-#     else:
-#         for i2 in i:
-#             if len(i2)<2:
-#                 print('---', i2, i[i2])
-#             else:
-#                 for i3 in i2:
-#                     print('------', i3, i2[i3])
-print(export_pattern.keys())
+#-------------------------------------------------
+# for prof in variable.valid_professions:
+#     export_pattern['professions']['junior']['sub'][prof] = export_pattern['professions'][prof]['ma']
 
+# from helper_functions import helper_functions as helper
+# helper.get_pattern(variable.pattern_path)
 

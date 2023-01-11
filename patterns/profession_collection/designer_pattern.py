@@ -89,7 +89,9 @@ uxre_searcher = {
 }
 uxre_searcher['mex'] = set(designer['mex']).union(set(uxre_searcher['mex2']))
 
-
+designer['ma'] = set(ui_ux['ma']).union(set(motion['ma'])).union(set(dd['ma'])).union(set(ddd['ma']))\
+    .union(set(game_designer['ma'])).union(set(illustrator['ma'])).union(set(graphic['ma'])).\
+    union(set(uxre_searcher['ma']))
 
 designer['sub'] = {
     'ui_ux': ui_ux,
