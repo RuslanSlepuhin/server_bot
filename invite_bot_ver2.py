@@ -3207,7 +3207,7 @@ class InviteBot():
 #                 message.chat.id,
 #                 'Bot is parsing the telegram channels...',
 #                 parse_mode='HTML')
-            await main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})  # run parser tg channels and write to profession's tables
+#             await main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})  # run parser tg channels and write to profession's tables
             # await bot_aiogram.send_message(
 #                 message.chat.id,
 #                 '...it has been successfully',
