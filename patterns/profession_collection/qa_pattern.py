@@ -36,6 +36,8 @@ support = {
     'mincl': pattern['qa']['sub']['support']['mincl'],
 }
 
+qa['ma'] = set(manual_qa['ma']).union(set(aqa['ma'])).union(set(support['ma']))
+
 qa['sub'] = {
     'manual_qa': manual_qa,
     'aqa': aqa,
