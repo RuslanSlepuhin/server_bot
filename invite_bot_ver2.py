@@ -236,6 +236,7 @@ class InviteBot():
                                                             '⛔️/emergency_push\n'
                                                             '⛔️/get_pattern\n'
                                                             '⛔️/clear_db_table\n'
+                                                            '⛔️/admin_temporary\n'
                                                             '----------------------------------------------------\n\n'
                                                             '---------------- PARSING: ----------------\n'
                                                             '🔆/magic_word - input word and get results from hh.ru\n'
@@ -291,6 +292,14 @@ class InviteBot():
         @self.dp.message_handler(commands=['debugs'])
         async def get_debugs(message: types.Message):
             await debug_function()
+
+        @self.dp.message_handler(commands=['admin_temporary'])
+        async def admin_temporary_commands(message: types.Message):
+            response = self.db.get_all_from_db(
+                table_name='admin_temporary',
+                field='id'
+            )
+            await self.bot_aiogram.send_message(message_chat_id, f"В temporary {len(response)} messages")
 
         @self.dp.message_handler(commands=['developing'])
         async def developing(message: types.Message):
