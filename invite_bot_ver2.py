@@ -3311,10 +3311,11 @@ class InviteBot():
                     without_sort=True,
                     field=variable.fields_admin_temporary
                 )
-                response_temp_dict = await helper.to_dict_from_temporary_response(response[0],
-                                                                                  variable.fields_admin_temporary)
 
                 if response:
+                    response_temp_dict = await helper.to_dict_from_temporary_response(response[0],
+                                                                                      variable.fields_admin_temporary)
+
                     # id_admin_last_session_table = int(response[0][2])
 
                     vacancy_from_admin = DataBaseOperations(None).get_all_from_db(
