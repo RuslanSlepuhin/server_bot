@@ -1,6 +1,5 @@
 import asyncio
 import time
-from multiprocessing import Pool
 import pandas as pd
 import psycopg2
 import os
@@ -9,7 +8,7 @@ import re
 import urllib
 from datetime import datetime, timedelta
 import pandas
-from aiogram import Bot, Dispatcher, executor, types
+from aiogram import Bot, Dispatcher, types
 import logging
 import configparser
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -22,17 +21,16 @@ from telethon.sync import TelegramClient
 from telethon.tl import functions
 from telethon.tl.functions.channels import GetParticipantsRequest
 from telethon.tl.functions.messages import GetHistoryRequest
-from telethon.tl.types import InputUser, InputChannel, ChannelParticipantsSearch, PeerChannel, PeerUser
+from telethon.tl.types import InputUser, InputChannel, ChannelParticipantsSearch, PeerChannel
 from db_operations.scraping_db import DataBaseOperations
 from filters.scraping_get_profession_Alex_next_2809 import AlexSort2809
-from progress.progress import ShowProgress
-from scraping_telegramchats2 import WriteToDbMessages, main
+from telegram_chats.scraping_telegramchats2 import WriteToDbMessages, main
 from sites.parsing_sites_runner import ParseSites
 from logs.logs import Logs
 from sites.scraping_dev import DevGetInformation
 from sites.scraping_geekjob import GeekGetInformation
 from sites.scraping_hh import HHGetInformation
-from progress.progress import ShowProgress
+from helper_functions.progress import ShowProgress
 from sites.scraping_superjob import SuperJobGetInformation
 from sites.scraping_svyazi import SvyaziGetInformation
 from sites.scrapping_finder import FinderGetInformation
@@ -103,7 +101,8 @@ class InviteBot():
         self.all_participant = []
         self.channel = None
         self.db = DataBaseOperations(con=None)
-        self.admin_check_file = './logs/check_file.txt'
+        self.admin_check_file = variable.admin_check_file_path
+        self.message_for_send_dict = {}
         # self.token = token
         # self.bot_aiogram = Bot(token=token)
         # self.storage = MemoryStorage()
@@ -229,14 +228,15 @@ class InviteBot():
                                                             '⛔️/peerchannel - useful for a developer to get id channel\n'
                                                             '⛔️/getdata - get channel data\n'
                                                             '⛔️/check_parameters - get vacancy\'s parameters\n'
-                                                            '⛔️/get_backup_db - recieve last db backup\n'
+                                                            '⛔️/get_backup_db - receive last db backup\n'
                                                             '⛔️/check_link_hh - doesnt work :)\n'
                                                             '⛔️/get_participants\n'
                                                             '⛔️/get_user_data\n'
                                                             '⛔️/emergency_push\n'
                                                             '⛔️/get_pattern\n'
+                                                            '⛔️/get_pattern_pseudo\n'
                                                             '⛔️/clear_db_table\n'
-                                                            '⛔️/admin_temporary\n'
+                                                            '⛔️/numbers_of_archive\n'
                                                             '----------------------------------------------------\n\n'
                                                             '---------------- PARSING: ----------------\n'
                                                             '🔆/magic_word - input word and get results from hh.ru\n'
@@ -283,23 +283,30 @@ class InviteBot():
             path = './logs/logs.txt'
             await send_file_to_user(message, path)
 
+        @self.dp.message_handler(commands=['numbers_of_archive'])
+        async def get_numbers_of_archive_commands(message: types.Message):
+            response = self.db.get_all_from_db(
+                table_name='archive',
+                field='id'
+            )
+            await self.bot_aiogram.send_message(message.chat.id, f"There are {len(response)} vacancies in archive table")
+
+
         @self.dp.message_handler(commands=['get_pattern'])
         async def get_logs(message: types.Message):
             path = variable.pattern_path
             await helper.get_pattern(path)
             await send_file_to_user(message, path, 'Please take the pattern')
 
+        @self.dp.message_handler(commands=['get_pattern_pseudo'])
+        async def get_pattern_pseudo_commands(message: types.Message):
+            path = variable.pattern_path
+            await helper.get_pattern(path, pseudo=True)
+            await send_file_to_user(message, path, 'Please take the pattern')
+
         @self.dp.message_handler(commands=['debugs'])
         async def get_debugs(message: types.Message):
             await debug_function()
-
-        @self.dp.message_handler(commands=['admin_temporary'])
-        async def admin_temporary_commands(message: types.Message):
-            response = self.db.get_all_from_db(
-                table_name='admin_temporary',
-                field='id'
-            )
-            await self.bot_aiogram.send_message(message_chat_id, f"В temporary {len(response)} messages")
 
         @self.dp.message_handler(commands=['developing'])
         async def developing(message: types.Message):
@@ -565,7 +572,7 @@ class InviteBot():
         async def ambulance(message: types.Message):
             short = ''
             shorts_list = []
-            with open('./ambulance/ambulance_shorts.txt', 'r') as file:
+            with open('excel/ambulance/ambulance_shorts.txt', 'r') as file:
                 shorts = file.read()
             if len(shorts)<4096:
                 return await self.bot_aiogram.send_message(message.chat.id, shorts, parse_mode='html')
@@ -1186,8 +1193,8 @@ class InviteBot():
                 #             try:
                 #                 await write_to_logs_error(f"Results:\n{short}\n")
                 #                 await self.bot_aiogram.send_message(variable.channel_id_for_shorts, short, parse_mode='html', disable_web_page_preview=True)
-                #             except Exception as e:
-                #                 await self.bot_aiogram.send_message(callback.message.chat.id, str(e))
+                #             except Exception as telethon:
+                #                 await self.bot_aiogram.send_message(callback.message.chat.id, str(telethon))
                 #
                 # await delete_and_change_waste_vacancy(callback.message, last_id_message_agregator=self.last_id_message_agregator, profession=profession)
                 #
@@ -1609,7 +1616,7 @@ class InviteBot():
                 channel = await self.client.get_entity(channel)
                 channel_to_send = InputChannel(channel.id, channel.access_hash)  # был InputPeerChannel
             except Exception as e:
-                # await bot_aiogram.send_message(message.chat.id, f'{e}\nУкажате канал в формате https//t.me/<имя канала> (без @)\n'
+                # await bot_aiogram.send_message(message.chat.id, f'{telethon}\nУкажате канал в формате https//t.me/<имя канала> (без @)\n'
                 #                                         f'Обратите внимание на то, что <b>и Вы и этот бот</b> в этом канале должны быть <b>администраторами</b>', parse_mode='html')
                 await self.bot_aiogram.send_message(message.chat.id, 'Это сообщение вместо того, по которому была ошибка')
                 return False
@@ -1678,7 +1685,7 @@ class InviteBot():
                         if msg:
                             await msg.delete()
                             msg = None
-                        # await bot_aiogram.send_message(message.chat.id, f"813: {str(e)}")
+                        # await bot_aiogram.send_message(message.chat.id, f"813: {str(telethon)}")
                         print(f"#813: if username != None {str(e)}")
                         text = f"#813: if username != None {str(e)}\n"
                         await add_log_inviter(text)
@@ -1697,7 +1704,7 @@ class InviteBot():
                                     try:
                                         user_to_send = [InputUser(id_user, access_hash_user)]
                                     except Exception as e:
-                                        # await bot_aiogram.send_message(message.chat.id, f"#824: if username != None {str(e)}")
+                                        # await bot_aiogram.send_message(message.chat.id, f"#824: if username != None {str(telethon)}")
                                         print(f"#824: if username != None {str(e)}")
                                         text = f"#824: if username != None {str(e)}\n"
                                         await add_log_inviter(text)
@@ -1708,7 +1715,7 @@ class InviteBot():
                             try:
                                 user_to_send = [InputUser(id_user, access_hash_user)]  # (PeerUser(id_user))
                             except Exception as e:
-                                # await bot_aiogram.send_message(message.chat.id, f"#831: if username = None {str(e)}")
+                                # await bot_aiogram.send_message(message.chat.id, f"#831: if username = None {str(telethon)}")
                                 print(f"#831: if username = None {str(e)}")
                                 text = f"#831: if username = None {str(e)}\n"
                                 await add_log_inviter(text)
@@ -1751,8 +1758,8 @@ class InviteBot():
                                     msg = None
                                 # -----------------------------------------------------try---------------------------------------------------------------
                                 try:
-                                    # await bot_aiogram.send_message(message.chat.id, f'<b>{channel_short_name}</b>: Для пользователя id={user[0]}\n{str(e)}', parse_mode='html')
-                                    # self.participants_dict['status'].append(str(e))
+                                    # await bot_aiogram.send_message(message.chat.id, f'<b>{channel_short_name}</b>: Для пользователя id={user[0]}\n{str(telethon)}', parse_mode='html')
+                                    # self.participants_dict['status'].append(str(telethon))
                                     self.all_participant[index][-1] = str(e)
 
                                     print(f'{channel_short_name}: Для пользователя id={user[0]}\n{str(e)}\n\n')
@@ -1798,9 +1805,9 @@ class InviteBot():
                     }
                 )
                 try:
-                    df.to_excel(f'./excel/invite_report.xlsx', sheet_name='Sheet1')
+                    df.to_excel(f'./excel/excel/invite_report.xlsx', sheet_name='Sheet1')
                     print('got it')
-                    await send_file_to_user(message, f'./excel/invite_report.xlsx')
+                    await send_file_to_user(message, f'./excel/excel/invite_report.xlsx')
                 except Exception as e:
                     await self.bot_aiogram.send_message(message.chat.id, f"Something is wrong: {str(e)}")
                     print(f"Something is wrong: {str(e)}")
@@ -1824,7 +1831,7 @@ class InviteBot():
                 if msg:
                     await msg.delete()
                     msg = None
-                # await bot_aiogram.send_message(message.chat.id, f'bottom: #897: {e}')
+                # await bot_aiogram.send_message(message.chat.id, f'bottom: #897: {telethon}')
                 print(f'bottom: #897: {e}')
 
                 await send_file_to_user(message, 'inviter_log.txt')
@@ -1839,7 +1846,7 @@ class InviteBot():
                 channel = await self.client.get_entity(channel)
                 channel_to_send = InputChannel(channel.id, channel.access_hash)  # был InputPeerChannel
             except Exception as e:
-                # await bot_aiogram.send_message(message.chat.id, f'{e}\nУкажате канал в формате https//t.me/<имя канала> (без @)\n'
+                # await bot_aiogram.send_message(message.chat.id, f'{telethon}\nУкажате канал в формате https//t.me/<имя канала> (без @)\n'
                 #                                         f'Обратите внимание на то, что <b>и Вы и этот бот</b> в этом канале должны быть <b>администраторами</b>', parse_mode='html')
                 await self.bot_aiogram.send_message(message.chat.id, 'Это сообщение вместо того, по которому была ошибка')
                 return False
@@ -1983,29 +1990,32 @@ class InviteBot():
                     progress_message = await self.bot_aiogram.send_message(message.chat.id, "progress 0%")
                     await progress.reset_percent()
                     for vacancy in response:
-
-                        id_admin_last_session_table = vacancy[0]
+                        response_admin_dict = await helper.to_dict_from_temporary_response(
+                            response=vacancy,
+                            fields=variable.admin_table_fields
+                        )
+                        id_admin_last_session_table = response_admin_dict['id']
 
                         # to compose the vacancy message for sending to agregator
-                        composed_message = await compose_message(vacancy, one_profession=profession, full=True)
+                        composed_message = await compose_message(
+                            one_profession=profession,
+                            vacancy_from_admin_dict=response_admin_dict
+                        )
                         composed_message['message'] = composed_message['composed_message']
-                        pass
-
-                        prof_stack = vacancy[4]
-
+                        response_admin_dict['id_admin_last_session_table'] = response_admin_dict['id']
                         try:
                             # push to the admin channel
                             await push_vacancies_to_agregator_from_admin(
                                 message=message,
-                                vacancy=composed_message,
-                                vacancy_from_admin=[vacancy],
-                                response=[vacancy],
-                                profession=profession,
-                                prof_stack=prof_stack,
-                                id_admin_last_session_table=id_admin_last_session_table,
+                                vacancy_message=composed_message,
+                                # vacancy_from_admin=[vacancy],
+                                # response=[vacancy],
+                                # profession=profession,
+                                prof_stack=response_admin_dict['profession'],
+                                id_admin_last_session_table=response_admin_dict,
                                 links_on_prof_channels=False,
-                                from_admin_temporary=False
                             )
+
                             status_agregator_send = True
 
                         except Exception as e:
@@ -2016,24 +2026,35 @@ class InviteBot():
 
                         if status_agregator_send:
                             # add to shorts
-                            response = self.db.get_all_from_db(
-                                table_name='admin_last_session',
-                                param=f"WHERE id={id_admin_last_session_table}"
-                            ) # for to refresh vacancy regarding agregator id if it has written
-                            vacancy = response[0]
-                            composed_message = await compose_message(vacancy, profession, full=False)
-                            message_for_send += f"{composed_message['composed_message']}\n"
-
+                            # response = self.db.get_all_from_db(
+                            #     table_name='admin_last_session',
+                            #     param=f"WHERE id={id_admin_last_session_table}",
+                            #     field=variable.admin_table_fields
+                            # ) # for to refresh vacancy regarding agregator id if it has written
+                            # response_admin_dict = await helper.to_dict_from_temporary_response(
+                            #     response=vacancy,
+                            #     fields=variable.admin_table_fields
+                            # )
+                            # composed_message = await compose_message(
+                            #     one_profession=profession,
+                            #     vacancy_from_admin_dict=response_admin_dict,
+                            #     full=True
+                            # )
+                            # message_for_send += f"{composed_message['composed_message']}\n"
+                            await compose_message_for_send_dict(
+                                composed_message_dict=composed_message,
+                                profession=profession
+                            )
                             await ambulance_saved_to_file(f"{composed_message['composed_message']}")
 
                             statistics[profession] += 1
                             self.quantity_entered_to_shorts += 1
 
                             await compose_data_and_push_to_db(
-                                vacancy_from_admin=[vacancy],
+                                vacancy_from_admin_dict=response_admin_dict,
                                 profession=profession
                             )
-                            prof_list = vacancy[4].split(',')
+                            prof_list = response_admin_dict['profession'].split(',')
 
                             # change field profession on DB or delete
                             await update_vacancy_admin_last_session(
@@ -2047,22 +2068,25 @@ class InviteBot():
                             n += 1
                             progress_message = await progress.show_the_progress(progress_message, n, length)
 
-                    vacancies_list = await cut_message_for_send(message_for_send)
-                    n_count = 1
-                    for short in vacancies_list:
-                        try:
-                            await write_to_logs_error(f"Results:\n{short}\n")
-                            # push shorts
-                            await self.bot_aiogram.send_message(config['My_channels'][f'{profession}_channel'], short, parse_mode='html',
-                                                           disable_web_page_preview=True)
-                            print(n_count, 'print shorts')
-                            n_count += 1
-                            await asyncio.sleep(random.randrange(3, 4))
 
-                        except Exception as e:
-                            await self.bot_aiogram.send_message(config['My_channels']['temporary_channel'], f'It did not send to {profession}. Please, do it manually', parse_mode='html')
-                            await self.bot_aiogram.send_message(config['My_channels']['temporary_channel'], short, parse_mode='html',
-                                                           disable_web_page_preview=True)
+                    await shorts_public(message=message)
+
+                    # vacancies_list = await cut_message_for_send(self.message_for_send)
+                    # n_count = 1
+                    # for short in vacancies_list:
+                    #     try:
+                    #         await write_to_logs_error(f"Results:\n{short}\n")
+                    #         # push shorts
+                    #         await self.bot_aiogram.send_message(config['My_channels'][f'{profession}_channel'], short, parse_mode='html',
+                    #                                        disable_web_page_preview=True)
+                    #         print(n_count, 'print shorts')
+                    #         n_count += 1
+                    #         await asyncio.sleep(random.randrange(3, 4))
+                    #
+                    #     except Exception as e:
+                    #         await self.bot_aiogram.send_message(config['My_channels']['temporary_channel'], f'It did not send to {profession}. Please, do it manually', parse_mode='html')
+                    #         await self.bot_aiogram.send_message(config['My_channels']['temporary_channel'], short, parse_mode='html',
+                    #                                        disable_web_page_preview=True)
                 else:
                     pass
             await self.bot_aiogram.send_message(message.chat.id, "The HARD pushing has done")
@@ -2080,7 +2104,7 @@ class InviteBot():
                 status = "w"
             else:
                 status = "a+"
-            with open("./ambulance/ambulance_shorts.txt", f"{status}") as file:
+            with open("excel/ambulance/ambulance_shorts.txt", f"{status}") as file:
                 try:
                     file.write(text)
                 except Exception as e:
@@ -2317,10 +2341,10 @@ class InviteBot():
                 }
             )
 
-            df.to_excel(f'./excel/followers_statistics.xlsx', sheet_name='Sheet1')
+            df.to_excel(f'./excel/excel/followers_statistics.xlsx', sheet_name='Sheet1')
             print(f'\nExcel was writting')
 
-            await send_file_to_user(message, path='./excel/followers_statistics.xlsx')
+            await send_file_to_user(message, path='excel/excel/excel/followers_statistics.xlsx')
 
         async def send_file_to_user(message, path, caption='Please take it'):
 
@@ -2357,40 +2381,41 @@ class InviteBot():
 
         async def compose_inline_keyboard(prefix=None):
             markup = InlineKeyboardMarkup(row_width=4)
-            button_marketing = InlineKeyboardButton('marketing', callback_data=f'{prefix}/marketing')
-            button_ba = InlineKeyboardButton('ba', callback_data=f'{prefix}/ba')
-            button_game = InlineKeyboardButton('game', callback_data=f'{prefix}/game')
-            button_product = InlineKeyboardButton('product', callback_data=f'{prefix}/product')
-            button_mobile = InlineKeyboardButton('mobile', callback_data=f'{prefix}/mobile')
-            button_pm = InlineKeyboardButton('pm', callback_data=f'{prefix}/pm')
-            button_sales_manager = InlineKeyboardButton('sales_manager', callback_data=f'{prefix}/sales_manager')
-            button_designer = InlineKeyboardButton('designer', callback_data=f'{prefix}/designer')
-            button_devops = InlineKeyboardButton('devops', callback_data=f'{prefix}/devops')
-            button_hr = InlineKeyboardButton('hr', callback_data=f'{prefix}/hr')
-            button_backend = InlineKeyboardButton('backend', callback_data=f'{prefix}/backend')
-            button_frontend = InlineKeyboardButton('frontend', callback_data=f'{prefix}/frontend')
-            button_qa = InlineKeyboardButton('qa', callback_data=f'{prefix}/qa')
-            button_junior = InlineKeyboardButton('junior', callback_data=f'{prefix}/junior')
-            button_analyst = InlineKeyboardButton('analyst', callback_data=f'{prefix}/analyst')
 
-            markup.row(button_marketing, button_ba, button_game, button_product)
-            markup.row(button_mobile, button_pm, button_sales_manager, button_designer)
-            markup.row(button_devops, button_hr, button_backend, button_frontend)
-            markup.row(button_qa, button_junior, button_analyst)
+            button_dict = {}
+            for item in self.valid_profession_list:
+                button_dict[item] = InlineKeyboardButton(item, callback_data=f"{prefix}/{item}")
+
+            # button_marketing = InlineKeyboardButton('marketing', callback_data=f'{prefix}/marketing')
+            # button_ba = InlineKeyboardButton('ba', callback_data=f'{prefix}/ba')
+            # button_game = InlineKeyboardButton('game', callback_data=f'{prefix}/game')
+            # button_product = InlineKeyboardButton('product', callback_data=f'{prefix}/product')
+            # button_mobile = InlineKeyboardButton('mobile', callback_data=f'{prefix}/mobile')
+            # button_pm = InlineKeyboardButton('pm', callback_data=f'{prefix}/pm')
+            # button_sales_manager = InlineKeyboardButton('sales_manager', callback_data=f'{prefix}/sales_manager')
+            # button_designer = InlineKeyboardButton('designer', callback_data=f'{prefix}/designer')
+            # button_devops = InlineKeyboardButton('devops', callback_data=f'{prefix}/devops')
+            # button_hr = InlineKeyboardButton('hr', callback_data=f'{prefix}/hr')
+            # button_backend = InlineKeyboardButton('backend', callback_data=f'{prefix}/backend')
+            # button_frontend = InlineKeyboardButton('frontend', callback_data=f'{prefix}/frontend')
+            # button_qa = InlineKeyboardButton('qa', callback_data=f'{prefix}/qa')
+            # button_junior = InlineKeyboardButton('junior', callback_data=f'{prefix}/junior')
+            # button_analyst = InlineKeyboardButton('analyst', callback_data=f'{prefix}/analyst')
+            #
+            markup.row(button_dict['designer'], button_dict['ba'], button_dict['game'], button_dict['product'])
+            markup.row(button_dict['mobile'], button_dict['pm'], button_dict['sales_manager'], button_dict['analyst'])
+            markup.row(button_dict['frontend'], button_dict['marketing'], button_dict['devops'], button_dict['hr'])
+            markup.row(button_dict['backend'], button_dict['qa'], button_dict['junior'])
             return markup
 
         async def compose_message(one_profession, vacancy_from_admin_dict, full=False, message=None):
             profession_list = {}
-            results_dict = {}
-            profession_amount = []
 
-            # if message[4]:
             if vacancy_from_admin_dict['profession']:
                 profession_list['profession'] = []
                 print(vacancy_from_admin_dict['profession'])
 
                 if one_profession:
-                    # professions_amount = profession_list['profession']  # count how much of professions
                     profession_list['profession'] = [one_profession, ]  # rewrite list if one_profession
                 else:
                     if ',' in vacancy_from_admin_dict['profession']:
@@ -2567,7 +2592,7 @@ class InviteBot():
                     await self.bot_aiogram.send_message(message.chat.id, f'\n***Cant get messages from admin***\n{e}\n')
                     # await self.bot_dict['bot'].send_message(
                     #     self.bot_dict['chat_id'],
-                    #     f"Getting history:\n{str(e)}: {channel}\npause 25-30 seconds...",
+                    #     f"Getting history:\n{str(telethon)}: {channel}\npause 25-30 seconds...",
                     #     parse_mode="HTML",
                     #     disable_web_page_preview=True)
                     time.sleep(2)
@@ -2618,10 +2643,10 @@ class InviteBot():
             #         offset_date=None, add_offset=0,
             #         limit=limit_msg, max_id=0, min_id=0,
             #         hash=0))
-            # except Exception as e:
+            # except Exception as telethon:
             #     await bot_aiogram.send_message(
             #         message.chat.id,
-            #         f"Getting history:\n{str(e)}: {channel}\npause 25-30 seconds...",
+            #         f"Getting history:\n{str(telethon)}: {channel}\npause 25-30 seconds...",
             #         parse_mode="HTML",
             #         disable_web_page_preview=True)
             #     time.sleep(2)
@@ -2730,7 +2755,7 @@ class InviteBot():
                 )
 
 
-        async def compose_data_and_push_to_db(vacancy_from_admin_dict, profession, vacancy_from_admin=None):
+        async def compose_data_and_push_to_db(vacancy_from_admin_dict, profession):
             profession_list = {}
             profession_list['profession'] = []
             profession_list['profession'] = [profession, ]
@@ -3009,9 +3034,9 @@ class InviteBot():
                 }
             )
 
-            df.to_excel(f'./excel/statistics.xlsx', sheet_name='Sheet1')
+            df.to_excel(f'./excel/excel/statistics.xlsx', sheet_name='Sheet1')
             print('got it')
-            await send_file_to_user(message, f'./excel/statistics.xlsx')
+            await send_file_to_user(message, f'excel/excel/statistics.xlsx')
 
         async def delete_since(tables_list=None, ids_list=None, param=None):
             """
@@ -3074,7 +3099,7 @@ class InviteBot():
                 'qa': info_dict['qa'],
                 'junior': info_dict['junior']
             })
-            path = f'./excel/consolidated_table.xlsx'
+            path = f'excel/excel/consolidated_table.xlsx'
             df.to_excel(path, sheet_name='Sheet1')
             print('got it')
             await send_file_to_user(message, path)
@@ -3174,7 +3199,7 @@ class InviteBot():
                     'anti_tag': anti_tag
                 }
             )
-            path = './excel/professions_rewrite.xlsx'
+            path = 'excel/excel/professions_rewrite.xlsx'
 
             try:
                 df.to_excel(path, sheet_name='Sheet1')
@@ -3216,24 +3241,24 @@ class InviteBot():
 #                 message.chat.id,
 #                 'Bot is parsing the telegram channels...',
 #                 parse_mode='HTML')
-#             await main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})  # run parser tg channels and write to profession's tables
+            await main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})  # run parser tg channels and write to profession's tables
             # await bot_aiogram.send_message(
-#                 message.chat.id,
-#                 '...it has been successfully',
+            #     message.chat.id,
+            #     '...it has been successfully',
 #                 parse_mode='HTML')
 #             await asyncio.sleep(2)
             #
             # # ---------------------- parsing the sites. List of them will grow ------------------------
 #             await bot_aiogram.send_message(message.chat.id, 'Bot is parsing the sites...')
-#             psites = ParseSites(client=self.client, bot_dict={'bot': bot_aiogram, 'chat_id': message.chat.id})
-#             await psites.call_sites()
+            psites = ParseSites(client=self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})
+            await psites.call_sites()
 #             await bot_aiogram.send_message(message.chat.id, '...it has been successfully. Press <b>Digest</b> for the next step', parse_mode='html')
 
-            psites = ParseSites(client=self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})
-            task1 = asyncio.create_task(main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}))
-            task2 = asyncio.create_task(psites.call_sites())
-            await asyncio.gather(task1, task2)
-            await self.bot_aiogram.send_message(message.chat.id, '----- PARSING HAS DONE! -----')
+            # psites = ParseSites(client=self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})
+            # task1 = asyncio.create_task(main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}))
+            # task2 = asyncio.create_task(psites.call_sites())
+            # await asyncio.gather(task1, task2)
+            # await self.bot_aiogram.send_message(message.chat.id, '----- PARSING HAS DONE! -----')
 
         async def debug_function():
             response = DataBaseOperations(None).get_all_from_db(
@@ -3303,10 +3328,13 @@ class InviteBot():
             # get messages from TG admin
             history_messages = await get_tg_history_messages(message)
             self.out_from_admin_channel = len(history_messages)
-            message_for_send = f'<i>Функционал дайджеста находится в состоянии альфа-тестирования, приносим свои ' \
-                               f'извинения, мы работаем над тем чтобы вы получали информацию максимально ' \
-                               f'качественную и в сжатые сроки</i>\n\n' \
-                               f'<b>Дайджест вакансий для {profession} за {datetime.now().strftime("%d.%m.%Y")}:</b>\n\n'
+            # message_for_send = f'<i>Функционал дайджеста находится в состоянии альфа-тестирования, приносим свои ' \
+            #                    f'извинения, мы работаем над тем чтобы вы получали информацию максимально ' \
+            #                    f'качественную и в сжатые сроки</i>\n\n' \
+            #                    f'<b>Дайджест вакансий для {profession} за {datetime.now().strftime("%d.%m.%Y")}:</b>\n\n'
+
+            message_for_send = f'<b>Дайджест вакансий для {profession} за {datetime.now().strftime("%d.%m.%Y")}:</b>\n\n'
+
 
             length = len(history_messages)
             n = 0
@@ -3320,11 +3348,10 @@ class InviteBot():
                     without_sort=True,
                     field=variable.fields_admin_temporary
                 )
+                response_temp_dict = await helper.to_dict_from_temporary_response(response[0],
+                                                                                  variable.fields_admin_temporary)
 
                 if response:
-                    response_temp_dict = await helper.to_dict_from_temporary_response(response[0],
-                                                                                      variable.fields_admin_temporary)
-
                     # id_admin_last_session_table = int(response[0][2])
 
                     vacancy_from_admin = DataBaseOperations(None).get_all_from_db(
@@ -3383,20 +3410,10 @@ class InviteBot():
                             vacancy_from_admin_dict=vacancy_from_admin_dict
                         )
 
-                        if composed_message_dict['sub_list']:
-                            for sub in composed_message_dict['sub_list']:
-                                if sub not in message_for_send_dict.keys():
-                                    message_for_send_dict[
-                                        sub] = f"{variable.message_for_send}Дайджест вакансий для {sub.capitalize()} за {datetime.now().strftime('%d.%m.%Y')}\n\n"
-                                message_for_send_dict[sub] += f"{composed_message_dict['composed_message']}\n"
-                        else:
-                            if profession not in message_for_send_dict.keys():
-                                message_for_send_dict[
-                                    profession] = f"{variable.message_for_send}Дайджест вакансий для {profession.capitalize()} за {datetime.now().strftime('%d.%m.%Y')}\n\n"
-                            message_for_send_dict[profession] += f"{composed_message_dict['composed_message']}\n"
-                        self.quantity_entered_to_shorts += 1
-
-                        message_for_send += f"{composed_message_dict['composed_message']}\n"
+                        await compose_message_for_send_dict(
+                            composed_message_dict,
+                            profession
+                        )
 
                         await compose_data_and_push_to_db(
                             vacancy_from_admin_dict=vacancy_from_admin_dict,
@@ -3423,28 +3440,29 @@ class InviteBot():
                 await show_progress(message, n, length)
 
             if "shorts" in callback_data:
-                for key in message_for_send_dict:
-                    message_for_send = message_for_send_dict[key]
-                    vacancies_list = await cut_message_for_send(message_for_send)
-                    for short in vacancies_list:
-                        try:
-                            await write_to_logs_error(f"Results:\n{short}\n")
-                            try:
-                                await self.bot_aiogram.send_message(
-                                    variable.channel_id_for_shorts,
-                                    short,
-                                    parse_mode='html',
-                                    disable_web_page_preview=True
-                                )
-                            except:
-                                await self.bot_aiogram.send_message(
-                                    message.chat.id,
-                                    short,
-                                    parse_mode='html',
-                                    disable_web_page_preview=True
-                                )
-                        except Exception as e:
-                            await self.bot_aiogram.send_message(message.chat.id, str(e))
+                await shorts_public(message)
+                # for key in self.message_for_send_dict:
+                #     message_for_send = self.message_for_send_dict[key]
+                #     vacancies_list = await cut_message_for_send(message_for_send)
+                #     for short in vacancies_list:
+                #         try:
+                #             await write_to_logs_error(f"Results:\n{short}\n")
+                #             try:
+                #                 await self.bot_aiogram.send_message(
+                #                     variable.channel_id_for_shorts,
+                #                     short,
+                #                     parse_mode='html',
+                #                     disable_web_page_preview=True
+                #                 )
+                #             except:
+                #                 await self.bot_aiogram.send_message(
+                #                     message.chat.id,
+                #                     short,
+                #                     parse_mode='html',
+                #                     disable_web_page_preview=True
+                #                 )
+                #         except Exception as e:
+                #             await self.bot_aiogram.send_message(message.chat.id, str(e))
 
             await delete_and_change_waste_vacancy(message=message,
                                                   last_id_message_agregator=self.last_id_message_agregator,
@@ -3462,6 +3480,35 @@ class InviteBot():
                 f'- in to shorts {self.quantity_entered_to_shorts}',
                 parse_mode='html'
             )
+
+        async def shorts_public(message):
+            pre_message = variable.pre_message_for_shorts
+            add_pre_message = True
+            for key in self.message_for_send_dict:
+                message_for_send = self.message_for_send_dict[key]
+                if add_pre_message:
+                    message_for_send = pre_message + message_for_send
+                    add_pre_message = False
+                vacancies_list = await cut_message_for_send(message_for_send)
+                for short in vacancies_list:
+                    try:
+                        await write_to_logs_error(f"Results:\n{short}\n")
+                        try:
+                            await self.bot_aiogram.send_message(
+                                variable.channel_id_for_shorts,
+                                short,
+                                parse_mode='html',
+                                disable_web_page_preview=True
+                            )
+                        except:
+                            await self.bot_aiogram.send_message(
+                                message.chat.id,
+                                short,
+                                parse_mode='html',
+                                disable_web_page_preview=True
+                            )
+                    except Exception as e:
+                        await self.bot_aiogram.send_message(message.chat.id, str(e))
 
         async def clear_db_table(profession, quantity_leave):
             updated = 0
@@ -3499,7 +3546,19 @@ class InviteBot():
                     )
                     removed += 1
 
-
+        async def compose_message_for_send_dict(composed_message_dict, profession):
+            if composed_message_dict['sub_list']:
+                for sub in composed_message_dict['sub_list']:
+                    if sub not in self.message_for_send_dict.keys():
+                        self.message_for_send_dict[
+                            sub] = f"Дайджест вакансий для {sub.capitalize()} за {datetime.now().strftime('%d.%m.%Y')}\n\n"
+                    self.message_for_send_dict[sub] += f"{composed_message_dict['composed_message']}\n"
+            else:
+                if profession not in self.message_for_send_dict.keys():
+                    self.message_for_send_dict[
+                        profession] = f"Дайджест вакансий для {profession.capitalize()} за {datetime.now().strftime('%d.%m.%Y')}\n\n"
+                self.message_for_send_dict[profession] += f"{composed_message_dict['composed_message']}\n"
+            self.quantity_entered_to_shorts += 1
 
         start_polling(self.dp)
         # executor.start_polling(dp, skip_updates=True)

@@ -10,18 +10,14 @@ class VacancyFilter:
 
     def __init__(self):
         self.pattern_alex = pattern_Alex2809.pattern
-        self.capitalize = ['pm', 'game', 'designer', 'hr', 'analyst', 'qa', 'ba', 'product']
+        self.capitalize = variables.not_lower_professions
 
         self.result_dict2 = {'vacancy': 0, 'contacts': 0, 'fullstack': 0, 'frontend': 0, 'backend': 0, 'pm': 0,
                              'mobile': 0, 'game': 0, 'designer': 0, 'hr': 0, 'analyst': 0, 'qa': 0, 'ba': 0,
                              'product': 0, 'devops': 0, 'marketing': 0, 'sales_manager': 0, 'junior': 0, 'middle': 0,
                              'senior': 0}
 
-        self.keys_result_dict = ['fullstack', 'frontend', 'qa', 'ba', 'backend', 'pm', 'mobile', 'game', 'designer',
-                                 'hr', 'analyst', 'product', 'devops', 'marketing', 'sales_manager']
-        self.valid_profession_list = ['marketing', 'ba', 'game', 'product', 'mobile',
-                                      'pm', 'sales_manager', 'analyst', 'frontend',
-                                      'designer', 'devops', 'hr', 'backend', 'frontend', 'qa', 'junior']
+        self.valid_profession_list = variables.valid_professions
         self.export_pattern = q
         self.not_lower_professions = variables.not_lower_professions
         self.excel_dict = {}
@@ -119,7 +115,7 @@ class VacancyFilter:
         if get_params:
             params = self.get_params(text=vacancy, profession=profession)
 
-
+        print(f"\nFound next professions:\n{profession['profession']}\n")
 
         return {'profession': profession, 'params': params}
 
@@ -172,8 +168,11 @@ class VacancyFilter:
             for anti_word in pattern['mex']:
                 # if low:
                 #     anti_word = anti_word.lower()
-
-                match = set(re.findall(rf"{anti_word}", vacancy))
+                match = []
+                try:
+                    match = set(re.findall(rf"{anti_word}", vacancy))
+                except Exception as e:
+                    print(f'anti_word = {anti_word}\n{e}')
                 if match:
                     result = 0
                     anti_tags += f'MEX {key}={match}\n'

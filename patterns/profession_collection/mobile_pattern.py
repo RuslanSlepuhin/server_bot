@@ -61,6 +61,9 @@ cross_mobile = {
 cross_mobile['mex'] = set(mobile['mex']).union(set(cross_mobile['mex2']))
 cross_mobile['ma'] = set(cross_mobile['ma2']).union(set(flutter['ma'])).union(set(react_native['ma']))
 
+cross_mobile['ma'] = set(cross_mobile['ma2']).union(set(flutter['ma'])).union(set(react_native['ma']))
+
+mobile['ma']=set(mobile['ma2']).union(set(mobile['mdef']))
 
 mobile['sub'] = {
     'ios': ios,

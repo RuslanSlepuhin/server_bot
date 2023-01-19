@@ -1,1 +1,0 @@
-worker: python invite_bot_ver2.py

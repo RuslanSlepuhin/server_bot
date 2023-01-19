@@ -1,3 +1,4 @@
+from patterns.data_pattern._data_pattern import pattern
 from patterns.profession_collection.analyst_pattern import analyst
 
 ba = analyst

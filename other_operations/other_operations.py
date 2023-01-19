@@ -109,7 +109,7 @@ def show_all():
         print(i)
 
 def append_columns():
-    DataBaseOperations(None).append_columns(['admin_temporary',], column='sended_to_agregator VARCHAR(30)')
+    DataBaseOperations(None).append_columns(['admin_last_session',], column='sub VARCHAR(250)')
 
     # DataBaseOperations(None).append_columns(
     #     ['marketing', 'ba', 'game', 'product', 'mobile', 'pm', 'sales_manager', 'analyst', 'frontend', 'designer',
@@ -348,7 +348,7 @@ def check_company():
 
         print(message_for_send)
 
-        with open("../excel/shorts", "a", encoding='utf-8') as file:
+        with open("../excel/excel/shorts", "a", encoding='utf-8') as file:
             file.write(f"{message_for_send}\n--------------------------------\n")
 
         pass
@@ -772,10 +772,52 @@ def check_in_db(title, body):
                 print(j)
     return matches_list
 
-# title = "Бизнес-аналитик"
-# body = "В Inspector Cloud мы создаем сервисы по распознавани"
-# match_list = check_in_db(title, body)
-# for i in match_list:
-#     print(i, match_list[i])
-# # print(len(response))
-#
+def remove_no_sort():
+    response = DataBaseOperations(None).get_all_from_db(
+        table_name='admin_last_session',
+        param="WHERE profession LIKE '%, pm%' OR profession LIKE '%pm, %'",
+        field='id, profession'
+    )
+    print('len = ', len(response))
+
+    for i in response:
+        print(i[0], i[1])
+        new_prof = i[1].split(', ')
+        if 'no_sort' in new_prof:
+            new_prof.remove('no_sort')
+            new_prof = ", ".join(new_prof)
+            print('new_prof=',new_prof)
+
+            query = f"UPDATE admin_last_session SET profession='{new_prof}' WHERE id={i[0]}"
+            DataBaseOperations(None).run_free_request(
+                request = query,
+                output_text='It has Changed'
+            )
+
+    print('len = ', len(response))
+
+# response = DataBaseOperations(None).get_all_from_db(
+#     table_name='archive',
+# )
+# print(len(response))
+# for i in response:
+#     print(i)
+# # # remove_no_sort()
+# # # append_columns()
+profession = 'analyst'
+profession_change = 'frontend'
+response = DataBaseOperations(None).get_all_from_db(
+    table_name='admin_last_session',
+    param=f"WHERE profession LIKE '%{profession}, %' or profession LIKE '%, {profession}%' OR profession='{profession}'",
+    field='id'
+)
+print(len(response))
+for i in range(0, len(response)-10):
+    id = response[i][0]
+    print(i)
+    DataBaseOperations(None).update_table(
+        table_name="admin_last_session",
+        param=f"WHERE id={id}",
+        field='profession',
+        value=f'{profession_change}'
+    )

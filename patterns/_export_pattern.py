@@ -20,7 +20,10 @@ from patterns.data_pattern._data_pattern import pattern
 from patterns.data_pattern._data_pattern import params
 from patterns.data_pattern._data_pattern import vacancy_pattern
 from patterns.data_pattern._data_pattern import search_companies, search_companies2
-from utils.additional_variables import additional_variables as variable
+from utils.additional_variables.additional_variables import valid_professions
+
+accumulate = set()
+
 export_pattern = {
     'data': {
         'vacancy': pattern['vacancy'],
@@ -74,6 +77,17 @@ export_pattern = {
     }
 }
 
+for profession_mex in export_pattern['professions']:
+    if profession_mex in valid_professions:
+        for profession_def in export_pattern['professions']:
+            if profession_def in valid_professions and profession_def != profession_mex:
+                accumulate = accumulate.union(set(export_pattern['professions'][profession_def]['mdef']))
+        accumulate = accumulate.union(set(export_pattern['professions'][profession_mex]['mex']))
+        export_pattern['professions'][profession_mex]['mex'] = accumulate
+        accumulate = set()
+
+        # for sub_profession in export_pattern['profession'][profession]['sub']:
+        #     accumulate = accumulate.union(set(export_pattern['profession'][profession]['sub'][sub_profession]['def']))
 
 
 # from qa
@@ -86,6 +100,7 @@ export_pattern['additional']['dev']['mex']=set(export_pattern['professions']['ba
     .union(set(export_pattern['professions']['fullstack']['ma'])).union(set(export_pattern['professions']['frontend']['ma'])).union(set(export_pattern['additional']['admins']['ma']))
 
 # from designer
+# ??????????
 export_pattern['professions']['designer']['mex']=set(export_pattern['additional']['dev']['mex']).union(set(export_pattern['professions']['mobile']['ma'])).union(set(export_pattern['professions']['designer']['mex2']))\
     .union(set(export_pattern['professions']['qa']['mdef'])).union(set(export_pattern['professions']['sales_manager']['ma'])).union(set(export_pattern['professions']['marketing']['ma']))\
     .union(set(export_pattern['professions']['ba']['ma'])).union(set(export_pattern['professions']['pm']['ma'])).union(set(export_pattern['professions']['devops']['ma']))\
@@ -97,18 +112,39 @@ detailed_designer['ma'] = set(export_pattern['professions']['designer']['sub']['
     .union(set(export_pattern['professions']['designer']['sub']['game_designer']['ma'])).union(set(export_pattern['professions']['designer']['sub']['illustrator']['ma']))\
     .union(set(export_pattern['professions']['designer']['sub']['graphic']['ma'])).union(set(export_pattern['professions']['designer']['sub']['uxre_searcher']['ma']))
 
+# ??????????
 export_pattern['professions']['designer']['mincl']=set(export_pattern['professions']['designer']['mex']).union(set(export_pattern['additional']['detailed_designer']['ma']))
 
 # from analyst
-export_pattern['professions']['analyst']['sub']['sys_analyst']['mex']=set(export_pattern['professions']['marketing']['mex']).union(set(export_pattern['professions']['analyst']['sub']['sys_analyst']['mex2'])),
-export_pattern['professions']['analyst']['sub']['data_analyst']['mex']=set(export_pattern['professions']['marketing']['mex']).union(set(export_pattern['professions']['analyst']['sub']['data_analyst']['mex2'])),
-export_pattern['professions']['analyst']['sub']['data_scientist']['mex']=set(export_pattern['professions']['marketing']['mex']).union(set(export_pattern['professions']['analyst']['sub']['data_scientist']['mex2'])),
-export_pattern['professions']['analyst']['sub']['ba']['mex']=set(export_pattern['professions']['marketing']['mex']).union(set(export_pattern['professions']['analyst']['sub']['ba']['mex2'])),
+# print('!!!!!', type(export_pattern['professions']['analyst']['sub']['sys_analyst']['mex']))
+# print('!!!!!', type(export_pattern['professions']['marketing']['mex']))
+# print('!!!!!', type(export_pattern['professions']['analyst']['sub']['sys_analyst']['mex2']))
+
+a = export_pattern['professions']['analyst']['sub']['sys_analyst']['mex']
+b = export_pattern['professions']['marketing']['mex']
+c = export_pattern['professions']['analyst']['sub']['sys_analyst']['mex2']
+export_pattern['professions']['analyst']['sub']['sys_analyst']['mex'] = set(a).union(set(b)).union(set(c))
+# export_pattern['professions']['analyst']['sub']['sys_analyst']['mex'] = export_pattern['professions']['analyst']['sub']['sys_analyst']['mex'].union(export_pattern['professions']['marketing']['mex']).union(export_pattern['professions']['analyst']['sub']['sys_analyst']['mex2']),
+
+a = export_pattern['professions']['analyst']['sub']['data_analyst']['mex']
+c = export_pattern['professions']['analyst']['sub']['data_analyst']['mex2']
+export_pattern['professions']['analyst']['sub']['data_analyst']['mex'] = set(a).union(set(b)).union(set(c))
+# export_pattern['professions']['analyst']['sub']['data_analyst']['mex']=set(export_pattern['professions']['marketing']['mex']).union(set(export_pattern['professions']['analyst']['sub']['data_analyst']['mex2'])),
+
+a = export_pattern['professions']['analyst']['sub']['data_scientist']['mex']
+c = export_pattern['professions']['analyst']['sub']['data_scientist']['mex2']
+export_pattern['professions']['analyst']['sub']['data_scientist']['mex'] = set(a).union(set(b)).union(set(c))
+# export_pattern['professions']['analyst']['sub']['data_scientist']['mex']=set(export_pattern['professions']['marketing']['mex']).union(set(export_pattern['professions']['analyst']['sub']['data_scientist']['mex2'])),
+
+a = export_pattern['professions']['analyst']['sub']['ba']['mex']
+c = export_pattern['professions']['analyst']['sub']['ba']['mex2']
+export_pattern['professions']['analyst']['sub']['ba']['mex'] = set(a).union(set(b)).union(set(c))
+# export_pattern['professions']['analyst']['sub']['ba']['mex']=set(export_pattern['professions']['marketing']['mex']).union(set(export_pattern['professions']['analyst']['sub']['ba']['mex2'])),
 
 # from mobile
-export_pattern['professions']['mobile']['mex']=set(export_pattern['professions']['mobile']['mex2']).union(set(export_pattern['professions']['designer']['ma']))
 
 # from frontend
+
 
 # from game
 
@@ -120,10 +156,5 @@ export_pattern['professions']['mobile']['mex']=set(export_pattern['professions']
 # from sales_manager
 # from dev
 
-#-------------------------------------------------
-# for prof in variable.valid_professions:
-#     export_pattern['professions']['junior']['sub'][prof] = export_pattern['professions'][prof]['ma']
 
-# from helper_functions import helper_functions as helper
-# helper.get_pattern(variable.pattern_path)
 

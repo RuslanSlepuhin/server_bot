@@ -3,6 +3,8 @@ import json
 import re
 import time
 from utils.additional_variables.additional_variables import admin_database
+from utils.additional_variables.additional_variables import table_list_for_checking_message_in_db
+
 import pandas as pd
 import psycopg2
 from datetime import datetime
@@ -352,7 +354,7 @@ class DataBaseOperations:
 
             except Exception as e:
                 print('Dont push in db, error = ', e)
-                # return response_dict['error', e]
+                # return response_dict['error', telethon]
             pass
 # ---------------- это для того, чтобы достать неотсортированные сообщения из базы и прогнать через оба алгоритма ---------
 #     def get_from_bd_for_analyze_python_vs_excel(self):
@@ -1273,3 +1275,21 @@ class DataBaseOperations:
     def update_table(self, table_name, param, field, value):
         query = f"""UPDATE {table_name} SET {field}='{value}' {param}"""
         self.run_free_request(request=query, output_text='vacancy has updated')
+
+    def check_exists_message(self, title=None, body=None, table_list=None):
+        if not title and not body:
+            return -1
+        vacancy_exists = 0
+        title = self.clear_title_or_body(title)
+        body = self.clear_title_or_body(body)
+        if not table_list:
+            table_list = table_list_for_checking_message_in_db
+        for table in table_list:
+            response = self.get_all_from_db(
+                table_name=table,
+                param=f"WHERE title='{title}' and body='{body}'",
+                field='id'
+            )
+            if response:
+                vacancy_exists += 1
+        return vacancy_exists == 0

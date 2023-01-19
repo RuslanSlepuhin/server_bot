@@ -1,5 +1,5 @@
-import time
 from patterns._export_pattern import export_pattern
+from patterns.pseudo_pattern.pseudo_export_pattern import export_pattern as pseudo_export_pattern
 
 def compose_to_str_from_list(data_list):
     sub_str = ''
@@ -21,9 +21,6 @@ def decompose_from_str_to_list(data_str):
             data_dict[key] = sub_items.split(', ')
         else:
             data_dict[key] = []
-    # for key in data_dict:
-    #     if data_dict[key] == ['']:
-    #         data_dict[key] = []
     return data_dict
 
 def compose_simple_list_to_str(data_list, separator):
@@ -49,46 +46,62 @@ async def to_dict_from_temporary_response(response, fields):
         response_dict[fields[i]] = response[i]
     return response_dict
 
-async def get_pattern(path):
+async def get_pattern(path, pseudo=False):
     print('\n\n---------------------------------------\n\n')
     message = ''
-    for key in export_pattern:
+    if pseudo:
+        pattern = pseudo_export_pattern
+    else:
+        pattern = export_pattern
+    for key in pattern:
         message += f"{key}:\n"
 
-        if type(export_pattern[key]) is dict:
-            for key2 in export_pattern[key]:
+        if type(pattern[key]) is dict:
+            for key2 in pattern[key]:
                 message += f"\t{key2}:\n"
 
-                if type(export_pattern[key][key2]) is dict:
-                    for key3 in export_pattern[key][key2]:
+                if type(pattern[key][key2]) is dict:
+                    for key3 in pattern[key][key2]:
                         message += f"\t\t{key3}:\n"
 
-                        if type(export_pattern[key][key2][key3]) is dict and export_pattern[key][key2][key3]:
-                            for key4 in export_pattern[key][key2][key3]:
+                        if type(pattern[key][key2][key3]) is dict and pattern[key][key2][key3]:
+                            for key4 in pattern[key][key2][key3]:
                                 message += f"\t\t\t{key4}:\n"
 
-                                if type(export_pattern[key][key2][key3][key4]) is dict:
-                                    for key5 in export_pattern[key][key2][key3][key4]:
+                                if type(pattern[key][key2][key3][key4]) is dict:
+                                    for key5 in pattern[key][key2][key3][key4]:
                                         message += f"\t\t\t\t{key5}:\n"
 
-                                        if type(export_pattern[key][key2][key3][key4][key5]) is dict:
-                                            for key6 in export_pattern[key][key2][key3][key4][key5]:
+                                        if type(pattern[key][key2][key3][key4][key5]) is dict:
+                                            for key6 in pattern[key][key2][key3][key4][key5]:
                                                 message += f"\t\t\t\t\t{key6}:\n"
                                         else:
-                                            message += f"\t\t\t\t\t\t{export_pattern[key][key2][key3][key4][key5]}\n"
+                                            message += f"\t\t\t\t\t\t{pattern[key][key2][key3][key4][key5]}\n"
                                 else:
-                                    message += f"\t\t\t\t\t{export_pattern[key][key2][key3][key4]}\n"
+                                    message += f"\t\t\t\t\t{pattern[key][key2][key3][key4]}\n"
                         else:
-                            message += f"\t\t\t{export_pattern[key][key2][key3]}\n"
+                            message += f"\t\t\t{pattern[key][key2][key3]}\n"
                 else:
-                    message += f"\t\t{export_pattern[key][key2]}\n"
+                    message += f"\t\t{pattern[key][key2]}\n"
         else:
-            message += f"\t{export_pattern[key]}\n"
+            message += f"\t{pattern[key]}\n"
 
     print(message)
     with open(path, "w", encoding='utf-8') as file:
         file.write(message)
         print('Done')
+
+async def transformTitleBodyBeforeDb(text=None, title=None, body=None):
+    if text:
+        title = text.partition(f'\n')[0]
+        body = text.replace(title, '').replace(f'\n\n', f'\n')
+    elif title+body:
+        if title:
+            title = title
+        if body:
+            body = body.replace(f'\n\n', f'\n')
+    return {'title': title, 'body': body}
+
 
 
 

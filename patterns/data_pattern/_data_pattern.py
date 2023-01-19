@@ -31,7 +31,17 @@ pattern = {
                 "developer is available","специалист службы поддержки","Специалист по допечатной подготовке","PCB design engineer",
                 "печатных плат","Creative screenwriter","Дизайнер фотокниг","[Жж]урналист","оптовым продажам","Онлайн-менчендайзер",
                 "[Кк]онсультант","[Чч]ерт[ёе]жник","Инженер-конструктор","администрирования выплат"," accountant"," #financier",
-                "проектировщик сетей связи","юрист", "Сметчик",),
+                "проектировщик сетей связи","юрист", "Сметчик", "[Рр]едактор сайта", "[Зз]амерщик", "встроенные кухни",
+                "[Пп]родавец-консультант", "менеджер-дизайнер", "[Фф]лорист", "[Аа]ссистент [Не]аучного отдела",
+                "[Мм]астер [Нн]огтевого сервиса", "[Кк]онструктор", "[Бб]Армен", "[Оо]фициант", "КАМ", "KAM",
+                "[Kk]ey [Aa]ccount [Mm]anager", "[Фф]инансовый [Аа]налитик", "[Вв]оспитатель", "[Пп]едагог",
+                "[Мм]едицинский [Пп]редставитель", "[Пп]овар", "[Ии]нженер-проектировщик", "[Дд]изайнер-архитектор",
+                "Вакансия в архиве", "[Чч]ерт[ёе]ж", "[Мм]енеджер-дизайнер", "[Аа]рхитектор-проектировщик",
+                "[Оо]формитель", "выставочных", "стендов", "кухонная мебель", "[Тт]ехнолог",
+                "[Мм]енеджер по работе с дизайнерами", "Design Studio 3D","' Chef '", "продюсер", "консультант",
+                "Дизайнер-фотограф", "специалист по работе с фотографиями", "медицинский представитель",
+                "[Дд]изайнер-строитель", "[Лл]огопед", "дефектолог", "ресниц", "маникюр", "педикюр", "архитектура зданий",
+                "[Дд]изайнер-архитектор", "кухни на заказ", "[Ll]ogistics manager"),
         'mex2': (),
         'mincl': (),
     },
@@ -65,7 +75,8 @@ pattern = {
                "[Ww]eb-Developer","[Jj]ava[Ss]cript","[Ff]ront-end [Рр]азработчик","[Рр]азработчик [Jj]ava[Ss]cript"
                "[Фф]ронтенд-[Рр]азработчик","[Дд]изайнер сайтов на [Tt]ilda","[Ff]rontend [Ee]ngineer","[Ww]eb-[Dd]eveloper", "[Вв]еб-[Пп]рограммист",
                "менторов по JS"),
-        'mdef': (),
+        'mdef': ("[Ff]rontend-разработчик", "[Ff]rontend developer", "[Jj]ava[Ss]cript разработчик",
+                 "[Ff]rontend разработчик"),
                # pattern['frontend']['ma']=set(pattern['Vue']['ma']).union(set(pattern['frontend']['ma2'])).union(set(pattern['React']['ma'])).union(set(pattern['Angular']['ma'])).union(set(pattern['Django']['ma'])).union(set(pattern['Wordpress']['ma'])).union(set(pattern['Bitrix']['ma'])).union(set(pattern['Joomla']['ma'])).union(set(pattern['Drupal']['ma']))
 
         'mex': (),
@@ -278,7 +289,7 @@ pattern = {
                  'net': {
                      'ma': (" .NET", "Spring.NET"),
                      'ma2': (),
-                     'mdef': (),
+                     'mdef': ("Разработчик .N[Ee][Tt]", "N[Ee][Tt] developer"),
                      'mex': (),
                      'mex2': (),
                      'mincl': ()
@@ -404,7 +415,7 @@ pattern = {
     'mobile': {
        'ma': (),
        'ma2':  ("Mobile","Мобильный разработчик",),
-       'mdef':( ),
+       'mdef':("[Aa]ndroid developer", "[Aa]ndroid-разработчик", "Flutter-разработчик", "Flutter-developer"),
        'mex': (),
        'mex2': ("Python", "T-Mobile", "Senior Product Designer (UX/UI)", "Product Designer","UI/UX Designer",
                  "Release Engineer", "share_ios","Content Designer", "Linux Embedded Developer", "Business Intelligence"),
@@ -418,7 +429,7 @@ pattern = {
             'ios':{
                 'ma':("ios","Swift","Senior ios разработчик","iOS разработчик","IOS Developer","iOS Developer",),
                 'ma2': (),
-                'mdef': (),
+                'mdef': ("[Рр]азработчик под [Ii]O[Ss]", "[Ii]O[Ss][ -]разработчик", "[Ii]O[Ss][ -][Dd]eveloper"),
                 'mex': (),
                 'mex2':("Swift, is a nice to have skill",),
                 'mincl': ()
@@ -473,7 +484,7 @@ pattern = {
     'pm': {
         'ma': (),
         'ma2': (),
-        'mdef': (),
+        'mdef': ("продукт менеджер", ),
         'mex2': (),
         'mex': ("собеседование с РМ", "Вакансия: Senior PHP Developer", "product lead", "Менеджер В2В", "Manager B2B",
                 "Senior Front-End Developer", "Senior Software Testing Engineer", "Sales manager", "Tech Lead",
@@ -590,7 +601,7 @@ pattern = {
                "UE4 Developer","Разработчик на Unity",),
         'mex': ("UI/UX Designer",),
         'ma2': (),
-        'mdef': (),
+        'mdef': ("Unity разработчик", ),
         'mex2': (),
         'mincl': ()
         },
@@ -600,29 +611,30 @@ pattern = {
         'ma': (),
         'ma2': ("[Dd]esigner", "[Дд]изайнер", "[Pp]roduct [Dd]esigner", "[Pp]hotoshop [Mm]anager", "[Cc]oncept [Aa]rtist",
                 "[Aa]rtist","[Аа]рт-[Дд]иректор", "[Dd]igital [Dd]esigner","[Pp]roduct [Dd]esigner","[Hh]ead of [Dd]esign",
-                "[Dd]igital [Aa]rt [Dd]irector",),
-        'mdef': (),
+                "[Dd]igital [Aa]rt [Dd]irector", "[Кк]реативный дизайнер"),
+        'mdef': ("[Тт]ехнический дизайнер", "[Пп]родуктовый дизайнер", "Арт-директор"),
         'mex': (),
         'mex2': ("дизайнеры", "Artec 3D", "3D scanners", "Web UI", "Product manager", "Product owner",
-                "из дизайнера", "из Дизайнера", "designers", "3D Unity", "3D unity", "Unity 3D",
-                "Understanding UI state", "Material UI", "до UI",
-                "PostgreSQL", "MySQL", "Senior Dealer", "Инженер-электронщик", "VueRouter", "Vuex",
-                "Unity Dev",  "Rest Api", "SQLite", "Оператор call-центра","Инженер-программист",
-                "Angular", "bitrix", "битрикс","Специалист по работе с клиентами","Retention Spesialist",
-                "json", "JSON",  "HRD","Консультант SAP","ремонтов квартир","Специалист по контенту",
-                "запуск производства","керамист","мебели","мебельного","мужской одежды",
-                "детской одежды","Business Development","Data acquisition manager","футболки","кофров", "чехлов",
-                "Проектировщик","интерьеров","Менеджер по продажам","квартир","СММ Менеджер",
-                "интерьера","ремонта квартир","Менеджер по маркетплейсам","специалист по подбору персонала",
+                 "из дизайнера", "из Дизайнера", "designers", "3D Unity", "3D unity", "Unity 3D",
+                 "Understanding UI state", "Material UI", "до UI",
+                 "PostgreSQL", "MySQL", "Senior Dealer", "Инженер-электронщик", "VueRouter", "Vuex",
+                 "Unity Dev",  "Rest Api", "SQLite", "Оператор call-центра","Инженер-программист",
+                 "Angular", "bitrix", "битрикс","Специалист по работе с клиентами","Retention Spesialist",
+                 "json", "JSON",  "HRD","Консультант SAP","ремонтов квартир","Специалист по контенту",
+                 "запуск производства","керамист","мебели","мебельного","мужской одежды",
+                 "детской одежды","Business Development","Data acquisition manager","футболки","кофров", "чехлов",
+                 "Проектировщик","интерьеров","Менеджер по продажам","квартир","СММ Менеджер",
+                 "интерьера","ремонта квартир","Менеджер по маркетплейсам","специалист по подбору персонала",
                  "Менеджер по продажам",
-                "отдела продаж","PR IT", "женской одежды",
-                "Нужен менеджер",
-                "Ассистент руководителя","Главный редактор","ассистент руководителя",
-                "Консультант","Продюсер","Аккаунт-менеджер","Creative screenwriter","Менеджер по рекламе"
-                "подбора персонала","видеограф","копирайтер","Менеджер по развитию интернет проектов",
-                "Аналитик","JoomShopping","в команде с дизайнером","Unity developer", "контентмейкер","видеоконтентмейкер",
-                "блоггер","с командой дизайнеров","Ресечер","Аналитик DWH","Авитолог","#ProductManager"
-                "Специалист по контекстной рекламе","Веб-мастер","Product Owner","Менеджер YouTube-канала","Аккаунт-менеджер"),
+                 "отдела продаж","PR IT", "женской одежды",
+                 "Нужен менеджер",
+                 "Ассистент руководителя","Главный редактор","ассистент руководителя",
+                 "Консультант","Продюсер","Аккаунт-менеджер","Creative screenwriter","Менеджер по рекламе"
+                 "подбора персонала","видеограф","копирайтер","Менеджер по развитию интернет проектов",
+                 "Аналитик","JoomShopping","в команде с дизайнером","Unity developer", "контентмейкер","видеоконтентмейкер",
+                 "блоггер","с командой дизайнеров","Ресечер","Аналитик DWH","Авитолог","#ProductManager"
+                 "Специалист по контекстной рекламе","Веб-мастер","Product Owner","Менеджер YouTube-канала","Аккаунт-менеджер",
+                 "[Дд]изайнер интерьер", "[Дд]изайнер упаковки", "[Дд]изайнер-консультант", "Разработчик-программист"),
         'mincl': (),
         # pattern['designer']['mex']=set(pattern['DEV']['mex']).union(set(pattern['mobile']['ma'])).union(set(pattern['designer']['mex2'])).union(set(pattern['qa']['mdef'])).union(set(pattern['sales_manager']['ma'])).union(set(pattern['marketing']['ma'])).union(set(pattern['ba']['ma'])).union(set(pattern['pm']['ma'])).union(set(pattern['devops']['ma'])).union(set(pattern['analyst']['ma'])).union(set(pattern['hr']['mdef']))
         # pattern['designer']['mexfinal']=set(pattern['designer']['mex']).union(set(pattern['DetailedDesigners']['ma']))
@@ -631,7 +643,7 @@ pattern = {
                     'ma':("[Uu][Xx]/[Uu][Ii]","[Uu][Ii]/[Uu][Xx]","UX", "UI", " CX исследователь"," UI/UX designer",
                         "UI Designer","UI designer","CRO manager","Mobile Designer","Веб-дизайнер","UX-писатель",),
                     'ma2': (),
-                    'mdef': (),
+                    'mdef': ("[Дд]изайнер [Ии]нтерфейсов"),
                     'mex': (),
                     'mex2':(),
                     'mincl': ()
@@ -641,7 +653,7 @@ pattern = {
                 'motion':{
                     'ma':("[Mm]otion",),
                     'ma2': (),
-                    'mdef': (),
+                    'mdef': ("[Mm]otion [Dd]esigner"),
                     'mex': (),
                     'mex2': ("[Mm]otion [Dd]esign", "3D будет преимуществом"),
                     'mincl': ()
@@ -673,7 +685,7 @@ pattern = {
                         "[Ll]ayout 3[Dd] [Aa]rtist","Дизайнер Квестов","[Gg]ame [Dd]esigner","[Гг]еймдизайнер",
                         "[Ll]evel [Aa]rtist","[Ии]гровое","риггер","риггинг","скиннинг","spine animator", "[Гг]ейм-[Дд]изайнер"),
                     'ma2': (),
-                    'mdef': (),
+                    'mdef': ("2д лвл дизайнер", "VFX Animator"),
                     'mex': (),
                     'mex2':(),
                     'mincl': ()
@@ -720,7 +732,6 @@ pattern = {
         # .union(set(pattern['UXREsearcher']['ma']))
 
     },
-
 #     # capitalize
     'hr': {
         'ma': ("Human Resources Officer", " HR", "recruter", "кадр", "human r", "head hunter", "Кадр", "HR BP",
@@ -728,7 +739,7 @@ pattern = {
                "подбора персонала","IT Recruiter","Position:IT Recruiter","Junior IT рекрутер",
                "специалист по подбору персонала","HCM","ресерчер",),
         'ma2': (),
-        'mdef': (),
+        'mdef': ("Специалист по подбору персонала", "менеджер по подбору персонал", "младший специалист HR"),
         'mex': ("Скрининг с HR", "я HR", "представляю кадровое агентство", "Общение с HR", "общение с HR", "HR_",
                 "HRTech", "HR департамент", "SEO HR", "HR@", "Кадровое агенство", "звонок с HR ",
                 "Пишите нашему HR-менеджеру", "HR-Link", "HR-Prime", "HR-у", "Контакт HR", "Связаться с HR",
@@ -738,11 +749,11 @@ pattern = {
                 "Вакансия: DevOps", "Data engineer", "Senior Android", "Разработчик Bitrix24", "Devops",
                 "Менеджер по продажам", "Data entry", "Senior PHP Developer", "DevOps Engineer", "Я Саша, ИТ-рекрутер",
                 "пишите в телеграмм нашему HR", "пишите нашему HR", "Mobile QA", "Front-end инженер", "Программиста игровой логики",
-                "я - HR", "Business Development Specialist", "Вакансия: Project Manager", "UI/UX Designer","Арт-директор"),
+                "я - HR", "Business Development Specialist", "Вакансия: Project Manager", "UI/UX Designer","Арт-директор",
+                "в HR-платформу"),
         'mex2': (),
         'mincl': ()
     },
-#
 #     # capitalize
     'analyst': {
         'ma': (
@@ -750,7 +761,8 @@ pattern = {
              "SOC Analyst", "Performance аналитик", "Маркетинг аналитик", "Старший аналитик", "Тимлид аналитики",
             "Machine Learning", "Ведущий аналитик", "Младший аналитик",),
         'ma2': (),
-        'mdef':(),
+        'mdef':("[Aa]nalyst", "[Аа]налитик\)", "[Аа]налитик трафика", "[Аа]нти-фрод", "[Аа]ссистент консультанта BI",
+                "[Mm]arketing [Aa]nalyst", "[Аа]налитик данных", "Core Gameplay Designer", "аналитик 1С"),
 
         'mex': ("Senior Product Designer (UX/UI)", "Product manager", "Senior Dealer", "Консультант",
                 "backend engineer", "Product Manager", "QA Engineer", "Product Manager", "BACKEND", "AQA",
@@ -836,7 +848,6 @@ pattern = {
                 },
         }
     },
-
 #     # capitalize
     'qa': {
         'ma': (),
@@ -844,7 +855,9 @@ pattern = {
                 "cucumber","SoapUI", "Postman", "POSTMAN","Soap", "postman"
                "#automation", "#selenium", "автотесты", "автотестов", "специалист по тестированию",
                 ),
-        'mdef':(  "заказного mobile", "Junior [Qq][Aa] [Ee]ngineer","mobile applications testing","[Qq][Aa] Lead", " [Qq][Aa] ","Quality Control Management", "Middle Тестировщик", "[Qq][Aa] [Ee]ngineer","[Qq][Aa]-[Ee]ngineer","[Qq][Aa]-инженер","Вакансия: QA Инженер","#QA", ),
+        'mdef':("заказного mobile", "Junior [Qq][Aa] [Ee]ngineer","mobile applications testing","[Qq][Aa] Lead",
+                " [Qq][Aa] ","Quality Control Management", "Middle Тестировщик", "[Qq][Aa] [Ee]ngineer",
+                "[Qq][Aa]-[Ee]ngineer","[Qq][Aa]-инженер","Вакансия: QA Инженер","#QA", "Фулл-стек тестировщик"),
         'mex': (),
         'mex2': ("тестировщиков", "тестировщиками", "проводить QA", " и QA", "to junior", "PHP Developer",
                 "Senior Product Designer (UX/UI)", "Администратор баз данных", "DBA", "Ios developer middle",
@@ -859,7 +872,7 @@ pattern = {
             'manual_qa':{
                 'ma':("[Mm]anual [Tt]esting","[Mm]anual [Qq][Aa]", "[Qq][Aa] [Mm]anual","[Jj]unior [Mm]anual [Qq][Aa]",),
                 'ma2': (),
-                'mdef': (),
+                'mdef': ("[Mm]anual-QA", "[Рр]учной тестировщика"),
                 'mex': (),
                 'mex2':(),
                 'mincl': ()
@@ -896,7 +909,7 @@ pattern = {
                "Системный Администратор Linux","SRE-инженер","Senior Devops","на позицию DevOps","эникей",),
 
         'ma2': (),
-        'mdef': (),
+        'mdef': ("[Jj]unior [Dd]ev[Oo]ps", "[Dd]ev[O]ps-инженер", "[Dd]ev[Oo]ps [Ии]нженер,"),
         'mex': (" и SRE", ", DevOps,", "DevOps командой", "участвовать в DevOps", "Опыт DevOps", "участвуют в DevOps",
                 "DevOps practices", "devops навыки", "DevOps tools", "Java Developer", "PHP разработчик",
                 "Go разработчик", "Backend .NET Developer", "product lead", "Flutter разработчик", "Graphic designer",
@@ -927,7 +940,9 @@ pattern = {
                "ТЗ-мейкер", "Специалист по маркетингу","PR IT","Интернет-маркетолог","редактор""Менеджер по развитию интернет проектов",
                "Маркетолог по воронкам", "куратор по маркетингу","Медиапланер","marketing manager",),
         'ma2': (),
-        'mdef': (),
+        'mdef': ("медиабайер", "Digital Planner", "менеджер по медиапланированию", "Media Planner",
+                 "Редактор телеграм-канала", "Content Manager", "PR-менеджер", "[Aa]ccount [Mm]eneger",
+                 "Аффилиатный Менеджер", "Affiliate manager"),
         'mex': ("SEO HR", "Product manager", "SEO HR", "HRBP", "Sales Manager", "Manual QA", "Product Manager", "Back-end", "Kotlin Developer",
                 "Middle Business Analyst", "PHP Developer","DevOps","C# Developer","Lead Business Analyst", "Data Scientist", "System Administrator",
                 "Project manager", "ищет веб-дизайнер", "ищем веб-дизайнер","Product Owner","CEO", "Lead Generation", "IT-specialist",
@@ -962,7 +977,7 @@ pattern = {
                 'seo':{
                     'ma':("SEO","SEO-специалист","SEO специалист","SEO консультант",),
                     'ma2': (),
-                    'mdef': (),
+                    'mdef': ("SEO-специалист",),
                     'mex': (),
                     'mex2':(),
                     'mincl': ()
@@ -1041,14 +1056,13 @@ pattern = {
         }
     },
 
-
     'sales_manager': {
         'ma': ("Sales manager", "sales manager", "Sales Manager", "[Мм]енеджера по продаж", "[Мм]енеджер холодных продаж",
                "[Мм]енеджер по продаж", "менеджер_отдела_продаж", "Lead Generation", "IT Sales Researcher", "#leadgeneration","User Acquisition",
                "CRO", "Sales Researcher","Менеджер по оптовым продажам",
                "Pre-sale manager","Руководитель отдела продаж","Business Development Manager","Sales Assistant", "sales manager","Business Development","Lead Generation",),
         'ma2': (),
-        'mdef': (),
+        'mdef': ("Специалист по продажам", "Менеджер по развитию бизнеса", "менеджер по развитию", "менеджер по работе с клиентами"),
         'mex': ("Python-разработчика","Системного администратора","NodeJS Developer","Project Manager"," DevOps Engineer"),
         'mex2': (),
         'mincl': ()
@@ -1081,7 +1095,7 @@ pattern = {
                 "Senior php developer","Team Lead","Senior Game Designer","senior developer","Senior Android Developer",
                 "Руководитель отдела","for 5+ years","for 4+ years","не менее 2-х лет","не менее 3 х лет","менторство над 1-2 джунами",
                 "готовим интернов и джунов","Easy(JS) сообществ","Senior IT Recruiter","Senior Google Media Buyer","Senior IT Recruiter",
-                "развить его от джуна",),
+                "развить его от джуна", "[Пп]реподаватель", "Арт-директор"),
         'mex2': (),
         'mincl': ()
     },
