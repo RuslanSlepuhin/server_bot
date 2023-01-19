@@ -156,13 +156,15 @@ class VacancyFilter:
         # if low:
         #     vacancy = vacancy.lower()
         for word in pattern['ma']:
+            if len(word) == 1:
+                pass
             # if low:
             #     word = word.lower()
             match = []
             try:
                 match = set(re.findall(rf"{word}", vacancy))
             except Exception as e:
-                with open(variables.path_filter_error_file, 'a+') as f:
+                with open('./excel/filter_jan_errors.txt', 'a+', encoding='utf-8') as f:
                     f.write(f"word = {word}\nvacancy = {vacancy}\nerror = {e}\n------------\n\n")
 
             if match:
@@ -173,11 +175,14 @@ class VacancyFilter:
             for anti_word in pattern['mex']:
                 # if low:
                 #     anti_word = anti_word.lower()
+                if len(anti_word) == 1:
+                    pass
+
                 match = []
                 try:
                     match = set(re.findall(rf"{anti_word}", vacancy))
                 except Exception as e:
-                    with open(variables.path_filter_error_file, 'a+') as f:
+                    with open('./excel/filter_jan_errors.txt', 'a+', encoding='utf-8') as f:
                         f.write(f"word = {anti_word}\nvacancy = {vacancy}\nerror = {e}\n------------\n\n")
 
                 if match:

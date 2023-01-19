@@ -643,7 +643,7 @@ pattern = {
                     'ma':("[Uu][Xx]/[Uu][Ii]","[Uu][Ii]/[Uu][Xx]","UX", "UI", " CX исследователь"," UI/UX designer",
                         "UI Designer","UI designer","CRO manager","Mobile Designer","Веб-дизайнер","UX-писатель",),
                     'ma2': (),
-                    'mdef': ("[Дд]изайнер [Ии]нтерфейсов"),
+                    'mdef': ("[Дд]изайнер [Ии]нтерфейсов", ),
                     'mex': (),
                     'mex2':(),
                     'mincl': ()
@@ -653,7 +653,7 @@ pattern = {
                 'motion':{
                     'ma':("[Mm]otion",),
                     'ma2': (),
-                    'mdef': ("[Mm]otion [Dd]esigner"),
+                    'mdef': ("[Mm]otion [Dd]esigner",),
                     'mex': (),
                     'mex2': ("[Mm]otion [Dd]esign", "3D будет преимуществом"),
                     'mincl': ()
