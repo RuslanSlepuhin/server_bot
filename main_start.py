@@ -41,12 +41,12 @@ if __name__ == "__main__":
     p1 = Process(target=start_endpoints, args=())
     p2 = Process(target=start_bot, args=())
     p3 = Process(target=talking_bot_run, args=())
-    p4 = Process(target=start_red_bot, args=())
+    # p4 = Process(target=start_red_bot, args=())
 
     p1.start()
     p2.start()
     p3.start()
-    p4.start()
+    # p4.start()
 
     # p1.join()
     # p2.join()
