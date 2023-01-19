@@ -2427,7 +2427,7 @@ class InviteBot():
             # button_junior = InlineKeyboardButton('junior', callback_data=f'{prefix}/junior')
             # button_analyst = InlineKeyboardButton('analyst', callback_data=f'{prefix}/analyst')
             #
-            markup.row(button_dict['designer'], button_dict['ba'], button_dict['game'], button_dict['product'])
+            markup.row(button_dict['designer'], button_dict['game'], button_dict['product'])
             markup.row(button_dict['mobile'], button_dict['pm'], button_dict['sales_manager'], button_dict['analyst'])
             markup.row(button_dict['frontend'], button_dict['marketing'], button_dict['devops'], button_dict['hr'])
             markup.row(button_dict['backend'], button_dict['qa'], button_dict['junior'])
