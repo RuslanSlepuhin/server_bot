@@ -162,7 +162,7 @@ class VacancyFilter:
             try:
                 match = set(re.findall(rf"{word}", vacancy))
             except Exception as e:
-                with open('./excel/filter_jan_errors.txt', 'a+') as f:
+                with open(variables.path_filter_error_file, 'a+') as f:
                     f.write(f"word = {word}\nvacancy = {vacancy}\nerror = {e}\n------------\n\n")
 
             if match:
@@ -177,7 +177,7 @@ class VacancyFilter:
                 try:
                     match = set(re.findall(rf"{anti_word}", vacancy))
                 except Exception as e:
-                    with open('./excel/filter_jan_errors.txt', 'a+') as f:
+                    with open(variables.path_filter_error_file, 'a+') as f:
                         f.write(f"word = {anti_word}\nvacancy = {vacancy}\nerror = {e}\n------------\n\n")
 
                 if match:

@@ -373,12 +373,19 @@ class InviteBot():
 
         @self.dp.message_handler(commands=['refresh_and_save_changes'])  #
         async def refresh_vacancies_and_save(message: types.Message):
+            with open(variable.path_filter_error_file, 'w') as f:
+                f.write(str(datetime.now().strftime('%d-%m-%y %H:%M')))
+
             # refresh all professions
             await refresh(message, save_changes=True)
             # remove doubles in admin
             await get_remove_doubles(message)
             # remove completed professions
             await remove_completed_professions(message)
+            await send_file_to_user(
+                path=variable.path_filter_error_file,
+                caption='wrong words in pattern'
+            )
 
         @self.dp.message_handler(commands=['remove_completed_professions'])
         async def remove_prof(message: types.Message):
@@ -3584,5 +3591,5 @@ class InviteBot():
 def run(token_in=None):
     InviteBot(token_in).main_invitebot()
 
-if __name__ == '__main__':
-   run()
+# if __name__ == '__main__':
+#    run()
