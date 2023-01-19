@@ -294,15 +294,23 @@ class InviteBot():
 
         @self.dp.message_handler(commands=['get_pattern'])
         async def get_logs(message: types.Message):
-            path = variable.pattern_path
-            await helper.get_pattern(path)
-            await send_file_to_user(message, path, 'Please take the pattern')
+            if message.from_user.id in variable.white_admin_list:
+                path = variable.pattern_path
+                await helper.get_pattern(path)
+                await send_file_to_user(message, path, 'Please take the pattern')
+                await send_file_to_user(message, variable.path_last_pattern, 'There are all merges')
+                await send_file_to_user(message, variable.path_data_pattern, 'All data have got from it')
+            else:
+                await self.bot_aiogram.send_message(message.chat.id, variable.message_not_access)
 
         @self.dp.message_handler(commands=['get_pattern_pseudo'])
         async def get_pattern_pseudo_commands(message: types.Message):
-            path = variable.pattern_path
-            await helper.get_pattern(path, pseudo=True)
-            await send_file_to_user(message, path, 'Please take the pattern')
+            if message.from_user.id in variable.white_admin_list:
+                path = variable.pattern_path
+                await helper.get_pattern(path, pseudo=True)
+                await send_file_to_user(message, path, 'Please take the pattern')
+            else:
+                await self.bot_aiogram.send_message(message.chat.id, variable.message_not_access)
 
         @self.dp.message_handler(commands=['debugs'])
         async def get_debugs(message: types.Message):
@@ -3567,5 +3575,5 @@ class InviteBot():
 def run(token_in=None):
     InviteBot(token_in).main_invitebot()
 
-# if __name__ == '__main__':
-#    run()
+if __name__ == '__main__':
+   run()
