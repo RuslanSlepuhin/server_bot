@@ -221,6 +221,10 @@ backend['sub'] = {
     'one_c': one_c,
     'embedded': embedded
 }
+# merge to ma = ma2 + mdef
+for sub in backend['sub']:
+    backend['sub'][sub]['ma'] = set(backend['sub'][sub]['ma']).union(set(backend['sub'][sub]['ma2'])).union(set(backend['sub'][sub]['mdef']))
+backend['ma'] = set(backend['ma']).union(set(backend['ma2'])).union(set(backend['mdef']))
 
 # add mincl to mex
 for sub_profession in backend['sub']:

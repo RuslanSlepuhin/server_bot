@@ -9,6 +9,10 @@ junior = {
     'mincl': pattern['junior']['mincl'],
 }
 junior['sub'] = {}
+# merge to ma = ma2 + mdef
+for sub in junior['sub']:
+    junior['sub'][sub]['ma'] = set(junior['sub'][sub]['ma']).union(set(junior['sub'][sub]['ma2'])).union(set(junior['sub'][sub]['mdef']))
+junior['ma'] = set(junior['ma']).union(set(junior['ma2'])).union(set(junior['mdef']))
 
 # add mincl to mex
 for sub_profession in junior['sub']:

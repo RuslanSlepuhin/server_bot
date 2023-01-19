@@ -76,6 +76,10 @@ mobile['sub'] = {
     'flutter': flutter,
     'react_native': react_native
 }
+# merge to ma = ma2 + mdef
+for sub in mobile['sub']:
+    mobile['sub'][sub]['ma'] = set(mobile['sub'][sub]['ma']).union(set(mobile['sub'][sub]['ma2'])).union(set(mobile['sub'][sub]['mdef']))
+mobile['ma'] = set(mobile['ma']).union(set(mobile['ma2'])).union(set(mobile['mdef']))
 
 # add mincl to mex
 for sub_profession in mobile['sub']:

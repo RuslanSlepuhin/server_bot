@@ -111,6 +111,10 @@ designer['sub'] = {
     'graphic': graphic,
     'uxre_searcher': uxre_searcher
 }
+# merge to ma = ma2 + mdef
+for sub in designer['sub']:
+    designer['sub'][sub]['ma'] = set(designer['sub'][sub]['ma']).union(set(designer['sub'][sub]['ma2'])).union(set(designer['sub'][sub]['mdef']))
+designer['ma'] = set(designer['ma']).union(set(designer['ma2'])).union(set(designer['mdef']))
 
 # add mincl to mex
 for sub_profession in designer['sub']:

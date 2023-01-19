@@ -10,6 +10,10 @@ sales_manager = {
 }
 
 sales_manager['sub'] = {}
+# merge to ma = ma2 + mdef
+for sub in sales_manager['sub']:
+    sales_manager['sub'][sub]['ma'] = set(sales_manager['sub'][sub]['ma']).union(set(sales_manager['sub'][sub]['ma2'])).union(set(sales_manager['sub'][sub]['mdef']))
+sales_manager['ma'] = set(sales_manager['ma']).union(set(sales_manager['ma2'])).union(set(sales_manager['mdef']))
 
 # add mincl to mex
 for sub_profession in sales_manager['sub']:

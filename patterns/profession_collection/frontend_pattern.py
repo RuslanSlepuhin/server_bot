@@ -115,6 +115,10 @@ frontend['sub'] = {
     'joomla': joomla,
     'drupal': drupal
 }
+# merge to ma = ma2 + mdef
+for sub in frontend['sub']:
+    frontend['sub'][sub]['ma'] = set(frontend['sub'][sub]['ma']).union(set(frontend['sub'][sub]['ma2'])).union(set(frontend['sub'][sub]['mdef']))
+frontend['ma'] = set(frontend['ma']).union(set(frontend['ma2'])).union(set(frontend['mdef']))
 
 # add mincl to mex
 for sub_profession in frontend['sub']:

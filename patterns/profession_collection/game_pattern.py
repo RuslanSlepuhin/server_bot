@@ -10,6 +10,10 @@ game = {
 }
 
 game['sub'] = {}
+# merge to ma = ma2 + mdef
+for sub in game['sub']:
+    game['sub'][sub]['ma'] = set(game['sub'][sub]['ma']).union(set(game['sub'][sub]['ma2'])).union(set(game['sub'][sub]['mdef']))
+game['ma'] = set(game['ma']).union(set(game['ma2'])).union(set(game['mdef']))
 
 # add mincl to mex
 for sub_profession in game['sub']:

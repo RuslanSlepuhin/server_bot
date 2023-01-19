@@ -552,7 +552,16 @@ class InviteBot():
         async def process_api_id(message: types.Message, state: FSMContext):
             async with state.proxy() as data:
                 data['link'] = message.text
-            link = message.text
+                link = message.text
+            await state.finish()
+            if 'https://hh.ru/vacancy/' in link:
+                hh = HHGetInformation(
+                    bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id},
+                    search_word=None
+                )
+                await hh.get_content_by_link_alone(link)
+
+
 
 # -----------------------------------------------------------------------
 

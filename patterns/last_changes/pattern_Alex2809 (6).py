@@ -473,7 +473,14 @@ pattern = {
                 
 },
                
-               # common3 !!!!!pattern['DetailedDesigners']['ma']=set(pattern['UX/UI']['ma']).union(set(pattern['Motion']['ma'])).union(set(pattern['2D']['ma'])).union(set(pattern['3D']['ma'])).union(set(pattern['GameDesigner']['ma'])).union(set(pattern['illustrator']['ma'])).union(set(pattern['Graphic']['ma'])).union(set(pattern['UXREsearcher']['ma']))
+               # common3 !!!!!pattern['DetailedDesigners']['ma']=set(pattern['UX/UI']['ma']).
+    #               union(set(pattern['Motion']['ma'])).
+    #               union(set(pattern['2D']['ma'])).
+    #               union(set(pattern['3D']['ma'])).
+    #               union(set(pattern['GameDesigner']['ma'])).
+    #               union(set(pattern['illustrator']['ma'])).
+    #               union(set(pattern['Graphic']['ma'])).
+    #               union(set(pattern['UXREsearcher']['ma']))
                
                
                

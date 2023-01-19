@@ -9,6 +9,10 @@ fullstack = {
     'mincl': pattern['fullstack']['mincl'],
 }
 fullstack['sub'] = {}
+# merge to ma = ma2 + mdef
+for sub in fullstack['sub']:
+    fullstack['sub'][sub]['ma'] = set(fullstack['sub'][sub]['ma']).union(set(fullstack['sub'][sub]['ma2'])).union(set(fullstack['sub'][sub]['mdef']))
+fullstack['ma'] = set(fullstack['ma']).union(set(fullstack['ma2'])).union(set(fullstack['mdef']))
 
 # add mincl to mex
 for sub_profession in fullstack['sub']:

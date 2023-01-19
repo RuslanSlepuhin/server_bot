@@ -56,6 +56,11 @@ analyst['sub'] = {
     'ba': ba
 }
 
+# merge to ma = ma2 + mdef
+for sub in analyst['sub']:
+    analyst['sub'][sub]['ma'] = set(analyst['sub'][sub]['ma']).union(set(analyst['sub'][sub]['ma2'])).union(set(analyst['sub'][sub]['mdef']))
+analyst['ma'] = set(analyst['ma']).union(set(analyst['ma2'])).union(set(analyst['mdef']))
+
 # add mincl to mex
 for sub_profession in analyst['sub']:
     analyst['sub'][sub_profession]['mex'] = set(analyst['sub'][sub_profession]['mex']).union(set(analyst['sub'][sub_profession]['mincl']))

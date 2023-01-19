@@ -1,3 +1,4 @@
+from patterns.data_pattern._data_pattern import pattern
 from patterns.pseudo_pattern.profession_collection.analyst_pattern import analyst
 
 ba = analyst
@@ -10,3 +11,4 @@ for i in ba:
         print('sub: ')
         for j in ba[i]:
             print(f"   * {j}: {ba[i][j]}")
+

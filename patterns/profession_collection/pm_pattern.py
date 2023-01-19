@@ -37,6 +37,10 @@ pm['sub'] = {
     'project': project,
     'product': product
 }
+# merge to ma = ma2 + mdef
+for sub in pm['sub']:
+    pm['sub'][sub]['ma'] = set(pm['sub'][sub]['ma']).union(set(pm['sub'][sub]['ma2'])).union(set(pm['sub'][sub]['mdef']))
+pm['ma'] = set(pm['ma']).union(set(pm['ma2'])).union(set(pm['mdef']))
 
 # add mincl to mex
 for sub_profession in pm['sub']:

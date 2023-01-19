@@ -130,6 +130,10 @@ marketing['sub'] = {
     'content_manager': content_manager,
     'tech_writer': tech_writer,
 }
+# merge to ma = ma2 + mdef
+for sub in marketing['sub']:
+    marketing['sub'][sub]['ma'] = set(marketing['sub'][sub]['ma']).union(set(marketing['sub'][sub]['ma2'])).union(set(marketing['sub'][sub]['mdef']))
+marketing['ma'] = set(marketing['ma']).union(set(marketing['ma2'])).union(set(marketing['mdef']))
 
 # add mincl to mex
 for sub_profession in marketing['sub']:
