@@ -17,7 +17,8 @@ ui_ux = {
     'mex2': pattern['designer']['sub']['ui_ux']['mex2'],
     'mincl': pattern['designer']['sub']['ui_ux']['mincl'],
 }
-ui_ux['mex'] = set(designer['mex']).union(set(ui_ux['mex2']))
+# designer1
+ui_ux['mex'] = set(ui_ux['mex']).union(set(designer['mex'])).union(set(ui_ux['mex2']))
 
 motion = {
     'ma': pattern['designer']['sub']['motion']['ma'],
@@ -27,7 +28,8 @@ motion = {
     'mex2': pattern['designer']['sub']['motion']['mex2'],
     'mincl': pattern['designer']['sub']['motion']['mincl'],
 }
-motion['mex'] = set(designer['mex']).union(set(motion['mex2']))
+# designer2
+motion['mex'] = set(motion['mex']).union(set(designer['mex'])).union(set(motion['mex2']))
 
 dd = {
     'ma': pattern['designer']['sub']['dd']['ma'],
@@ -37,7 +39,8 @@ dd = {
     'mex2': pattern['designer']['sub']['dd']['mex2'],
     'mincl': pattern['designer']['sub']['dd']['mincl'],
 }
-dd['mex'] = set(designer['mex']).union(set(dd['mex2']))
+# designer3
+dd['mex'] = set(dd['mex']).union(set(designer['mex'])).union(set(dd['mex2']))
 
 ddd = {
     'ma': pattern['designer']['sub']['ddd']['ma'],
@@ -47,7 +50,8 @@ ddd = {
     'mex2': pattern['designer']['sub']['ddd']['mex2'],
     'mincl': pattern['designer']['sub']['ddd']['mincl'],
 }
-ddd['mex'] = set(designer['mex']).union(set(ddd['mex2']))
+# designer4
+ddd['mex'] = set(ddd['mex']).union(set(designer['mex'])).union(set(ddd['mex2']))
 
 game_designer = {
     'ma': pattern['designer']['sub']['game_designer']['ma'],
@@ -57,7 +61,8 @@ game_designer = {
     'mex2': pattern['designer']['sub']['game_designer']['mex2'],
     'mincl': pattern['designer']['sub']['game_designer']['mincl'],
 }
-game_designer['mex'] = set(designer['mex']).union(set(game_designer['mex2']))
+# designer5
+game_designer['mex'] = set(game_designer['mex']).union(set(designer['mex'])).union(set(game_designer['mex2']))
 
 illustrator = {
     'ma': pattern['designer']['sub']['illustrator']['ma'],
@@ -67,7 +72,8 @@ illustrator = {
     'mex2': pattern['designer']['sub']['illustrator']['mex2'],
     'mincl': pattern['designer']['sub']['illustrator']['mincl'],
 }
-illustrator['mex'] = set(designer['mex']).union(set(illustrator['mex2']))
+# designer6
+illustrator['mex'] = set(illustrator['mex']).union(set(designer['mex'])).union(set(illustrator['mex2']))
 
 graphic = {
     'ma': pattern['designer']['sub']['graphic']['ma'],
@@ -77,7 +83,8 @@ graphic = {
     'mex2': pattern['designer']['sub']['graphic']['mex2'],
     'mincl': pattern['designer']['sub']['graphic']['mincl'],
 }
-graphic['mex'] = set(designer['mex']).union(set(graphic['mex2']))
+# designer7
+graphic['mex'] = set(graphic['mex']).union(set(designer['mex'])).union(set(graphic['mex2']))
 
 uxre_searcher = {
     'ma': pattern['designer']['sub']['uxre_searcher']['ma'],
@@ -87,11 +94,12 @@ uxre_searcher = {
     'mex2': pattern['designer']['sub']['uxre_searcher']['mex2'],
     'mincl': pattern['designer']['sub']['uxre_searcher']['mincl'],
 }
-uxre_searcher['mex'] = set(designer['mex']).union(set(uxre_searcher['mex2']))
+# designer8
+uxre_searcher['mex'] = set(uxre_searcher['mex']).union(set(designer['mex'])).union(set(uxre_searcher['mex2']))
 
-designer['ma'] = set(ui_ux['ma']).union(set(motion['ma'])).union(set(dd['ma'])).union(set(ddd['ma']))\
-    .union(set(game_designer['ma'])).union(set(illustrator['ma'])).union(set(graphic['ma'])).\
-    union(set(uxre_searcher['ma']))
+# designer['ma'] = set(ui_ux['ma']).union(set(motion['ma'])).union(set(dd['ma'])).union(set(ddd['ma']))\
+#     .union(set(game_designer['ma'])).union(set(illustrator['ma'])).union(set(graphic['ma'])).\
+#     union(set(uxre_searcher['ma']))
 
 designer['sub'] = {
     'ui_ux': ui_ux,
@@ -103,6 +111,11 @@ designer['sub'] = {
     'graphic': graphic,
     'uxre_searcher': uxre_searcher
 }
+
+# add mincl to mex
+for sub_profession in designer['sub']:
+    designer['sub'][sub_profession]['mex'] = set(designer['sub'][sub_profession]['mex']).union(set(designer['sub'][sub_profession]['mincl']))
+
 # print(f"\n********************\n{backend}\n****************\n")
 
 print('\nDESIGNER')

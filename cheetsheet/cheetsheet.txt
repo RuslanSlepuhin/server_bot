@@ -15,4 +15,6 @@ sudo nano /etc/rc.local
 В открывшемся текстовом файле находим exit 0 и над этой строкой пишем:
 setupcon
 
+git stash
+
 

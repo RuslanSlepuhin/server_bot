@@ -11,6 +11,10 @@ sales_manager = {
 
 sales_manager['sub'] = {}
 
+# add mincl to mex
+for sub_profession in sales_manager['sub']:
+    sales_manager['sub'][sub_profession]['mex'] = set(sales_manager['sub'][sub_profession]['mex']).union(set(sales_manager['sub'][sub_profession]['mincl']))
+
 # print(f"\n********************\n{backend}\n****************\n")
 
 print('\nSALES MANAGER')

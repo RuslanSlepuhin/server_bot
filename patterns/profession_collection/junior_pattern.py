@@ -9,3 +9,7 @@ junior = {
     'mincl': pattern['junior']['mincl'],
 }
 junior['sub'] = {}
+
+# add mincl to mex
+for sub_profession in junior['sub']:
+    junior['sub'][sub_profession]['mex'] = set(junior['sub'][sub_profession]['mex']).union(set(junior['sub'][sub_profession]['mincl']))

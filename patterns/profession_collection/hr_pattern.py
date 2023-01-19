@@ -11,6 +11,10 @@ hr = {
 
 hr['sub'] = {}
 
+# add mincl to mex
+for sub_profession in hr['sub']:
+    hr['sub'][sub_profession]['mex'] = set(hr['sub'][sub_profession]['mex']).union(set(hr['sub'][sub_profession]['mincl']))
+
 # print(f"\n********************\n{frontend}\n****************\n")
 print('\nGAME:')
 for i in hr:

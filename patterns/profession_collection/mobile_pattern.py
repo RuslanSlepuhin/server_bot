@@ -8,7 +8,6 @@ mobile = {
     'mex2': pattern['mobile']['mex2'],
     'mincl': pattern['mobile']['mincl'],
 }
-mobile['ma'] = set(mobile['ma2']).union(set(mobile['mdef']))
 
 ios = {
     'ma': pattern['mobile']['sub']['ios']['ma'],
@@ -18,7 +17,8 @@ ios = {
     'mex2': pattern['mobile']['sub']['ios']['mex2'],
     'mincl': pattern['mobile']['sub']['ios']['mincl'],
 }
-ios['mex'] = set(mobile['mex']).union(set(ios['mex2']))
+# mobile3
+ios['mex'] = set(ios['mex']).union(set(mobile['mex'])).union(set(ios['mex2']))
 
 android = {
     'ma': pattern['mobile']['sub']['android']['ma'],
@@ -28,7 +28,8 @@ android = {
     'mex2': pattern['mobile']['sub']['android']['mex2'],
     'mincl': pattern['mobile']['sub']['android']['mincl'],
 }
-android['mex'] = set(mobile['mex']).union(set(android['mex2']))
+# mobile
+android['mex'] = set(android['mex']).union(set(mobile['mex'])).union(set(android['mex2']))
 
 flutter = {
     'ma': pattern['mobile']['sub']['flutter']['ma'],
@@ -38,7 +39,8 @@ flutter = {
     'mex2': pattern['mobile']['sub']['flutter']['mex2'],
     'mincl': pattern['mobile']['sub']['flutter']['mincl'],
 }
-flutter['mex'] = set(mobile['mex']).union(set(flutter['mex2']))
+# mobile7
+flutter['mex'] = set(flutter['mex']).union(set(mobile['mex'])).union(set(flutter['mex2']))
 
 react_native = {
     'ma': pattern['mobile']['sub']['react_native']['ma'],
@@ -48,7 +50,8 @@ react_native = {
     'mex2': pattern['mobile']['sub']['react_native']['mex2'],
     'mincl': pattern['mobile']['sub']['react_native']['mincl'],
 }
-react_native['mex'] = set(mobile['mex']).union(set(react_native['mex2']))
+# mobile8
+react_native['mex'] = set(react_native['mex']).union(set(mobile['mex'])).union(set(react_native['mex2']))
 
 cross_mobile = {
     'ma': pattern['mobile']['sub']['cross_mobile']['ma'],
@@ -58,12 +61,13 @@ cross_mobile = {
     'mex2': pattern['mobile']['sub']['cross_mobile']['mex2'],
     'mincl': pattern['mobile']['sub']['cross_mobile']['mincl'],
 }
-cross_mobile['mex'] = set(mobile['mex']).union(set(cross_mobile['mex2']))
-cross_mobile['ma'] = set(cross_mobile['ma2']).union(set(flutter['ma'])).union(set(react_native['ma']))
+# mobile5
+cross_mobile['mex'] = set(cross_mobile['mex']).union(set(mobile['mex'])).union(set(cross_mobile['mex2']))
+# mobile6
+cross_mobile['ma'] = set(cross_mobile['ma']).union(set(cross_mobile['ma2'])).union(set(flutter['ma'])).union(set(react_native['ma']))
 
-cross_mobile['ma'] = set(cross_mobile['ma2']).union(set(flutter['ma'])).union(set(react_native['ma']))
-
-mobile['ma']=set(mobile['ma2']).union(set(mobile['mdef']))
+# mobile1
+mobile['ma'] = set(mobile['ma']).union(set(mobile['ma2'])).union(set(mobile['mdef']))
 
 mobile['sub'] = {
     'ios': ios,
@@ -72,6 +76,11 @@ mobile['sub'] = {
     'flutter': flutter,
     'react_native': react_native
 }
+
+# add mincl to mex
+for sub_profession in mobile['sub']:
+    mobile['sub'][sub_profession]['mex'] = set(mobile['sub'][sub_profession]['mex']).union(set(mobile['sub'][sub_profession]['mincl']))
+
 # print(f"\n********************\n{backend}\n****************\n")
 
 print('\nMOBILE')

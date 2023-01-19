@@ -17,7 +17,8 @@ vue = {
     'mex2': pattern['frontend']['sub']['vue']['mex2'],
     'mincl': pattern['frontend']['sub']['vue']['mincl'],
 }
-vue['mex'] = set(frontend['mex']).union(set(vue['mex2']))
+# front3
+vue['mex'] = set(vue['mex']).union(set(frontend['mex'])).union(set(vue['mex2']))
 
 react = {
     'ma': pattern['frontend']['sub']['react']['ma'],
@@ -27,7 +28,8 @@ react = {
     'mex2': pattern['frontend']['sub']['react']['mex2'],
     'mincl': pattern['frontend']['sub']['react']['mincl'],
 }
-react['mex'] = set(frontend['mex']).union(set(react['mex2']))
+# front4
+react['mex'] = set(react['mex']).union(set(frontend['mex'])).union(set(react['mex2']))
 
 angular = {
     'ma': pattern['frontend']['sub']['angular']['ma'],
@@ -37,7 +39,8 @@ angular = {
     'mex2': pattern['frontend']['sub']['angular']['mex2'],
     'mincl': pattern['frontend']['sub']['angular']['mincl'],
 }
-angular['mex'] = set(frontend['mex']).union(set(angular['mex2']))
+# front5
+angular['mex'] = set(angular['mex']).union(set(frontend['mex'])).union(set(angular['mex2']))
 
 django = {
     'ma': pattern['frontend']['sub']['django']['ma'],
@@ -47,7 +50,8 @@ django = {
     'mex2': pattern['frontend']['sub']['django']['mex2'],
     'mincl': pattern['frontend']['sub']['django']['mincl'],
 }
-django['mex'] = set(frontend['mex']).union(set(django['mex2']))
+# front6
+django['mex'] = set(django['mex']).union(set(frontend['mex'])).union(set(django['mex2']))
 
 wordpress = {
     'ma': pattern['frontend']['sub']['wordpress']['ma'],
@@ -57,7 +61,8 @@ wordpress = {
     'mex2': pattern['frontend']['sub']['wordpress']['mex2'],
     'mincl': pattern['frontend']['sub']['wordpress']['mincl'],
 }
-wordpress['mex'] = set(frontend['mex']).union(set(wordpress['mex2']))
+# front7
+wordpress['mex'] = set(wordpress['mex']).union(set(frontend['mex'])).union(set(wordpress['mex2']))
 
 bitrix = {
     'ma': pattern['frontend']['sub']['bitrix']['ma'],
@@ -67,7 +72,8 @@ bitrix = {
     'mex2': pattern['frontend']['sub']['bitrix']['mex2'],
     'mincl': pattern['frontend']['sub']['bitrix']['mincl'],
 }
-bitrix['mex'] = set(frontend['mex']).union(set(bitrix['mex2']))
+# front8
+bitrix['mex'] = set(bitrix['mex']).union(set(frontend['mex'])).union(set(bitrix['mex2']))
 
 joomla = {
     'ma': pattern['frontend']['sub']['joomla']['ma'],
@@ -77,7 +83,8 @@ joomla = {
     'mex2': pattern['frontend']['sub']['joomla']['mex2'],
     'mincl': pattern['frontend']['sub']['joomla']['mincl'],
 }
-joomla['mex'] = set(frontend['mex']).union(set(joomla['mex2']))
+# front9
+joomla['mex'] = set(joomla['mex']).union(set(frontend['mex'])).union(set(joomla['mex2']))
 
 drupal = {
     'ma': pattern['frontend']['sub']['drupal']['ma'],
@@ -87,11 +94,14 @@ drupal = {
     'mex2': pattern['frontend']['sub']['drupal']['mex2'],
     'mincl': pattern['frontend']['sub']['drupal']['mincl'],
 }
-drupal['mex'] = set(frontend['mex']).union(set(drupal['mex2']))
+# front10
+drupal['mex'] = set(drupal['mex']).union(set(frontend['mex'])).union(set(drupal['mex2']))
 
-frontend['mex'] = set(vue['mex2']).union(set(frontend['mex2']))
+# front2
+frontend['mex'] = set(frontend['mex']).union(set(vue['mex2'])).union(set(frontend['mex2']))
 
-frontend['ma']=set(vue['ma']).union(set(frontend['ma2'])).union(set(react['ma'])).union(set(angular['ma'])).\
+# front1
+frontend['ma'] = set(frontend['ma']).union(set(vue['ma'])).union(set(frontend['ma2'])).union(set(react['ma'])).union(set(angular['ma'])).\
     union(set(django['ma'])).union(set(wordpress['ma'])).union(set(bitrix['ma'])).union(set(joomla['ma'])).\
     union(set(drupal['ma']))
 
@@ -105,6 +115,11 @@ frontend['sub'] = {
     'joomla': joomla,
     'drupal': drupal
 }
+
+# add mincl to mex
+for sub_profession in frontend['sub']:
+    frontend['sub'][sub_profession]['mex'] = set(frontend['sub'][sub_profession]['mex']).union(set(frontend['sub'][sub_profession]['mincl']))
+
 # print(f"\n********************\n{frontend}\n****************\n")
 print('\nFRONTEND:')
 for i in frontend:

@@ -56,6 +56,10 @@ analyst['sub'] = {
     'ba': ba
 }
 
+# add mincl to mex
+for sub_profession in analyst['sub']:
+    analyst['sub'][sub_profession]['mex'] = set(analyst['sub'][sub_profession]['mex']).union(set(analyst['sub'][sub_profession]['mincl']))
+
 # print(f"\n********************\n{backend}\n****************\n")
 
 print('\nANALYST')

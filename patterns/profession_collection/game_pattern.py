@@ -11,6 +11,10 @@ game = {
 
 game['sub'] = {}
 
+# add mincl to mex
+for sub_profession in game['sub']:
+    game['sub'][sub_profession]['mex'] = set(game['sub'][sub_profession]['mex']).union(set(game['sub'][sub_profession]['mincl']))
+
 # print(f"\n********************\n{frontend}\n****************\n")
 print('\nGAME:')
 for i in game:

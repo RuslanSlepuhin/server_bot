@@ -17,7 +17,8 @@ python = {
     'mex2': pattern['backend']['sub']['python']['mex2'],
     'mincl': pattern['backend']['sub']['python']['mincl'],
 }
-python['mex'] = set(backend['mex']).union(set(python['mex2']))
+# back2
+python['mex'] = set(python['mex']).union(set(backend['mex'])).union(set(python['mex2']))
 
 c = {
     'ma': pattern['backend']['sub']['c']['ma'],
@@ -27,7 +28,8 @@ c = {
     'mex2': pattern['backend']['sub']['c']['mex2'],
     'mincl': pattern['backend']['sub']['c']['mincl'],
 }
-c['mex'] = set(backend['mex']).union(set(c['mex2']))
+# back3
+c['mex'] = set(c['mex']).union(set(backend['mex'])).union(set(c['mex2']))
 
 php = {
     'ma': pattern['backend']['sub']['php']['ma'],
@@ -37,7 +39,8 @@ php = {
     'mex2': pattern['backend']['sub']['php']['mex2'],
     'mincl': pattern['backend']['sub']['php']['mincl'],
 }
-php['mex'] = set(backend['mex']).union(set(php['mex2']))
+# back4
+php['mex'] = set(php['mex']).union(set(backend['mex'])).union(set(php['mex2']))
 
 java = {
     'ma': pattern['backend']['sub']['java']['ma'],
@@ -47,7 +50,8 @@ java = {
     'mex2': pattern['backend']['sub']['java']['mex2'],
     'mincl': pattern['backend']['sub']['java']['mincl'],
 }
-java['mex'] = set(backend['mex']).union(set(java['mex2']))
+# back5
+java['mex'] = set(java['mex']).union(set(backend['mex'])).union(set(java['mex2']))
 
 ruby = {
     'ma': pattern['backend']['sub']['ruby']['ma'],
@@ -57,7 +61,8 @@ ruby = {
     'mex2': pattern['backend']['sub']['ruby']['mex2'],
     'mincl': pattern['backend']['sub']['ruby']['mincl'],
 }
-ruby['mex'] = set(backend['mex']).union(set(ruby['mex2']))
+# back6
+ruby['mex'] = set(ruby['mex']).union(set(backend['mex'])).union(set(ruby['mex2']))
 
 scala = {
     'ma': pattern['backend']['sub']['scala']['ma'],
@@ -67,7 +72,8 @@ scala = {
     'mex2': pattern['backend']['sub']['scala']['mex2'],
     'mincl': pattern['backend']['sub']['scala']['mincl'],
 }
-scala['mex'] = set(backend['mex']).union(set(scala['mex2']))
+# back7
+scala['mex'] = set(scala['mex']).union(set(backend['mex'])).union(set(scala['mex2']))
 
 net = {
     'ma': pattern['backend']['sub']['net']['ma'],
@@ -77,7 +83,8 @@ net = {
     'mex2': pattern['backend']['sub']['net']['mex2'],
     'mincl': pattern['backend']['sub']['net']['mincl'],
 }
-net['mex'] = set(backend['mex']).union(set(net['mex2']))
+# back8
+net['mex'] = set(net['mex']).union(set(backend['mex'])).union(set(net['mex2']))
 
 nodejs = {
     'ma': pattern['backend']['sub']['nodejs']['ma'],
@@ -87,7 +94,8 @@ nodejs = {
     'mex2': pattern['backend']['sub']['nodejs']['mex2'],
     'mincl': pattern['backend']['sub']['nodejs']['mincl'],
 }
-nodejs['mex'] = set(backend['mex']).union(set(nodejs['mex2']))
+# back9
+nodejs['mex'] = set(nodejs['mex']).union(set(backend['mex'])).union(set(nodejs['mex2']))
 
 laravel = {
     'ma': pattern['backend']['sub']['laravel']['ma'],
@@ -97,7 +105,8 @@ laravel = {
     'mex2': pattern['backend']['sub']['laravel']['mex2'],
     'mincl': pattern['backend']['sub']['laravel']['mincl'],
 }
-laravel['mex'] = set(backend['mex']).union(set(laravel['mex2']))
+# back10
+laravel['mex'] = set(laravel['mex']).union(set(backend['mex'])).union(set(laravel['mex2']))
 
 golang = {
     'ma': pattern['backend']['sub']['golang']['ma'],
@@ -107,7 +116,8 @@ golang = {
     'mex2': pattern['backend']['sub']['golang']['mex2'],
     'mincl': pattern['backend']['sub']['golang']['mincl'],
 }
-golang['mex'] = set(backend['mex']).union(set(golang['mex2']))
+# back11
+golang['mex'] = set(golang['mex']).union(set(backend['mex'])).union(set(golang['mex2']))
 
 delphi = {
     'ma': pattern['backend']['sub']['delphi']['ma'],
@@ -117,7 +127,8 @@ delphi = {
     'mex2': pattern['backend']['sub']['delphi']['mex2'],
     'mincl': pattern['backend']['sub']['delphi']['mincl'],
 }
-delphi['mex'] = set(backend['mex']).union(set(delphi['mex2']))
+# back12
+delphi['mex'] = set(delphi['mex']).union(set(backend['mex'])).union(set(delphi['mex2']))
 
 abap = {
     'ma': pattern['backend']['sub']['abap']['ma'],
@@ -127,7 +138,8 @@ abap = {
     'mex2': pattern['backend']['sub']['abap']['mex2'],
     'mincl': pattern['backend']['sub']['abap']['mincl'],
 }
-abap['mex'] = set(backend['mex']).union(set(abap['mex2']))
+# back13
+abap['mex'] = set(abap['mex']).union(set(backend['mex'])).union(set(abap['mex2']))
 
 ml = {
     'ma': pattern['backend']['sub']['ml']['ma'],
@@ -137,7 +149,8 @@ ml = {
     'mex2': pattern['backend']['sub']['ml']['mex2'],
     'mincl': pattern['backend']['sub']['ml']['mincl'],
 }
-ml['mex'] = set(backend['mex']).union(set(ml['mex2']))
+# back14
+ml['mex'] = set(ml['mex']).union(set(backend['mex'])).union(set(ml['mex2']))
 
 data_engineer = {
     'ma': pattern['backend']['sub']['data_engineer']['ma'],
@@ -147,7 +160,8 @@ data_engineer = {
     'mex2': pattern['backend']['sub']['data_engineer']['mex2'],
     'mincl': pattern['backend']['sub']['data_engineer']['mincl'],
 }
-data_engineer['mex'] = set(backend['mex']).union(set(data_engineer['mex2']))
+# back15
+data_engineer['mex'] = set(data_engineer['mex']).union(set(backend['mex'])).union(set(data_engineer['mex2']))
 
 unity = {
     'ma': pattern['backend']['sub']['unity']['ma'],
@@ -157,7 +171,8 @@ unity = {
     'mex2': pattern['backend']['sub']['unity']['mex2'],
     'mincl': pattern['backend']['sub']['unity']['mincl'],
 }
-unity['mex'] = set(backend['mex']).union(set(unity['mex2']))
+# back16
+unity['mex'] = set(unity['mex']).union(set(backend['mex'])).union(set(unity['mex2']))
 
 one_c = {
     'ma': pattern['backend']['sub']['one_c']['ma'],
@@ -167,7 +182,8 @@ one_c = {
     'mex2': pattern['backend']['sub']['one_c']['mex2'],
     'mincl': pattern['backend']['sub']['one_c']['mincl'],
 }
-one_c['mex'] = set(backend['mex']).union(set(one_c['mex2']))
+# back17
+one_c['mex'] = set(one_c['mex']).union(set(backend['mex'])).union(set(one_c['mex2']))
 
 embedded = {
     'ma': pattern['backend']['sub']['embedded']['ma'],
@@ -177,9 +193,11 @@ embedded = {
     'mex2': pattern['backend']['sub']['embedded']['mex2'],
     'mincl': pattern['backend']['sub']['embedded']['mincl'],
 }
-embedded['mex'] = set(backend['mex']).union(set(embedded['mex2']))
+# back18
+embedded['mex'] = set(embedded['mex']).union(set(backend['mex'])).union(set(embedded['mex2']))
 
-backend['ma']=set(python['ma']).union(set(c['ma'])).union(set(php['ma'])).union(set(java['ma']))\
+# back1
+backend['ma'] = set(backend['ma']).union(set(python['ma'])).union(set(c['ma'])).union(set(php['ma'])).union(set(java['ma']))\
     .union(set(ruby['ma'])).union(set(scala['ma'])).union(set(net['ma'])).union(set(nodejs['ma']))\
     .union(set(laravel['ma'])).union(set(golang['ma'])).union(set(delphi['ma'])).union(set(abap['ma']))\
     .union(set(ml['ma'])).union(set(data_engineer['ma']))
@@ -203,6 +221,12 @@ backend['sub'] = {
     'one_c': one_c,
     'embedded': embedded
 }
+
+# add mincl to mex
+for sub_profession in backend['sub']:
+    backend['sub'][sub_profession]['mex'] = set(backend['sub'][sub_profession]['mex']).union(set(backend['sub'][sub_profession]['mincl']))
+
+
 # print(f"\n********************\n{backend}\n****************\n")
 print('\nBACKEND')
 for i in backend:
@@ -212,4 +236,3 @@ for i in backend:
         print('sub: ')
         for j in backend[i]:
             print(f"   * {j}: {backend[i][j]}")
-

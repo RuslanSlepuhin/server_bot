@@ -11,6 +11,10 @@ devops = {
 
 devops['sub'] = {}
 
+# add mincl to mex
+for sub_profession in devops['sub']:
+    devops['sub'][sub_profession]['mex'] = set(devops['sub'][sub_profession]['mex']).union(set(devops['sub'][sub_profession]['mincl']))
+
 # print(f"\n********************\n{backend}\n****************\n")
 
 print('\nDEV')

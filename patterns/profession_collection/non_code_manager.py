@@ -11,6 +11,10 @@ non_code_manager = {
 
 non_code_manager['sub'] = {}
 
+# add mincl to mex
+for sub_profession in non_code_manager['sub']:
+    non_code_manager['sub'][sub_profession]['mex'] = set(non_code_manager['sub'][sub_profession]['mex']).union(set(non_code_manager['sub'][sub_profession]['mincl']))
+
 # print(f"\n********************\n{backend}\n****************\n")
 
 print('\nSALES MANAGER')

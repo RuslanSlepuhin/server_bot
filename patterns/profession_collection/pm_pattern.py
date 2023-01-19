@@ -26,15 +26,22 @@ product = {
     'mex2': pattern['pm']['sub']['product']['mex2'],
     'mincl': pattern['pm']['sub']['product']['mincl'],
 }
-product['mex'] = set(pm['mex2']).union(set(product['mex2']))
-project['mex'] = set(pm['mex2']).union(set(project['mex2']))
-pm['ma'] = set(project['mdef']).union(set(pm['mincl'])).union(set(product['mdef']))
+# product['mex'] = set(pm['mex2']).union(set(product['mex2']))
+# project['mex'] = set(pm['mex2']).union(set(project['mex2']))
+# pm['ma'] = set(project['mdef']).union(set(pm['mincl'])).union(set(product['mdef']))
 
+# pm1
+pm['ma'] = set(pm['ma']).union(set(project['mdef'])).union(set(pm['mincl'])).union(set(product['mdef']))
 
 pm['sub'] = {
     'project': project,
     'product': product
 }
+
+# add mincl to mex
+for sub_profession in pm['sub']:
+    pm['sub'][sub_profession]['mex'] = set(pm['sub'][sub_profession]['mex']).union(set(pm['sub'][sub_profession]['mincl']))
+
 # print(f"\n********************\n{backend}\n****************\n")
 
 print('\nPM')

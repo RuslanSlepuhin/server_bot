@@ -1,21 +1,21 @@
 from patterns.data_pattern._data_pattern import pattern
 
 qa = {
-    'ma': pattern['qa']['ma'],
-    'ma2': pattern['qa']['ma2'],
-    'mdef': pattern['qa']['mdef'],
-    'mex': pattern['qa']['mex'],
-    'mex2': pattern['qa']['mex2'],
-    'mincl': pattern['qa']['mincl'],
+    'ma': set(pattern['qa']['ma']),
+    'ma2': set(pattern['qa']['ma2']),
+    'mdef': set(pattern['qa']['mdef']),
+    'mex': set(pattern['qa']['mex']),
+    'mex2': set(pattern['qa']['mex2']),
+    'mincl': set(pattern['qa']['mincl']),
 }
 
 manual_qa = {
-    'ma': pattern['qa']['sub']['manual_qa']['ma'],
-    'ma2': pattern['qa']['sub']['manual_qa']['ma2'],
-    'mdef': pattern['qa']['sub']['manual_qa']['mdef'],
-    'mex': pattern['qa']['sub']['manual_qa']['mex'],
-    'mex2': pattern['qa']['sub']['manual_qa']['mex2'],
-    'mincl': pattern['qa']['sub']['manual_qa']['mincl'],
+    'ma': set(pattern['qa']['sub']['manual_qa']['ma']),
+    'ma2': set(pattern['qa']['sub']['manual_qa']['ma2']),
+    'mdef': set(pattern['qa']['sub']['manual_qa']['mdef']),
+    'mex': set(pattern['qa']['sub']['manual_qa']['mex']),
+    'mex2': set(pattern['qa']['sub']['manual_qa']['mex2']),
+    'mincl': set(pattern['qa']['sub']['manual_qa']['mincl']),
 }
 
 aqa = {
@@ -43,6 +43,11 @@ qa['sub'] = {
     'aqa': aqa,
     'support': support,
 }
+
+# add mincl to mex
+for sub_profession in qa['sub']:
+    qa['sub'][sub_profession]['mex'] = set(qa['sub'][sub_profession]['mex']).union(set(qa['sub'][sub_profession]['mincl']))
+
 # print(f"\n********************\n{backend}\n****************\n")
 
 print('\nQA')

@@ -10,6 +10,11 @@ detailed_designer = {
 
 detailed_designer['sub'] = {}
 
+# add mincl to mex
+for sub_profession in detailed_designer['sub']:
+    detailed_designer['sub'][sub_profession]['mex'] = set(detailed_designer['sub'][sub_profession]['mex']).union(set(detailed_designer['sub'][sub_profession]['mincl']))
+
+
 print('\nDETAILED DESIGNER:')
 for i in detailed_designer:
     if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
@@ -18,4 +23,3 @@ for i in detailed_designer:
         print('sub: ')
         for j in detailed_designer[i]:
             print(f"   * {j}: {detailed_designer[i][j]}")
-

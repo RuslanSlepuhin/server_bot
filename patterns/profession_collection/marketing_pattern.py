@@ -17,7 +17,8 @@ smm = {
     'mex2': pattern['marketing']['sub']['smm']['mex2'],
     'mincl': pattern['marketing']['sub']['smm']['mincl'],
 }
-smm['mex'] = set(marketing['mex']).union(set(smm['mex2']))
+# marketing1
+smm['mex'] = set(smm['mex']).union(set(marketing['mex'])).union(set(smm['mex2']))
 
 copyrighter = {
     'ma': pattern['marketing']['sub']['copyrighter']['ma'],
@@ -27,7 +28,8 @@ copyrighter = {
     'mex2': pattern['marketing']['sub']['copyrighter']['mex2'],
     'mincl': pattern['marketing']['sub']['copyrighter']['mincl'],
 }
-copyrighter['mex'] = set(marketing['mex']).union(set(copyrighter['mex2']))
+# marketing2
+copyrighter['mex'] = set(copyrighter['mex']).union(set(marketing['mex'])).union(set(copyrighter['mex2']))
 
 seo = {
     'ma': pattern['marketing']['sub']['seo']['ma'],
@@ -37,7 +39,8 @@ seo = {
     'mex2': pattern['marketing']['sub']['seo']['mex2'],
     'mincl': pattern['marketing']['sub']['seo']['mincl'],
 }
-seo['mex'] = set(marketing['mex']).union(set(seo['mex2']))
+# marketing3
+seo['mex'] = set(seo['mex']).union(set(marketing['mex'])).union(set(seo['mex2']))
 
 link_builder = {
     'ma': pattern['marketing']['sub']['link_builder']['ma'],
@@ -47,7 +50,8 @@ link_builder = {
     'mex2': pattern['marketing']['sub']['link_builder']['mex2'],
     'mincl': pattern['marketing']['sub']['link_builder']['mincl'],
 }
-link_builder['mex'] = set(marketing['mex']).union(set(link_builder['mex2']))
+# marketing4
+link_builder['mex'] = set(link_builder['mex']).union(set(marketing['mex'])).union(set(link_builder['mex2']))
 
 media_buyer = {
     'ma': pattern['marketing']['sub']['media_buyer']['ma'],
@@ -57,7 +61,8 @@ media_buyer = {
     'mex2': pattern['marketing']['sub']['media_buyer']['mex2'],
     'mincl': pattern['marketing']['sub']['media_buyer']['mincl'],
 }
-media_buyer['mex'] = set(marketing['mex']).union(set(media_buyer['mex2']))
+# marketing5
+media_buyer['mex'] = set(media_buyer['mex']).union(set(marketing['mex'])).union(set(media_buyer['mex2']))
 
 email_marketer = {
     'ma': pattern['marketing']['sub']['email_marketer']['ma'],
@@ -67,7 +72,19 @@ email_marketer = {
     'mex2': pattern['marketing']['sub']['email_marketer']['mex2'],
     'mincl': pattern['marketing']['sub']['email_marketer']['mincl'],
 }
-email_marketer['mex'] = set(marketing['mex']).union(set(email_marketer['mex2']))
+# marketing6
+email_marketer['mex'] = set(email_marketer['mex']).union(set(marketing['mex'])).union(set(email_marketer['mex2']))
+
+lead_generation_marketing = {
+    'ma': pattern['marketing']['sub']['LeadGenerationMarketing']['ma'],
+    'ma2': pattern['marketing']['sub']['LeadGenerationMarketing']['ma2'],
+    'mdef': pattern['marketing']['sub']['LeadGenerationMarketing']['mdef'],
+    'mex': pattern['marketing']['sub']['LeadGenerationMarketing']['mex'],
+    'mex2': pattern['marketing']['sub']['LeadGenerationMarketing']['mex2'],
+    'mincl': pattern['marketing']['sub']['LeadGenerationMarketing']['mincl'],
+}
+# marketing7
+lead_generation_marketing['mex'] = set(lead_generation_marketing['mex']).union(set(pattern['marketing']['mex'])).union(set(pattern['marketing']['sub']['LeadGenerationMarketing']['mex2'])),
 
 context = {
     'ma': pattern['marketing']['sub']['context']['ma'],
@@ -77,7 +94,8 @@ context = {
     'mex2': pattern['marketing']['sub']['context']['mex2'],
     'mincl': pattern['marketing']['sub']['context']['mincl'],
 }
-context['mex'] = set(marketing['mex']).union(set(context['mex2']))
+# marketing8
+context['mex'] = set(context['mex']).union(set(marketing['mex'])).union(set(context['mex2']))
 
 content_manager = {
     'ma': pattern['marketing']['sub']['content_manager']['ma'],
@@ -87,7 +105,8 @@ content_manager = {
     'mex2': pattern['marketing']['sub']['content_manager']['mex2'],
     'mincl': pattern['marketing']['sub']['content_manager']['mincl'],
 }
-content_manager['mex'] = set(marketing['mex']).union(set(content_manager['mex2']))
+# marketing9
+content_manager['mex'] = set(content_manager['mex']).union(set(marketing['mex'])).union(set(content_manager['mex2']))
 
 tech_writer = {
     'ma': pattern['marketing']['sub']['tech_writer']['ma'],
@@ -97,7 +116,8 @@ tech_writer = {
     'mex2': pattern['marketing']['sub']['tech_writer']['mex2'],
     'mincl': pattern['marketing']['sub']['tech_writer']['mincl'],
 }
-tech_writer['mex'] = set(marketing['mex']).union(set(tech_writer['mex2']))
+# marketing10
+tech_writer['mex'] = set(tech_writer['mex']).union(set(marketing['mex'])).union(set(tech_writer['mex2']))
 
 marketing['sub'] = {
     'smm': smm,
@@ -110,6 +130,10 @@ marketing['sub'] = {
     'content_manager': content_manager,
     'tech_writer': tech_writer,
 }
+
+# add mincl to mex
+for sub_profession in marketing['sub']:
+    marketing['sub'][sub_profession]['mex'] = set(marketing['sub'][sub_profession]['mex']).union(set(marketing['sub'][sub_profession]['mincl']))
 
 # print(f"\n********************\n{frontend}\n****************\n")
 print('\nMARKETING:')

@@ -8,4 +8,8 @@ fullstack = {
     'mex2': pattern['fullstack']['mex2'],
     'mincl': pattern['fullstack']['mincl'],
 }
-fullstack['sub'] = ()
+fullstack['sub'] = {}
+
+# add mincl to mex
+for sub_profession in fullstack['sub']:
+    fullstack['sub'][sub_profession]['mex'] = set(fullstack['sub'][sub_profession]['mex']).union(set(fullstack['sub'][sub_profession]['mincl']))
