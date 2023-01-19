@@ -2,6 +2,7 @@ import os
 import time
 from invite_bot_ver2 import run
 from _apps.talking_bot.mvp_connect_talking_bot import talking_bot_run
+from _apps.endpoints import endpoints
 from multiprocessing import Process
 import settings.os_getenv as settings
 # ev = Event()
@@ -31,7 +32,7 @@ def start_red_bot():
 def start_endpoints():
     # ev.wait()
     print('2')
-    _apps.endpoints.endpoints.run_endpoints()
+    endpoints.run_endpoints()
 
 # lock = Lock()
 #
