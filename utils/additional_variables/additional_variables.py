@@ -40,3 +40,7 @@ table_list_for_checking_message_in_db = ['admin_last_session', 'archive']
 pre_message_for_shorts = '<i>Функционал дайджеста находится в состоянии альфа-тестирования, приносим свои ' \
                                    f'извинения, мы работаем над тем чтобы вы получали информацию максимально ' \
                                    f'качественную и в сжатые сроки</i>\n\n'
+
+message_not_access = "Sorry, you have not the permissions"
+path_last_pattern = "./patterns/last_changes/pattern_Alex2809 (6).py"
+path_data_pattern = "./patterns/data_pattern/_data_pattern.py"
