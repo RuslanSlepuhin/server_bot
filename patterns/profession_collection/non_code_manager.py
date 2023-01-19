@@ -11,9 +11,11 @@ non_code_manager = {
 
 non_code_manager['sub'] = {}
 # merge to ma = ma2 + mdef
+accumulate = set()
 for sub in non_code_manager['sub']:
     non_code_manager['sub'][sub]['ma'] = set(non_code_manager['sub'][sub]['ma']).union(set(non_code_manager['sub'][sub]['ma2'])).union(set(non_code_manager['sub'][sub]['mdef']))
-non_code_manager['ma'] = set(non_code_manager['ma']).union(set(non_code_manager['ma2'])).union(set(non_code_manager['mdef']))
+    accumulate = accumulate.union(non_code_manager['sub'][sub]['ma'])
+non_code_manager['ma'] = set(non_code_manager['ma']).union(set(non_code_manager['ma2'])).union(set(non_code_manager['mdef'])).union(accumulate)
 
 # add mincl to mex
 for sub_profession in non_code_manager['sub']:

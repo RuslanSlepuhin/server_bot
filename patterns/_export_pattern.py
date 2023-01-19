@@ -158,8 +158,6 @@ accumulate = set()
 for profession_mex in export_pattern['professions']:
     if profession_mex in valid_professions_extended:
         for profession_def in export_pattern['professions']:
-            if profession_def == 'analyst' and profession_mex == 'analyst':
-                pass
             if profession_def in valid_professions_extended and profession_def != profession_mex and profession_def != 'junior':
                 accumulate = accumulate.union(set(export_pattern['professions'][profession_def]['mdef']))
         accumulate = accumulate.union(set(export_pattern['professions'][profession_mex]['mex']))

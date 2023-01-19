@@ -11,9 +11,11 @@ dev = {
 
 dev['sub'] = {}
 # merge to ma = ma2 + mdef
+accumulate = set()
 for sub in dev['sub']:
     dev['sub'][sub]['ma'] = set(dev['sub'][sub]['ma']).union(set(dev['sub'][sub]['ma2'])).union(set(dev['sub'][sub]['mdef']))
-dev['ma'] = set(dev['ma']).union(set(dev['ma2'])).union(set(dev['mdef']))
+    accumulate = accumulate.union(dev['sub'][sub]['ma'])
+dev['ma'] = set(dev['ma']).union(set(dev['ma2'])).union(set(dev['mdef'])).union(accumulate)
 
 # add mincl to mex
 for sub_profession in dev['sub']:

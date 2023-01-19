@@ -10,9 +10,11 @@ detailed_designer = {
 
 detailed_designer['sub'] = {}
 # merge to ma = ma2 + mdef
+accumulate = set()
 for sub in detailed_designer['sub']:
     detailed_designer['sub'][sub]['ma'] = set(detailed_designer['sub'][sub]['ma']).union(set(detailed_designer['sub'][sub]['ma2'])).union(set(detailed_designer['sub'][sub]['mdef']))
-detailed_designer['ma'] = set(detailed_designer['ma']).union(set(detailed_designer['ma2'])).union(set(detailed_designer['mdef']))
+    accumulate = accumulate.union(detailed_designer['sub'][sub]['ma'])
+detailed_designer['ma'] = set(detailed_designer['ma']).union(set(detailed_designer['ma2'])).union(set(detailed_designer['mdef'])).union(accumulate)
 
 # add mincl to mex
 for sub_profession in detailed_designer['sub']:

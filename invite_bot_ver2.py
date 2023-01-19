@@ -383,6 +383,7 @@ class InviteBot():
             # remove completed professions
             await remove_completed_professions(message)
             await send_file_to_user(
+                message=message,
                 path=variable.path_filter_error_file,
                 caption='wrong words in pattern'
             )

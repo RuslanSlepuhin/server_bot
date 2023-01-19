@@ -11,9 +11,11 @@ hr = {
 
 hr['sub'] = {}
 # merge to ma = ma2 + mdef
+accumulate = set()
 for sub in hr['sub']:
     hr['sub'][sub]['ma'] = set(hr['sub'][sub]['ma']).union(set(hr['sub'][sub]['ma2'])).union(set(hr['sub'][sub]['mdef']))
-hr['ma'] = set(hr['ma']).union(set(hr['ma2'])).union(set(hr['mdef']))
+    accumulate = accumulate.union(hr['sub'][sub]['ma'])
+hr['ma'] = set(hr['ma']).union(set(hr['ma2'])).union(set(hr['mdef'])).union(accumulate)
 
 # add mincl to mex
 for sub_profession in hr['sub']:

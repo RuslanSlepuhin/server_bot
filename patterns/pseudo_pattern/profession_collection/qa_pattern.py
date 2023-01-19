@@ -44,9 +44,11 @@ qa['sub'] = {
     'support': support,
 }
 # merge to ma = ma2 + mdef
+accumulate = set()
 for sub in qa['sub']:
     qa['sub'][sub]['ma'] = set(qa['sub'][sub]['ma']).union(set(qa['sub'][sub]['ma2'])).union(set(qa['sub'][sub]['mdef']))
-qa['ma'] = set(qa['ma']).union(set(qa['ma2'])).union(set(qa['mdef']))
+    accumulate = accumulate.union(qa['sub'][sub]['ma'])
+qa['ma'] = set(qa['ma']).union(set(qa['ma2'])).union(set(qa['mdef'])).union(accumulate)
 
 # add mincl to mex
 for sub_profession in qa['sub']:

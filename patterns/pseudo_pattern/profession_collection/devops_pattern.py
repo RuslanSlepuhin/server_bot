@@ -10,10 +10,12 @@ devops = {
 }
 
 devops['sub'] = {}
+accumulate = set()
 # merge to ma = ma2 + mdef
 for sub in devops['sub']:
     devops['sub'][sub]['ma'] = set(devops['sub'][sub]['ma']).union(set(devops['sub'][sub]['ma2'])).union(set(devops['sub'][sub]['mdef']))
-devops['ma'] = set(devops['ma']).union(set(devops['ma2'])).union(set(devops['mdef']))
+    accumulate = accumulate.union(devops['sub'][sub]['ma'])
+devops['ma'] = set(devops['ma']).union(set(devops['ma2'])).union(set(devops['mdef'])).union(accumulate)
 
 # add mincl to mex
 for sub_profession in devops['sub']:

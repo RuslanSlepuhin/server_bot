@@ -10,9 +10,11 @@ fullstack = {
 }
 fullstack['sub'] = {}
 # merge to ma = ma2 + mdef
+accumulate = set()
 for sub in fullstack['sub']:
     fullstack['sub'][sub]['ma'] = set(fullstack['sub'][sub]['ma']).union(set(fullstack['sub'][sub]['ma2'])).union(set(fullstack['sub'][sub]['mdef']))
-fullstack['ma'] = set(fullstack['ma']).union(set(fullstack['ma2'])).union(set(fullstack['mdef']))
+    accumulate = accumulate.union(fullstack['sub'][sub]['ma'])
+fullstack['ma'] = set(fullstack['ma']).union(set(fullstack['ma2'])).union(set(fullstack['mdef'])).union(accumulate)
 
 # add mincl to mex
 for sub_profession in fullstack['sub']:

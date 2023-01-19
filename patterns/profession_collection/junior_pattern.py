@@ -10,9 +10,11 @@ junior = {
 }
 junior['sub'] = {}
 # merge to ma = ma2 + mdef
+accumulate = set()
 for sub in junior['sub']:
     junior['sub'][sub]['ma'] = set(junior['sub'][sub]['ma']).union(set(junior['sub'][sub]['ma2'])).union(set(junior['sub'][sub]['mdef']))
-junior['ma'] = set(junior['ma']).union(set(junior['ma2'])).union(set(junior['mdef']))
+    accumulate = accumulate.union(junior['sub'][sub]['ma'])
+junior['ma'] = set(junior['ma']).union(set(junior['ma2'])).union(set(junior['mdef'])).union(accumulate)
 
 # add mincl to mex
 for sub_profession in junior['sub']:

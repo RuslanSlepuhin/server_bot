@@ -196,11 +196,11 @@ embedded = {
 # back18
 embedded['mex'] = set(embedded['mex']).union(set(backend['mex'])).union(set(embedded['mex2']))
 
-# back1
-backend['ma'] = set(backend['ma']).union(set(python['ma'])).union(set(c['ma'])).union(set(php['ma'])).union(set(java['ma']))\
-    .union(set(ruby['ma'])).union(set(scala['ma'])).union(set(net['ma'])).union(set(nodejs['ma']))\
-    .union(set(laravel['ma'])).union(set(golang['ma'])).union(set(delphi['ma'])).union(set(abap['ma']))\
-    .union(set(ml['ma'])).union(set(data_engineer['ma']))
+# # back1
+# backend['ma'] = set(backend['ma']).union(set(python['ma'])).union(set(c['ma'])).union(set(php['ma'])).union(set(java['ma']))\
+#     .union(set(ruby['ma'])).union(set(scala['ma'])).union(set(net['ma'])).union(set(nodejs['ma']))\
+#     .union(set(laravel['ma'])).union(set(golang['ma'])).union(set(delphi['ma'])).union(set(abap['ma']))\
+#     .union(set(ml['ma'])).union(set(data_engineer['ma']))
 
 backend['sub'] = {
     'python': python,
@@ -222,9 +222,11 @@ backend['sub'] = {
     'embedded': embedded
 }
 # merge to ma = ma2 + mdef
+accumulate = set()
 for sub in backend['sub']:
     backend['sub'][sub]['ma'] = set(backend['sub'][sub]['ma']).union(set(backend['sub'][sub]['ma2'])).union(set(backend['sub'][sub]['mdef']))
-backend['ma'] = set(backend['ma']).union(set(backend['ma2'])).union(set(backend['mdef']))
+    accumulate = accumulate.union(backend['sub'][sub]['ma'])
+backend['ma'] = set(backend['ma']).union(set(backend['ma2'])).union(set(backend['mdef'])).union(accumulate)
 
 # add mincl to mex
 for sub_profession in backend['sub']:

@@ -38,9 +38,11 @@ pm['sub'] = {
     'product': product
 }
 # merge to ma = ma2 + mdef
+accumulate = set()
 for sub in pm['sub']:
     pm['sub'][sub]['ma'] = set(pm['sub'][sub]['ma']).union(set(pm['sub'][sub]['ma2'])).union(set(pm['sub'][sub]['mdef']))
-pm['ma'] = set(pm['ma']).union(set(pm['ma2'])).union(set(pm['mdef']))
+    accumulate = accumulate.union(pm['sub'][sub]['ma'])
+pm['ma'] = set(pm['ma']).union(set(pm['ma2'])).union(set(pm['mdef'])).union(accumulate)
 
 # add mincl to mex
 for sub_profession in pm['sub']:
