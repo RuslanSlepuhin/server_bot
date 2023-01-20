@@ -318,7 +318,7 @@ class VacancyFilter:
             vacancy = self.clean_vacancy_from_get_vacancy_name(vacancy)
 
             print('++++++++++++++++++++\nvacancy = ', vacancy, '\n++++++++++++++++++++')
-            time.sleep(10)
+            # time.sleep(10)
         return vacancy
 
     def clean_vacancy_from_get_vacancy_name(self, vacancy):
