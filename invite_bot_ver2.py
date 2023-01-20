@@ -48,6 +48,7 @@ config = configparser.ConfigParser()
 config.read("./settings/config.ini")
 
 api_id = settings.api_id
+print('api_id = ', api_id)
 api_hash = settings.api_hash
 username = settings.username
 
