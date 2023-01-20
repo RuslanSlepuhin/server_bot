@@ -1,4 +1,6 @@
 import re
+import time
+
 from patterns import pattern_Alex2809
 from db_operations.scraping_db import DataBaseOperations
 # from patterns.pattern_Alex2809 import search_companies, search_companies2, english_pattern, remote_pattern, \
@@ -293,37 +295,38 @@ class VacancyFilter:
         vacancy = ''
         vacancy_pattern = self.export_pattern['others']['vacancy']['sub']['common_vacancy']
         match = re.findall(rf"{vacancy_pattern}", text)
-        if match:
+        if len(''.join(match))>0:
             vacancy = match[0]
         else:
-            for pro in profession_list:
+            # for pro in profession_list:
+            for pro in variables.valid_professions:
                 if pro == 'no_sort':
                     pattern = self.export_pattern['others']['vacancy']['sub']['backend_vacancy']
                 else:
                     pattern = self.export_pattern['others']['vacancy']['sub'][f'{pro}_vacancy']
                 match = re.findall(rf"{pattern}", text)
-                if match:
+                if len(''.join(match))>0:
                     vacancy = match[0]
                     break
 
             if not vacancy:
                 pattern = self.export_pattern['others']['vacancy']['sub']['backend_vacancy']
                 match = re.findall(rf"{pattern}", text)
-                if match:
+                if len(''.join(match))>0:
                     vacancy = match[0]
         if vacancy:
-            vacancy = re.sub(r"[Дд]олжность[:\s]{1,2}", '', vacancy)
-            vacancy = re.sub(r"[Вв]акансия[:\s]{1,2}", '', vacancy)
-            vacancy = vacancy.strip()
-
             vacancy = self.clean_vacancy_from_get_vacancy_name(vacancy)
+
+            print('++++++++++++++++++++\nvacancy = ', vacancy, '\n++++++++++++++++++++')
+            time.sleep(10)
         return vacancy
 
     def clean_vacancy_from_get_vacancy_name(self, vacancy):
         trash_list = ["[Ии]щем в команду[:]?", "[Тт]ребуется[:]?", "[Ии]щем[:]?", "[Вв]акансия[:]?", "[Пп]озиция[:]?",
                       "[Дд]олжность[:]?", "в поиске[:]?", "[Нн]азвание вакансии[:]?", "[VACANCYvacancy]{7}[:]?"]
         for i in trash_list:
-            vacancy = re.sub(rf"{i}", "", vacancy)
+            if i in vacancy:
+                vacancy = re.sub(rf"{i}", "", vacancy)
 
         return vacancy.strip()
 
