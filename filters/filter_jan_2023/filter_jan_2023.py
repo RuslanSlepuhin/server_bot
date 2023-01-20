@@ -5,7 +5,7 @@ from db_operations.scraping_db import DataBaseOperations
 #     relocate_pattern, middle_pattern, senior_pattern, vacancy_name, vacancy_pattern, contacts_pattern, profession_new_pattern
 from patterns._export_pattern import export_pattern as q
 from utils.additional_variables import additional_variables as variables
-import asyncio
+import time
 
 class VacancyFilter:
 
@@ -318,19 +318,19 @@ class VacancyFilter:
             except Exception as e:
                 print('filter_jan 315')
                 print('vacancy = ', vacancy)
-                await asyncio.sleep(20)
+                await time.sleep(20)
             try:
                 vacancy = re.sub(r"[Вв]акансия[:\s]{1,2}", '', vacancy)
             except Exception as e:
                 print('filter_jan 315')
                 print('vacancy = ', vacancy)
-                await asyncio.sleep(20)
+                await time.sleep(20)
             try:
                 vacancy = vacancy.strip()
             except Exception as e:
                 print('filter_jan 315')
                 print('vacancy = ', vacancy)
-                await asyncio.sleep(20)
+                await time.sleep(20)
 
             vacancy = self.clean_vacancy_from_get_vacancy_name(vacancy)
         return vacancy
