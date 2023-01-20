@@ -10,7 +10,7 @@ import settings.os_getenv as settings
 num_processes = os.cpu_count()
 
 def start_bot():
-    time.sleep(10)
+    time.sleep(3)
     # ev.wait()
     print('1')
     time.sleep(1)
@@ -19,7 +19,7 @@ def start_bot():
     print('1-2')
 
 def start_red_bot():
-    time.sleep(10)
+    time.sleep(1)
     # ev.wait()
     print('4')
     time.sleep(1)
