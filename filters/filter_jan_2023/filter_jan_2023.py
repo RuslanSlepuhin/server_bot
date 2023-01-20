@@ -315,8 +315,9 @@ class VacancyFilter:
         if vacancy:
             if type(vacancy) in [set, tuple, list]:
                 vacancy = vacancy[0]
+                print('vacancy was not string')
             print('vacancy = ', vacancy)
-            time.sleep(7)
+            time.sleep(3)
             try:
                 vacancy = re.sub(r"[Дд]олжность[:\s]{1,2}", '', vacancy)
             except Exception as e:
