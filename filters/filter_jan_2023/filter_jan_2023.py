@@ -320,8 +320,10 @@ class VacancyFilter:
                 vacancy = re.sub(r"[Вв]акансия[:\s]{1,2}", '', vacancy)
             except Exception as e:
                 print('filter_jan 315')
-
-            vacancy = vacancy.strip()
+            try:
+                vacancy = vacancy.strip()
+            except Exception as e:
+                print('filter_jan 315')
 
             vacancy = self.clean_vacancy_from_get_vacancy_name(vacancy)
         return vacancy
