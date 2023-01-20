@@ -3825,5 +3825,5 @@ class InviteBot():
 def run(token_in=None):
     InviteBot(token_in).main_invitebot()
 
-if __name__ == '__main__':
-   run()
+# if __name__ == '__main__':
+#    run()
