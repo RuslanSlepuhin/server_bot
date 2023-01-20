@@ -39,6 +39,8 @@ from sites.scraping_rabota import RabotaGetInformation
 from filters.filter_jan_2023.filter_jan_2023 import VacancyFilter
 from helper_functions import helper_functions as helper
 from utils.additional_variables import additional_variables as variable
+from patterns._export_pattern import export_pattern
+from patterns.data_pattern._data_pattern import pattern as data_pattern
 
 logs = Logs()
 import settings.os_getenv as settings
@@ -192,6 +194,11 @@ class InviteBot():
             profession = State()
             quantity_leave = State()
 
+        class Form_pattern(StatesGroup):
+            profession = State()
+            sub = State()
+            sub_profession = State()
+            sub_sub = State()
 
         @self.dp.message_handler(commands=['start'])
         async def send_welcome(message: types.Message):
@@ -251,6 +258,8 @@ class InviteBot():
                                                             '/download - ❗️you get excel from admin vacancies with search tags\n'
                                                             '/ambulance - if bot gets accident in hard pushing and you think you loose the shorts\n\n'
                                                             '---------------- TOOLS: ----------------\n'
+                                                            '🛠/edit_pattern - stop proccess\n'
+                                                            '🖐️/stop - stop proccess\n'
                                                             '➡️/refresh_and_save_changes - One click for the correct refresh. Includes:\n'
                                                             '✅/refresh - to get the professions in excel format in all vacancies throgh the new filters logic (without rewriting)\n'
                                                             '✅/check_doubles - remove the vacancy"s doubles\n'
@@ -261,6 +270,44 @@ class InviteBot():
                                                             '/add_statistics\n\n'
                                                             '---------------------------------------------------\n\n'
                                                             '❗️- it is admin options')
+
+        @self.dp.message_handler(commands=['read_pattern_row'])
+        async def stop_commands(message: types.Message):
+            excel_dict = {}
+            pattern = data_pattern
+            for key in pattern:
+                if type(pattern[key]) is not dict:
+                    excel_dict = await compose_excel_dict(
+                        key='profession',
+                        value=key,
+                        key_list=['profession', 'sub', 'sub_profession', 'sub_sub'],
+                        excel_dict=excel_dict
+                    )
+                    for key2 in pattern[key]:
+                        if type(pattern[key][key2]) is not dict:
+                            excel_dict = await compose_excel_dict(
+                                key='sub',
+                                value=key2,
+                                key_list=['profession', 'sub', 'sub_profession', 'sub_sub'],
+                                excel_dict=excel_dict
+                            )
+                            for key3 in pattern[key][key2]:
+                                if type(pattern[key][key2][key3]) is not dict:
+                                    excel_dict = await compose_excel_dict(
+                                        key='sub_profession',
+                                        value=key3,
+                                        key_list=['profession', 'sub', 'sub_profession', 'sub_sub'],
+                                        excel_dict=excel_dict
+                                    )
+
+
+
+        @self.dp.message_handler(commands=['stop'])
+        async def stop_commands(message: types.Message):
+            print("Proccess has been stoped")
+            await self.bot_aiogram.send_message(message.chat.id, "Proccess has been stoped")
+            loop = asyncio.get_running_loop()
+            loop.stop()
 
         @self.dp.message_handler(commands=['emergency_push'])
         async def emergency_push(message: types.Message):
@@ -362,9 +409,11 @@ class InviteBot():
                 quantity_leave = message.text
                 profession = data['profession']
             await state.finish()
+            msg = await self.bot_aiogram.send_message(message.chat.id, "Please waite a few seconds")
             await clear_db_table(
                 profession, quantity_leave
             )
+            await msg.edit_text(f"{msg.text}\nDone!")
 
         @self.dp.message_handler(commands=['refresh'])
         async def refresh_vacancies(message: types.Message):
@@ -1273,8 +1322,6 @@ class InviteBot():
                 msg = await self.bot_aiogram.send_message(callback.message.chat.id, 'Please wait a few seconds ...')
 
                 result_dict = {}
-
-                logs.write_log(f"invite_bot_2: Callback: show_info_last_records")
 
                 # --------- compose data from last session --------------
                 result_dict['last_session'] = {}
@@ -2481,58 +2528,205 @@ class InviteBot():
                     if sub_pro:
                         sub_list.append(sub_pro)
 
-                message_for_send = ''
-                if vacancy_from_admin_dict['vacancy']:
-                    if not full:
-                        message_for_send += f"<a href=\"{config['My_channels']['agregator_link']}/{vacancy_from_admin_dict['sended_to_agregator']}\"><b>Вакансия: {vacancy_from_admin_dict['vacancy']}</b>\n</a>"
+            # code for transpose in shorts like reference
+
+                remote_pattern = export_pattern['others']['remote']['ma']
+                relocate_pattern = export_pattern['others']['relocate']['ma']
+                experience_pattern = export_pattern['others']['relocate']['ma']
+                english_pattern = export_pattern['others']['english_for_shorts']['ma']
+                salary_patterns = export_pattern['others']['salary_for_shorts']['ma']
+                city_pattern = export_pattern['others']['city_for_shorts']['ma']
+                vacancy_pattern = export_pattern['others']['vacancy']['sub']
+
+                remote_shorts = ''
+                relocate_shorts = ''
+                experience_shorts = ''
+                english_shorts = ''
+                salary_shorts = ''
+                city_shorts = ''
+
+                if not full:
+                    remote_shorts = await helper.get_field_for_shorts(
+                        presearch_results=[
+                            vacancy_from_admin_dict['job_type'],
+                            vacancy_from_admin_dict['title']+vacancy_from_admin_dict['body'],
+                        ],
+                        pattern=remote_pattern,
+                        return_value='remote',
+                    )
+                    remote_shorts = remote_shorts['return_value']
+
+                    relocate_shorts = await helper.get_field_for_shorts(
+                        presearch_results=[
+                            vacancy_from_admin_dict['job_type'],
+                            vacancy_from_admin_dict['relocation'],
+                            vacancy_from_admin_dict['title']+vacancy_from_admin_dict['body'],
+                            params['relocation']
+                        ],
+                        pattern=relocate_pattern,
+                        return_value = 'relocate'
+                    )
+                    relocate_shorts = relocate_shorts['return_value']
+
+                    experience_shorts = await helper.get_field_for_shorts(
+                        presearch_results=[
+                            vacancy_from_admin_dict['experience'],
+                            vacancy_from_admin_dict['job_type']
+                        ],
+                        pattern=experience_pattern,
+                        return_value = 'relocate'
+                    )
+                    if experience_shorts['match']:
+                        experience_shorts = experience_shorts['match']
+                        experience_shorts = re.findall(r'[0-9]{1,2}', relocate_shorts)
+                        if experience_shorts:
+                            experience_shorts = experience_shorts[0]
                     else:
-                        message_for_send += f"<b>Вакансия: {vacancy_from_admin_dict['vacancy']}</b>\n"
-                elif params['vacancy']:
-                    if not full:
-                        message_for_send += f"<a href=\"{config['My_channels']['agregator_link']}/{vacancy_from_admin_dict['sended_to_agregator']}\"><b>Вакансия: {params['vacancy']}</b>\n</a>"
+                        experience_shorts = ''
+
+                    english_shorts = await helper.get_field_for_shorts(
+                        presearch_results=[
+                            vacancy_from_admin_dict['english'],
+                            params['english']
+                        ],
+                        pattern=english_pattern,
+                        return_value = 'relocate'
+                    )
+                    if english_shorts['match']:
+                        english_shorts = english_shorts['match']
+                    elif english_shorts['element_is_not_empty']:
+                        english_shorts = 'necessary'
                     else:
-                        message_for_send += f"<b>Вакансия: {params['vacancy']}</b>\n"
+                        english_shorts = ''
+
+                    salary_shorts = await helper.get_field_for_shorts(
+                        presearch_results=[
+                            vacancy_from_admin_dict['salary'],
+                            vacancy_from_admin_dict['title']+vacancy_from_admin_dict['body']
+                        ],
+                        pattern=salary_patterns,
+                        return_value = 'salary'
+                    )
+                    salary_shorts = salary_shorts['match']
+                    salary_shorts = salary_shorts.replace('до', '-').replace('  ', ' ')
+
+                    city_shorts = await helper.get_city_vacancy_for_shorts(
+                        presearch_results=[
+                            vacancy_from_admin_dict['city'],
+                            vacancy_from_admin_dict['job_type'],
+                            vacancy_from_admin_dict['title'] + vacancy_from_admin_dict['body'],
+                        ],
+                            pattern=city_pattern,
+                            return_value = 'match'
+                        )
+                    if city_shorts['return_value']:
+                        city_shorts = city_shorts['return_value']
+                    elif city_shorts['element_is_not_empty']:
+                        if vacancy_from_admin_dict['city']:
+                            city_shorts = vacancy_from_admin_dict['city']
+                        else:
+                            city_shorts = ''
+                    else:
+                        city_shorts = ''
+
+                    message_for_send = ''
+                    vacancy = ''
+                    if vacancy_from_admin_dict['vacancy']:
+                        vacancy = vacancy_from_admin_dict['vacancy']
+                    elif params['vacancy']:
+                        vacancy = params['vacancy']
+                    if not vacancy:
+                        vacancy = await helper.get_city_vacancy_for_shorts(
+                        presearch_results=[
+                            vacancy_from_admin_dict['title'],
+                            vacancy_from_admin_dict['body'],
+                        ],
+                        pattern = vacancy_pattern,
+                        return_value='match'
+                        )
+                        if "#" not in vacancy['match']:
+                            vacancy = vacancy['match']
+                    if not vacancy:
+                        vacancy = f"Вакансия #{random.randrange(100, 5000)}"
+                    message_for_send += f"<a href=\"{config['My_channels']['agregator_link']}/" \
+                                        f"{vacancy_from_admin_dict['sended_to_agregator']}\">" \
+                                        f"<b>{vacancy}</b></a> "
+
+                    company = ''
+                    if vacancy_from_admin_dict['company']:
+                        company = vacancy_from_admin_dict['company']
+                    elif params['company']:
+                        company = params['company']
+                    if company:
+                        message_for_send += f"в {company.strip()} "
+
+                    message_for_send += '('
+
+                    if city_shorts:
+                        message_for_send += f"{city_shorts}, "
+
+                    if english_shorts:
+                        message_for_send += f"eng: {english_shorts}, "
+
+                    if experience_shorts:
+                        message_for_send += f"exp: {experience_shorts} year(s), "
+
+                    if relocate_shorts:
+                        message_for_send += f"{relocate_shorts.capitalize()}, "
+
+                    if remote_shorts:
+                        message_for_send += f"{remote_shorts.capitalize()}, "
+
+                    if salary_shorts:
+                        message_for_send += f"{salary_shorts}, "
+                # end of code
+
                 else:
-                    if not full:
-                        message_for_send += f"<a href=\"{config['My_channels']['agregator_link']}/{vacancy_from_admin_dict['sended_to_agregator']}\"><b>Вакансия: #{random.randrange(100, 5000)}</b>\n</a>"
+
+                    message_for_send = 'Вакансия '
+                    if vacancy_from_admin_dict['vacancy']:
+                        vacancy = vacancy_from_admin_dict['vacancy']
+                    elif params['vacancy']:
+                        vacancy = params['vacancy']
                     else:
-                        message_for_send += f"<b>Вакансия: #{random.randrange(100, 5000)}</b>\n"
+                        vacancy = f"#{random.randrange(100, 5000)}"
+                    message_for_send += f"<b>: {vacancy.replace('.', '').strip()}</b>\n"
 
-                if vacancy_from_admin_dict['company']:
-                    message_for_send += f"Компания: {vacancy_from_admin_dict['company']}\n"
-                elif params['company']:
-                    message_for_send += f"Компания: {params['company']}\n"
+                    company = ''
+                    if vacancy_from_admin_dict['company']:
+                        company = vacancy_from_admin_dict['company']
+                    elif params['company']:
+                        company = params['company']
+                    if company:
+                        message_for_send += f"Компания: {company.strip()}\n"
 
-                if vacancy_from_admin_dict['city']:
-                    message_for_send += f"Город/страна: {vacancy_from_admin_dict['city']}\n"
+                    if vacancy_from_admin_dict['city']:
+                        message_for_send += f"Город/страна: {vacancy_from_admin_dict['city']}\n"
 
-                if vacancy_from_admin_dict['english']:
-                    message_for_send += f"English: {vacancy_from_admin_dict['english']}\n"
-                elif params['english']:
-                    message_for_send += f"English: {params['english']}\n"
+                    english=''
+                    if vacancy_from_admin_dict['english']:
+                        english = vacancy_from_admin_dict['english']
+                    elif params['english']:
+                        english = params['english']
+                    if english:
+                        message_for_send += f"English: {params['english']}\n"
 
-                if vacancy_from_admin_dict['job_type']:
-                    message_for_send += f"Формат работы: {vacancy_from_admin_dict['job_type']}\n"
-                elif params['job_type']:
-                    message_for_send += f"Формат работы: {params['job_type']}\n"
+                    job_type = ''
+                    if vacancy_from_admin_dict['job_type']:
+                        job_type = vacancy_from_admin_dict['job_type']
+                    elif params['job_type']:
+                        job_type = params['job_type']
+                    if job_type:
+                        message_for_send += f"Формат работы: {params['job_type']}\n"
 
-                if vacancy_from_admin_dict['relocation']:
-                    message_for_send += f"Релокация: {vacancy_from_admin_dict['relocation']}\n"
-                elif params['relocation']:
-                    message_for_send += f"Релокация: {params['relocation']}\n"
+                    relocation = ''
+                    if vacancy_from_admin_dict['relocation']:
+                        relocation = vacancy_from_admin_dict['relocation']
+                    elif params['relocation']:
+                        relocation = params['relocation']
+                    if relocation:
+                        message_for_send += f"Релокация: {relocation}\n"
 
-                # if not full:
-                #     if sended_to_agregator and sended_to_agregator != "None":
-                #         message_for_send += f"{config['My_channels']['agregator_link']}/{sended_to_agregator}\n"
-                #         message_for_send += f"<a href=\"{config['My_channels']['agregator_link']}/{sended_to_agregator}\">Подробнее</a>"
-                #         # message_for_send += hlink(title="Подробнее", url=f"{config['My_channels']['agregator_link']}/{sended_to_agregator}")
-                #         message_for_send += '\n'
-
-                if not message_for_send:
-                    message_for_send = 'The vacancy not found\n\n'
-                    await write_to_logs_error(f"The vacancy not found\n{vacancy_from_admin_dict['title']}{vacancy_from_admin_dict['body']}")
-
-                if full:
                     if vacancy_from_admin_dict['salary']:
                         message_for_send += f"Зарплата: {vacancy_from_admin_dict['salary']}\n"
 
@@ -2551,11 +2745,32 @@ class InviteBot():
                 if len(message_for_send) > 4096:
                     message_for_send = message_for_send[0:4092] + '...'
 
+                if not message_for_send:
+                    message_for_send = 'The vacancy not found\n\n'
+                    await write_to_logs_error(f"The vacancy not found\n{vacancy_from_admin_dict['title']}{vacancy_from_admin_dict['body']}")
+
+                if not full:
+                    if message_for_send[-1:] == '(':
+                        message_for_send = message_for_send[:-2] + '\n'
+                    elif message_for_send[-2:] == ', ':
+                        message_for_send = message_for_send[0:-2]
+                        message_for_send += ')\n'
+
 
                 try:
                     sub_list = sub[one_profession]
                 except:
                     sub_list = []
+
+                print('-------------------------------------')
+                print('db_remote = ', vacancy_from_admin_dict['job_type'])
+                print('db_relocation = ', vacancy_from_admin_dict['relocation'])
+                print('db_relocation = ', params['relocation'])
+                print('db_salary = ', vacancy_from_admin_dict['salary'])
+                print('db_english = ', vacancy_from_admin_dict['english'])
+                print('params_english = ', params['english'])
+                print('message_for_send ', message_for_send)
+                print('-------------------------------------')
 
                 return {'composed_message': message_for_send, 'sub_list': sub_list, 'db_id': vacancy_from_admin_dict['id'], 'all_subs': sub}
 
@@ -2743,19 +2958,26 @@ class InviteBot():
                     without_sort=True,
                     field='sended_to_agregator'
                 )
-                print('changed id agreg = ', response_check[0][0])
+                try:
+                    print('changed id agreg = ', response_check[0][0])
+                except Exception as e:
+                    print('hey, dude, WTF in 2832?\n', e)
+                    # self.bot_aiogram.send_message(message.chat.id, f"'hey, dude, WTF in 2832?\n{e}")
 
             # await asyncio.sleep(1)
 
-        async def transfer_vacancy_admin_archive(id_admin_last_session_table):
-            response = self.db.get_all_from_db(
-                table_name=f'{variable.admin_database}',
-                param=f"WHERE id={id_admin_last_session_table}",
-                field=variable.admin_table_fields
-            )
+        async def transfer_vacancy_admin_archive(id_admin_last_session_table, response=None):
+            if not response:
+                response = self.db.get_all_from_db(
+                    table_name=f'{variable.admin_database}',
+                    param=f"WHERE id={id_admin_last_session_table}",
+                    field=variable.admin_table_fields
+                )
+                response = response[0]
+
             if response:
                 response_dict = await helper.to_dict_from_admin_response(
-                    response=response[0],
+                    response=response,
                     fields=variable.admin_table_fields
                 )
 
@@ -2842,7 +3064,7 @@ class InviteBot():
                 response_temp_dict=None,
                 vacancy_from_admin_dict=None,
                 links_on_prof_channels=False,
-                # from_admin_temporary=True
+                # from_admin_temporary=True,
         ):
 
             """
@@ -3567,7 +3789,11 @@ class InviteBot():
                     updated += 1
                 else:
                     await transfer_vacancy_admin_archive(
-                        id_admin_last_session_table=response[index][1]
+                        id_admin_last_session_table=response[index][1],
+                    )
+                    self.db.delete_data(
+                        table_name=variable.admin_database,
+                        param=f"WHERE id={response[index][1]}"
                     )
                     removed += 1
 
@@ -3585,6 +3811,13 @@ class InviteBot():
                 self.message_for_send_dict[profession] += f"{composed_message_dict['composed_message']}\n"
             self.quantity_entered_to_shorts += 1
 
+        async def compose_excel_dict(key, value, key_list, excel_dict):
+            for i in key_list:
+                if i == key:
+                    excel_dict[i] = value
+                else:
+                    excel_dict[i] = ''
+
         start_polling(self.dp)
         # executor.start_polling(dp, skip_updates=True)
 
@@ -3592,5 +3825,5 @@ class InviteBot():
 def run(token_in=None):
     InviteBot(token_in).main_invitebot()
 
-# if __name__ == '__main__':
-#    run()
+if __name__ == '__main__':
+   run()

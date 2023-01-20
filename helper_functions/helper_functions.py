@@ -1,3 +1,5 @@
+import re
+
 from patterns._export_pattern import export_pattern
 from patterns.pseudo_pattern.pseudo_export_pattern import export_pattern as pseudo_export_pattern
 
@@ -33,6 +35,13 @@ def list_to_string(raw_list, separator):
     return separator.join(raw_list)
 
 async def to_dict_from_admin_response(response, fields):
+    response_dict = {}
+    fields = fields.split(', ')
+    for i in range(0, len(fields)):
+        response_dict[fields[i]] = response[i]
+    return response_dict
+
+def to_dict_from_admin_response_sync(response, fields):
     response_dict = {}
     fields = fields.split(', ')
     for i in range(0, len(fields)):
@@ -102,6 +111,33 @@ async def transformTitleBodyBeforeDb(text=None, title=None, body=None):
             body = body.replace(f'\n\n', f'\n')
     return {'title': title, 'body': body}
 
+async def get_field_for_shorts(presearch_results: list, pattern: str, return_value='match'):
+    element_is_not_empty = False
+    for element in presearch_results:
+        if element:
+            element_is_not_empty = True
+        for pattern_item in pattern:
+            match = re.findall(rf"{pattern_item}", element)
+            if match:
+                return {'return_value': return_value, 'element_is_not_empty': element_is_not_empty, 'match': match[0]}
+    return {'return_value': '', 'element_is_not_empty': element_is_not_empty, 'match': ''}
 
+async def get_city_vacancy_for_shorts(presearch_results: list, pattern: str, return_value='match'):
+    element_is_not_empty = False
+    for element in presearch_results:
+        if element:
+            element_is_not_empty = True
+            for key in pattern:
+                if type(pattern[key]) is not str:
+                    for value in pattern[key]:
+                        match = re.findall(rf"{value}", element)
+                        if match:
+                            return {'return_value': f"{key}, {value}", 'element_is_not_empty': element_is_not_empty, 'match': match[0]}
+                else:
+                    match = re.findall(rf"{pattern[key]}", element)
+                    if match:
+                        return {'return_value': f"{key}, {key}", 'element_is_not_empty': element_is_not_empty,
+                                'match': match[0]}
 
+    return {'return_value': '', 'element_is_not_empty': element_is_not_empty, 'match': ''}
 

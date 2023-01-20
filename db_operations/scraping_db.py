@@ -653,8 +653,6 @@ class DataBaseOperations:
 
     def run_free_request(self, request, output_text=None):
 
-        logs.write_log(f"scraping_db: function: run_free_request")
-
         if not self.con:
             self.connect_db()
         cur = self.con.cursor()
@@ -668,7 +666,7 @@ class DataBaseOperations:
                 cur.execute(query)
                 print(output_text)
             except Exception as e:
-                print(e)
+                print('ERROR ', e)
             pass
 
     def write_pattern_new(self, key, ma, mex, value, table_name='pattern'):

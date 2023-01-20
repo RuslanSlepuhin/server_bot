@@ -1,4 +1,6 @@
 # for add in vacancy search in db tables
+import pandas
+
 additional_elements = {'admin_last_session', 'archive'}
 
 valid_professions = ['designer', 'game', 'product', 'mobile', 'pm', 'sales_manager', 'analyst', 'frontend',
@@ -46,3 +48,17 @@ path_last_pattern = "./patterns/last_changes/pattern_Alex2809 (6).py"
 path_data_pattern = "./patterns/data_pattern/_data_pattern.py"
 
 path_filter_error_file = "./excel/filter_jan_errors.txt"
+
+
+cities_file_path = './utils/additional_data/data.xlsx'
+excel_data_df = pandas.read_excel(f'{cities_file_path}', sheet_name='Cities')
+excel_dict = {
+    'city': excel_data_df['city'].tolist(),
+    'country': excel_data_df['country'].tolist(),
+}
+result_excel_dict = {}
+for i in range(0, len(excel_dict['city'])):
+    if excel_dict['country'][i] in result_excel_dict:
+        result_excel_dict[excel_dict['country'][i]].append(excel_dict['city'][i])
+    else:
+        result_excel_dict[excel_dict['country'][i]] = [excel_dict['city'][i]]

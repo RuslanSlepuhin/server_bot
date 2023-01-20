@@ -268,6 +268,7 @@ class VacancyFilter:
         match = re.findall(rf"{remote_pattern}", text)
         if match:
             return match[0]
+            # return 'remote'
         else:
             return ''
 
@@ -299,7 +300,7 @@ class VacancyFilter:
                 if pro == 'no_sort':
                     pattern = self.export_pattern['others']['vacancy']['sub']['backend_vacancy']
                 else:
-                    pattern = pattern = self.export_pattern['others']['vacancy']['sub'][f'{pro}_vacancy']
+                    pattern = self.export_pattern['others']['vacancy']['sub'][f'{pro}_vacancy']
                 match = re.findall(rf"{pattern}", text)
                 if match:
                     vacancy = match[0]

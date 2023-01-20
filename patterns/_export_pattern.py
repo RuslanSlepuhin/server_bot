@@ -55,7 +55,19 @@ export_pattern = {
         'remote': pattern['remote'],
         'relocate': pattern['relocate'],
         'english': {
-            'ma': params['english_level'],
+            'ma': params['english_level']
+        },
+        'experience': {
+            'ma': params['experience']
+        },
+        'english_for_shorts': {
+            'ma': params['english_for_shorts']
+        },
+        'salary_for_shorts': {
+            'ma': params['salary_for_shorts']
+        },
+        'city_for_shorts': {
+            'ma': params['city_for_shorts']
         },
         'vacancy': {
             'ma': '',

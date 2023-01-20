@@ -1,6 +1,7 @@
 """
 This pattern was made at night at 28/09/2022 with ALexander (online).
 """
+from utils.additional_variables.additional_variables import result_excel_dict as cities_dict
 
 pattern = {
 
@@ -1181,7 +1182,16 @@ params = {
     'english_level': ('[Ee]nglish[\W]{0,2}[A-Za-zА-Яа-я][\W]{0,3}[\d]', '[Uu]pper[\W]{0,1}intermediate', '[Ii]ntermediate', '[Pp]re[\W]{0,1}[Ii]ntermediate', '[Uu]pper'),
     'relocation': ('[Рр]елокация', 'relocation', 'relocate'),
     'country_relocation': (),
-    'possibility_relocaton': ()
+    'possibility_relocaton': (),
+    'experience': {"[0-9] лет|[0-9] год|[0-9] year", },
+    'english_for_shorts': {'[Bb][^\na-zA-Zа-яА-Я0-9]?1|[Bb][^\na-zA-Zа-яА-Я0-9]?0|[Bb][^\na-zA-Zа-яА-Я0-9]?2|'
+                           '[Aa][^\na-zA-Zа-яА-Я0-9]?1|[Aa][^\na-zA-Zа-яА-Я0-9]?0|[Aa][^\na-zA-Zа-яА-Я0-9]?2|'
+                           '[Pp]re[^\na-zA-Zа-яА-Я][Ii]ntermediate|[Ii]ntermediate|[Uu]pper|[Aa]dvance|[Рр]азговорный',},
+    'salary_for_shorts': {'[0-9]{1,3}[^\n%A-Za-zА-Яа-я]{0,1}[0-9]{1,3}[^\n]*₽|'
+                          '[0-9]{1,3}[^\n%A-Za-zА-Яа-я]{0,1}[0-9]{1,3}[^\n]*\$|'
+                          '[0-9]{1,3}[^\n%A-Za-zА-Яа-я]{0,1}[0-9]{1,3}[^\n]*€|'
+                          '[0-9]{1,3}[^\n%A-Za-zА-Яа-я]{0,1}[0-9]{1,3}[^\n]*[руб,млн,KZT,USD,EUR]{3}',},
+    'city_for_shorts': cities_dict,
 }
 
 cities_pattern = {
@@ -1980,7 +1990,7 @@ vacancy_pattern = {
     'designer_vacancy': "[аАРТрт]{3}-[Дд]иректор[а]?[^ом]|2D[\W]дизайнер[^\n,\.;]*|[^\nа-яА-Я]*[UXUI\/]{2,5}[\W][Dd]esigner[^\n\.,;\"]+|[^\n@:(]+[Dd]esigner[^\n\.,;\"]*|[^\nа-яА-Я]*[UXUI\/\|]{2,5}[\W][Дд]изайнер[^\n)\.,;]*|дизайнеров[\s\-\-]{1,3}[A-Za-z\+\/]+|^[Дд]изайнер$|[^\nа-яА-Я]+2D[\W][Хх]удожник|[^\nа-яА-Я\-]*[Aa]rtist[\W][^\n\"]*|[SMMsmmwebWEB]{3}[\W]?дизайнер",
     'devops_vacancy': "[^\n\"]*CTO[^\n\.,;\"]*|[^\n\"]*technical[\W]officer[^\n\"]*",
     'hr_vacancy': "",
-    'backend_vacancy': "[^\n.,;!\-]+[Ee]ngineer[^\n.,;]*|[^\n\.,;а-яА-Я#]+[dD]eveloper[^a-z][^\n;а-яА-Я\"]*|[^\n.,;]*[Pp]ro[duje]{2}ct[^\n][Mm]anager[^\n,;\"]+|[^\n.,;]+[Cc]ommunity[^\n][Mm]anager[^\n.,;]+|Программист[а][^\n\.,][CС]#|Position[^\n]+|[Аа]налитик[а] бизнес[^\n]процессов|[^\nа-яА-Я]*Lead[^\n]ML|React разработчик[а]?|[^\nа-яА-Я,]*[Рр]азработчик[а]?[^а-я][^\n\.;\"]*|Middlе Jаvа-рaзрaбoтчик|[a-zA-Z]*[^#\-]QA[^\n\.:;\-\"]|Инженер данных [^\n]+|Machine[\W]Learning[\W]Specialist|[^\nа-яА-Яє]+[Ff]ull[\W][sS]tack[^\nа-яА-Яє]+|[a-zA-Z]+[\W][23][Dd][\W]?[хХ]удожник[а]?|[^\n]+blockchain architect|ищем[^\n\.;]+|[^\n;\.,‼️]+artist[^\n;\.,]+|[MmiddleJjuniorSsenior]{6}[\W][Rr]uby[\W][Dd]eveloper|[a-zA-ZА-Яа-я]+\sтестировщик|Junior QA|[Bb]ig[\W][Dd]ata[\W][Ee]ngineer",
+    'backend_vacancy': "[Cc]\+\+[\W]?(программист|разработчик)|[^\n.,;!\-]+[Ee]ngineer[^\n.,;]*|[^\n\.,;а-яА-Я#]+[dD]eveloper[^a-z][^\n;а-яА-Я\"]*|[^\n.,;]*[Pp]ro[duje]{2}ct[^\n][Mm]anager[^\n,;\"]+|[^\n.,;]+[Cc]ommunity[^\n][Mm]anager[^\n.,;]+|Программист[а][^\n\.,][CС]#|Position[^\n]+|[Аа]налитик[а] бизнес[^\n]процессов|[^\nа-яА-Я]*Lead[^\n]ML|React разработчик[а]?|[^\nа-яА-Я,]*[Рр]азработчик[а]?[^\n\.;\"]*|Middlе Jаvа-рaзрaбoтчик|[a-zA-Z]*[^#\-]QA[^\n\.:;\-\"]|Инженер данных [^\n]+|Machine[\W]Learning[\W]Specialist|[^\nа-яА-Яє]+[Ff]ull[\W][sS]tack[^\nа-яА-Яє]+|[a-zA-Z]+[\W][23][Dd][\W]?[хХ]удожник[а]?|[^\n]+blockchain architect|ищем[^\n\.;]+|[^\n;\.,‼️]+artist[^\n;\.,]+|[MmiddleJjuniorSsenior]{6}[\W][Rr]uby[\W][Dd]eveloper|[a-zA-ZА-Яа-я]+\sтестировщик|Junior QA|[Bb]ig[\W][Dd]ata[\W][Ee]ngineer|[a-zA-Z]{2,10}.js[^\n]{1,15}([Dd]eveloper|[Рр]азработчик)",
     'qa_vacancy': "[^\n.,;!\-]+[Ee]ngineer[^\n.,;]*|[^\n\.,;а-яА-Я#]+[dD]eveloper[^a-z][^\n;а-яА-Я\"]*|[^\n.,;]*[Pp]ro[duje]{2}ct[^\n][Mm]anager[^\n,;\"]+|[^\n.,;]+[Cc]ommunity[^\n][Mm]anager[^\n.,;]+|Программист[а][^\n\.,][CС]#|Position[^\n]+|[Аа]налитик[а] бизнес[^\n]процессов|[^\nа-яА-Я]*Lead[^\n]ML|React разработчик[а]?|[^\nа-яА-Я,]*[Рр]азработчик[а]?[^а-я][^\n\.;\"]*|Middlе Jаvа-рaзрaбoтчик|[a-zA-Z]*[^#\-]QA[^\n\.:;\-\"]|Инженер данных [^\n]+|Machine[\W]Learning[\W]Specialist|[^\nа-яА-Яє]+[Ff]ull[\W][sS]tack[^\nа-яА-Яє]+|[a-zA-Z]+[\W][23][Dd][\W]?[хХ]удожник[а]?|[^\n]+blockchain architect|ищем[^\n\.;]+|[^\n;\.,‼️]+artist[^\n;\.,]+|[MmiddleJjuniorSsenior]{6}[\W][Rr]uby[\W][Dd]eveloper|[a-zA-ZА-Яа-я]+\sтестировщик|Junior QA|[Bb]ig[\W][Dd]ata[\W][Ee]ngineer",
     'junior_vacancy': "",
     'middle_vacancy': "",
