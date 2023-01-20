@@ -312,8 +312,15 @@ class VacancyFilter:
                 if match:
                     vacancy = match[0]
         if vacancy:
-            vacancy = re.sub(r"[Дд]олжность[:\s]{1,2}", '', vacancy)
-            vacancy = re.sub(r"[Вв]акансия[:\s]{1,2}", '', vacancy)
+            try:
+                vacancy = re.sub(r"[Дд]олжность[:\s]{1,2}", '', vacancy)
+            except Exception as e:
+                print('filter_jan 315')
+            try:
+                vacancy = re.sub(r"[Вв]акансия[:\s]{1,2}", '', vacancy)
+            except Exception as e:
+                print('filter_jan 315')
+
             vacancy = vacancy.strip()
 
             vacancy = self.clean_vacancy_from_get_vacancy_name(vacancy)
