@@ -313,6 +313,10 @@ class VacancyFilter:
                 if match:
                     vacancy = match[0]
         if vacancy:
+            if type(vacancy) in [set, tuple, list]:
+                vacancy = vacancy[0]
+            print('vacancy = ', vacancy)
+            time.sleep(7)
             try:
                 vacancy = re.sub(r"[Дд]олжность[:\s]{1,2}", '', vacancy)
             except Exception as e:
