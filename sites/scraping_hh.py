@@ -15,6 +15,7 @@ from patterns.pattern_Alex2809 import cities_pattern, params
 from filters.scraping_get_profession_Alex_next_2809 import AlexSort2809
 from sites.write_each_vacancy_to_db import write_each_vacancy
 from settings.browser_settings import options, chrome_driver_path
+from utils.additional_variables.additional_variables import sites_search_words, how_much_pages
 
 class HHGetInformation:
 
@@ -100,7 +101,7 @@ class HHGetInformation:
                 pass
             await self.get_link_message(self.browser.page_source, word)
 
-            till = 13
+            till = how_much_pages
             for self.page_number in range(1, till):
                 try:
                     await self.bot.send_message(self.chat_id, f'https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&text={word}&from=suggest_post&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&page={self.page_number}&hhtmFrom=vacancy_search_list',

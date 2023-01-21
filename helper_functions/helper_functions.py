@@ -123,6 +123,7 @@ async def get_field_for_shorts(presearch_results: list, pattern: str, return_val
     return {'return_value': '', 'element_is_not_empty': element_is_not_empty, 'match': ''}
 
 async def get_city_vacancy_for_shorts(presearch_results: list, pattern: str, return_value='match'):
+    key = ''
     element_is_not_empty = False
     for element in presearch_results:
         if element:

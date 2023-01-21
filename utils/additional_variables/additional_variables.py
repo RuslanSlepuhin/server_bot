@@ -62,3 +62,9 @@ for i in range(0, len(excel_dict['city'])):
         result_excel_dict[excel_dict['country'][i]].append(excel_dict['city'][i])
     else:
         result_excel_dict[excel_dict['country'][i]] = [excel_dict['city'][i]]
+
+clear_vacancy_trash_pattern = "[Ии]щем в команду[:]?|[Тт]ребуется[:]?|[Ии]щем[:]?|[Вв]акансия[:]?|[Пп]озиция[:]?|" \
+                              "[Дд]олжность[:]|в поиске[:]|[Нн]азвание вакансии[:]|[VACANCYvacancy]{7}[:]?|[Pp]osition[:]?"
+
+how_much_pages = 7
+

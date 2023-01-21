@@ -291,31 +291,50 @@ class VacancyFilter:
 
         return company.strip()
 
-    def get_vacancy_name(self, text, profession_list):
+    def get_vacancy_name(self, text, profession_list, sub=None):
         vacancy = ''
-        vacancy_pattern = self.export_pattern['others']['vacancy']['sub']['common_vacancy']
-        match = re.findall(rf"{vacancy_pattern}", text)
-        print(f'************\nmatch= {match}\n************')
-        if len(''.join(match))>0:
-            vacancy = match[0]
-        else:
-            # for pro in profession_list:
+        match = []
+
+        if not vacancy:
             for pro in variables.valid_professions:
                 if pro == 'no_sort':
-                    pattern = self.export_pattern['others']['vacancy']['sub']['backend_vacancy']
-                else:
-                    pattern = self.export_pattern['others']['vacancy']['sub'][f'{pro}_vacancy']
-                match = re.findall(rf"{pattern}", text)
-                print(f'************\nmatch= {match}\n************')
-                if len(''.join(match))>0:
-                    vacancy = match[0]
-                    break
+                    pass
+                    # pattern = self.export_pattern['others']['vacancy']['sub']['backend_vacancy']
+                # else:
+                pattern = self.export_pattern['others']['vacancy']['sub'][f'{pro}_vacancy']
+                if pattern:
+                    match = re.findall(rf"{pattern}", text)
+                    print('pro = ', pro)
+                    print('match = ', match)
+                    print("''.join(match) = ", ''.join(match))
+                    if len(''.join(match)) > 0:
+                        vacancy = match[0]
+                        break
 
-            if not vacancy:
-                pattern = self.export_pattern['others']['vacancy']['sub']['backend_vacancy']
-                match = re.findall(rf"{pattern}", text)
+        if not vacancy:
+            vacancy_pattern = self.export_pattern['others']['vacancy']['sub']['common_vacancy']
+            if vacancy_pattern:
+                match = re.findall(rf"{vacancy_pattern}", text)
+                print('pro = common')
+                print('match = ', match)
+                print("''.join(match) = ", ''.join(match))
                 if len(''.join(match))>0:
                     vacancy = match[0]
+
+
+            # if not vacancy:
+            #     pattern = self.export_pattern['others']['vacancy']['sub']['backend_vacancy']
+            #     match = re.findall(rf"{pattern}", text)
+            #     print('match = ', match)
+            #     print("''.join(match) = ", ''.join(match))
+            #     if len(''.join(match))>0:
+            #         vacancy = match[0]
+
+        if sub and not vacancy:
+            for key in sub:
+                if sub[key]:
+                    vacancy = f"{sub[key].capitaloze()} {key}"
+                    break
         if vacancy:
             vacancy = self.clean_vacancy_from_get_vacancy_name(vacancy)
 
@@ -324,12 +343,13 @@ class VacancyFilter:
         return vacancy
 
     def clean_vacancy_from_get_vacancy_name(self, vacancy):
-        trash_list = ["[Ии]щем в команду[:]?", "[Тт]ребуется[:]?", "[Ии]щем[:]?", "[Вв]акансия[:]?", "[Пп]озиция[:]?",
-                      "[Дд]олжность[:]?", "в поиске[:]?", "[Нн]азвание вакансии[:]?", "[VACANCYvacancy]{7}[:]?"]
-        for i in trash_list:
-            if i in vacancy:
-                vacancy = re.sub(rf"{i}", "", vacancy)
-
+        vacancy = re.findall(r"[a-zA-Zа-яА-Я0-9:;-_\\/\s]+", vacancy)[0]
+        # trash_list = ["[Ии]щем в команду[:]?", "[Тт]ребуется[:]?", "[Ии]щем[:]?", "[Вв]акансия[:]?", "[Пп]озиция[:]?",
+        #               "[Дд]олжность[:]?", "в поиске[:]?", "[Нн]азвание вакансии[:]?", "[VACANCYvacancy]{7}[:]?"]
+        # for i in trash_list:
+        #     if i in vacancy:
+        vacancy = re.sub(rf"{variables.clear_vacancy_trash_pattern}", "", vacancy)
+        print("vacancy_final = ", vacancy.strip())
         return vacancy.strip()
 
     def compose_junior_sub(self, profession, key_word):

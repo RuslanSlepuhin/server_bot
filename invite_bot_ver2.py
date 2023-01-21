@@ -48,7 +48,6 @@ config = configparser.ConfigParser()
 config.read("./settings/config.ini")
 
 api_id = settings.api_id
-print('api_id = ', api_id)
 api_hash = settings.api_hash
 username = settings.username
 
@@ -3689,28 +3688,6 @@ class InviteBot():
 
             if "shorts" in callback_data:
                 await shorts_public(message)
-                # for key in self.message_for_send_dict:
-                #     message_for_send = self.message_for_send_dict[key]
-                #     vacancies_list = await cut_message_for_send(message_for_send)
-                #     for short in vacancies_list:
-                #         try:
-                #             await write_to_logs_error(f"Results:\n{short}\n")
-                #             try:
-                #                 await self.bot_aiogram.send_message(
-                #                     variable.channel_id_for_shorts,
-                #                     short,
-                #                     parse_mode='html',
-                #                     disable_web_page_preview=True
-                #                 )
-                #             except:
-                #                 await self.bot_aiogram.send_message(
-                #                     message.chat.id,
-                #                     short,
-                #                     parse_mode='html',
-                #                     disable_web_page_preview=True
-                #                 )
-                #         except Exception as e:
-                #             await self.bot_aiogram.send_message(message.chat.id, str(e))
 
             await delete_and_change_waste_vacancy(message=message,
                                                   last_id_message_agregator=self.last_id_message_agregator,
@@ -3826,5 +3803,5 @@ class InviteBot():
 def run(token_in=None):
     InviteBot(token_in).main_invitebot()
 
-if __name__ == '__main__':
-   run()
+# if __name__ == '__main__':
+#    run()
