@@ -35,7 +35,7 @@ dict_for_title_shorts = {
 
 pattern_path = "./excel/pattern.txt"
 admin_check_file_path = './logs/check_file.txt'
-sites_search_words = ['designer', 'ui', 'junior', 'product manager', 'project manager', 'python', 'php']
+sites_search_words = ['designer', 'без опыта', 'стажер', 'ui', 'junior', 'product manager', 'project manager', 'python', 'php']
 
 table_list_for_checking_message_in_db = ['admin_last_session', 'archive']
 

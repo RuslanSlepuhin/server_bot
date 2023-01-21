@@ -200,6 +200,9 @@ class InviteBot():
             sub_profession = State()
             sub_sub = State()
 
+        class Form_db(StatesGroup):
+            name = State()
+
         @self.dp.message_handler(commands=['start'])
         async def send_welcome(message: types.Message):
 
@@ -244,6 +247,7 @@ class InviteBot():
                                                             '⛔️/get_pattern_pseudo\n'
                                                             '⛔️/clear_db_table\n'
                                                             '⛔️/numbers_of_archive\n'
+                                                            '⛔️/how_many_records_in_db_table - shows quantity of records in db table\n'
                                                             '----------------------------------------------------\n\n'
                                                             '---------------- PARSING: ----------------\n'
                                                             '🔆/magic_word - input word and get results from hh.ru\n'
@@ -270,6 +274,27 @@ class InviteBot():
                                                             '/add_statistics\n\n'
                                                             '---------------------------------------------------\n\n'
                                                             '❗️- it is admin options')
+
+        @self.dp.message_handler(commands=['how_many_records_in_db_table'])
+        async def how_many_records_in_db_table_commands(message: types.Message):
+            await Form_db.name.set()
+            await self.bot_aiogram.send_message(message.chat.id, 'Type the table name like the profession')
+
+        @self.dp.message_handler(state=Form_db.name)
+        async def emeggency_push_profession(message: types.Message, state: FSMContext):
+            async with state.proxy() as data:
+                data['name'] = message.text
+                db_name = message.text
+            await state.finish()
+            response = self.db.get_all_from_db(
+                table_name=db_name,
+                field='id'
+            )
+            if type(response) is not str:
+                await self.bot_aiogram.send_message(message.chat.id, f'{len(response)} records')
+            else:
+                await self.bot_aiogram.send_message(message.chat.id, f'{str(response)}')
+
 
         @self.dp.message_handler(commands=['read_pattern_row'])
         async def stop_commands(message: types.Message):
@@ -2609,6 +2634,8 @@ class InviteBot():
                     )
                     salary_shorts = salary_shorts['match']
                     salary_shorts = salary_shorts.replace('до', '-').replace('  ', ' ')
+
+                    print('///////////////////\nsalary = ', salary_shorts, '\n///////////////////')
 
                     city_shorts = await helper.get_city_vacancy_for_shorts(
                         presearch_results=[
