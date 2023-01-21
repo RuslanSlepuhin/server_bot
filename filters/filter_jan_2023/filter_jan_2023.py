@@ -295,6 +295,7 @@ class VacancyFilter:
         vacancy = ''
         vacancy_pattern = self.export_pattern['others']['vacancy']['sub']['common_vacancy']
         match = re.findall(rf"{vacancy_pattern}", text)
+        print(f'************\nmatch= {match}\n************')
         if len(''.join(match))>0:
             vacancy = match[0]
         else:
@@ -305,6 +306,7 @@ class VacancyFilter:
                 else:
                     pattern = self.export_pattern['others']['vacancy']['sub'][f'{pro}_vacancy']
                 match = re.findall(rf"{pattern}", text)
+                print(f'************\nmatch= {match}\n************')
                 if len(''.join(match))>0:
                     vacancy = match[0]
                     break
