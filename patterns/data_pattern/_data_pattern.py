@@ -24,7 +24,7 @@ pattern = {
                 "Шукаю свою першу роботу","#resume", " Ділимося з вами дружніми Telegram каналами", "делимся резюме", 
                 "проводим эфир","я оказываю","медицинская сестра", "медицинский брат", "дефектолог","патриотическ",
                 "юрист","менеджер по бизнес-процессам","Logistics Partner Manager","Оператор колл-центра","Прораб",
-                "Telecom Onboarding","Support Operations Manager","FarPost","Бизнес-ассистент","Операционный менеджер",
+                "Telecom Onboarding","Support Operations Manager", "FarPost", "Бизнес-ассистент", "Операционный менеджер",
                 "Координатор Тайных Покупателей","Руководитель онлайн казино","Менеджер по работе с поставщиками",
                 "Руководитель направления проектных продаж","Оператор ПК","видеомониторинг", " Заказ канцелярии",
                 "Контроль за работой курьеров","Поиск подрядчиков","инженер-конструктор","Менеджер по работе с маркетплейсами",
@@ -42,7 +42,7 @@ pattern = {
                 "[Мм]енеджер по работе с дизайнерами", "Design Studio 3D","' Chef '", "продюсер", "консультант",
                 "Дизайнер-фотограф", "специалист по работе с фотографиями", "медицинский представитель",
                 "[Дд]изайнер-строитель", "[Лл]огопед", "дефектолог", "ресниц", "маникюр", "педикюр", "архитектура зданий",
-                "[Дд]изайнер-архитектор", "кухни на заказ", "[Ll]ogistics manager"),
+                "[Дд]изайнер-архитектор", "кухни на заказ", "[Ll]ogistics manager", "[Оо]фис-менеджер"),
         'mex2': (),
         'mincl': (),
     },
@@ -192,7 +192,7 @@ pattern = {
         'ma2': ("#[Bb]ackend", "[Bb]ackend", "[Bb]ack-end", "[Bb]ack end","Вакансия: [Bb]ackend  [Ee]ngineer","[Bb]ackend разработчик", "Senior Backend Developer","Backend engineer","Position:Backend Engineer","Junior Backend Developer","Senior backend",
                "Backend-разработчик", "#backend","Position:Backend Engineer","backend developer","Blockchain Developer","IT [Aa]rchitect","приглашает в штат бэкенд-разработчиков","разработчик ML",),
         # pattern['backend']['ma']=set(pattern['python']['ma']).union(set(pattern['C']['ma'])).union(set(pattern['PHP']['ma'])).union(set(pattern['Java']['ma'])).union(set(pattern['Ruby']['ma'])).union(set(pattern['Scala']['ma'])).union(set(pattern['.NET']['ma'])).union(set(pattern['NodeJS']['ma'])).union(set(pattern['Laravel']['ma'])).union(set(pattern['Golang']['ma'])).union(set(pattern['Delphi']['ma'])).union(set(pattern['ABAP']['ma'])).union(set(pattern['ML']['ma'])).union(set(pattern['DataEngineer']['ma']))
-        'mdef': (),
+        'mdef': ('[Bb]ackend-разработчик', '[Pp]ython разработчик', '[Пп]рограммист 1С-Битрикс'),
         'mex': (),
         'mex2': ("DevSecOps", " UI/UX designer", "@python_job_interview", "Data Engineer", "backend разработчиками",
                 "Backend QA Engineer", "тестирования backend", "тестирование backend", "QA Automation", "QA Auto",
@@ -485,7 +485,7 @@ pattern = {
     'pm': {
         'ma': (),
         'ma2': (),
-        'mdef': ("продукт менеджер", ),
+        'mdef': ("продукт менеджер", '[Pp]roduct manager', '[Мм]енеджер проектов'),
         'mex2': (),
         'mex': ("собеседование с РМ", "Вакансия: Senior PHP Developer", "product lead", "Менеджер В2В", "Manager B2B",
                 "Senior Front-End Developer", "Senior Software Testing Engineer", "Sales manager", "Tech Lead",
@@ -811,7 +811,7 @@ pattern = {
                     'ma':( "[Ss]ystem [Aa]nalyst","[Сс]истемного [Aа]налитика","#SA",  "[Сс]истемный [Аа]налитик",),
                     'mex2':(),
                     'ma2': (),
-                    'mdef': (),
+                    'mdef': ("[Сс]истемный аналитик", ),
                     'mex': (),
                     'mincl': ()
                     # pattern['SysAnal']['mex']=set(pattern['marketing']['mex']).union(set(pattern['SysAnal']['mex2'])),
@@ -967,7 +967,7 @@ pattern = {
                 'copyrighter': {
                     'ma':("[Cc]opyrighter","[Кк]опирайтер","Копирайтер-редактор",),
                     'ma2': (),
-                    'mdef': (),
+                    'mdef': ('[Кк]опирайтер',),
                     'mex': (),
                     'mex2':(),
                     'mincl': ()
@@ -988,7 +988,7 @@ pattern = {
                 'link_builder':{
                     'ma':("[Ll]ink[Bb]uilder","Link Builder","линкбилдинг",),
                     'ma2': (),
-                    'mdef': (),
+                    'mdef': ('SEO-специалист',),
                     'mex': (),
                     'mex2':(),
                     'mincl': ()

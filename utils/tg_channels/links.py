@@ -1,13 +1,11 @@
 list_links = [
-    # 'https://t.me/askrubot',
-    # 'https://t.me/popa_belkvn',
-    # 'https://t.me/it_interns', # interns
-    # 'https://t.me/itvacancycv',
-    # 'https://t.me/fordev',
-    # 'https://t.me/relocaty_jobs',  # +
-    # 'https://t.me/qa_jobs',  # +
-    # 'https://t.me/scala_jobs_feed',
-    # 'https://t.me/joinchat/AAAAAEzV8yADoj9hGdvThQ', # подписаться
+    'https://t.me/it_interns', # interns
+    'https://t.me/itvacancycv',
+    'https://t.me/fordev',
+    'https://t.me/relocaty_jobs',  # +
+    'https://t.me/qa_jobs',  # +
+    'https://t.me/scala_jobs_feed',
+    'https://t.me/joinchat/AAAAAEzV8yADoj9hGdvThQ', # подписаться
     'https://t.me/qajoboffer',
     'https://t.me/javascript_jobs_feed',
     'https://t.me/joinchat/AAAAAE41V66UBtfXtuSrpg',  # подписаться
