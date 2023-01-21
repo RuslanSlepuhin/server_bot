@@ -306,7 +306,12 @@ class VacancyFilter:
                     match = re.findall(rf"{pattern}", text)
                     print('pro = ', pro)
                     print('match = ', match)
-                    print("''.join(match) = ", ''.join(match))
+                    try:
+                        print("''.join(match) = ", ''.join(match))
+                    except Exception as e:
+                        print("type(match) = ", type(match))
+                        print(e)
+                        pass
                     if len(''.join(match)) > 0:
                         vacancy = match[0]
                         break
@@ -317,7 +322,12 @@ class VacancyFilter:
                 match = re.findall(rf"{vacancy_pattern}", text)
                 print('pro = common')
                 print('match = ', match)
-                print("''.join(match) = ", ''.join(match))
+                try:
+                    print("''.join(match) = ", ''.join(match))
+                except Exception as e:
+                    print("type(match) = ", type(match))
+                    print(e)
+                    pass
                 if len(''.join(match))>0:
                     vacancy = match[0]
 
