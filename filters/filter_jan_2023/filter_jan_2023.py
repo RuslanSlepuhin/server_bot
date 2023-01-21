@@ -306,15 +306,15 @@ class VacancyFilter:
                     match = re.findall(rf"{pattern}", text)
                     print('pro = ', pro)
                     print('match = ', match)
+                    print("type(match) = ", type(match))
                     try:
-                        print("''.join(match) = ", ''.join(match))
+                        match_str = ''.join(match)
+                        print("''.join(match) = ", match_str)
+                        if len(''.join(match)) > 0:
+                            vacancy = match[0]
+                            break
                     except Exception as e:
-                        print("type(match) = ", type(match))
-                        print(e)
-                        pass
-                    if len(''.join(match)) > 0:
-                        vacancy = match[0]
-                        break
+                        print('Error: ', e)
 
         if not vacancy:
             vacancy_pattern = self.export_pattern['others']['vacancy']['sub']['common_vacancy']
@@ -322,15 +322,14 @@ class VacancyFilter:
                 match = re.findall(rf"{vacancy_pattern}", text)
                 print('pro = common')
                 print('match = ', match)
+                print("type(match) = ", type(match))
                 try:
-                    print("''.join(match) = ", ''.join(match))
+                    match_str = ''.join(match)
+                    print("''.join(match) = ", match_str)
+                    if len(''.join(match)) > 0:
+                        vacancy = match[0]
                 except Exception as e:
-                    print("type(match) = ", type(match))
-                    print(e)
-                    pass
-                if len(''.join(match))>0:
-                    vacancy = match[0]
-
+                    print('Error: ', e)
 
             # if not vacancy:
             #     pattern = self.export_pattern['others']['vacancy']['sub']['backend_vacancy']
