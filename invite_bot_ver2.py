@@ -272,7 +272,7 @@ class InviteBot():
                                                             '/ambulance - if bot gets accident in hard pushing and you think you loose the shorts\n\n'
                                                             '---------------- TOOLS: ----------------\n'
                                                             '🛠/edit_pattern - stop proccess\n'
-                                                            '/schedule - non-stop parsing\n'
+                                                            '📅/schedule - non-stop parsing\n'
                                                             '🖐️/stop - stop proccess\n'
                                                             '➡️/refresh_and_save_changes - One click for the correct refresh. Includes:\n'
                                                             '✅/refresh - to get the professions in excel format in all vacancies throgh the new filters logic (without rewriting)\n'
