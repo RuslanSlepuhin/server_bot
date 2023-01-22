@@ -3535,19 +3535,18 @@ class InviteBot():
             # await bot_aiogram.send_message(
             #     message.chat.id,
             #     '...it has been successfully',
-#                 parse_mode='HTML')
-#             await asyncio.sleep(2)
+            #                 parse_mode='HTML')
+            #             await asyncio.sleep(2)
             #
             # # ---------------------- parsing the sites. List of them will grow ------------------------
-#             await bot_aiogram.send_message(message.chat.id, 'Bot is parsing the sites...')
-            psites = ParseSites(client=self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})
+            #             await bot_aiogram.send_message(message.chat.id, 'Bot is parsing the sites...')
+            psites = ParseSites(client=self.client, bot_dict=bot_dict)
             await psites.call_sites()
-            p7 = Process(target=psites.call_sites, args=(self.client, bot_dict))
+            p7 = Process(target=psites.call_sites, args=())
             p6.start()
             p7.start()
             p6.join()
             p7.join()
-
 
 #             await bot_aiogram.send_message(message.chat.id, '...it has been successfully. Press <b>Digest</b> for the next step', parse_mode='html')
 
