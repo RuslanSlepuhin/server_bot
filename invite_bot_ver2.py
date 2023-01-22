@@ -3525,35 +3525,33 @@ class InviteBot():
             await asyncio.sleep(1)
 
             # # -----------------------parsing telegram channels -------------------------------------
-#             await bot_aiogram.send_message(
-#                 message.chat.id,
-#                 'Bot is parsing the telegram channels...',
-#                 parse_mode='HTML')
-#             await main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})  # run parser tg channels and write to profession's tables
+            # await main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})  # run parser tg channels and write to profession's tables
+
             bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
-            p6 = Process(target=main, args=(self.client, bot_dict))
+            # p6 = Process(target=main, args=(self.client, bot_dict))
+
             # await bot_aiogram.send_message(
             #     message.chat.id,
             #     '...it has been successfully',
-            #                 parse_mode='HTML')
-            #             await asyncio.sleep(2)
+            #     parse_mode='HTML')
+            # await asyncio.sleep(2)
             #
             # # ---------------------- parsing the sites. List of them will grow ------------------------
-            #             await bot_aiogram.send_message(message.chat.id, 'Bot is parsing the sites...')
+            # await bot_aiogram.send_message(message.chat.id, 'Bot is parsing the sites...')
+
             # psites = ParseSites(client=self.client, bot_dict=bot_dict)
             # await psites.call_sites()
             # p7 = Process(target=psites.call_sites, args=())
-            p6.start()
+            # p6.start()
             # p7.start()
-            p6.join()
+            # p6.join()
             # p7.join()
+            # await bot_aiogram.send_message(message.chat.id, '...it has been successfully. Press <b>Digest</b> for the next step', parse_mode='html')
 
-#             await bot_aiogram.send_message(message.chat.id, '...it has been successfully. Press <b>Digest</b> for the next step', parse_mode='html')
-
-            # psites = ParseSites(client=self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})
-            # task1 = asyncio.create_task(main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}))
-            # task2 = asyncio.create_task(psites.call_sites())
-            # await asyncio.gather(task1, task2)
+            psites = ParseSites(client=self.client, bot_dict=bot_dict)
+            task1 = asyncio.create_task(main(self.client, bot_dict=bot_dict))
+            task2 = asyncio.create_task(psites.call_sites())
+            await asyncio.gather(task1, task2)
             await self.bot_aiogram.send_message(message.chat.id, '----- PARSING HAS BEEN DONE! -----')
 
         async def debug_function():
