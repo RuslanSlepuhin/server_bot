@@ -11,6 +11,7 @@ from db_operations.scraping_db import DataBaseOperations
 from sites.write_each_vacancy_to_db import write_each_vacancy
 from settings.browser_settings import options, chrome_driver_path
 from utils.additional_variables.additional_variables import sites_search_words
+from helper_functions.helper_functions import edit_message, send_message
 
 class GeekGetInformation:
 
@@ -368,6 +369,7 @@ class GeekGetInformation:
         )
 
     async def output_logs(self, response_from_db, vacancy, word=None):
+
         additional_message = ''
         profession = response_from_db['profession']
         response_from_db = response_from_db['response_from_db']
@@ -386,16 +388,31 @@ class GeekGetInformation:
                 self.written_vacancies += 1
 
         if len(f"{self.current_message}\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}") < 4096:
-            self.current_message = await self.bot.edit_message_text(
-                f'{self.current_message.text}\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}',
-                self.current_message.chat.id,
-                self.current_message.message_id,
-                parse_mode='html',
-                disable_web_page_preview=True
+            new_text = f"\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}"
+
+            self.current_message = await edit_message(
+                bot=self.bot,
+                text=new_text,
+                msg=self.current_message
             )
+
+            # self.current_message = await self.bot.edit_message_text(
+            #     f'{self.current_message.text}{new_text}',
+            #     self.current_message.chat.id,
+            #     self.current_message.message_id,
+            #     parse_mode='html',
+            #     disable_web_page_preview=True
+            # )
         else:
-            self.current_message = await self.bot.send_message(self.chat_id,
-                                                               f"{self.count_message_in_one_channel}. {vacancy}\n{additional_message}")
+            new_text = f"{self.count_message_in_one_channel}. {vacancy}\n{additional_message}"
+            self.current_message = await send_message(
+                bot=self.bot,
+                chat_id=self.chat_id,
+                text=new_text
+            )
+
+            # self.current_message = await self.bot.send_message(self.chat_id,
+            #                                                    f"{self.count_message_in_one_channel}. {vacancy}\n{additional_message}")
 
         print(f"\n{self.count_message_in_one_channel} from_channel hh.ru search {word}")
         self.count_message_in_one_channel += 1

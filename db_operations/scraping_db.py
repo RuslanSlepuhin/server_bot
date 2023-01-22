@@ -273,7 +273,7 @@ class DataBaseOperations:
                 response = cur.fetchall()
             except Exception as e:
                 print(e)
-                return str(e)
+                return []
         if curs:
             return cur
         return response

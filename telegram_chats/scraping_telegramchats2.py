@@ -159,7 +159,14 @@ class WriteToDbMessages():
         total_count_limit = limit_msg  # значение 0 = все сообщения
         history = None
 
-        self.msg = self.current_message = await self.bot_dict['bot'].send_message(self.bot_dict['chat_id'], f'<em>channel {channel}</em>', parse_mode='html', disable_web_page_preview = True)
+        new_text = f"<em>channel {channel}</em>"
+
+        self.msg = await helper.send_message(
+            bot=self.bot_dict['bot'],
+            chat_id=self.bot_dict['chat_id'],
+            text=new_text
+        )
+        # self.msg = await self.bot_dict['bot'].send_message(self.bot_dict['chat_id'], f'<em>channel {channel}</em>', parse_mode='html', disable_web_page_preview = True)
 
         # data = await self.client.get_entity('https://t.me/fake_adminka')
         # print(data)
@@ -220,7 +227,15 @@ class WriteToDbMessages():
 
         for one_message in reversed(all_messages):
             await self.operations_with_each_message(channel, one_message)
-        await self.msg.edit_text(f"{self.msg.text}\nhas written {self.exist_dict['written']}\nexist: {self.exist_dict['existed']}", disable_web_page_preview = True)
+
+        new_text = f"\nhas written {self.exist_dict['written']}\nexist: {self.exist_dict['existed']}"
+        self.msg = await helper.edit_message(
+            bot=self.bot_dict['bot'],
+            text=new_text,
+            msg=self.msg
+        )
+
+        # await self.msg.edit_text(f"{self.msg.text}\nhas written {self.exist_dict['written']}\nexist: {self.exist_dict['existed']}", disable_web_page_preview = True)
         self.exist_dict['written'] = 0
         self.exist_dict['existed'] = 0
 

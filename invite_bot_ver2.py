@@ -3502,6 +3502,7 @@ class InviteBot():
 
             psites = ParseSites(client=self.client, bot_dict=bot_dict)
             await main(self.client, bot_dict=bot_dict)
+            # self.bot_aiogram.send_message(message.chat.id, "TG channels parsing has finished")
             await psites.call_sites()
             await self.bot_aiogram.send_message(message.chat.id, '----- PARSING HAS BEEN DONE! -----')
 
@@ -3827,6 +3828,7 @@ class InviteBot():
                 except:
                     pass
                 await connect_with_client(message, id_customer)
+
 
 
         start_polling(self.dp)

@@ -1,4 +1,5 @@
 import re
+import time
 
 from patterns._export_pattern import export_pattern
 from patterns.pseudo_pattern.pseudo_export_pattern import export_pattern as pseudo_export_pattern
@@ -116,10 +117,10 @@ async def get_field_for_shorts(presearch_results: list, pattern: str, return_val
     for element in presearch_results:
         if element:
             element_is_not_empty = True
-        for pattern_item in pattern:
-            match = re.findall(rf"{pattern_item}", element)
-            if match:
-                return {'return_value': return_value, 'element_is_not_empty': element_is_not_empty, 'match': match[0]}
+            for pattern_item in pattern:
+                match = re.findall(rf"{pattern_item}", element)
+                if match:
+                    return {'return_value': return_value, 'element_is_not_empty': element_is_not_empty, 'match': match[0]}
     return {'return_value': '', 'element_is_not_empty': element_is_not_empty, 'match': ''}
 
 async def get_city_vacancy_for_shorts(presearch_results: list, pattern: str, return_value='match'):
@@ -142,3 +143,34 @@ async def get_city_vacancy_for_shorts(presearch_results: list, pattern: str, ret
 
     return {'return_value': '', 'element_is_not_empty': element_is_not_empty, 'match': ''}
 
+
+async def send_message(bot, chat_id, text, parse_mode='html', disable_web_page_preview=True):
+    ex = "Flood control"
+    while ex.lower() == 'flood control':
+        try:
+            await bot.send_message(chat_id, text, parse_mode=parse_mode, disable_web_page_preview=disable_web_page_preview)
+            ex = ''
+        except Exception as ex:
+            ex = str(ex)
+            if 'flood control' in ex.lower():
+                print("\n--------------\nFlood control\n--------------\n")
+                match = re.findall(r"[0-9]{1,4} seconds", ex)
+                if match:
+                    seconds = match[0].split(' ')[0] + 5
+                    time.sleep(int(seconds))
+
+async def edit_message(bot, text, msg, parse_mode='html', disable_web_page_preview=True):
+    ex = "Flood control"
+    while ex.lower() == 'flood control':
+        try:
+            msg = await bot.edit_message_text(f"{msg.text}{text}", msg.chat.id, msg.message_id, parse_mode=parse_mode, disable_web_page_preview=disable_web_page_preview)
+            ex = ''
+        except Exception as ex:
+            ex = str(ex)
+            if 'flood control' in ex.lower():
+                print("\n--------------\nFlood control\n--------------\n")
+                match = re.findall(r"[0-9]{1,4} seconds", ex)
+                if match:
+                    seconds = match[0].split(' ')[0] + 5
+                    time.sleep(int(seconds))
+    return msg
