@@ -24,17 +24,17 @@ def start_endpoints():
 
 if __name__ == "__main__":
 
-    start_bot(double=True, token_in=settings.token_red)
+    # start_bot(double=True, token_in=settings.token_red)
 
-    # p1 = Process(target=start_endpoints, args=())
-    # p2 = Process(target=start_bot, args=())
-    # p3 = Process(target=start_bot, args=(True, settings.token_red))
-    # p4 = Process(target=talking_bot_run, args=())
+    p1 = Process(target=start_endpoints, args=())
+    p2 = Process(target=start_bot, args=())
+    p3 = Process(target=start_bot, args=(True, settings.token_red))
+    p4 = Process(target=talking_bot_run, args=())
 
-    # p1.start()
-    # p2.start()
-    # p3.start()
-    # p4.start()
+    p1.start()
+    p2.start()
+    p3.start()
+    p4.start()
 
     # p1.join()
     # p2.join()
