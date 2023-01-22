@@ -1,4 +1,5 @@
 import asyncio
+import threading
 import time
 import pandas as pd
 import psycopg2
@@ -55,6 +56,7 @@ username = settings.username
 api_id_double = settings.api_id_double
 api_hash_double = settings.api_hash_double
 username_double = settings.username_double
+
 
 # token = settings.token
 # logging.basicConfig(level=logging.INFO)
@@ -118,7 +120,7 @@ class InviteBot():
             self.client = TelegramClient(username_double, int(api_id_double), api_hash_double)
         else:
             self.client = TelegramClient(username, int(api_id), api_hash)
-        self.client.connect()
+        self.client.start()
 
         logging.basicConfig(level=logging.INFO)
         if token_in:
@@ -270,6 +272,7 @@ class InviteBot():
                                                             '/ambulance - if bot gets accident in hard pushing and you think you loose the shorts\n\n'
                                                             '---------------- TOOLS: ----------------\n'
                                                             '🛠/edit_pattern - stop proccess\n'
+                                                            '/schedule - non-stop parsing\n'
                                                             '🖐️/stop - stop proccess\n'
                                                             '➡️/refresh_and_save_changes - One click for the correct refresh. Includes:\n'
                                                             '✅/refresh - to get the professions in excel format in all vacancies throgh the new filters logic (without rewriting)\n'
@@ -281,6 +284,7 @@ class InviteBot():
                                                             '/add_statistics\n\n'
                                                             '---------------------------------------------------\n\n'
                                                             '❗️- it is admin options')
+
 
         @self.dp.message_handler(commands=['how_many_records_in_db_table'])
         async def how_many_records_in_db_table_commands(message: types.Message):
@@ -302,6 +306,9 @@ class InviteBot():
             else:
                 await self.bot_aiogram.send_message(message.chat.id, f'{str(response)}')
 
+        @self.dp.message_handler(commands=['schedule'])
+        async def schedule_command(message: types.Message):
+            await schedule(message)
 
         @self.dp.message_handler(commands=['read_pattern_row'])
         async def stop_commands(message: types.Message):
@@ -3548,7 +3555,7 @@ class InviteBot():
             # task1 = asyncio.create_task(main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}))
             # task2 = asyncio.create_task(psites.call_sites())
             # await asyncio.gather(task1, task2)
-            # await self.bot_aiogram.send_message(message.chat.id, '----- PARSING HAS DONE! -----')
+            await self.bot_aiogram.send_message(message.chat.id, '----- PARSING HAS BEEN DONE! -----')
 
         async def debug_function():
             response = DataBaseOperations(None).get_all_from_db(
@@ -3839,6 +3846,15 @@ class InviteBot():
                 else:
                     excel_dict[i] = ''
 
+        async def schedule(message):
+            while True:
+                # thr1 = threading.Thread(target=get_news, args=(message))
+                # thr1.start()
+                await get_news(message=message)
+                await self.bot_aiogram.send_message(message.chat.id, 'Pause 60 minutes')
+                await asyncio.sleep(20*60)
+
+
         start_polling(self.dp)
         # executor.start_polling(dp, skip_updates=True)
 
@@ -3849,5 +3865,5 @@ def run(double=False, token_in=None):
         double=double
     ).main_invitebot()
 
-if __name__ == '__main__':
-   run()
+# if __name__ == '__main__':
+#    run()
