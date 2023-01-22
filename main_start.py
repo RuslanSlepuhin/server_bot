@@ -29,10 +29,10 @@ if __name__ == "__main__":
     p3 = Process(target=start_bot, args=(True, settings.token_red))
     p4 = Process(target=talking_bot_run, args=())
 
-    p1.start()
-    p2.start()
+    # p1.start()
+    # p2.start()
     p3.start()
-    p4.start()
+    # p4.start()
 
     # p1.join()
     # p2.join()
