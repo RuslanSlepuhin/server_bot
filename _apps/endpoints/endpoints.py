@@ -4,6 +4,7 @@ import json
 import os
 import psycopg2
 from flask import Flask
+import random
 # from db_operations.scraping_db import DataBaseOperations
 
 config = configparser.ConfigParser()
@@ -34,7 +35,8 @@ async def main_endpoints():
     @app.route("/get")
     async def hello_world2():
         data = await get_from_db()
-        data = data[0]
+        index = random.randrange(0, len(data))
+        data = data[index]
         print(data)
         data_dict = {
             'vacancy': {
@@ -48,7 +50,7 @@ async def main_endpoints():
 
     async def get_from_db():
         cur = con.cursor()
-        query = "SELECT * FROM admin_last_session"
+        query = "SELECT * FROM admin_last_session WHERE profession <> 'no_sort'"
         with con:
             cur.execute(query)
         response = cur.fetchall()

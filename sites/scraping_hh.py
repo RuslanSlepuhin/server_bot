@@ -1,6 +1,4 @@
-import asyncio
 import re
-import time
 from datetime import datetime
 import pandas as pd
 import requests
@@ -12,7 +10,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from db_operations.scraping_db import DataBaseOperations
 from patterns.pattern_Alex2809 import cities_pattern, params
-from filters.scraping_get_profession_Alex_next_2809 import AlexSort2809
 from sites.write_each_vacancy_to_db import write_each_vacancy
 from settings.browser_settings import options, chrome_driver_path
 from utils.additional_variables.additional_variables import sites_search_words, how_much_pages
@@ -42,14 +39,10 @@ class HHGetInformation:
             'contacts': []
         }
         if not search_word:
-            self.search_words = ['junior', 'джуниор', 'kotlin', 'product', 'mobile', 'marketing', 'аналитик',
-                                 'frontend', 'designer', 'devops', 'hr', 'backend', 'qa', 'junior', 'ba']
-
-            self.search_words = ['designer', 'junior']
+            self.search_words = sites_search_words
         else:
             self.search_words=[search_word]
         self.page_number = 1
-
         self.current_message = None
         self.msg = None
         self.written_vacancies = 0
@@ -75,25 +68,20 @@ class HHGetInformation:
         self.count_message_in_one_channel = 1
 
         await self.get_info()
-        await self.bot.send_message(self.chat_id, 'hh.ru parsing: Done!', disable_web_page_preview=True)
         self.browser.quit()
 
     async def get_info(self):
-        self.browser = webdriver.Chrome(
-            executable_path=chrome_driver_path,
-            options=options
-        )
+        self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         for word in self.search_words:
             self.page_number = 0
-            link  = f'https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&text={word}&from=suggest_post&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1'
-            link = f'https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&text={word}&from=suggest_post&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1'
+            link = f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text='
             # await self.bot.send_message(self.chat_id, link, disable_web_page_preview=True)
 
             print('page link: ', link)
             try:
                 self.browser.get(link)
             except Exception as e:
-                print('_apps could not to get the link', e)
+                print('bot could not to get the link', e)
 
             try:
                 self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -104,15 +92,16 @@ class HHGetInformation:
             till = how_much_pages
             for self.page_number in range(1, till):
                 try:
-                    # await self.bot.send_message(self.chat_id, f'https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&text={word}&from=suggest_post&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&page={self.page_number}&hhtmFrom=vacancy_search_list',
-                    #                             disable_web_page_preview=True)
-                    self.browser.get(f'https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&text={word}&from=suggest_post&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&page={self.page_number}&hhtmFrom=vacancy_search_list')
+                    # await self.bot.send_message(self.chat_id, f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text=&page={self.page_number}&hhtmFrom=vacancy_search_list',
+                    #                       disable_web_page_preview=True)
+                    self.browser.get(f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text=&page={self.page_number}&hhtmFrom=vacancy_search_list')
                     self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                     vacancy_exists_on_page = await self.get_link_message(self.browser.page_source, word)
                     if not vacancy_exists_on_page:
                         break
                 except:
                     break
+        await self.bot.send_message(self.chat_id, 'hh.ru parsing: Done!', disable_web_page_preview=True)
 
     async def get_link_message(self, raw_content, word):
 
@@ -222,7 +211,7 @@ class HHGetInformation:
         links.append(vacancy_url)
 
         print('self.broswer.get(vacancy_url)')
-        # await self._apps.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
+        # await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
         # self.browser = browser
         self.browser.get(vacancy_url)
         # self.browser.get('https://google.com')
@@ -307,9 +296,6 @@ class HHGetInformation:
             counter += 1
         job_type = re.sub(r'\<[a-zA-Z\s\.\-\'"=!\<_\/]+\>', " ", job_type)
 
-        if re.findall(r'удаленная работа', job_type):
-            remote = True
-
         contacts = ''
 
         try:
@@ -371,37 +357,29 @@ class HHGetInformation:
             'job_type': job_type,
             'city':city,
             'salary':salary,
-            'experience':'',
+            'experience':experience,
             'time_of_public':date,
             'contacts':contacts,
             'session': self.current_session
         }
 
         response_from_db = write_each_vacancy(results_dict)
+        additional_message = ''
         profession = response_from_db['profession']
         response_from_db = response_from_db['response_from_db']
+
         if response_from_db:
             additional_message = f'-exists in db\n'
             self.rejected_vacancies += 1
 
-        elif not response_from_db and 'no_sort' not in profession['profession']:
-            prof_str = ''
-            for j in profession['profession']:
-                prof_str += f"{j}, "
-            prof_str = prof_str[:-2]
+        elif not response_from_db:
+            prof_str = ", ".join(profession['profession'])
             additional_message = f"<b>+w: {prof_str}</b>\n"
-            self.written_vacancies += 1
 
-        else:
-            # additional_message = f'(no_sort)\n'
-            prof_str = ''
-            for j in profession['profession']:
-                prof_str += f"{j}, "
-            prof_str = prof_str[:-2]
-            additional_message = f"<b>+w: {prof_str}</b>\n"
-            # self.rejected_vacancies += 1
-            self.written_vacancies += 1
-
+            if 'no_sort' not in profession['profession']:
+                self.written_vacancies += 1
+            else:
+                self.written_vacancies += 1
 
         if len(f"{self.current_message}\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}")< 4096:
             self.current_message = await self.bot.edit_message_text(
@@ -411,12 +389,28 @@ class HHGetInformation:
                 parse_mode='html',
                 disable_web_page_preview=True
             )
-            pass
         else:
             self.current_message = await self.bot.send_message(self.chat_id, f"{self.count_message_in_one_channel}. {vacancy}\n{additional_message}")
-            pass
+
         print(f"\n{self.count_message_in_one_channel} from_channel hh.ru search {word}")
         self.count_message_in_one_channel += 1
+
+    async def get_content_by_link_alone(self, link):
+        self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        try:
+            self.browser.get(link)
+        except Exception as e:
+            print(e)
+            await self.bot.send_message(self.chat_id, str(e))
+            return False
+        try:
+            self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        except:
+            pass
+        # await self.get_content_from_link(self.browser.page_source)
+        pass
+        self.browser.quit()
+
 # loop = asyncio.new_event_loop()
 # loop.run_until_complete(HHGetInformation(bot_dict={}).get_content())
 
