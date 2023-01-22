@@ -56,6 +56,8 @@ api_id_double = settings.api_id_double
 api_hash_double = settings.api_hash_double
 username_double = settings.username_double
 
+client = TelegramClient(username_double, int(api_id_double), api_hash_double)
+
 # token = settings.token
 # logging.basicConfig(level=logging.INFO)
 # bot_aiogram = Bot(token=token)
