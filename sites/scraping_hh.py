@@ -71,7 +71,10 @@ class HHGetInformation:
         self.browser.quit()
 
     async def get_info(self):
-        self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        self.browser = webdriver.Chrome(
+            executable_path=chrome_driver_path,
+            options=options
+        )
         for word in self.search_words:
             self.page_number = 0
             link = f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text='
