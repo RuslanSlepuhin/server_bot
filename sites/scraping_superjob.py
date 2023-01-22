@@ -88,8 +88,8 @@ class SuperJobGetInformation:
             till = 13
             for self.page_number in range(1, till):
                 try:
-                    await self.bot.send_message(self.chat_id, f'https://www.superjob.ru/vacancy/search/?keywords={word}&remote_work_binary=0&geo%5Bc%5D%5B0%5D=1&noGeo=1&page={self.page_number}',
-                                          disable_web_page_preview=True)
+                    # await self.bot.send_message(self.chat_id, f'https://www.superjob.ru/vacancy/search/?keywords={word}&remote_work_binary=0&geo%5Bc%5D%5B0%5D=1&noGeo=1&page={self.page_number}',
+                    #                       disable_web_page_preview=True)
                     self.browser.get(f'https://www.superjob.ru/vacancy/search/?keywords={word}&remote_work_binary=0&geo%5Bc%5D%5B0%5D=1&noGeo=1&page={self.page_number}')
                     self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                     vacancy_exists_on_page = await self.get_link_message(self.browser.page_source, word)

@@ -75,8 +75,8 @@ class SvyaziGetInformation:
             options=options
         )
         try:
-            await self.bot.send_message(self.chat_id, f'https://www.svyazi.app/jobs',
-                                  disable_web_page_preview=True)
+            # await self.bot.send_message(self.chat_id, f'https://www.svyazi.app/jobs',
+            #                       disable_web_page_preview=True)
             self.browser.get(f'https://www.svyazi.app/jobs')
             self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)

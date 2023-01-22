@@ -87,7 +87,7 @@ class HHGetInformation:
             self.page_number = 0
             link  = f'https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&text={word}&from=suggest_post&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1'
             link = f'https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&text={word}&from=suggest_post&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1'
-            await self.bot.send_message(self.chat_id, link, disable_web_page_preview=True)
+            # await self.bot.send_message(self.chat_id, link, disable_web_page_preview=True)
 
             print('page link: ', link)
             try:
@@ -104,8 +104,8 @@ class HHGetInformation:
             till = how_much_pages
             for self.page_number in range(1, till):
                 try:
-                    await self.bot.send_message(self.chat_id, f'https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&text={word}&from=suggest_post&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&page={self.page_number}&hhtmFrom=vacancy_search_list',
-                                                disable_web_page_preview=True)
+                    # await self.bot.send_message(self.chat_id, f'https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&text={word}&from=suggest_post&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&page={self.page_number}&hhtmFrom=vacancy_search_list',
+                    #                             disable_web_page_preview=True)
                     self.browser.get(f'https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&text={word}&from=suggest_post&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&page={self.page_number}&hhtmFrom=vacancy_search_list')
                     self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                     vacancy_exists_on_page = await self.get_link_message(self.browser.page_source, word)

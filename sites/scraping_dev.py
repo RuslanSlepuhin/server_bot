@@ -90,7 +90,7 @@ class DevGetInformation:
 
         # get juniors -------------------------
         link = junior_link
-        await self.bot.send_message(self.chat_id, link, disable_web_page_preview=True)
+        # await self.bot.send_message(self.chat_id, link, disable_web_page_preview=True)
 
         print('page link: ', link)
         try:
@@ -115,7 +115,7 @@ class DevGetInformation:
             else:
                 link = f'https://jobs.devby.io/?&filter[search]={word}'
 
-            await self.bot.send_message(self.chat_id, link, disable_web_page_preview=True)
+            # await self.bot.send_message(self.chat_id, link, disable_web_page_preview=True)
 
             print('page link: ', link)
             try:
