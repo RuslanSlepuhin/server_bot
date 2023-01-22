@@ -268,10 +268,12 @@ class DataBaseOperations:
         # print('query = ', query)
 
         with self.con:
-
-            cur.execute(query)
-            response = cur.fetchall()
-
+            try:
+                cur.execute(query)
+                response = cur.fetchall()
+            except Exception as e:
+                print(e)
+                return str(e)
         if curs:
             return cur
         return response
@@ -848,6 +850,9 @@ class DataBaseOperations:
         return False
 
     def check_vacancy_exists_in_db(self, tables_list, title, body):
+        title = self.clear_title_or_body(title)
+        body = self.clear_title_or_body(body)
+        
         for one_element in tables_list:
             response = self.get_all_from_db(
                 table_name=f'{one_element}',
