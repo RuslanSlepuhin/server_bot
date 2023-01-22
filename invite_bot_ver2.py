@@ -222,15 +222,13 @@ class InviteBot():
             logs.write_log(f'\n------------------ start --------------------')
             # -------- make a parse keyboard for admin ---------------
             parsing_kb = ReplyKeyboardMarkup(resize_keyboard=True)
-            parsing_button1 = KeyboardButton('Get news from channels')
+            # parsing_button1 = KeyboardButton('Get news from channels')
             parsing_button2 = KeyboardButton('Subscr.statistics')
             parsing_button3 = KeyboardButton('Digest')
-            parsing_button4 = KeyboardButton('Invite people')
+            # parsing_button4 = KeyboardButton('Invite people')
             # parsing_button5 = KeyboardButton('Get participants')
 
-            parsing_kb.row(parsing_button1, parsing_button2)
-            parsing_kb.row(parsing_button3, parsing_button4)
-            # parsing_kb.add(parsing_button5)
+            parsing_kb.row(parsing_button3, parsing_button2)
 
             await self.bot_aiogram.send_message(message.chat.id, f'Привет, {message.from_user.first_name}!', reply_markup=parsing_kb)
             await self.bot_aiogram.send_message(variable.id_owner, f'User {message.from_user.id} has started')
@@ -272,8 +270,10 @@ class InviteBot():
                                                             '/ambulance - if bot gets accident in hard pushing and you think you loose the shorts\n\n'
                                                             '---------------- TOOLS: ----------------\n'
                                                             '🛠/edit_pattern - stop proccess\n'
-                                                            '📅/schedule - non-stop parsing\n'
-                                                            '🖐️/stop - stop proccess\n'
+                                                            '/schedule - non-stop parsing\n'
+                                                            '/invite_people - start to invite followers\n'
+                                                            '/get_news - start to invite followers\n'
+                                                           '🖐️/stop - stop proccess\n'
                                                             '➡️/refresh_and_save_changes - One click for the correct refresh. Includes:\n'
                                                             '✅/refresh - to get the professions in excel format in all vacancies throgh the new filters logic (without rewriting)\n'
                                                             '✅/check_doubles - remove the vacancy"s doubles\n'
@@ -305,6 +305,14 @@ class InviteBot():
                 await self.bot_aiogram.send_message(message.chat.id, f'{len(response)} records')
             else:
                 await self.bot_aiogram.send_message(message.chat.id, f'{str(response)}')
+
+        @self.dp.message_handler(commands=['invite_people'])
+        async def invite_people_command(message: types.Message):
+            await invite_people(message)
+
+        @self.dp.message_handler(commands=['get_news'])
+        async def get_news_command(message: types.Message):
+            await get_news(message)
 
         @self.dp.message_handler(commands=['schedule'])
         async def schedule_command(message: types.Message):
@@ -341,7 +349,7 @@ class InviteBot():
 
 
 
-        @self.dp.message_handler(commands=['stop'])
+        @self.dp.message_handler(commands=['ssstop'])
         async def stop_commands(message: types.Message):
             print("Proccess has been stoped")
             await self.bot_aiogram.send_message(message.chat.id, "Proccess has been stoped")
@@ -1546,57 +1554,22 @@ class InviteBot():
                             await self.bot_aiogram.send_message(message.chat.id,
                                                            '🚀 Sorry, this options available only for admin')
 
-                if message.text == 'Get news from channels':
-
-                    logs.write_log(f"invite_bot_2: content_types: Get news from channels")
-                    await get_news(message=message)
-
-
+                # if message.text == 'Get news from channels':
+                #     await get_news(message=message)
 
                 #----------------------- Listening channels at last --------------------------------------
 
-                if message.text == 'Invite people':
-                    # if client.is_connected():
-                    #     client.disconnect()
+                # if message.text == 'Invite people':
+                #     await invite_people(message=message)
 
-                    logs.write_log(f"invite_bot_2: content_types: Invite people")
-
-                    id_customer = message.from_user.id
-                    customer = await check_customer(message, id_customer)
-                    # con = db_connect()
-                    if customer:
-                        # get_customer_from_db = get_db(id_customer)
-                        get_customer_from_db = DataBaseOperations(None).get_all_from_db(table_name='users', param=f"WHERE id_user='{id_customer}'", without_sort=True)
-                        if not get_customer_from_db:
-                            await Form.api_id.set()
-                            return await self.bot_aiogram.send_message(message.chat.id, "Введите api_id (отменить /cancel)")
-
-                        self.current_customer = get_customer_from_db[0]
-                        self.api_id = int(self.current_customer[2])
-                        self.api_hash = self.current_customer[3]
-                        self.phone_number = self.current_customer[4]
-                        self.password = self.current_customer[5]
-                        try:
-                            if self.client.is_connected():
-                                await self.client.disconnect()
-                        except:
-                            pass
-                        await connect_with_client(message, id_customer)
-
-
-                    # await bot.delete_message(message.chat.id, message.message_id)
-                    # response = requests.get(url='https://tg-channel-parse.herokuapp.com/scrape')
-                    # await bot.send_message(message.chat.id, response.status_code)
-                if message.text == 'Listen to channels':
-
-                    logs.write_log(f"invite_bot_2: content_types: Listen to channels")
-
-                    # await bot.delete_message(message.chat.id, message.message_id)
-                    # await bot.send_message(message.chat.id, "Bot is listening TG channels and it will send notifications here")
-                    # ListenChats()
-                    # await client.run_until_disconnected()
-                    await get_subscribers_statistic(message)
-                    pass
+                # if message.text == 'Listen to channels':
+                #
+                #     # await bot.delete_message(message.chat.id, message.message_id)
+                #     # await bot.send_message(message.chat.id, "Bot is listening TG channels and it will send notifications here")
+                #     # ListenChats()
+                #     # await client.run_until_disconnected()
+                #     await get_subscribers_statistic(message)
+                #     pass
 
                 if message.text == 'Digest':
 
@@ -3525,33 +3498,11 @@ class InviteBot():
             await asyncio.sleep(1)
 
             # # -----------------------parsing telegram channels -------------------------------------
-            # await main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})  # run parser tg channels and write to profession's tables
-
             bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
-            # p6 = Process(target=main, args=(self.client, bot_dict))
-
-            # await bot_aiogram.send_message(
-            #     message.chat.id,
-            #     '...it has been successfully',
-            #     parse_mode='HTML')
-            # await asyncio.sleep(2)
-            #
-            # # ---------------------- parsing the sites. List of them will grow ------------------------
-            # await bot_aiogram.send_message(message.chat.id, 'Bot is parsing the sites...')
-
-            # psites = ParseSites(client=self.client, bot_dict=bot_dict)
-            # await psites.call_sites()
-            # p7 = Process(target=psites.call_sites, args=())
-            # p6.start()
-            # p7.start()
-            # p6.join()
-            # p7.join()
-            # await bot_aiogram.send_message(message.chat.id, '...it has been successfully. Press <b>Digest</b> for the next step', parse_mode='html')
 
             psites = ParseSites(client=self.client, bot_dict=bot_dict)
-            task1 = asyncio.create_task(main(self.client, bot_dict=bot_dict))
-            task2 = asyncio.create_task(psites.call_sites())
-            await asyncio.gather(task1, task2)
+            await main(self.client, bot_dict=bot_dict)
+            await psites.call_sites()
             await self.bot_aiogram.send_message(message.chat.id, '----- PARSING HAS BEEN DONE! -----')
 
         async def debug_function():
@@ -3848,8 +3799,34 @@ class InviteBot():
                 # thr1 = threading.Thread(target=get_news, args=(message))
                 # thr1.start()
                 await get_news(message=message)
-                await self.bot_aiogram.send_message(message.chat.id, 'Pause 60 minutes')
-                await asyncio.sleep(20*60)
+                await self.bot_aiogram.send_message(message.chat.id, 'Pause 10 minutes')
+                print('Pause 10 minutes')
+                await asyncio.sleep(10*60)
+                await self.bot_aiogram.send_message(message.chat.id, 'Next loop has been started')
+
+
+        async def invite_people(message):
+            id_customer = message.from_user.id
+            customer = await check_customer(message, id_customer)
+            if customer:
+                get_customer_from_db = DataBaseOperations(None).get_all_from_db(table_name='users',
+                                                                                param=f"WHERE id_user='{id_customer}'",
+                                                                                without_sort=True)
+                if not get_customer_from_db:
+                    await Form.api_id.set()
+                    return await self.bot_aiogram.send_message(message.chat.id, "Введите api_id (отменить /cancel)")
+
+                self.current_customer = get_customer_from_db[0]
+                self.api_id = int(self.current_customer[2])
+                self.api_hash = self.current_customer[3]
+                self.phone_number = self.current_customer[4]
+                self.password = self.current_customer[5]
+                try:
+                    if self.client.is_connected():
+                        await self.client.disconnect()
+                except:
+                    pass
+                await connect_with_client(message, id_customer)
 
 
         start_polling(self.dp)
