@@ -3851,5 +3851,5 @@ def run(double=False, token_in=None):
         double=double
     ).main_invitebot()
 
-# if __name__ == '__main__':
-#    run()
+if __name__ == '__main__':
+   run()
