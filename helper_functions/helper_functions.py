@@ -145,10 +145,11 @@ async def get_city_vacancy_for_shorts(presearch_results: list, pattern: str, ret
 
 
 async def send_message(bot, chat_id, text, parse_mode='html', disable_web_page_preview=True):
+    msg = None
     ex = "Flood control"
     while ex.lower() == 'flood control':
         try:
-            await bot.send_message(chat_id, text, parse_mode=parse_mode, disable_web_page_preview=disable_web_page_preview)
+            msg = await bot.send_message(chat_id, text, parse_mode=parse_mode, disable_web_page_preview=disable_web_page_preview)
             ex = ''
         except Exception as ex:
             ex = str(ex)
@@ -158,6 +159,7 @@ async def send_message(bot, chat_id, text, parse_mode='html', disable_web_page_p
                 if match:
                     seconds = match[0].split(' ')[0] + 5
                     time.sleep(int(seconds))
+    return msg
 
 async def edit_message(bot, text, msg, parse_mode='html', disable_web_page_preview=True):
     ex = "Flood control"
