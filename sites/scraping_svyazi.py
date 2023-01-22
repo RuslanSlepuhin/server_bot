@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from db_operations.scraping_db import DataBaseOperations
 from sites.write_each_vacancy_to_db import write_each_vacancy
 from settings.browser_settings import options, chrome_driver_path
+from utils.additional_variables.additional_variables import sites_search_words
 
 class SvyaziGetInformation:
 
@@ -34,10 +35,7 @@ class SvyaziGetInformation:
             'contacts': []
         }
         if not search_word:
-            self.search_words = ['junior', 'джуниор', 'kotlin', 'product', 'mobile', 'marketing', 'аналитик',
-                                 'frontend', 'designer', 'devops', 'hr', 'backend', 'qa', 'junior', 'ba']
-
-            self.search_words = ['designer', 'ui', 'junior', 'product manager', 'project manager', 'python', 'php']
+            self.search_words = sites_search_words
         else:
             self.search_words=[search_word]
         self.page_number = 1
@@ -74,9 +72,10 @@ class SvyaziGetInformation:
             executable_path=chrome_driver_path,
             options=options
         )
+
         try:
-            # await self.bot.send_message(self.chat_id, f'https://www.svyazi.app/jobs',
-            #                       disable_web_page_preview=True)
+            await self.bot.send_message(self.chat_id, f'https://www.svyazi.app/jobs',
+                                  disable_web_page_preview=True)
             self.browser.get(f'https://www.svyazi.app/jobs')
             self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
@@ -194,7 +193,7 @@ class SvyaziGetInformation:
         links.append(vacancy_url)
 
         print('self.broswer.get(vacancy_url)')
-        # await self._apps.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
+        # await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
         # self.browser = browser
         self.browser.get(vacancy_url)
         # self.browser.get('https://google.com')
@@ -348,32 +347,31 @@ class SvyaziGetInformation:
         }
 
         response_from_db = write_each_vacancy(results_dict)
+
+        await self.output_logs(
+            response_from_db=response_from_db,
+            vacancy=vacancy,
+        )
+
+    async def output_logs(self, response_from_db, vacancy, word=None):
+        additional_message = ''
         profession = response_from_db['profession']
         response_from_db = response_from_db['response_from_db']
+
         if response_from_db:
             additional_message = f'-exists in db\n'
             self.rejected_vacancies += 1
 
-        elif not response_from_db and 'no_sort' not in profession['profession']:
-            prof_str = ''
-            for j in profession['profession']:
-                prof_str += f"{j}, "
-            prof_str = prof_str[:-2]
+        elif not response_from_db:
+            prof_str = ", ".join(profession['profession'])
             additional_message = f"<b>+w: {prof_str}</b>\n"
-            self.written_vacancies += 1
 
-        else:
-            # additional_message = f'(no_sort)\n'
-            prof_str = ''
-            for j in profession['profession']:
-                prof_str += f"{j}, "
-            prof_str = prof_str[:-2]
-            additional_message = f"<b>+w: {prof_str}</b>\n"
-            # self.rejected_vacancies += 1
-            self.written_vacancies += 1
+            if 'no_sort' not in profession['profession']:
+                self.written_vacancies += 1
+            else:
+                self.written_vacancies += 1
 
-
-        if len(f"{self.current_message}\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}")< 4096:
+        if len(f"{self.current_message}\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}") < 4096:
             self.current_message = await self.bot.edit_message_text(
                 f'{self.current_message.text}\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}',
                 self.current_message.chat.id,
@@ -381,12 +379,13 @@ class SvyaziGetInformation:
                 parse_mode='html',
                 disable_web_page_preview=True
             )
-            pass
         else:
-            self.current_message = await self.bot.send_message(self.chat_id, f"{self.count_message_in_one_channel}. {vacancy}\n{additional_message}")
-            pass
-        print(f"\n{self.count_message_in_one_channel} from_channel hh.ru search")
+            self.current_message = await self.bot.send_message(self.chat_id,
+                                                               f"{self.count_message_in_one_channel}. {vacancy}\n{additional_message}")
+
+        print(f"\n{self.count_message_in_one_channel} from_channel hh.ru search {word}")
         self.count_message_in_one_channel += 1
+
 # loop = asyncio.new_event_loop()
 # loop.run_until_complete(HHGetInformation(bot_dict={}).get_content())
 

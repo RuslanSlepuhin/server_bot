@@ -1,10 +1,7 @@
 
-import asyncio
 import re
-import time
 from datetime import datetime
 import pandas as pd
-import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
@@ -12,11 +9,10 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from db_operations.scraping_db import DataBaseOperations
-from patterns.pattern_Alex2809 import cities_pattern, params
-from filters.scraping_get_profession_Alex_next_2809 import AlexSort2809
 from sites.sites_additional_utils.get_structure import get_structure, get_structure_advance
 from sites.write_each_vacancy_to_db import write_each_vacancy
 from settings.browser_settings import options, chrome_driver_path
+from utils.additional_variables.additional_variables import sites_search_words
 
 junior_link = 'https://jobs.devby.io/?filter[levels][]=intern&filter[levels][]=junior'
 link_search = 'https://jobs.devby.io/?&filter[search]=project%20manager'
@@ -46,10 +42,7 @@ class DevGetInformation:
             'contacts': []
         }
         if not search_word:
-            self.search_words = ['junior', 'джуниор', 'kotlin', 'product', 'mobile', 'marketing', 'аналитик',
-                                 'frontend', 'designer', 'devops', 'hr', 'backend', 'qa', 'junior', 'ba']
-
-            self.search_words = ['designer', 'ui', 'junior', 'product manager', 'project manager', 'python', 'php']
+            self.search_words = sites_search_words
         else:
             self.search_words=[search_word]
         self.page_number = 1
@@ -88,22 +81,22 @@ class DevGetInformation:
             options=options
         )
 
-        # get juniors -------------------------
-        link = junior_link
+        # # get juniors -------------------------
+        # link = junior_link
         # await self.bot.send_message(self.chat_id, link, disable_web_page_preview=True)
-
-        print('page link: ', link)
-        try:
-            self.browser.get(link)
-        except Exception as e:
-            print('bot could not to get the link', e)
-
-        try:
-            self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        except:
-            pass
-        word = 'junior'
-        await self.get_link_message(self.browser.page_source, word)
+        #
+        # print('page link: ', link)
+        # try:
+        #     self.browser.get(link)
+        # except Exception as telethon:
+        #     print('bot could not to get the link', telethon)
+        #
+        # try:
+        #     self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        # except:
+        #     pass
+        # word = 'junior'
+        # await self.get_link_message(self.browser.page_source, word)
         #-------------------------------------
 
         for word in self.search_words:
@@ -115,7 +108,7 @@ class DevGetInformation:
             else:
                 link = f'https://jobs.devby.io/?&filter[search]={word}'
 
-            # await self.bot.send_message(self.chat_id, link, disable_web_page_preview=True)
+            await self.bot.send_message(self.chat_id, link, disable_web_page_preview=True)
 
             print('page link: ', link)
             try:
@@ -440,32 +433,32 @@ class DevGetInformation:
         }
 
         response_from_db = write_each_vacancy(results_dict)
+
+        await self.output_logs(
+            response_from_db=response_from_db,
+            vacancy=vacancy,
+            word=word
+        )
+
+    async def output_logs(self, response_from_db, vacancy, word=None):
+        additional_message = ''
         profession = response_from_db['profession']
         response_from_db = response_from_db['response_from_db']
+
         if response_from_db:
             additional_message = f'-exists in db\n'
             self.rejected_vacancies += 1
 
-        elif not response_from_db and 'no_sort' not in profession['profession']:
-            prof_str = ''
-            for j in profession['profession']:
-                prof_str += f"{j}, "
-            prof_str = prof_str[:-2]
+        elif not response_from_db:
+            prof_str = ", ".join(profession['profession'])
             additional_message = f"<b>+w: {prof_str}</b>\n"
-            self.written_vacancies += 1
 
-        else:
-            # additional_message = f'(no_sort)\n'
-            prof_str = ''
-            for j in profession['profession']:
-                prof_str += f"{j}, "
-            prof_str = prof_str[:-2]
-            additional_message = f"<b>+w: {prof_str}</b>\n"
-            # self.rejected_vacancies += 1
-            self.written_vacancies += 1
+            if 'no_sort' not in profession['profession']:
+                self.written_vacancies += 1
+            else:
+                self.written_vacancies += 1
 
-
-        if len(f"{self.current_message}\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}")< 4096:
+        if len(f"{self.current_message}\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}") < 4096:
             self.current_message = await self.bot.edit_message_text(
                 f'{self.current_message.text}\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}',
                 self.current_message.chat.id,
@@ -473,11 +466,12 @@ class DevGetInformation:
                 parse_mode='html',
                 disable_web_page_preview=True
             )
-            pass
         else:
-            self.current_message = await self.bot.send_message(self.chat_id, f"{self.count_message_in_one_channel}. {vacancy}\n{additional_message}")
-            pass
-        print(f"\n{self.count_message_in_one_channel} from_channel dev.by search {word}")
+            self.current_message = await self.bot.send_message(self.chat_id,
+                                                               f"{self.count_message_in_one_channel}. {vacancy}\n{additional_message}")
+
+        print(f"\n{self.count_message_in_one_channel} from_channel hh.ru search {word}")
         self.count_message_in_one_channel += 1
+
 # loop = asyncio.new_event_loop()
 # loop.run_until_complete(HHGetInformation(bot_dict={}).get_content())

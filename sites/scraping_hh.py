@@ -366,7 +366,17 @@ class HHGetInformation:
             'session': self.current_session
         }
 
+
         response_from_db = write_each_vacancy(results_dict)
+
+        await self.output_logs(
+            response_from_db=response_from_db,
+            vacancy=vacancy,
+            word=word
+        )
+
+    async def output_logs(self, response_from_db, vacancy, word):
+
         additional_message = ''
         profession = response_from_db['profession']
         response_from_db = response_from_db['response_from_db']
@@ -384,7 +394,7 @@ class HHGetInformation:
             else:
                 self.written_vacancies += 1
 
-        if len(f"{self.current_message}\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}")< 4096:
+        if len(f"{self.current_message}\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}") < 4096:
             self.current_message = await self.bot.edit_message_text(
                 f'{self.current_message.text}\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}',
                 self.current_message.chat.id,
@@ -393,7 +403,8 @@ class HHGetInformation:
                 disable_web_page_preview=True
             )
         else:
-            self.current_message = await self.bot.send_message(self.chat_id, f"{self.count_message_in_one_channel}. {vacancy}\n{additional_message}")
+            self.current_message = await self.bot.send_message(self.chat_id,
+                                                               f"{self.count_message_in_one_channel}. {vacancy}\n{additional_message}")
 
         print(f"\n{self.count_message_in_one_channel} from_channel hh.ru search {word}")
         self.count_message_in_one_channel += 1
@@ -413,6 +424,8 @@ class HHGetInformation:
         # await self.get_content_from_link(self.browser.page_source)
         pass
         self.browser.quit()
+
+
 
 # loop = asyncio.new_event_loop()
 # loop.run_until_complete(HHGetInformation(bot_dict={}).get_content())
