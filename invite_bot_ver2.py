@@ -3540,13 +3540,13 @@ class InviteBot():
             #
             # # ---------------------- parsing the sites. List of them will grow ------------------------
             #             await bot_aiogram.send_message(message.chat.id, 'Bot is parsing the sites...')
-            psites = ParseSites(client=self.client, bot_dict=bot_dict)
-            await psites.call_sites()
-            p7 = Process(target=psites.call_sites, args=())
+            # psites = ParseSites(client=self.client, bot_dict=bot_dict)
+            # await psites.call_sites()
+            # p7 = Process(target=psites.call_sites, args=())
             p6.start()
-            p7.start()
+            # p7.start()
             p6.join()
-            p7.join()
+            # p7.join()
 
 #             await bot_aiogram.send_message(message.chat.id, '...it has been successfully. Press <b>Digest</b> for the next step', parse_mode='html')
 
