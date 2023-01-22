@@ -41,6 +41,7 @@ from helper_functions import helper_functions as helper
 from utils.additional_variables import additional_variables as variable
 from patterns._export_pattern import export_pattern
 from patterns.data_pattern._data_pattern import pattern as data_pattern
+from multiprocessing import Process
 
 logs = Logs()
 import settings.os_getenv as settings
@@ -50,6 +51,10 @@ config.read("./settings/config.ini")
 api_id = settings.api_id
 api_hash = settings.api_hash
 username = settings.username
+
+api_id_double = settings.api_id_double
+api_hash_double = settings.api_hash_double
+username_double = settings.username_double
 
 # token = settings.token
 # logging.basicConfig(level=logging.INFO)
@@ -71,7 +76,7 @@ logs.write_log(f'\n------------------ restart --------------------')
 
 class InviteBot():
 
-    def __init__(self, token_in=None):
+    def __init__(self, token_in=None, double=False):
         self.chat_id = None
         self.start_time_listen_channels = datetime.now()
         self.start_time_scraping_channels = None
@@ -109,8 +114,10 @@ class InviteBot():
         # self.bot_aiogram = Bot(token=token)
         # self.storage = MemoryStorage()
         # self.dp = Dispatcher(self.bot_aiogram, storage=self.storage)
-
-        self.client = TelegramClient(username, int(api_id), api_hash)
+        if double:
+            self.client = TelegramClient(username_double, int(api_id_double), api_hash_double)
+        else:
+            self.client = TelegramClient(username, int(api_id), api_hash)
         self.client.start()
 
         logging.basicConfig(level=logging.INFO)
@@ -3515,7 +3522,9 @@ class InviteBot():
 #                 message.chat.id,
 #                 'Bot is parsing the telegram channels...',
 #                 parse_mode='HTML')
-            await main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})  # run parser tg channels and write to profession's tables
+#             await main(self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})  # run parser tg channels and write to profession's tables
+            bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
+            p6 = Process(target=main, args=(self.client, bot_dict))
             # await bot_aiogram.send_message(
             #     message.chat.id,
             #     '...it has been successfully',
@@ -3526,6 +3535,13 @@ class InviteBot():
 #             await bot_aiogram.send_message(message.chat.id, 'Bot is parsing the sites...')
             psites = ParseSites(client=self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})
             await psites.call_sites()
+            p7 = Process(target=psites.call_sites, args=(self.client, bot_dict))
+            p6.start()
+            p7.start()
+            p6.join()
+            p7.join()
+
+
 #             await bot_aiogram.send_message(message.chat.id, '...it has been successfully. Press <b>Digest</b> for the next step', parse_mode='html')
 
             # psites = ParseSites(client=self.client, bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})
@@ -3827,8 +3843,11 @@ class InviteBot():
         # executor.start_polling(dp, skip_updates=True)
 
 
-def run(token_in=None):
-    InviteBot(token_in).main_invitebot()
+def run(double=False, token_in=None):
+    InviteBot(
+        token_in=token_in,
+        double=double
+    ).main_invitebot()
 
 # if __name__ == '__main__':
 #    run()
