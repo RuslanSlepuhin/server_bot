@@ -368,7 +368,7 @@ class InviteBot():
         @self.dp.message_handler(commands=['db_check_url_vacancy'])
         async def db_check_url_vacancy_commands(message: types.Message):
             await Form_check_url.url.set()
-            await self.bot_aiogram.send_message(message.chat.id, 'Type the table name like the profession')
+            await self.bot_aiogram.send_message(message.chat.id, 'Type the vacancy_url to looking for in the database')
 
         @self.dp.message_handler(state=Form_check_url.url)
         async def db_check_url_vacancy_form(message: types.Message, state: FSMContext):
