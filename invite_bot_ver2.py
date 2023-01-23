@@ -3272,7 +3272,7 @@ class InviteBot():
                     title = vacancy[2]
                     body = vacancy[3]
                     vac = vacancy[5]
-                    response_from_filter = AlexSort2809().sort_by_profession_by_Alex(title=title, body=body)
+                    response_from_filter = VacancyFilter().sort_profession(title=title, body=body)
                     profession = response_from_filter['profession']
                     params = response_from_filter['params']
                     if vac:
