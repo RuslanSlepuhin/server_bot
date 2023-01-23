@@ -157,8 +157,8 @@ async def send_message(bot, chat_id, text, parse_mode='html', disable_web_page_p
                 print("\n--------------\nFlood control\n--------------\n")
                 match = re.findall(r"[0-9]{1,4} seconds", ex)
                 if match:
-                    seconds = match[0].split(' ')[0] + 5
-                    time.sleep(int(seconds))
+                    seconds = match[0].split(' ')[0]
+                    time.sleep(int(seconds)+5)
     return msg
 
 async def edit_message(bot, text, msg, parse_mode='html', disable_web_page_preview=True):
@@ -173,6 +173,6 @@ async def edit_message(bot, text, msg, parse_mode='html', disable_web_page_previ
                 print("\n--------------\nFlood control\n--------------\n")
                 match = re.findall(r"[0-9]{1,4} seconds", ex)
                 if match:
-                    seconds = match[0].split(' ')[0] + 5
-                    time.sleep(int(seconds))
+                    seconds = match[0].split(' ')[0]
+                    time.sleep(int(seconds)+5)
     return msg
