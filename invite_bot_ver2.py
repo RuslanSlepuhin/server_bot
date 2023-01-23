@@ -803,11 +803,11 @@ class InviteBot():
             #     only_profession=True
             # )
 
-            dict_response = AlexSort2809().sort_by_profession_by_Alex(
+            dict_response = VacancyFilter().sort_profession(
                 body=body,
                 title=title,
                 check_contacts=False,
-                check_vacancy=False
+                check_vacancy=True
             )
 
             profession = dict_response['profession']
