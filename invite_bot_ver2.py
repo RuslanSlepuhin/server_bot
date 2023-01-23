@@ -212,6 +212,9 @@ class InviteBot():
         class Form_db(StatesGroup):
             name = State()
 
+        class Form_check_url(StatesGroup):
+            url = State()
+
         @self.dp.message_handler(commands=['start'])
         async def send_welcome(message: types.Message):
 
@@ -270,6 +273,7 @@ class InviteBot():
                                                             '/ambulance - if bot gets accident in hard pushing and you think you loose the shorts\n\n'
                                                             '---------------- TOOLS: ----------------\n'
                                                             '🛠/edit_pattern - stop proccess\n'
+                                                            '/db_check_url_vacancy - does vacancy exist by link\n'
                                                             '/schedule - non-stop parsing\n'
                                                             '/restore_from_admin - restory the lost vacancies\n'
                                                             '/invite_people - start to invite followers\n'
@@ -354,12 +358,25 @@ class InviteBot():
 
 
 
-        @self.dp.message_handler(commands=['ssstop'])
+        @self.dp.message_handler(commands=['stop'])
         async def stop_commands(message: types.Message):
             print("Proccess has been stoped")
             await self.bot_aiogram.send_message(message.chat.id, "Proccess has been stoped")
             loop = asyncio.get_running_loop()
             loop.stop()
+
+        @self.dp.message_handler(commands=['db_check_url_vacancy'])
+        async def db_check_url_vacancy_commands(message: types.Message):
+            await Form_check_url.url.set()
+            await self.bot_aiogram.send_message(message.chat.id, 'Type the table name like the profession')
+
+        @self.dp.message_handler(state=Form_check_url.url)
+        async def db_check_url_vacancy_form(message: types.Message, state: FSMContext):
+            async with state.proxy() as data:
+                data['url'] = message.text
+                url = message.text
+            await state.finish()
+            await db_check_url_vacancy(message, url=url)
 
         @self.dp.message_handler(commands=['emergency_push'])
         async def emergency_push(message: types.Message):
@@ -4028,8 +4045,29 @@ class InviteBot():
                             table_to='admin_last_session'
                         )
 
+        async def db_check_url_vacancy(message, url):
+            table_list = variable.valid_professions
+            table_list.insert(0, variable.admin_database)
+            table_list.insert(0, variable.archive_database)
+            url = url.strip()
 
+            for pro in table_list:
+                response = self.db.get_all_from_db(
+                    table_name=pro,
+                    field='title',
+                    param=f"WHERE vacancy_url='{url}'"
+                )
+                # response = self.db.get_all_from_db(
+                #     table_name=pro,
+                #     field='vacancy_url',
+                #     param=f"WHERE chat_name='{url}'"
+                #     param=f"WHERE body LIKE '%В red_mad_robot мы создаём цифровые продукты, которыми пользуются миллионы людей, от маркетплейсов и экосистем до мобильных приложений и веб-порталов — и, возможно, ты один из них! Помогаем компаниям в технологической трансформации и поддерживаем стартапы, которые создают наше общее будущее. Мы ищем QA инженера, который разбирается в том, по каким критериям осуществлять оценку, составляет планы тестирования, разрабатывает тест-кейсы и делает всё, чтобы приёмочное тестирование прошло на отлично с первого раза. Что предстоит делать:   Осуществлять функциональное ручное тестирование клиент-серверных приложений (iOS, Android, Web);   Локализовывать, документировать и поддерживать дефекты;   Разрабатывать и поддерживать тест-кейсы/чек-листы;%'"
+                # )
 
+                if response:
+                    return await self.bot_aiogram.send_message(message.chat.id, f"😎 (+)Vacancy FOUND in {pro} table\n{response[0][0][0:40]}")
+
+            return await self.bot_aiogram.send_message(message.chat.id, f"😱 (-)Vacancy NOT FOUND")
 
         start_polling(self.dp)
         # executor.start_polling(dp, skip_updates=True)
@@ -4041,5 +4079,5 @@ def run(double=False, token_in=None):
         double=double
     ).main_invitebot()
 
-# if __name__ == '__main__':
-#    run()
+if __name__ == '__main__':
+   run()
