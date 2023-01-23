@@ -273,7 +273,7 @@ class DataBaseOperations:
                 response = cur.fetchall()
             except Exception as e:
                 print(e)
-                return []
+                return str(e)
         if curs:
             return cur
         return response
@@ -852,7 +852,7 @@ class DataBaseOperations:
     def check_vacancy_exists_in_db(self, tables_list, title, body):
         title = self.clear_title_or_body(title)
         body = self.clear_title_or_body(body)
-        
+
         for one_element in tables_list:
             response = self.get_all_from_db(
                 table_name=f'{one_element}',

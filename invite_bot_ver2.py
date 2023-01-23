@@ -271,9 +271,10 @@ class InviteBot():
                                                             '---------------- TOOLS: ----------------\n'
                                                             '🛠/edit_pattern - stop proccess\n'
                                                             '/schedule - non-stop parsing\n'
+                                                            '/restore_from_admin - restory the lost vacancies\n'
                                                             '/invite_people - start to invite followers\n'
                                                             '/get_news - start to invite followers\n'
-                                                           '🖐️/stop - stop proccess\n'
+                                                            '🖐️/stop - stop proccess\n'
                                                             '➡️/refresh_and_save_changes - One click for the correct refresh. Includes:\n'
                                                             '✅/refresh - to get the professions in excel format in all vacancies throgh the new filters logic (without rewriting)\n'
                                                             '✅/check_doubles - remove the vacancy"s doubles\n'
@@ -317,6 +318,10 @@ class InviteBot():
         @self.dp.message_handler(commands=['schedule'])
         async def schedule_command(message: types.Message):
             await schedule(message)
+
+        @self.dp.message_handler(commands=['restore_from_admin'])
+        async def restore_from_admin_command(message: types.Message):
+            await restore_from_admin(message, 110)
 
         @self.dp.message_handler(commands=['read_pattern_row'])
         async def stop_commands(message: types.Message):
@@ -2980,10 +2985,16 @@ class InviteBot():
 
             # await asyncio.sleep(1)
 
-        async def transfer_vacancy_admin_archive(id_admin_last_session_table, response=None):
+        async def transfer_vacancy_admin_archive(
+                id_admin_last_session_table,
+                table_from=variable.admin_database,
+                table_to=variable.archive_database,
+                response=None
+        ):
+
             if not response:
                 response = self.db.get_all_from_db(
-                    table_name=f'{variable.admin_database}',
+                    table_name=f'{table_from}',
                     param=f"WHERE id={id_admin_last_session_table}",
                     field=variable.admin_table_fields
                 )
@@ -2996,7 +3007,7 @@ class InviteBot():
                 )
 
                 # response = response[0]
-                query = f"""INSERT INTO {variable.archive_database} (
+                query = f"""INSERT INTO {table_to} (
                         chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, 
                         job_type, city, salary, experience, contacts, time_of_public, created_at, agregator_link, 
                         session, sended_to_agregator, sub) 
@@ -3828,6 +3839,195 @@ class InviteBot():
                 except:
                     pass
                 await connect_with_client(message, id_customer)
+
+        async def restore_from_admin(message, numbers):
+            vacancies_from_agregator = await get_tg_history_messages(
+                message=message,
+                channel=config['My_channels']['agregator_channel'],
+                limit_msg=numbers
+            )
+            # vacancies_from_admin = await get_tg_history_messages(
+            #     message=message,
+            #     channel=config['My_channels']['admin_channel'],
+            #     limit_msg=numbers
+            #
+            #
+            positive = 0
+            negative = 0
+            response_dict = {}
+            response_dict['admin_last_session'] = []
+            response_dict['archive'] = []
+            for vacancy in vacancies_from_agregator:
+                print(vacancy['date'])
+                vacancy = str(vacancy['message'])
+                title = vacancy.split('\n')
+                title = title[0].replace('Вакансия : ', '')
+
+                body = vacancy.split('\n\n')
+                body = "\n\n".join(body[1:])
+
+                body = body.split('\n')
+                body = "\n".join(body[1:])
+
+                body = body.split('----')[0]
+
+                title = self.db.clear_title_or_body(title)
+                body = self.db.clear_title_or_body(body)
+
+                prof = VacancyFilter().sort_profession(
+                    title=title,
+                    body=body,
+                    check_contacts=False,
+                    check_vacancy=False,
+                    get_params=False
+                )
+                prof = prof['profession']['profession']
+
+                if 'junior' in prof:
+                    # print('title: ', title)
+                    # print("body: ", body)
+                    param = f"WHERE title LIKE '%{title.strip()}%' and body LIKE '%{body.strip()}%'"
+
+                    response = self.db.get_all_from_db(
+                        table_name=variable.admin_database,
+                        param=param
+                    )
+                    if response:
+                        response_dict['admin_last_session'].append(response[0][0])
+                    response2 = self.db.get_all_from_db(
+                        table_name='archive',
+                        param=param
+                    )
+                    if response2:
+                        response_dict['archive'].append(response2[0][0])
+
+                    if response or response2:
+                        print('response')
+                        positive += 1
+                    else:
+                        param = f"WHERE vacancy LIKE '%{title.strip()}%' and body LIKE '%{body.strip()}%'"
+                        response = self.db.get_all_from_db(
+                            table_name=variable.admin_database,
+                            param=param
+                        )
+                        if response:
+                            response_dict['admin_last_session'].append(response[0][0])
+
+                        response2 = self.db.get_all_from_db(
+                            table_name='archive',
+                            param=param
+                        )
+                        if response2:
+                            response_dict['archive'].append(response2[0][0])
+                        if response2 or response:
+                            print('response')
+                            positive += 1
+                        else:
+                            print('???')
+                            negative += 1
+                    print('----------------')
+                    pass
+                print(f'positive: {positive}\nnegative: {negative}')
+            pass
+
+
+
+            vacancies_from_admin = await get_tg_history_messages(
+                message=message,
+                channel=config["My_channels"]["admin_channel"],
+                limit_msg=5
+            )
+            for vacancy in vacancies_from_admin:
+                vacancy = str(vacancy['message'])
+                title = vacancy.split('\n')
+                title = title[0].replace('Вакансия : ', '')
+
+                body = vacancy.split('\n\n')
+                body = "\n\n".join(body[1:])
+
+                body = body.split('\n')
+                body = "\n".join(body[1:])
+
+                body = body.split('----')[0]
+
+                title = self.db.clear_title_or_body(title)
+                body = self.db.clear_title_or_body(body)
+                param = f"WHERE title LIKE '%{title.strip()}%' and body LIKE '%{body.strip()}%'"
+
+                response = self.db.get_all_from_db(
+                    table_name=variable.admin_database,
+                    param=param
+                )
+                if response:
+                    response_dict['admin_last_session'].append(response[0][0])
+                response2 = self.db.get_all_from_db(
+                    table_name='archive',
+                    param=param
+                )
+                if response2:
+                    response_dict['archive'].append(response2[0][0])
+
+                if response or response2:
+                    print('response')
+                    positive += 1
+                else:
+                    param = f"WHERE vacancy LIKE '%{title.strip()}%' and body LIKE '%{body.strip()}%'"
+                    response = self.db.get_all_from_db(
+                        table_name=variable.admin_database,
+                        param=param
+                    )
+                    if response:
+                        response_dict['admin_last_session'].append(response[0][0])
+
+                    response2 = self.db.get_all_from_db(
+                        table_name='archive',
+                        param=param
+                    )
+                    if response2:
+                        response_dict['archive'].append(response2[0][0])
+                    if response2 or response:
+                        print('response')
+                        positive += 1
+                    else:
+                        print('???')
+                        negative += 1
+                print(f'positive: {positive}\nnegative: {negative}')
+
+                print('----------------')
+
+            pass
+            new_profession = ''
+            for key in response_dict:
+                if key == 'admin_last_session':
+                    for id in response_dict[key]:
+                        profession = self.db.get_all_from_db(
+                            table_name='admin_last_session',
+                            param=f"Where id={id}",
+                            field='profession'
+                        )[0][0]
+                        if 'junior' not in profession:
+                            new_profession = profession + ', junior'
+                        self.db.update_table(
+                            table_name='admin_last_session',
+                            param=f"WHERE id={id}",
+                            field='profession',
+                            value=new_profession
+                        )
+                if key == 'archive':
+                    new_profession = 'junior'
+                    for id in response_dict[key]:
+                        self.db.update_table(
+                            table_name='archive',
+                            param=f"WHERE id={id}",
+                            field='profession',
+                            value=new_profession
+                        )
+                        await transfer_vacancy_admin_archive(
+                            id_admin_last_session_table=id,
+                            table_from='archive',
+                            table_to='admin_last_session'
+                        )
+
 
 
 
