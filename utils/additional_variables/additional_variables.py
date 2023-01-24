@@ -1,6 +1,13 @@
 # for add in vacancy search in db tables
 import pandas
 
+admin_database = 'admin_last_session'
+archive_database = 'archive'
+admin_table_fields = "id, chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, " \
+                             "job_type, city, salary, experience, contacts, time_of_public, created_at, agregator_link, " \
+                             "session, sended_to_agregator, sub"
+fields_admin_temporary = "id_admin_channel, id_admin_last_session_table, sended_to_agregator"
+
 additional_elements = {'admin_last_session', 'archive'}
 
 valid_professions = ['designer', 'game', 'product', 'mobile', 'pm', 'sales_manager', 'analyst', 'frontend',
@@ -8,6 +15,8 @@ valid_professions = ['designer', 'game', 'product', 'mobile', 'pm', 'sales_manag
 valid_professions_extended = []
 valid_professions_extended.extend(valid_professions)
 valid_professions_extended.extend(['fullstack'])
+tables_for_search_vacancy_existing = [admin_database, 'archive']
+all_tables_for_vacancy_search = valid_professions_extended.extend(tables_for_search_vacancy_existing)
 
 not_lower_professions = ['pm', 'game', 'designer', 'hr', 'analyst', 'qa', 'ba' 'devops', 'product']
 
@@ -16,13 +25,6 @@ white_admin_list = [1763672666, 556128576, 758905227, 945718420, 5755261667, 588
 id_owner = 1763672666
 
 #admin database name
-admin_database = 'admin_last_session'
-archive_database = 'archive'
-admin_table_fields = "id, chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, " \
-                             "job_type, city, salary, experience, contacts, time_of_public, created_at, agregator_link, " \
-                             "session, sended_to_agregator, sub"
-
-fields_admin_temporary = "id_admin_channel, id_admin_last_session_table, sended_to_agregator"
 channel_id_for_shorts = -1001671844820
 
 # message_for_send = f'<i>Функционал дайджеста находится в состоянии альфа-тестирования, приносим свои ' \
@@ -35,7 +37,7 @@ dict_for_title_shorts = {
 
 pattern_path = "./excel/pattern.txt"
 admin_check_file_path = './logs/check_file.txt'
-sites_search_words = ['designer', 'без опыта', 'стажер', 'ui', 'junior', 'product manager', 'project manager', 'python', 'php']
+sites_search_words = ['designer', 'ui', 'junior', 'без опыта', 'стажер', 'product manager', 'project manager', 'python', 'php']
 
 table_list_for_checking_message_in_db = ['admin_last_session', 'archive']
 
@@ -51,6 +53,9 @@ path_filter_error_file = "./excel/filter_jan_errors.txt"
 
 
 cities_file_path = './utils/additional_data/data.xlsx'
+# cities_file_path = './../utils/additional_data/data.xlsx' # for tests
+
+
 excel_data_df = pandas.read_excel(f'{cities_file_path}', sheet_name='Cities')
 excel_dict = {
     'city': excel_data_df['city'].tolist(),
