@@ -4046,9 +4046,7 @@ class InviteBot():
                         )
 
         async def db_check_url_vacancy(message, url):
-            table_list = variable.valid_professions
-            table_list.insert(0, variable.admin_database)
-            table_list.insert(0, variable.archive_database)
+            table_list = variable.all_tables_for_vacancy_search
             url = url.strip()
 
             for pro in table_list:
@@ -4079,5 +4077,5 @@ def run(double=False, token_in=None):
         double=double
     ).main_invitebot()
 
-if __name__ == '__main__':
-   run()
+# if __name__ == '__main__':
+#    run()
