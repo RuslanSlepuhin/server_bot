@@ -2629,7 +2629,7 @@ class InviteBot():
                     if english_shorts['match']:
                         english_shorts = english_shorts['match']
                     elif english_shorts['element_is_not_empty']:
-                        english_shorts = 'necessary'
+                        english_shorts = 'B1+'
                     else:
                         english_shorts = ''
 

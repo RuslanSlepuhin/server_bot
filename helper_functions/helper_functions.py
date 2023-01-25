@@ -151,14 +151,14 @@ async def send_message(bot, chat_id, text, parse_mode='html', disable_web_page_p
         try:
             msg = await bot.send_message(chat_id, text, parse_mode=parse_mode, disable_web_page_preview=disable_web_page_preview)
             ex = ''
-        except Exception as ex:
-            ex = str(ex)
+        except Exception as e:
+            ex = e.args[0]
             if 'flood control' in ex.lower():
                 print("\n--------------\nFlood control\n--------------\n")
                 match = re.findall(r"[0-9]{1,4} seconds", ex)
                 if match:
                     seconds = match[0].split(' ')[0]
-                    time.sleep(int(seconds)+5)
+                    time.sleep(int(seconds) + 5)
     return msg
 
 async def edit_message(bot, text, msg, parse_mode='html', disable_web_page_preview=True):
@@ -167,12 +167,12 @@ async def edit_message(bot, text, msg, parse_mode='html', disable_web_page_previ
         try:
             msg = await bot.edit_message_text(f"{msg.text}{text}", msg.chat.id, msg.message_id, parse_mode=parse_mode, disable_web_page_preview=disable_web_page_preview)
             ex = ''
-        except Exception as ex:
-            ex = str(ex)
+        except Exception as e:
+            ex = e.args[0]
             if 'flood control' in ex.lower():
                 print("\n--------------\nFlood control\n--------------\n")
                 match = re.findall(r"[0-9]{1,4} seconds", ex)
                 if match:
                     seconds = match[0].split(' ')[0]
-                    time.sleep(int(seconds)+5)
+                    time.sleep(int(seconds) + 5)
     return msg
