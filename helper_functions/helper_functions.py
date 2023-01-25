@@ -1,8 +1,10 @@
 import re
 import time
+from datetime import datetime
 
 from patterns._export_pattern import export_pattern
 from patterns.pseudo_pattern.pseudo_export_pattern import export_pattern as pseudo_export_pattern
+from utils.additional_variables.additional_variables import flood_control_logs_path
 
 def compose_to_str_from_list(data_list):
     sub_str = ''
@@ -153,6 +155,10 @@ async def send_message(bot, chat_id, text, parse_mode='html', disable_web_page_p
             ex = ''
         except Exception as e:
             ex = e.args[0]
+
+            with open(flood_control_logs_path, "a") as file:
+                file.write(f"{datetime.now().strftime('%d-%m-%y %H:%M%S')} Exception {ex}")
+
             if 'flood control' in ex.lower():
                 print("\n--------------\nFlood control\n--------------\n")
                 match = re.findall(r"[0-9]{1,4} seconds", ex)
@@ -169,6 +175,10 @@ async def edit_message(bot, text, msg, parse_mode='html', disable_web_page_previ
             ex = ''
         except Exception as e:
             ex = e.args[0]
+
+            with open(flood_control_logs_path, "a") as file:
+                file.write(f"{datetime.now().strftime('%d-%m-%y %H:%M%S')} Exception {ex}")
+
             if 'flood control' in ex.lower():
                 print("\n--------------\nFlood control\n--------------\n")
                 match = re.findall(r"[0-9]{1,4} seconds", ex)
