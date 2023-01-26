@@ -177,7 +177,7 @@ async def edit_message(bot, text, msg, parse_mode='html', disable_web_page_previ
             ex = e.args[0]
 
             with open(flood_control_logs_path, "a") as file:
-                file.write(f"{datetime.now().strftime('%d-%m-%y %H:%M%S')} Exception {ex}")
+                file.write(f"{datetime.now().strftime('%d-%m-%y %H:%M%S')} Exception {ex}\n--------\n")
 
             if 'flood control' in ex.lower():
                 print("\n--------------\nFlood control\n--------------\n")
