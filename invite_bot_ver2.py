@@ -43,6 +43,7 @@ from utils.additional_variables import additional_variables as variable
 from patterns._export_pattern import export_pattern
 from patterns.data_pattern._data_pattern import pattern as data_pattern
 from multiprocessing import Process
+from sites.send_log_txt import send_log_txt
 
 logs = Logs()
 import settings.os_getenv as settings
@@ -287,9 +288,22 @@ class InviteBot():
                                                             '---------------------------------------------------\n\n'
                                                              '---------------- STATISTICS: ----------------\n'
                                                             '/check_title_body\n'
+                                                            '/get_profession_parsing_tags_log - send the file with tags and antitags'
                                                             '/add_statistics\n\n'
                                                             '---------------------------------------------------\n\n'
                                                             '❗️- it is admin options')
+
+        @self.dp.message_handler(commands=['get_profession_parsing_tags_log'])
+        async def get_profession_parsing_tags_log_command(message: types.Message):
+            if message.from_user.id in self.white_admin_list:
+                await send_file_to_user(
+                    message=message,
+                    path=variable.path_log_check_profession,
+                    caption="take the tags"
+                )
+
+            else:
+                await self.bot_aiogram.send_message(message.chat.id, "Sorry, your permission is wrong")
 
         @self.dp.message_handler(commands=['get_flood_error_logs'])
         async def get_flood_error_logs_commands(message: types.Message):
@@ -387,7 +401,10 @@ class InviteBot():
                 data['url'] = message.text
                 url = message.text
             await state.finish()
-            await db_check_url_vacancy(message, url=url)
+            vacancy_text = await db_check_url_vacancy(message, url=url)
+            if vacancy_text:
+                await self.bot_aiogram.send_message(message.chat.id, vacancy_text)
+
 
         @self.dp.message_handler(commands=['emergency_push'])
         async def emergency_push(message: types.Message):
@@ -633,11 +650,17 @@ class InviteBot():
                 data['word'] = message.text
                 search_word = message.text
             await state.finish()
+            await send_log_txt(text='', write_mode='w')
             hh = HHGetInformation(
                 search_word=search_word,
                 bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
             )
             await hh.get_content()
+            await send_file_to_user(
+                message=message,
+                path=variable.path_log_check_profession,
+                caption=""
+            )
 
             # pool = Pool(processes=3)
             # result = pool.apply_async(hh.get_content, ())
@@ -668,13 +691,13 @@ class InviteBot():
                 body = data['body']
             await state.finish()
             results = await search_vacancy_in_db(title, body)
-            if not results:
+            if not results['len']:
                 await self.bot_aiogram.send_message(message.chat.id, f"not found")
             else:
                 message_for_send = ''
                 for i in results:
-                    message_for_send += f"{i}: {results[i]}"
-                await self.bot_aiogram.send_message(message.chat.id, f"search results:\n{results}")
+                    message_for_send += f"{i}: {results[i]}\n"
+                await self.bot_aiogram.send_message(message.chat.id, f"search results:\n{message_for_send}")
 
 
         @self.dp.message_handler(commands=['check_link_hh'])
@@ -770,7 +793,7 @@ class InviteBot():
                             stat_dict[date][channel] += len(re.findall(r"Вакансия: ", vacancy['message']))
                 except:
                     print(f'channel {channel} has the accidence')
-                    self.bot_aiogram.send_message(message.chat.id, f'channel {channel} has the accidence')
+                    await self.bot_aiogram.send_message(message.chat.id, f'channel {channel} has the accidence')
 
                 await asyncio.sleep(3)
 
@@ -3527,6 +3550,8 @@ class InviteBot():
 
         async def get_news(message):
             # ----------------- make the current session and write it in DB ----------------------
+            await send_log_txt(text='', write_mode='w')
+
             self.current_session = datetime.now().strftime("%Y%m%d%H%M%S")
             DataBaseOperations(None).write_current_session(self.current_session)
             await self.bot_aiogram.send_message(message.chat.id, f'Session is {self.current_session}')
@@ -3549,6 +3574,12 @@ class InviteBot():
                 path=variable.flood_control_logs_path,
                 caption="take the exception logs"
             )
+            await send_file_to_user(
+                message=message,
+                path=variable.path_log_check_profession,
+                caption="take the profession logs"
+            )
+
 
         async def debug_function():
             response = DataBaseOperations(None).get_all_from_db(
@@ -4068,14 +4099,15 @@ class InviteBot():
             for pro in table_list:
                 response = self.db.get_all_from_db(
                     table_name=pro,
-                    field='title',
+                    field='title, body',
                     param=f"WHERE vacancy_url='{url}'"
                 )
-
                 if response:
-                    return await self.bot_aiogram.send_message(message.chat.id, f"😎 (+)Vacancy FOUND in {pro} table\n{response[0][0][0:40]}")
-
-            return await self.bot_aiogram.send_message(message.chat.id, f"😱 (-)Vacancy NOT FOUND")
+                    await self.bot_aiogram.send_message(message.chat.id, f"😎 (+)Vacancy FOUND in {pro} table\n{response[0][0][0:40]}")
+                    text = f"{response[0][0]}\n{response[0][1]}"
+                    return text
+            await self.bot_aiogram.send_message(message.chat.id, f"😱 (-)Vacancy NOT FOUND")
+            return ''
 
         start_polling(self.dp)
         # executor.start_polling(dp, skip_updates=True)
@@ -4087,5 +4119,5 @@ def run(double=False, token_in=None):
         double=double
     ).main_invitebot()
 
-if __name__ == '__main__':
-   run()
+# if __name__ == '__main__':
+#    run()
