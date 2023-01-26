@@ -329,8 +329,10 @@ class InviteBot():
 
         @self.dp.message_handler(commands=['schedule'])
         async def schedule_command(message: types.Message):
-            await schedule(message)
-
+            if message.from_user.id in self.white_admin_list:
+                await schedule(message)
+            else:
+                await self.bot_aiogram.send_message(message.chat.id, "Sorry, your permission is wrong")
         @self.dp.message_handler(commands=['restore_from_admin'])
         async def restore_from_admin_command(message: types.Message):
             await restore_from_admin(message, 110)
