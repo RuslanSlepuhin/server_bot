@@ -16,7 +16,12 @@ valid_professions_extended = []
 valid_professions_extended.extend(valid_professions)
 valid_professions_extended.extend(['fullstack'])
 tables_for_search_vacancy_existing = [admin_database, 'archive']
-all_tables_for_vacancy_search = valid_professions_extended.extend(tables_for_search_vacancy_existing)
+# all_tables_for_vacancy_search = ['designer', 'game', 'product', 'mobile', 'pm', 'sales_manager', 'analyst', 'frontend',
+#                      'marketing', 'devops', 'hr', 'backend', 'qa', 'junior', admin_database, archive_database]
+
+all_tables_for_vacancy_search = []
+all_tables_for_vacancy_search.extend([admin_database, archive_database])
+all_tables_for_vacancy_search.extend(valid_professions)
 
 not_lower_professions = ['pm', 'game', 'designer', 'hr', 'analyst', 'qa', 'ba' 'devops', 'product']
 
