@@ -257,6 +257,7 @@ class InviteBot():
                                                             '⛔️/get_pattern_pseudo\n'
                                                             '⛔️/clear_db_table\n'
                                                             '⛔️/numbers_of_archive\n'
+                                                            '⛔️/get_flood_error_logs\n'
                                                             '⛔️/how_many_records_in_db_table - shows quantity of records in db table\n'
                                                             '----------------------------------------------------\n\n'
                                                             '---------------- PARSING: ----------------\n'
@@ -290,6 +291,13 @@ class InviteBot():
                                                             '---------------------------------------------------\n\n'
                                                             '❗️- it is admin options')
 
+        @self.dp.message_handler(commands=['get_flood_error_logs'])
+        async def get_flood_error_logs_commands(message: types.Message):
+            await send_file_to_user(
+                message=message,
+                path=variable.flood_control_logs_path,
+                caption="take the exception logs"
+            )
 
         @self.dp.message_handler(commands=['how_many_records_in_db_table'])
         async def how_many_records_in_db_table_commands(message: types.Message):
@@ -3533,6 +3541,11 @@ class InviteBot():
             # self.bot_aiogram.send_message(message.chat.id, "TG channels parsing has finished")
             await psites.call_sites()
             await self.bot_aiogram.send_message(message.chat.id, '----- PARSING HAS BEEN DONE! -----')
+            await send_file_to_user(
+                message=message,
+                path=variable.flood_control_logs_path,
+                caption="take the exception logs"
+            )
 
         async def debug_function():
             response = DataBaseOperations(None).get_all_from_db(
