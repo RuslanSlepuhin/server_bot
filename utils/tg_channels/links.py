@@ -1,4 +1,12 @@
 list_links = [
+    'https://t.me/remoters',
+    'https://t.me/young_relocate',
+    'https://t.me/workvc',
+    'https://t.me/forproducts',
+    'https://t.me/dreamjob_minsk',
+    'https://t.me/juno_jobs',
+    'https://t.me/jobforjunior',
+    'https://t.me/noexperience',
     'https://t.me/marketing_jobs',
     'https://t.me/myresume_ru',
     'https://t.me/jvmjobs',
