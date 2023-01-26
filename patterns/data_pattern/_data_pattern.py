@@ -532,7 +532,7 @@ pattern = {
                 "контенту",
                 "Помощник", "marketing manager", "менеджер по продажам", "sales manager", "контекстной рекламе",
                 "CRM-аналитик",
-                "керамист", "технолог", "Java Developer", "Load Test Engineer", "UI/UX designer",
+                "керамист", "технолог[\W]", "Java Developer", "Load Test Engineer", "UI/UX designer",
                 "Менеджер по маркетплейсам",
                 "Менеджер по работе с маркетплейсами", "Гейм-дизайнер", "Game designer", "Game Producer", "Копирайтер",
                 "Sales Researcher", "Team Lead", "Junior front-end", "iOS Developer", "Full-stack",
