@@ -823,7 +823,7 @@ class InviteBot():
             dict_response = VacancyFilter().sort_profession(
                 body=body,
                 title=title,
-                check_contacts=False,
+                check_contacts=True,
                 check_vacancy=True
             )
 
