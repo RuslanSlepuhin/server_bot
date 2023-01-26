@@ -408,7 +408,7 @@ class SuperJobGetInformation:
 
         elif not response_from_db:
             prof_str = ", ".join(profession['profession'])
-            additional_message = f"<b>+w: {prof_str}</b>\n"
+            additional_message = f"<b>+w: {prof_str}</b>\n{profession['tag']}\n{profession['anti_tag']}\n"
 
             if 'no_sort' not in profession['profession']:
                 self.written_vacancies += 1
