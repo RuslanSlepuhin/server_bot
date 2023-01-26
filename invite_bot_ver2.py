@@ -2570,7 +2570,7 @@ class InviteBot():
                 english_pattern = export_pattern['others']['english_for_shorts']['ma'][:40]
                 salary_patterns = export_pattern['others']['salary_for_shorts']['ma'][:40]
                 city_pattern = export_pattern['others']['city_for_shorts']['ma'][:40]
-                vacancy_pattern = export_pattern['others']['vacancy']['sub'][:40]
+                vacancy_pattern = export_pattern['others']['vacancy']['sub'][:100]
 
                 remote_shorts = ''
                 relocate_shorts = ''
