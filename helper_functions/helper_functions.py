@@ -186,3 +186,4 @@ async def edit_message(bot, text, msg, parse_mode='html', disable_web_page_previ
                     seconds = match[0].split(' ')[0]
                     time.sleep(int(seconds) + 5)
     return msg
+

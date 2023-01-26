@@ -13,6 +13,7 @@ from sites.write_each_vacancy_to_db import write_each_vacancy
 from settings.browser_settings import options, chrome_driver_path
 from utils.additional_variables.additional_variables import sites_search_words
 from helper_functions.helper_functions import edit_message, send_message
+from sites.send_log_txt import send_log_txt
 
 class RabotaGetInformation:
 
@@ -392,7 +393,10 @@ class RabotaGetInformation:
 
         elif not response_from_db:
             prof_str = ", ".join(profession['profession'])
-            additional_message = f"<b>+w: {prof_str}</b>\n{vacancy_url}\n{profession['tag']}\n{profession['anti_tag']}\n"
+            additional_message = f"<b>+w: {prof_str}</b>\n{vacancy_url}\n{profession['tag']}\n{profession['anti_tag']}\n-------\n"
+
+            text_for_log = f"{vacancy}\n+w: {prof_str}\n{vacancy_url}\n{profession['tag']}\n{profession['anti_tag']}\n-------\n"
+            await send_log_txt(text_for_log)
 
             if 'no_sort' not in profession['profession']:
                 self.written_vacancies += 1
