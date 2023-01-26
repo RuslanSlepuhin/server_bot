@@ -3275,12 +3275,9 @@ class InviteBot():
                 response = DataBaseOperations(None).get_all_from_db(
                     table_name=f'{i}',
                     param="""WHERE profession <> 'no_sort'""",
-                    # param="""WHERE profession LIKE '%designer%'""",
                     without_sort=True
                 )
 
-                # if n > 200:
-                #     break
                 await self.bot_aiogram.send_message(message.chat.id, f'There are {len(response)} records from {i}\nPlease wait...')
                 msg = await self.bot_aiogram.send_message(message.chat.id, 'progress 0%')
                 n=0
@@ -3289,7 +3286,12 @@ class InviteBot():
                     title = vacancy[2]
                     body = vacancy[3]
                     vac = vacancy[5]
-                    response_from_filter = VacancyFilter().sort_profession(title=title, body=body)
+                    response_from_filter = VacancyFilter().sort_profession(
+                        title=title,
+                        body=body,
+                        check_vacancy=False,
+                        check_contacts=False
+                    )
                     profession = response_from_filter['profession']
                     params = response_from_filter['params']
                     if vac:
@@ -3310,8 +3312,6 @@ class InviteBot():
                         current_number=n,
                         end_number = length
                     )
-                    # if n>200:
-                    #     break
             df = pd.DataFrame(
                 {
                     'title': excel_list['title'],
@@ -4077,5 +4077,5 @@ def run(double=False, token_in=None):
         double=double
     ).main_invitebot()
 
-# if __name__ == '__main__':
-#    run()
+if __name__ == '__main__':
+   run()
