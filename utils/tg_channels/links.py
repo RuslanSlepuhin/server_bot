@@ -1,4 +1,7 @@
 list_links = [
+    'https://t.me/marketing_jobs',
+    'https://t.me/myresume_ru',
+    'https://t.me/jvmjobs',
     'https://t.me/it_interns', # interns
     'https://t.me/itvacancycv',
     'https://t.me/fordev',
