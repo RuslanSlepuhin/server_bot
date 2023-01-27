@@ -211,7 +211,11 @@ class HHGetInformation:
 
     async def get_content_from_link(self, i, links, word):
         vacancy_url = i.get('href')
-        vacancy_url = re.findall(r'https:\/\/hh.ru\/vacancy\/[0-9]{6,12}', vacancy_url)[0]
+        try:
+            vacancy_url = re.findall(r'https:\/\/hh.ru\/vacancy\/[0-9]{6,12}', vacancy_url)[0]
+        except Exception as e:
+            print('/////////////////// ALARM in hh scraper /////////////////////')
+            return e
         print('vacancy_url = ', vacancy_url)
         links.append(vacancy_url)
 
