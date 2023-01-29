@@ -144,6 +144,7 @@ class DataBaseOperations:
                             time_of_public TIMESTAMP,
                             created_at TIMESTAMP,
                             agregator_link VARCHAR(200),
+                            sub VARCHAR (250),  
                             session VARCHAR(15),
                             FOREIGN KEY (session) REFERENCES current_session(session)
                             );"""
@@ -151,8 +152,6 @@ class DataBaseOperations:
             print(f'table {table_name} has been crated or exists')
 
     def push_to_bd(self, results_dict, profession_list=None, agregator_id=None):
-
-        logs.write_log(f"scraping_db: function: push_to_bd")
 
         response_dict = {}
         if not self.con:
