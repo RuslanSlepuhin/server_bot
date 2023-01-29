@@ -44,6 +44,8 @@ from patterns._export_pattern import export_pattern
 from patterns.data_pattern._data_pattern import pattern as data_pattern
 from multiprocessing import Process
 from sites.send_log_txt import send_log_txt
+from aiogram.utils import executor
+
 
 logs = Logs()
 import settings.os_getenv as settings
