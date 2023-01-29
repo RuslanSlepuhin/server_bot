@@ -952,6 +952,20 @@ class InviteBot():
                         results_dict['experience'] = ''
                         results_dict['contacts'] = ''
                         results_dict['session'] = '20221114114824'
+                        results_dict['sub'] = ''
+
+                        sub = VacancyFilter().sort_profession(
+                            title=results_dict['title'],
+                            body=results_dict['body'],
+                            check_contacts=False,
+                            check_vacancy=True,
+                            get_params=False
+                        )['profession']['sub']
+
+                        if profession in sub:
+                            results_dict['sub'] = f"{profession}: {', '.join(results_dict['sub'][profession])}"
+                        else:
+                            results_dict['sub'] = f"{profession}: "
 
                         is_exist = DataBaseOperations(None).get_all_from_db(
                             table_name=profession,
@@ -2145,7 +2159,8 @@ class InviteBot():
                 # choose from db regarding profession
                 response = self.db.get_all_from_db(
                     table_name='admin_last_session',
-                    param = f"WHERE profession LIKE '%{profession}' OR profession LIKE '%{profession},%'"
+                    param=f"WHERE profession LIKE '%{profession}' OR profession LIKE '%{profession},%'",
+                    field=variable.admin_table_fields
                 )
                 if response:
                     await self.bot_aiogram.send_message(message.chat.id, f"{profession} in progress...")
@@ -2632,13 +2647,13 @@ class InviteBot():
 
             # code for transpose in shorts like reference
 
-                remote_pattern = export_pattern['others']['remote']['ma'][:40]
-                relocate_pattern = export_pattern['others']['relocate']['ma'][:40]
-                experience_pattern = export_pattern['others']['relocate']['ma'][:40]
-                english_pattern = export_pattern['others']['english_for_shorts']['ma'][:40]
-                salary_patterns = export_pattern['others']['salary_for_shorts']['ma'][:40]
-                city_pattern = export_pattern['others']['city_for_shorts']['ma'][:40]
-                vacancy_pattern = export_pattern['others']['vacancy']['sub'][:100]
+                remote_pattern = export_pattern['others']['remote']['ma']
+                relocate_pattern = export_pattern['others']['relocate']['ma']
+                experience_pattern = export_pattern['others']['relocate']['ma']
+                english_pattern = export_pattern['others']['english_for_shorts']['ma']
+                salary_patterns = export_pattern['others']['salary_for_shorts']['ma']
+                city_pattern = export_pattern['others']['city_for_shorts']['ma']
+                vacancy_pattern = export_pattern['others']['vacancy']['sub']
 
                 remote_shorts = ''
                 relocate_shorts = ''
@@ -2754,7 +2769,7 @@ class InviteBot():
                         vacancy = f"Вакансия #{random.randrange(100, 5000)}"
                     message_for_send += f"<a href=\"{config['My_channels']['agregator_link']}/" \
                                         f"{vacancy_from_admin_dict['sended_to_agregator']}\">" \
-                                        f"<b>{vacancy}</b></a> "
+                                        f"<b>{vacancy[0:40]}</b></a> "
 
                     company = ''
                     if vacancy_from_admin_dict['company']:
@@ -2762,27 +2777,27 @@ class InviteBot():
                     elif params['company']:
                         company = params['company']
                     if company:
-                        message_for_send += f"в {company.strip()} "
+                        message_for_send += f"в {company.strip()[:40]} "
 
                     message_for_send += '('
 
                     if city_shorts:
-                        message_for_send += f"{city_shorts}, "
+                        message_for_send += f"{city_shorts[:40]}, "
 
                     if english_shorts:
-                        message_for_send += f"eng: {english_shorts}, "
+                        message_for_send += f"eng: {english_shorts[:40]}, "
 
                     if experience_shorts:
-                        message_for_send += f"exp: {experience_shorts} year(s), "
+                        message_for_send += f"exp: {experience_shorts[:40]} year(s), "
 
                     if relocate_shorts:
-                        message_for_send += f"{relocate_shorts.capitalize()}, "
+                        message_for_send += f"{relocate_shorts.capitalize()[:40]}, "
 
                     if remote_shorts:
-                        message_for_send += f"{remote_shorts.capitalize()}, "
+                        message_for_send += f"{remote_shorts.capitalize()[:40]}, "
 
                     if salary_shorts:
-                        message_for_send += f"{salary_shorts}, "
+                        message_for_send += f"{salary_shorts[:40]}, "
                 # end of code
 
                 else:
@@ -3683,13 +3698,7 @@ class InviteBot():
             # get messages from TG admin
             history_messages = await get_tg_history_messages(message)
             self.out_from_admin_channel = len(history_messages)
-            # message_for_send = f'<i>Функционал дайджеста находится в состоянии альфа-тестирования, приносим свои ' \
-            #                    f'извинения, мы работаем над тем чтобы вы получали информацию максимально ' \
-            #                    f'качественную и в сжатые сроки</i>\n\n' \
-            #                    f'<b>Дайджест вакансий для {profession} за {datetime.now().strftime("%d.%m.%Y")}:</b>\n\n'
-
             message_for_send = f'<b>Дайджест вакансий для {profession} за {datetime.now().strftime("%d.%m.%Y")}:</b>\n\n'
-
 
             length = len(history_messages)
             n = 0
@@ -3718,15 +3727,11 @@ class InviteBot():
                     vacancy_from_admin_dict = await helper.to_dict_from_admin_response(vacancy_from_admin[0],
                                                                                        variable.admin_table_fields)
 
-                    # prof_stack = vacancy_from_admin[0][4]
 
                     # if vacancy has sent in agregator already, it doesn't push again. And remove profess from profs or drop vacancy if there is profession alone
                     await push_vacancies_to_agregator_from_admin(
                         message=message,
                         vacancy_message=vacancy,
-                        # vacancy_from_admin=vacancy_from_admin,
-                        # response=response,
-                        # profession=profession,
                         prof_stack=vacancy_from_admin_dict['profession'],
                         response_temp_dict=response_temp_dict,
                         vacancy_from_admin_dict=vacancy_from_admin_dict,
@@ -3738,13 +3743,9 @@ class InviteBot():
                         # ---------- the unique operation block for fulls = pushing to prof channel full message ----------
                         print('push vacancy in channel\n')
                         print(f"\n{vacancy['message'][0:40]}")
-                        # response_dict = await compose_for_push_to_db(response, profession)
-                        # if False in response_dict.values():
                         await self.bot_aiogram.send_message(int(config['My_channels'][f'{profession}_channel']),
                                                             vacancy['message'])
                         await asyncio.sleep(random.randrange(3, 4))
-                        # else:
-                        #     print('It has been got True from db')
                     # ------------------- end of  pushing to prof channel full message -----------------
 
                     elif "shorts" in callback_data:
@@ -3773,7 +3774,6 @@ class InviteBot():
                         await compose_data_and_push_to_db(
                             vacancy_from_admin_dict=vacancy_from_admin_dict,
                             profession=profession,
-                            # vacancy_from_admin=vacancy_from_admin,
                         )
                         prof_list = vacancy_from_admin_dict['profession'].split(', ')
                         profession_list['profession'] = [profession, ]
@@ -4217,8 +4217,8 @@ class InviteBot():
 
 
 
-        start_polling(self.dp)
-        # executor.start_polling(dp, skip_updates=True)
+        # start_polling(self.dp)
+        executor.start_polling(self.dp, skip_updates=True)
 
 
 def run(double=False, token_in=None):
