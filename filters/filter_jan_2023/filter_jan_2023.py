@@ -354,6 +354,8 @@ class VacancyFilter:
 
         if sub and not vacancy:
             for key in sub:
+                print('key ', key)
+                print('sub ', sub)
                 if sub[key]:
                     vacancy = f"{sub[key].capitaloze()} {key}"
                     break
