@@ -244,7 +244,7 @@ class RabotaGetInformation:
         try:
             body = soup.find('div', class_='vacancy-section').get_text()
         except:
-            body = soup.find('div', class_='vacancy-description').get_text()
+            return False
 
         body = body.replace('\n\n', '\n')
         body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
