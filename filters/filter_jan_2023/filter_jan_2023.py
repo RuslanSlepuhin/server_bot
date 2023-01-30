@@ -214,7 +214,7 @@ class VacancyFilter:
         params['job_type'] = self.get_remote_new(text)
         params['relocation'] = self.get_relocation_new(text)
         params['english'] = self.english_requirements_new(text)
-        params['vacancy'] = self.get_vacancy_name(text, profession['profession'])
+        params['vacancy'] = self.get_vacancy_name(text, profession['sub'])
         return params
 
     def transform_fullstack_to_back_and_front(self, text, profession):
@@ -304,7 +304,7 @@ class VacancyFilter:
 
         return company.strip()
 
-    def get_vacancy_name(self, text, sub=None, profession_list=None):
+    def get_vacancy_name(self, text, sub=None):
         vacancy = ''
         match = []
 
@@ -354,10 +354,8 @@ class VacancyFilter:
 
         if sub and not vacancy:
             for key in sub:
-                print('key ', key)
-                print('sub ', sub)
                 if sub[key]:
-                    vacancy = f"{sub[key].capitaloze()} {key}"
+                    vacancy = f"{', '.join(sub[key])} {key}"
                     break
         if vacancy:
             vacancy = self.clean_vacancy_from_get_vacancy_name(vacancy)
