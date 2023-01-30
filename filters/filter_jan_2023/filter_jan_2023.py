@@ -70,27 +70,39 @@ class VacancyFilter:
                     return {'profession': profession, 'params': {}}
 
             # ---------------- professions -----------------
-
             for item in self.valid_profession_list:
-                if item in self.not_lower_professions:
-                    low = False
-                else:
-                    low = True
-
-                if item == 'product':
-                    item = 'pm'
-
-                result = self.check_parameter(
-                    pattern=self.export_pattern['professions'][item],
-                    vacancy=vacancy,
-                    low=low,
-                    key=item
-                )
+                result = self.search_profession(vacancy=title, item=item, mex=False)
                 if result['result']:
                     profession['profession'].append(result['result'])
-                    # print(f"in loop: {profession['profession']}")
-                profession['tag'] += result['tags']
-                profession['anti_tag'] += result['anti_tags']
+                    profession['tag'] += result['tags']
+                    profession['anti_tag'] += result['anti_tags']
+            # for item in self.valid_profession_list:
+            #     if item in self.not_lower_professions:
+            #         low = False
+            #     else:
+            #         low = True
+            #
+            #     if item == 'product':
+            #         item = 'pm'
+            #
+            #     result = self.check_parameter(
+            #         pattern=self.export_pattern['professions'][item],
+            #         vacancy=vacancy,
+            #         low=low,
+            #         key=item
+            #     )
+            #     if result['result']:
+            #         profession['profession'].append(result['result'])
+            #         # print(f"in loop: {profession['profession']}")
+            #     profession['tag'] += result['tags']
+            #     profession['anti_tag'] += result['anti_tags']
+            if not profession['profession']:
+                for item in self.valid_profession_list:
+                    result = self.search_profession(vacancy=vacancy, item=item)
+                    if result['result']:
+                        profession['profession'].append(result['result'])
+                        profession['tag'] += result['tags']
+                        profession['anti_tag'] += result['anti_tags']
 
             if 'fullstack' in profession['profession']:
                 profession = self.transform_fullstack_to_back_and_front(text=vacancy, profession=profession)
@@ -150,7 +162,7 @@ class VacancyFilter:
         pass
         return profession
 
-    def check_parameter(self, pattern, vacancy, key, low=True):
+    def check_parameter(self, pattern, vacancy, key, low=True, mex=True):
         result = 0
         tags = ''
         anti_tags = ''
@@ -173,7 +185,7 @@ class VacancyFilter:
                 result += len(match)
                 tags += f'MA {key}={match}\n'
 
-        if result:
+        if result and mex:
             for anti_word in pattern['mex']:
                 # if low:
                 #     anti_word = anti_word.lower()
@@ -193,6 +205,7 @@ class VacancyFilter:
                     break
         else:
             anti_tags = ''
+        pass
         return {'result': key if result else '', 'tags': tags, 'anti_tags': anti_tags}
 
     def get_params(self, text, profession, all_fields_null=False):
@@ -291,7 +304,7 @@ class VacancyFilter:
 
         return company.strip()
 
-    def get_vacancy_name(self, text, profession_list, sub=None):
+    def get_vacancy_name(self, text, sub=None, profession_list=None):
         vacancy = ''
         match = []
 
@@ -368,4 +381,22 @@ class VacancyFilter:
                 if key != key_word:
                     profession['sub'][key_word].append(key)
         return profession
+
+    def search_profession(self, vacancy, item, mex=True):
+            if item in self.not_lower_professions:
+                low = False
+            else:
+                low = True
+
+            if item == 'product':
+                item = 'pm'
+
+            result = self.check_parameter(
+                pattern=self.export_pattern['professions'][item],
+                vacancy=vacancy,
+                low=low,
+                key=item,
+                mex=mex
+            )
+            return result
 
