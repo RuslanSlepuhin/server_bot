@@ -17,6 +17,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.utils import executor
 from aiogram.utils.executor import start_polling
 from telethon.sync import TelegramClient
 from telethon.tl import functions
@@ -25,6 +26,7 @@ from telethon.tl.functions.messages import GetHistoryRequest
 from telethon.tl.types import InputUser, InputChannel, ChannelParticipantsSearch, PeerChannel
 from db_operations.scraping_db import DataBaseOperations
 from filters.scraping_get_profession_Alex_next_2809 import AlexSort2809
+from sites.scraping_hhkz import HHKzGetInformation
 from telegram_chats.scraping_telegramchats2 import WriteToDbMessages, main
 from sites.parsing_sites_runner import ParseSites
 from logs.logs import Logs
@@ -44,8 +46,6 @@ from patterns._export_pattern import export_pattern
 from patterns.data_pattern._data_pattern import pattern as data_pattern
 from multiprocessing import Process
 from sites.send_log_txt import send_log_txt
-from aiogram.utils import executor
-
 
 logs = Logs()
 import settings.os_getenv as settings
@@ -175,6 +175,9 @@ class InviteBot():
         class Form_delete(StatesGroup):
             date = State()
 
+        class Form_hhkz(StatesGroup):
+            word = State()
+
         class Form(StatesGroup):
             api_id = State()
             api_hash = State()
@@ -268,6 +271,7 @@ class InviteBot():
                                                             '----------------------------------------------------\n\n'
                                                             '---------------- PARSING: ----------------\n'
                                                             '🔆/magic_word - input word and get results from hh.ru\n'
+                                                            '🔆/hh_kz - input word and get results from hh.ru\n'
                                                             '🔆/svyazi - get data from svyazi.app\n'
                                                             '🔆/finder - get the data from finder.vc\n'
                                                             '🔆/habr - get the data from career.habr.com\n'
@@ -672,6 +676,32 @@ class InviteBot():
                 await state.finish()
                 info = await self.client.get_entity(user_data)
                 await self.bot_aiogram.send_message(message.chat.id, info)
+
+        @self.dp.message_handler(commands=['hh_kz'])
+        async def hh_kz_commands(message: types.Message):
+            await Form_hhkz.word.set()
+            await self.bot_aiogram.send_message(message.chat.id,
+                                                'Type word for getting more vacancies from hh.kz\nor /cancel')
+
+        # ------------------------ fill search word form ----------------------------------
+        # word
+        @self.dp.message_handler(state=Form_hhkz.word)
+        async def process_api_id(message: types.Message, state: FSMContext):
+            async with state.proxy() as data:
+                data['word'] = message.text
+                search_word = message.text
+            await state.finish()
+            await send_log_txt(text='', write_mode='w')
+            hh_kz = HHKzGetInformation(
+                search_word=search_word,
+                bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
+            )
+            await hh_kz.get_content()
+            await send_file_to_user(
+                message=message,
+                path=variable.path_log_check_profession,
+                caption=""
+            )
 
         @self.dp.message_handler(commands=['magic_word'])
         async def magic_word(message: types.Message):
