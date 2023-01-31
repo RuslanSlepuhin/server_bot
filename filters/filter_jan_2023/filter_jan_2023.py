@@ -1,16 +1,16 @@
 import re
 
-from __backup__ import pattern_Alex2809
+# from __backup__ import pattern_Alex2809
 from db_operations.scraping_db import DataBaseOperations
 # from patterns.pattern_Alex2809 import search_companies, search_companies2, english_pattern, remote_pattern, \
 #     relocate_pattern, middle_pattern, senior_pattern, vacancy_name, vacancy_pattern, contacts_pattern, profession_new_pattern
-from patterns._export_pattern import export_pattern as q
+from patterns._export_pattern import export_pattern
 from utils.additional_variables import additional_variables as variables
 
 class VacancyFilter:
 
     def __init__(self):
-        self.pattern_alex = pattern_Alex2809.pattern
+        # self.pattern_alex = pattern_Alex2809.pattern
         self.capitalize = variables.not_lower_professions
 
         self.result_dict2 = {'vacancy': 0, 'contacts': 0, 'fullstack': 0, 'frontend': 0, 'backend': 0, 'pm': 0,
@@ -19,7 +19,7 @@ class VacancyFilter:
                              'senior': 0}
 
         self.valid_profession_list = variables.valid_professions
-        self.export_pattern = q
+        self.export_pattern = export_pattern
         self.not_lower_professions = variables.not_lower_professions
         self.excel_dict = {}
         self.profession = {}
@@ -215,14 +215,14 @@ class VacancyFilter:
 
     def transform_fullstack_to_back_and_front(self, text):
 
-        for anti_word in self.pattern_alex['backend']['mex']:
+        for anti_word in self.export_pattern['professions']['backend']['mex']:
             match = re.findall(rf"{anti_word.lower()}", text.lower())
             if match:
                 self.profession['anti_tag'] += f'TAG ANTI backend={match}\n'
             else:
                 self.profession['profession'].add('backend')
 
-        for anti_word in self.pattern_alex['frontend']['mex']:
+        for anti_word in self.export_pattern['professions']['frontend']['mex']:
             match = re.findall(rf"{anti_word.lower()}", text.lower())
             if match:
                 self.profession['anti_tag'] += f'TAG ANTI frontend={match}\n'
