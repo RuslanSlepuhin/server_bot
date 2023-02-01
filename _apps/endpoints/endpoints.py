@@ -8,9 +8,11 @@ import random
 from db_operations.scraping_db import DataBaseOperations
 from utils.additional_variables.additional_variables import admin_database, admin_table_fields
 from helper_functions.helper_functions import to_dict_from_admin_response
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from flask import request
 from utils.additional_variables.additional_variables import path_post_request_file
+from patterns._export_pattern import export_pattern
+from patterns.data_pattern._data_pattern import pattern
 
 db=DataBaseOperations(None)
 
@@ -46,10 +48,11 @@ async def main_endpoints():
     async def get_all_vacancies():
         return await get_all_vacancies_from_db()
 
-    @app.route("/get-all-vacancies2")
-    async def get_all_vacancies1():
-        print('!!!!!!!!!!!!!!!')
-        return await get_all_vacancies_from_db()
+    @app.route("/get-all-vacancies-admin")
+    async def get_all_vacancies_admin():
+        response = await get_all_vacancies_from_db()
+        response['pattern'] = await get_export_pattern_dict()
+        return response
 
     @app.route("/get-all-vacancies3")
     async def get_all_vacancies3():
@@ -108,6 +111,25 @@ async def main_endpoints():
     async def write_to_file(text):
         with open(path_post_request_file, 'a', encoding='utf-8') as file:
             file.write(f"{str(text)}\n-----------\n")
+
+    async def get_export_pattern_dict():
+        dict_pattern = {}
+        for profession in export_pattern['professions']:
+            dict_pattern[profession] = {}
+            if 'ma' not in dict_pattern[profession]:
+                dict_pattern[profession]['ma'] = []
+
+            dict_pattern[profession]['ma'] = list(export_pattern['professions'][profession]['ma'])
+            for sub in export_pattern['professions'][profession]['sub']:
+                if 'sub' not in dict_pattern[profession]:
+                    # dict_pattern[profession] = {}
+                    dict_pattern[profession]['sub'] = {}
+
+                if sub not in dict_pattern[profession]['sub']:
+                    dict_pattern[profession]['sub'][sub] = []
+
+                dict_pattern[profession]['sub'][sub] = list(export_pattern['professions'][profession]['sub'][sub]['ma'])
+        return dict_pattern
 
     app.run(host=localhost, port=int(os.environ.get('PORT', 5000)))
 
