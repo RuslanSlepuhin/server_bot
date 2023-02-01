@@ -9,6 +9,7 @@ from db_operations.scraping_db import DataBaseOperations
 from utils.additional_variables.additional_variables import admin_database, admin_table_fields
 from helper_functions.helper_functions import to_dict_from_admin_response
 from flask_cors import CORS, cross_origin
+from flask import request
 
 db=DataBaseOperations(None)
 
@@ -69,6 +70,11 @@ async def main_endpoints():
             }
         }
         return json.dumps(data_dict, sort_keys=False, indent=4, ensure_ascii=False, separators=(',', ': '))
+
+    @app.route("/post-vacancies", methods = ['POST'])
+    async def post_data():
+        request_data = request.json
+        return {'It works': request_data}
 
     async def get_from_db():
         cur = con.cursor()
