@@ -126,9 +126,11 @@ async def main_endpoints():
                     dict_pattern[profession]['sub'] = {}
 
                 if sub not in dict_pattern[profession]['sub']:
-                    dict_pattern[profession]['sub'][sub] = []
+                    dict_pattern[profession]['sub'][sub] = {}
+                    dict_pattern[profession]['sub'][sub]['ma'] = []
 
-                dict_pattern[profession]['sub'][sub] = list(export_pattern['professions'][profession]['sub'][sub]['ma'])
+
+                dict_pattern[profession]['sub'][sub]['ma'] = list(export_pattern['professions'][profession]['sub'][sub]['ma'])
         return dict_pattern
 
     app.run(host=localhost, port=int(os.environ.get('PORT', 5000)))
