@@ -10,6 +10,7 @@ from utils.additional_variables.additional_variables import admin_database, admi
 from helper_functions.helper_functions import to_dict_from_admin_response
 from flask_cors import CORS, cross_origin
 from flask import request
+from utils.additional_variables.additional_variables import path_post_request_file
 
 db=DataBaseOperations(None)
 
@@ -74,6 +75,7 @@ async def main_endpoints():
     @app.route("/post-vacancies", methods = ['POST'])
     async def post_data():
         request_data = request.json
+        await write_to_file(text=request_data)
         return {'It works': request_data}
 
     async def get_from_db():
@@ -102,6 +104,10 @@ async def main_endpoints():
                 all_vacancies['vacancies'][str(number)] = vacancy_dict
             number += 1
         return all_vacancies
+
+    async def write_to_file(text):
+        with open(path_post_request_file, 'a', encoding='utf-8') as file:
+            file.write(f"{str(text)}\n-----------\n")
 
     app.run(host=localhost, port=int(os.environ.get('PORT', 5000)))
 
