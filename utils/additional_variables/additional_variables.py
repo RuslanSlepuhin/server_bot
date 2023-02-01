@@ -86,3 +86,5 @@ clear_vacancy_trash_pattern = "[Ии]щем в команду[:]?|[Тт]ребу
 
 how_much_pages = 7
 
+path_post_request_file = "./excel/path_post_request_file.txt"
+
