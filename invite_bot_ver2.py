@@ -122,7 +122,7 @@ class InviteBot():
             self.client = TelegramClient(username_double, int(api_id_double), api_hash_double)
         else:
             self.client = TelegramClient(username, int(api_id), api_hash)
-        self.client.connect()
+        self.client.start()
 
         logging.basicConfig(level=logging.INFO)
         if token_in:
