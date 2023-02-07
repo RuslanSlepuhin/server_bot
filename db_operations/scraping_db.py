@@ -5,7 +5,7 @@ import re
 from asgiref.sync import async_to_sync
 
 from utils.additional_variables.additional_variables import admin_database
-from utils.additional_variables.additional_variables import table_list_for_checking_message_in_db
+from utils.additional_variables.additional_variables import table_list_for_checking_message_in_db, short_session_database
 
 import psycopg2
 from datetime import datetime
@@ -152,7 +152,7 @@ class DataBaseOperations:
                         )
             print(f'table {table_name} has been crated or exists')
 
-    def push_to_bd(self, results_dict, profession_list=None, agregator_id=None):
+    def push_to_bd(self, results_dict, profession_list=None, agregator_id=None, shorts_session_name=None):
 
         response_dict = {}
         if not self.con:
@@ -167,13 +167,13 @@ class DataBaseOperations:
 
             for pro in pro_set:
                 self.check_or_create_table(cur, pro)
-                self.push_to_db_write_message(cur, pro, results_dict, response_dict, agregator_id)
+                self.push_to_db_write_message(cur, pro, results_dict, response_dict, agregator_id, shorts_session_name)
         else:
             self.check_or_create_table(cur, pro)
-            response_dict = self.push_to_db_write_message(cur, pro, results_dict, response_dict, agregator_id)
+            response_dict = self.push_to_db_write_message(cur, pro, results_dict, response_dict, agregator_id, shorts_session_name)
         return response_dict
 
-    def push_to_db_write_message(self, cur, pro, results_dict, response_dict, agregator_id):
+    def push_to_db_write_message(self, cur, pro, results_dict, response_dict, agregator_id, shorts_session_name=None):
 
         logs.write_log(f"scraping_db: function: push_to_db_write_message")
 
@@ -217,13 +217,15 @@ class DataBaseOperations:
 
             new_post = f"""INSERT INTO {pro} (
             chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, job_type, 
-            city, salary, experience, contacts, time_of_public, created_at, agregator_link, session, sub) 
+            city, salary, experience, contacts, time_of_public, created_at, agregator_link, session, sub, tags, 
+            full_tags, full_anti_tags, short_session_numbers) 
                         VALUES ('{results_dict['chat_name']}', '{results_dict['title']}', '{results_dict['body']}', 
                         '{pro}', '{results_dict['vacancy']}', '{results_dict['vacancy_url']}', '{results_dict['company']}', 
                         '{results_dict['english']}', '{results_dict['relocation']}', '{results_dict['job_type']}', 
                         '{results_dict['city']}', '{results_dict['salary']}', '{results_dict['experience']}', 
                         '{results_dict['contacts']}', '{results_dict['time_of_public']}', '{datetime.now()}', '{agregator_id}', 
-                        '{results_dict['session']}', '{results_dict['sub']}');"""
+                        '{results_dict['session']}', '{results_dict['sub']}', '{results_dict['tags']}', '{results_dict['full_tags']}',
+                        '{results_dict['full_anti_tags']}', '{shorts_session_name}');"""
             # print('query in db: ', new_post)
             with self.con:
                 try:
@@ -748,11 +750,6 @@ class DataBaseOperations:
         cur = self.con.cursor()
         self.check_or_create_table_admin(cur)
 
-        # shorts_session_name = self.get_all_from_db(
-        #     table_name='shorts_session_name',
-        #     param="WHERE id=(SELECT MAX(id) FROM shorts_session_name)",
-        #     field='session_name'
-        # )
         tags = helper.get_tags(profession)
         full_tags = profession['tag'].replace("'", "")
         full_anti_tags = profession['anti_tag'].replace("'", "")
@@ -960,7 +957,7 @@ class DataBaseOperations:
                     cur.execute(query_for_change_type)
                     print(f'changed title in {table_name}')
                 except Exception as e:
-                    print(f"title in {table_name} didn't change for reason {e}")
+                    print(f"field in {table_name} didn't change for reason {e}")
 
     def check_admin_temporary(self, cur):
         cur = self.con.cursor()
@@ -1234,16 +1231,18 @@ class DataBaseOperations:
         self.create_or_exists_short_session()
         cur = self.con.cursor()
         with self.con:
-            cur.execute(f"""INSERT INTO shorts_session_name session_name VALUES '{short_session_name}';""")
+            cur.execute(f"""INSERT INTO shorts_session_name (session_name) VALUES ('{short_session_name}');""")
 
     def create_or_exists_short_session(self):
         if not self.con:
             self.connect_db()
         cur = self.con.cursor()
+        # self.delete_table('shorts_session_name')
         with self.con:
-            cur.execute("""CREATE TABLE IF NOT EXISTS shorts_session_name (
+            query = """CREATE TABLE IF NOT EXISTS shorts_session_name (
                             id SERIAL PRIMARY KEY,
-                            session_name VARCHAR(14),
+                            session_name VARCHAR(50)
                         );"""
-                        )
+            cur.execute(query)
+
             print('short_session_name table has created')
