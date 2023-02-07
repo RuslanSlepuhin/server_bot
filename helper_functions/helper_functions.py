@@ -206,5 +206,5 @@ def get_tags(profession):
                             tags_set.add(tag_value)
     return ", ".join(tags_set)
 
-async def get_short_session_name():
-    return datetime.now().strftime('%Y%m%d%H%M')
+async def get_short_session_name(prefix):
+    return f"{prefix.strip()}: {datetime.now().strftime('%Y%m%d%H%M%S')}"
