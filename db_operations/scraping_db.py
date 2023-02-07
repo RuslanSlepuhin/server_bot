@@ -1,11 +1,9 @@
 import configparser
 import json
 import re
-import time
 from utils.additional_variables.additional_variables import admin_database
 from utils.additional_variables.additional_variables import table_list_for_checking_message_in_db
 
-import pandas as pd
 import psycopg2
 from datetime import datetime
 # from filters.scraping_get_profession_Alex_Rus import AlexRusSort
@@ -15,11 +13,9 @@ from helper_functions import helper_functions as helper
 logs = Logs()
 
 # from scraping_send_to_bot import PushToDB
-from patterns import pattern_Alex2809
 
 config = configparser.ConfigParser()
 config.read("./../settings/config.ini")
-
 # ---------------------DB operations ----------------------
 class DataBaseOperations:
 
@@ -143,6 +139,10 @@ class DataBaseOperations:
                             created_at TIMESTAMP,
                             agregator_link VARCHAR(200),
                             sub VARCHAR (250),  
+                            tags VARCHAR (700),
+                            full_tags VARCHAR (700),
+                            full_anti_tags VARCHAR (700),
+                            short_session_numbers VARCHAR (300),
                             session VARCHAR(15),
                             FOREIGN KEY (session) REFERENCES current_session(session)
                             );"""
@@ -353,81 +353,7 @@ class DataBaseOperations:
                 print('Dont push in db, error = ', e)
                 # return response_dict['error', telethon]
             pass
-# ---------------- это для того, чтобы достать неотсортированные сообщения из базы и прогнать через оба алгоритма ---------
-#     def get_from_bd_for_analyze_python_vs_excel(self):
-#         """
-#         Get in DB messages and write it to Excel file to check
-#         :return: nothing
-#         """
-#         logs.write_log(f"scraping_db: function: get_from_bd_for_analyze_python_vs_excel")
-#
-#         profession_alex = []
-#         profession_rus = []
-#         profession_channel = []
-#         profession_title = []
-#         profession_body = []
-#         profession_alex_tag = []
-#         profession_alex_antitag = []
-#         profession_rus_tag = []
-#
-#         if not self.con:
-#             self.connect_db()
-#
-#         cur = self.con.cursor()
-#
-#         query = f"""SELECT * FROM all_messages WHERE DATE(created_at) > '2022-09-24' ORDER BY time_of_public"""
-#         with self.con:
-#             cur.execute(query)
-#             r = cur.fetchall()
-#         for item in r:
-#             pro_alex = ''
-#             pro_rus = ''
-#             created_at = ''
-#
-#             print('r = ', item)
-#             channel = item[1]
-#             title = item[2].replace('Обсуждение вакансии в чате @devops_jobs', '')
-#             body = item[3].replace('Обсуждение вакансии в чате @devops_jobs', '')
-#             time_public = item[5]
-#             created_at = item[6]
-#             # alex_old = AlexSort().sort_by_profession_by_Alex(title, body)
-#             alex = AlexSort2809().sort_by_profession_by_Alex(title, body)
-#             rus = AlexRusSort().sort_by_profession_by_AlexRus(title, body)
-#
-#
-#             for pro in alex['profession']:
-#                 pro_alex += pro + ' '
-#             pro_rus = rus['profession']
-#
-#             profession_channel.append(channel)
-#             profession_alex.append(pro_alex)
-#             profession_alex_tag.append(alex['tag'])
-#             profession_alex_antitag.append(alex['anti_tag'])
-#             profession_rus.append(pro_rus)
-#             try:
-#                 profession_rus_tag.append(rus['tag'])
-#             except:
-#                 pass
-#             profession_title.append(title)
-#             profession_body.append(body)
-#
-#
-#         df = pd.DataFrame(
-#             {
-#                'channel':  profession_channel,
-#                 'pro_Alex_28092022_nigth': profession_alex,
-#                 # 'tag_Alex': profession_alex_tag,
-#                 # 'antitag_Alex': profession_alex_antitag,
-#                 'alternative': profession_rus,
-#                 # 'tag_Rus': profession_rus_tag,
-#                 'title': profession_title,
-#                 'body': profession_body,
-#                 'created_at': created_at,
-#                 'time_public': time_public,
-#             }
-#         )
-#
-#         df.to_excel('all_messages.xlsx', sheet_name='Sheet1')
+
 
     def collect_data_for_send_to_bot(self, profession):
         """
@@ -561,23 +487,27 @@ class DataBaseOperations:
                     except Exception as e:
                         print('error: ', e)
 
-    def add_columns_to_tables(self):
+    def add_columns_to_tables(self, table_list=None, column_name_type=None):
 
-        logs.write_log(f"scraping_db: function: add_columns_to_tables")
+        if not table_list:
+            table_list = [admin_database, ]
+
+        if not column_name_type:
+            column_name_type = 'sended_to_agregator VARCHAR(30)'
 
         if not self.con:
             self.connect_db()
         cur = self.con.cursor()
 
-        # for i in ['backend', 'frontend', 'devops', 'pm', 'product', 'designer', 'analyst',
-        #                             'fullstack', 'mobile', 'qa', 'hr', 'game', 'ba', 'marketing', 'junior',
-        #                             'sales_manager', 'middle', 'senior']:
-        for i in ['admin_last_session',]:
+        for table_name in table_list:
 
-            query = f"""ALTER TABLE {i} ADD COLUMN sended_to_agregator VARCHAR(30)"""
+            query = f"""ALTER TABLE {table_name} ADD COLUMN {column_name_type}"""
             with self.con:
-                cur.execute(query)
-                print(f'Added agr_link to {i}')
+                try:
+                    cur.execute(query)
+                    print(f'Added {column_name_type} to {table_name}')
+                except Exception as e:
+                    print(e)
 
     def output_tables(self):
 
@@ -629,19 +559,6 @@ class DataBaseOperations:
         cur = self.con.cursor()
 
         for table in table_name_list:
-            # query = f"""ALTER TABLE {table}
-            #     ADD COLUMN IF NOT EXISTS vacancy VARCHAR (700),
-            #     ADD COLUMN IF NOT EXISTS vacancy_url VARCHAR (150),
-            #     ADD COLUMN IF NOT EXISTS company VARCHAR (200),
-            #     ADD COLUMN IF NOT EXISTS english VARCHAR (100),
-            #     ADD COLUMN IF NOT EXISTS relocation VARCHAR (100),
-            #     ADD COLUMN IF NOT EXISTS job_type VARCHAR (700),
-            #     ADD COLUMN IF NOT EXISTS city VARCHAR (150),
-            #     ADD COLUMN IF NOT EXISTS salary VARCHAR (300),
-            #     ADD COLUMN IF NOT EXISTS experience VARCHAR (700),
-            #     ADD COLUMN IF NOT EXISTS contacts VARCHAR (500),
-            #     ADD COLUMN IF NOT EXISTS agregator_link VARCHAR(200);
-            # """
             query = f"""ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {column};"""
 
             with self.con:
@@ -786,6 +703,10 @@ class DataBaseOperations:
                                 session VARCHAR(15),
                                 sended_to_agregator VARCHAR(30),
                                 sub VARCHAR (250),  
+                                tags VARCHAR (700),
+                                full_tags VARCHAR (700),
+                                full_anti_tags VARCHAR (700),
+                                short_session_numbers VARCHAR (300),
                                 FOREIGN KEY (session) REFERENCES current_session(session)
                                 );"""
                             )
@@ -851,7 +772,7 @@ class DataBaseOperations:
         for one_element in tables_list:
             response = self.get_all_from_db(
                 table_name=f'{one_element}',
-                param=f"WHERE title='{title}' AND body = '{body}'"
+                param=f"WHERE title='{title}' AND body='{body}'"
             )
             if response:
                 print(f'!!!!!!!!!!! Vacancy exists in {one_element} table\n')
@@ -1270,9 +1191,9 @@ class DataBaseOperations:
 
         return answer_dict
 
-    def update_table(self, table_name, param, field, value):
+    def update_table(self, table_name, param, field, value, output_text='vacancy has updated'):
         query = f"""UPDATE {table_name} SET {field}='{value}' {param}"""
-        self.run_free_request(request=query, output_text='vacancy has updated')
+        self.run_free_request(request=query, output_text=output_text)
 
     def check_exists_message(self, title=None, body=None, table_list=None):
         if not title and not body:
