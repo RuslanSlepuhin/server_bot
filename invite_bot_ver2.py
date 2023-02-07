@@ -4390,22 +4390,6 @@ class InviteBot():
         async def rollback_by_number_short_session(message):
             msg = await self.bot_aiogram.send_message(message.chat.id, "Please wait a few seconds")
 
-            responses1 = self.db.get_all_from_db(
-                table_name='devops',
-                param="WHERE short_session_numbers LIKE '%20230207231816%'"
-                # field='short_session_numbers'
-            )
-            responses_admin = self.db.get_all_from_db(
-                table_name=variable.admin_database,
-                param="WHERE short_session_numbers LIKE '%20230207231816%'"
-                # field='short_session_numbers'
-            )
-            responses_archive = self.db.get_all_from_db(
-                table_name=variable.archive_database,
-                param="WHERE short_session_numbers LIKE '%20230207231816%'"
-                # field='short_session_numbers'
-            )
-            pass
             # layout: backend: 070220230134
             bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
             progress = ShowProgress(bot_dict)
