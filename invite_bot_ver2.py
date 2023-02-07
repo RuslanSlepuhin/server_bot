@@ -3682,6 +3682,9 @@ class InviteBot():
 
         async def push_shorts(message, callback_data):
 
+            short_session_name = await helper.get_short_session_name()
+            self.db.write_short_session(short_session_name)
+
             print('callback_data ', callback_data)
 
             profession_list = {}
@@ -4297,24 +4300,36 @@ class InviteBot():
                     get_params=False
 
                 )
-                tag_list = profession['profession']['tag'].split('\n')
-                anti_tag_list = profession['profession']['anti_tag'].split('\n')
-                tags = ''
-                tags_set = set()
-                for tag in tag_list:
-                    if tag:
-                        if 'vacancy' not in tag:
-                            tag_value = tag.split("'")[-2]
-                            tag_word = tag.split("=")[0][3:]
-                            if anti_tag_list:
-                                for anti_tag in anti_tag_list:
-                                    if anti_tag:
-                                        anti_tag_word = anti_tag.split("=")[0][4:]
-                                        if anti_tag_word != tag_word:
-                                            tags_set.add(tag_value)
-                                    else:
-                                        tags_set.add(tag_value)
-                tags = ", ".join(tags_set)
+                tags = helper.get_tags(profession['profession'])
+                # response_dict = await helper.to_dict_from_admin_response(
+                #     response=response,
+                #     fields=variable.admin_table_fields
+                # )
+                # profession = VacancyFilter().sort_profession(
+                #     title=response_dict['title'], body=response_dict['body'],
+                #     check_contacts=False,
+                #     check_profession=True,
+                #     get_params=False
+                #
+                # )
+                # tag_list = profession['profession']['tag'].split('\n')
+                # anti_tag_list = profession['profession']['anti_tag'].split('\n')
+                # tags = ''
+                # tags_set = set()
+                # for tag in tag_list:
+                #     if tag:
+                #         if 'vacancy' not in tag:
+                #             tag_value = tag.split("'")[-2]
+                #             tag_word = tag.split("=")[0][3:]
+                #             if anti_tag_list:
+                #                 for anti_tag in anti_tag_list:
+                #                     if anti_tag:
+                #                         anti_tag_word = anti_tag.split("=")[0][4:]
+                #                         if anti_tag_word != tag_word:
+                #                             tags_set.add(tag_value)
+                #                     else:
+                #                         tags_set.add(tag_value)
+                # tags = ", ".join(tags_set)
                 print('tags: ', tags)
 
                 if tags:
