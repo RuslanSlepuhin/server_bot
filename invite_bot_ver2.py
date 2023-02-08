@@ -223,6 +223,9 @@ class InviteBot():
         class Form_vacancy_names(StatesGroup):
             profession = State()
 
+        class Form_rollback(StatesGroup):
+            short_session_name = State()
+
         @self.dp.message_handler(commands=['start'])
         async def send_welcome(message: types.Message):
 
@@ -248,10 +251,26 @@ class InviteBot():
         async def get_logs(message: types.Message):
             await self.bot_aiogram.send_message(message.chat.id, variable.help_text)
 
-        @self.dp.message_handler(commands=['rollback_by_number_short_session'])
+        @self.dp.message_handler(commands=['rollback_last_short_session'])
         async def rollback_by_number_short_session_command(message: types.Message):
             await rollback_by_number_short_session(
                 message=message
+            )
+
+        @self.dp.message_handler(commands=['rollback_by_number_short_session'])
+        async def rollback_by_number_short_session_command(message: types.Message):
+            await Form_rollback.short_session_name.set()
+            await self.bot_aiogram.send_message(message.chat.id, 'Type the shorts_session_name from you bot message')
+
+        @self.dp.message_handler(state=Form_rollback.short_session_name)
+        async def rollback_by_number_short_session_form(message: types.Message, state: FSMContext):
+            async with state.proxy() as data:
+                data['short_session_name'] = message.text
+                short_session_name = message.text
+            await state.finish()
+            await rollback_by_number_short_session(
+                message=message,
+                short_session_number=short_session_name
             )
 
 
@@ -3372,6 +3391,7 @@ class InviteBot():
             excel_list['tag'] = []
             excel_list['anti_tag'] = []
             excel_list['vacancy'] = []
+            excel_list['sub'] = []
             n = 0
             for i in [variable.admin_database,]:
                 response = DataBaseOperations(None).get_all_from_db(
@@ -3396,6 +3416,7 @@ class InviteBot():
                     full_tags = vacancy_dict['full_tags']
                     full_anti_tags = vacancy_dict['full_anti_tags']
                     profession = vacancy_dict['profession']
+                    sub = vacancy_dict['sub']
 
                     # response_from_filter = VacancyFilter().sort_profession(
                     #     title=title,
@@ -3419,6 +3440,7 @@ class InviteBot():
                     excel_list['profession'].append(profession)
                     excel_list['tag'].append(full_tags)
                     excel_list['anti_tag'].append(full_anti_tags)
+                    excel_list['sub'].append(sub)
                     n += 1
                     print(f'step {n} passed')
                     msg = await sp.show_the_progress(
@@ -3432,6 +3454,7 @@ class InviteBot():
                     'body': excel_list['body'],
                     'vacancy': excel_list['vacancy'],
                     'profession': excel_list['profession'],
+                    'sub': excel_list['sub'],
                     'tag': excel_list['tag'],
                     'anti_tag': excel_list['anti_tag']
                 }
@@ -4417,35 +4440,36 @@ class InviteBot():
                     end_number=length
                 )
 
-        async def rollback_by_number_short_session(message):
+        async def rollback_by_number_short_session(message, short_session_number=None):
             msg = await self.bot_aiogram.send_message(message.chat.id, "Please wait a few seconds")
 
-            responses1 = self.db.get_all_from_db(
-                table_name='devops',
-                param="WHERE short_session_numbers LIKE '%20230207231816%'"
-                # field='short_session_numbers'
-            )
-            responses_admin = self.db.get_all_from_db(
-                table_name=variable.admin_database,
-                param="WHERE short_session_numbers LIKE '%20230207231816%'"
-                # field='short_session_numbers'
-            )
-            responses_archive = self.db.get_all_from_db(
-                table_name=variable.archive_database,
-                param="WHERE short_session_numbers LIKE '%20230207231816%'"
-                # field='short_session_numbers'
-            )
+            # responses1 = self.db.get_all_from_db(
+            #     table_name='devops',
+            #     param="WHERE short_session_numbers LIKE '%20230207231816%'"
+            #     # field='short_session_numbers'
+            # )
+            # responses_admin = self.db.get_all_from_db(
+            #     table_name=variable.admin_database,
+            #     param="WHERE short_session_numbers LIKE '%20230207231816%'"
+            #     # field='short_session_numbers'
+            # )
+            # responses_archive = self.db.get_all_from_db(
+            #     table_name=variable.archive_database,
+            #     param="WHERE short_session_numbers LIKE '%20230207231816%'"
+            #     # field='short_session_numbers'
+            # )
             pass
             # layout: backend: 070220230134
             bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
             progress = ShowProgress(bot_dict)
 
-            short_session_number = self.db.get_all_from_db(
-                table_name=variable.short_session_database,
-                param=f"WHERE id=(SELECT MAX(id) FROM {variable.short_session_database})",
-                field='session_name',
-                without_sort=True
-            )[0][0]
+            if not short_session_number:
+                short_session_number = self.db.get_all_from_db(
+                    table_name=variable.short_session_database,
+                    param=f"WHERE id=(SELECT MAX(id) FROM {variable.short_session_database})",
+                    field='session_name',
+                    without_sort=True
+                )[0][0]
 
             # add tags
             table_list = []
