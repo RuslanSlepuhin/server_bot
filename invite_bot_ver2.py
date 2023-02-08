@@ -4367,14 +4367,14 @@ class InviteBot():
                 #                         tags_set.add(tag_value)
                 # tags = ", ".join(tags_set)
                 print('tags: ', tags)
-
+                profession_name = ", ".join(profession['profession']['profession'])
                 if tags:
                     self.db.update_table(
                         table_name=variable.admin_database,
                         param=f"WHERE id={response_dict['id']}",
                         field='tags',
                         value=tags,
-                        output_text=f'{n}tags was updated'
+                        output_text=f'{n}-tags was updated'
                     )
                 if profession['profession']['tag'] :
                     self.db.update_table(
@@ -4382,7 +4382,7 @@ class InviteBot():
                         param=f"WHERE id={response_dict['id']}",
                         field='full_tags',
                         value=profession['profession']['tag'].replace("'", ""),
-                        output_text=f'{n}full_tags was updated'
+                        output_text=f'{n}-full_tags was updated'
                     )
                 if profession['profession']['anti_tag']:
                     self.db.update_table(
@@ -4390,7 +4390,25 @@ class InviteBot():
                         param=f"WHERE id={response_dict['id']}",
                         field='full_anti_tags',
                         value=profession['profession']['anti_tag'].replace("'", ""),
-                        output_text = f'{n}anti_tags was updated'
+                        output_text = f'{n}-anti_tags was updated'
+                    )
+                if profession_name != response_dict['profession']:
+                    # rewrite profession
+                    self.db.update_table(
+                        table_name=variable.admin_database,
+                        param=f"WHERE id={response_dict['id']}",
+                        field='profession',
+                        value=profession_name,
+                        output_text=f'{n}-profession was updated'
+                    )
+                    # rewrite sub
+                    sub = helper.compose_to_str_from_list(profession['profession']['sub'])
+                    self.db.update_table(
+                        table_name=variable.admin_database,
+                        param=f"WHERE id={response_dict['id']}",
+                        field='sub',
+                        value=sub,
+                        output_text=f'{n}-sub was updated'
                     )
                 n += 1
                 await progress.show_the_progress(
