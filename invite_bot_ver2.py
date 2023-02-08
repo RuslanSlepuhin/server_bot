@@ -3373,10 +3373,11 @@ class InviteBot():
             excel_list['anti_tag'] = []
             excel_list['vacancy'] = []
             n = 0
-            for i in ['admin_last_session']:
+            for i in [variable.admin_database,]:
                 response = DataBaseOperations(None).get_all_from_db(
                     table_name=f'{i}',
                     param="""WHERE profession <> 'no_sort'""",
+                    field=variable.admin_table_fields,
                     without_sort=True
                 )
 
@@ -3385,28 +3386,39 @@ class InviteBot():
                 n=0
                 length=len(response)
                 for vacancy in response:
-                    title = vacancy[2]
-                    body = vacancy[3]
-                    vac = vacancy[5]
-                    response_from_filter = VacancyFilter().sort_profession(
-                        title=title,
-                        body=body,
-                        check_vacancy=False,
-                        check_contacts=False
+                    vacancy_dict = await helper.to_dict_from_admin_response(
+                        response=vacancy,
+                        fields=variable.admin_table_fields
                     )
-                    profession = response_from_filter['profession']
-                    params = response_from_filter['params']
+                    title = vacancy_dict['title']
+                    body = vacancy_dict['body']
+                    vac = vacancy_dict['vacancy']
+                    full_tags = vacancy_dict['full_tags']
+                    full_anti_tags = vacancy_dict['full_anti_tags']
+                    profession = vacancy_dict['profession']
+
+                    # response_from_filter = VacancyFilter().sort_profession(
+                    #     title=title,
+                    #     body=body,
+                    #     check_vacancy=False,
+                    #     check_contacts=False,
+                    #     check_profession=False,
+                    #     get_params=True
+                    # )
+                    # # profession = response_from_filter['profession']
+                    # params = response_from_filter['params']
+
                     if vac:
                         excel_list['vacancy'].append(vac)
-                    elif params['vacancy']:
-                        excel_list['vacancy'].append(params['vacancy'])
+                    # elif params['vacancy']:
+                    #     excel_list['vacancy'].append(params['vacancy'])
                     else:
                         excel_list['vacancy'].append('-')
                     excel_list['title'].append(title)
                     excel_list['body'].append(body)
-                    excel_list['profession'].append(profession['profession'])
-                    excel_list['tag'].append(profession['tag'])
-                    excel_list['anti_tag'].append(profession['anti_tag'])
+                    excel_list['profession'].append(profession)
+                    excel_list['tag'].append(full_tags)
+                    excel_list['anti_tag'].append(full_anti_tags)
                     n += 1
                     print(f'step {n} passed')
                     msg = await sp.show_the_progress(
@@ -4390,6 +4402,22 @@ class InviteBot():
         async def rollback_by_number_short_session(message):
             msg = await self.bot_aiogram.send_message(message.chat.id, "Please wait a few seconds")
 
+            responses1 = self.db.get_all_from_db(
+                table_name='devops',
+                param="WHERE short_session_numbers LIKE '%20230207231816%'"
+                # field='short_session_numbers'
+            )
+            responses_admin = self.db.get_all_from_db(
+                table_name=variable.admin_database,
+                param="WHERE short_session_numbers LIKE '%20230207231816%'"
+                # field='short_session_numbers'
+            )
+            responses_archive = self.db.get_all_from_db(
+                table_name=variable.archive_database,
+                param="WHERE short_session_numbers LIKE '%20230207231816%'"
+                # field='short_session_numbers'
+            )
+            pass
             # layout: backend: 070220230134
             bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
             progress = ShowProgress(bot_dict)
