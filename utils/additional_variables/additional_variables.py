@@ -121,6 +121,7 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '⛔️/developing\n' \
             '⛔️/get_vacancy_names - you type the profession and bot shows you all titles\n' \
             '⛔️/add_tags_to_DB - (one time usable)\n' \
+            '⛔️/rollback_last_short_session - one step back (shorts) you type number short_session (you can see)\n' \
             '⛔️/rollback_by_number_short_session - one step back (shorts) you type number short_session (you can see)\n' \
             '⛔️/ --- refresh_pattern - to get the modify pattern from DB\n' \
             '⛔️/peerchannel - useful for a developer to get id channel\n' \
