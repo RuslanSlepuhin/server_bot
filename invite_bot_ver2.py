@@ -497,15 +497,25 @@ class InviteBot():
         async def get_debugs(message: types.Message):
             await debug_function()
 
-        @self.dp.message_handler(commands=['developing'])
-        async def developing(message: types.Message):
-            self.db.check_or_create_table_admin(
-                table_name='archive'
-            )
-            self.db.append_columns(
-                table_name_list=['admin_last_session',],
-                column="sub VARCHAR (250)"
-            )
+        @self.dp.message_handler(commands=['get_tables_and_fields'])
+        async def get_tables_and_fields(message: types.Message):
+            dict_tables = {}
+            info = self.db.get_information_about_tables_and_fields()
+            for i in info:
+                if i[0] not in dict_tables:
+                    dict_tables[i[0]] = []
+                dict_tables[i[0]].append(i[1])
+            for i in dict_tables:
+                print(f"{i}:")
+                count = 0
+                message_for_send = f"{i}:\n"
+                for element in dict_tables[i]:
+                    print(f"   {count}-{element}")
+                    message_for_send += f"   {count}-{element}\n"
+                    count += 1
+                await self.bot_aiogram.send_message(message.chat.id, message_for_send)
+                await asyncio.sleep(random.randrange(1, 2))
+                print('--------\n')
 
         @self.dp.message_handler(commands=['get_backup_db'])
         async def get_logs(message: types.Message):

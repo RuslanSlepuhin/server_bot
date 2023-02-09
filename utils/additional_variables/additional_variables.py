@@ -119,6 +119,7 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '------------ FOR DEVELOPER: ------------\n' \
             '⛔️/debugs\n' \
             '⛔️/developing\n' \
+            '⛔️/get_tables_and_fields\n' \
             '⛔️/get_vacancy_names - you type the profession and bot shows you all titles\n' \
             '⛔️/add_tags_to_DB - (one time usable)\n' \
             '⛔️/rollback_last_short_session - one step back (shorts) you type number short_session (you can see)\n' \
