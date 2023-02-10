@@ -226,6 +226,9 @@ class InviteBot():
         class Form_rollback(StatesGroup):
             short_session_name = State()
 
+        class Form_vacancy_name(StatesGroup):
+            profession = State()
+
         @self.dp.message_handler(commands=['start'])
         async def send_welcome(message: types.Message):
 
@@ -250,6 +253,23 @@ class InviteBot():
         @self.dp.message_handler(commands=['help'])
         async def get_logs(message: types.Message):
             await self.bot_aiogram.send_message(message.chat.id, variable.help_text)
+
+        @self.dp.message_handler(commands=['get_vacancies_name_by_profession'])
+        async def get_vacancies_name_by_profession_command(message: types.Message):
+            await Form_vacancy_names.profession.set()
+            await self.bot_aiogram.send_message(message.chat.id, 'Type the profession')
+
+        @self.dp.message_handler(state=Form_vacancy_names.profession)
+        async def get_vacancies_name_by_profession_form(message: types.Message, state: FSMContext):
+            async with state.proxy() as data:
+                data['profession'] = message.text
+                profession = message.text
+            await state.finish()
+            if profession not in variable.valid_professions:
+                await Form_vacancy_names.profession.set()
+                await self.bot_aiogram.send_message(message.chat.id, 'Type the correct profession')
+            else:
+                await get_vacancies_name_by_profession(message,profession)
 
         @self.dp.message_handler(commands=['rollback_last_short_session'])
         async def rollback_by_number_short_session_command(message: types.Message):
@@ -4549,6 +4569,32 @@ class InviteBot():
                                 param=f"WHERE id={response_dict['id']}"
                             )
             await msg.edit_text(f"{msg.text}\nDone! Data has restored")
+
+        async def get_vacancies_name_by_profession(message, profession):
+            vacancy_name_str = ''
+            vacancy_name_list = []
+            responses = self.db.get_all_from_db(
+                table_name=variable.admin_database,
+                field='title, vacancy, full_tags, full_anti_tags',
+                param=f"WHERE profession LIKE '%{profession}%'"
+            )
+            for response in responses:
+                if response[1]:
+                    text = f"{response[1]}\n{response[2]}\n{response[3]}\n----------\n"
+                else:
+                    text = f"{response[0]}\n{response[2]}\n{response[3]}\n----------\n"
+                if len(f"{vacancy_name_str}{text}")>4096:
+                    vacancy_name_list.append(vacancy_name_str)
+                    vacancy_name_str = text
+                else:
+                    vacancy_name_str += text
+            vacancy_name_list.append(vacancy_name_str)
+            for i in vacancy_name_list:
+                await self.bot_aiogram.send_message(message.chat.id, i)
+                await asyncio.sleep(random.randrange(1,2))
+
+
+
 
         # start_polling(self.dp)
         executor.start_polling(self.dp, skip_updates=True)
