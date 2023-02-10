@@ -89,12 +89,10 @@ clear_vacancy_trash_pattern = "[Ии]щем в команду[:]?|[Тт]ребу
                               "[Дд]олжность[:]|в поиске[:]|[Нн]азвание вакансии[:]|[VACANCYvacancy]{7}[:]?|[Pp]osition[:]?"
 
 how_much_pages = 7
-
 path_post_request_file = "./excel/path_post_request_file.txt"
-
 till = 5
-
 vacancy_fresh_time_days = 7
+path_to_excel = "./excel/"
 
 post_request_for_example = {
     'profession': '',
@@ -126,7 +124,7 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '⛔️/add_tags_to_DB - (one time usable)\n' \
             '⛔️/rollback_last_short_session - one step back (shorts) you type number short_session (you can see)\n' \
             '⛔️/rollback_by_number_short_session - one step back (shorts) you type number short_session (you can see)\n' \
-            '⛔️/get_vacancies_name_by_profession\n' \
+            '⛔️/get_vacancies_name_by_profession - get vacancies name from DB to file with fields\n' \
             '⛔️/ --- refresh_pattern - to get the modify pattern from DB\n' \
             '⛔️/peerchannel - useful for a developer to get id channel\n' \
             '⛔️/getdata - get channel data\n' \
