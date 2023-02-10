@@ -1533,9 +1533,15 @@ class InviteBot():
                         text=variable.admin_table_fields,
                         separator=', '
                     )
+                responses = self.db.get_all_from_db(
+                    table_name=variable.admin_database,
+                    param="WHERE profession <> 'no_sort'",
+                    field='id'
+                )
                 for item in variable.valid_professions:
                     message_for_send += f"{item}: {result_dict['last_session'][item]}/{result_dict['all'][item]}\n"
-                message_for_send += f"-----------------\nSumm: {sum(result_dict['last_session'].values())}/{sum(result_dict['all'].values())}"
+                message_for_send += f"-----------------\nSumm: {sum(result_dict['last_session'].values())}/{sum(result_dict['all'].values())}\n" \
+                                    f"vacancies number: {len(responses)}"
                 await self.bot_aiogram.send_message(callback.message.chat.id, message_for_send, parse_mode='html', reply_markup=self.markup)
 
 # -----------------------------------------------------------------------
@@ -3738,7 +3744,7 @@ class InviteBot():
             answer_dict = self.db.remove_completed_professions()
             await self.bot_aiogram.send_message(
                 message.chat.id,
-                f"messages: {answer_dict['messages']}\ndeleted: {answer_dict['deleted']}\nchanged: {answer_dict['change_profession']}"
+                f"messages: {answer_dict['messages']}\nremoved to archive: {answer_dict['deleted']}\nchanged profession: {answer_dict['change_profession']}"
             )
 
         async def push_shorts(message, callback_data):
