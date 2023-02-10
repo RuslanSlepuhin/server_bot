@@ -4575,23 +4575,36 @@ class InviteBot():
             vacancy_name_list = []
             responses = self.db.get_all_from_db(
                 table_name=variable.admin_database,
-                field='title, vacancy, full_tags, full_anti_tags',
+                field='title, vacancy, full_tags, full_anti_tags, profession, sub',
                 param=f"WHERE profession LIKE '%{profession}%'"
             )
-            for response in responses:
-                if response[1]:
-                    text = f"{response[1]}\n{response[2]}\n{response[3]}\n----------\n"
-                else:
-                    text = f"{response[0]}\n{response[2]}\n{response[3]}\n----------\n"
-                if len(f"{vacancy_name_str}{text}")>4096:
-                    vacancy_name_list.append(vacancy_name_str)
-                    vacancy_name_str = text
-                else:
-                    vacancy_name_str += text
-            vacancy_name_list.append(vacancy_name_str)
-            for i in vacancy_name_list:
-                await self.bot_aiogram.send_message(message.chat.id, i)
-                await asyncio.sleep(random.randrange(1,2))
+            if responses:
+                with open(f"{variable.path_to_excel}{profession}.txt", 'a', encoding="utf-8") as file:
+                    file.write("")
+                vacancy_name_list.append(f"Quantity juniors: {len(responses)}\n\n")
+                count = 1
+                for response in responses:
+                    if response[1]:
+                        text = f"{count}\n{response[1]}\nprof: {response[4]}\n{response[2]}\n{response[3]}\nsubs:\n{response[5]}\n----------\n\n"
+                    else:
+                        text = f"{count}\n{response[0]}\nprof: {response[4]}\n{response[2]}\n{response[3]}\nsubs:\n{response[5]}\n----------\n\n"
+                    if len(f"{vacancy_name_str}{text}")>4096:
+                        vacancy_name_list.append(vacancy_name_str)
+                        vacancy_name_str = text
+                    else:
+                        vacancy_name_str += text
+                    count += 1
+                vacancy_name_list.append(vacancy_name_str)
+                # for i in vacancy_name_list:
+                #     await self.bot_aiogram.send_message(message.chat.id, i)
+                #     await asyncio.sleep(random.randrange(1,2))
+                with open(f"{variable.path_to_excel}{profession}.txt", 'a', encoding="utf-8") as file:
+                    for i in vacancy_name_list:
+                        file.write(i)
+                await send_file_to_user(
+                    message=message,
+                    path=f"{variable.path_to_excel}{profession}.txt"
+                )
 
 
 
