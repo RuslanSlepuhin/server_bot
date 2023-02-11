@@ -210,14 +210,14 @@ class DataBaseOperations:
             new_post = f"""INSERT INTO {pro} (
             chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, job_type, 
             city, salary, experience, contacts, time_of_public, created_at, agregator_link, session, sub, tags, 
-            full_tags, full_anti_tags, short_session_numbers) 
+            full_tags, full_anti_tags, short_session_numbers, level) 
                         VALUES ('{results_dict['chat_name']}', '{results_dict['title']}', '{results_dict['body']}', 
                         '{pro}', '{results_dict['vacancy']}', '{results_dict['vacancy_url']}', '{results_dict['company']}', 
                         '{results_dict['english']}', '{results_dict['relocation']}', '{results_dict['job_type']}', 
                         '{results_dict['city']}', '{results_dict['salary']}', '{results_dict['experience']}', 
                         '{results_dict['contacts']}', '{results_dict['time_of_public']}', '{datetime.now()}', '{agregator_id}', 
                         '{results_dict['session']}', '{results_dict['sub']}', '{results_dict['tags']}', '{results_dict['full_tags']}',
-                        '{results_dict['full_anti_tags']}', '{shorts_session_name}');"""
+                        '{results_dict['full_anti_tags']}', '{shorts_session_name}', '{results_dict['level']}');"""
             # print('query in db: ', new_post)
             with self.con:
                 try:
@@ -743,19 +743,19 @@ class DataBaseOperations:
         tags = helper.get_tags(profession)
         full_tags = profession['tag'].replace("'", "")
         full_anti_tags = profession['anti_tag'].replace("'", "")
-
+        level = profession['level']
 
         new_post = f"""INSERT INTO {table_name} (
                             chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, job_type, 
                             city, salary, experience, contacts, time_of_public, created_at, session, sub,
-                            tags, full_tags, full_anti_tags) 
+                            tags, full_tags, full_anti_tags, level) 
                                         VALUES ('{results_dict['chat_name']}', '{results_dict['title']}', '{results_dict['body']}', 
                                         '{results_dict['profession']}', '{results_dict['vacancy']}', '{results_dict['vacancy_url']}', '{results_dict['company']}', 
                                         '{results_dict['english']}', '{results_dict['relocation']}', '{results_dict['job_type']}', 
                                         '{results_dict['city']}', '{results_dict['salary']}', '{results_dict['experience']}', 
                                         '{results_dict['contacts']}', '{results_dict['time_of_public']}', '{datetime.now()}', 
                                         '{results_dict['session']}', '{results_dict['sub']}',
-                                        '{tags}', '{full_tags}', '{full_anti_tags}');"""
+                                        '{tags}', '{full_tags}', '{full_anti_tags}', '{level}');"""
         with self.con:
             try:
                 cur.execute(new_post)

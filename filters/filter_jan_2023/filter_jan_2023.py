@@ -166,7 +166,7 @@ class VacancyFilter:
             if level_list:
                 self.profession['level'] = ", ".join(level_list)
             else:
-                self.profession['level'] = 'undefined'
+                self.profession['level'] = ''
 
         return {'profession': self.profession, 'params': params}
 
