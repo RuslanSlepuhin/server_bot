@@ -4617,11 +4617,12 @@ class InviteBot():
             path = "./excel/vacancy_from_admin.txt"
             history_messages = await get_tg_history_messages(message)
             for vacancy in history_messages:
-                with open(path, 'a', encoding='utf-8') as file:
+                with open(path, 'w', encoding='utf-8') as file:
                     text = vacancy['message'].split('\n')[0]
                     file.write(f"{text}\n")
 
             await send_file_to_user(message, path=path)
+
 
 
         # start_polling(self.dp)
