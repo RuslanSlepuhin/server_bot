@@ -1,5 +1,6 @@
 import asyncio
 import configparser
+import datetime
 import json
 import os
 import psycopg2
@@ -95,33 +96,42 @@ async def main_endpoints():
         # )
         param = "WHERE"
         if request_data['vacancy']:
+            request_data['vacancy'] = request_data['vacancy'].lower()
             if param[-1:] == "'":
                 param += f" AND"
-            param += f" vacancy LIKE '%{request_data['vacancy']}%'"
+            param += f" LOWER(vacancy) LIKE '%{request_data['vacancy']}%'"
 
         if request_data['level']:
+            request_data['level'] = request_data['level'].lower()
             if param[-1:] == "'":
                 param += f" AND"
-            param += f" profession LIKE '%{request_data['level']}%'"
+            param += f" LOWER(profession) LIKE '%{request_data['level']}%'"
 
 
         if request_data['profession']:
+            request_data['profession'] = request_data['profession'].lower()
             if param[-1:] == "'":
                 param += f" AND"
-            param += f" profession LIKE '%{request_data['profession']}%'"
+            param += f" LOWER(profession) LIKE '%{request_data['profession']}%'"
 
         if request_data['language']:
+            request_data['language'] = request_data['language'].lower()
             if param[-1:] == "'":
                 param += " AND"
-            param += f" (title LIKE '%{request_data['language']}%' or body LIKE '%{request_data['language']}%')"
+            param += f" (LOWER(title) LIKE '%{request_data['language']}%' or LOWER(body) LIKE '%{request_data['language']}%')"
+
+        today = datetime.datetime.now()
+        date_from = (today - datetime.timedelta(days=variable.vacancy_fresh_time_days)).strftime("%Y-%m-%d")
+        param += f" AND DATE(created_at) > '{date_from}'"
+        # param = f"WHERE DATE(created_at) > '{date_from}'"
 
         responses = db.get_all_from_db(
-            table_name=variable.archive_database,
+            table_name=variable.admin_database,
             param=param,
             without_sort=False,
             field=variable.admin_table_fields
         )
-        if responses or type(responses) is not str:
+        if responses and type(responses) is not str:
             count = 0
             for response in responses:
                 response_dict = await helper.to_dict_from_admin_response(
@@ -143,6 +153,25 @@ async def main_endpoints():
             "vacancies_number": 0,
             "vacancies": ""
         }
+
+    @app.route("/get-vacancy-offset", methods = ['POST'])
+    async def get_vacancy_offset():
+        response_dict = {}
+        request_data = request.json
+        responses = db.get_all_from_db(
+            table_name=admin_database,
+            param=f"WHERE profession LIKE '%, {request_data['profession']}%' "
+                  f"OR profession LIKE '%{request_data['profession']}, %' "
+                  f"OR profession = '{request_data['profession']}' "
+                  f"ORDER BY id LIMIT 1 OFFSET {request_data['offset']}",
+            field=admin_table_fields,
+            without_sort=True
+        )
+        if responses:
+            response_dict = await helper.to_dict_from_admin_response(responses[0], admin_table_fields)
+            print(f"get each vacancy len={len(responses)} id={response_dict['id']} offset={request_data['offset']}")
+        return response_dict
+
 
     async def get_from_db():
         cur = con.cursor()
