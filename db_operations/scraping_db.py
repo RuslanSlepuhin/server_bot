@@ -1,7 +1,7 @@
 import configparser
 import json
 import re
-from utils.additional_variables.additional_variables import admin_database
+from utils.additional_variables.additional_variables import admin_database, archive_database, admin_table_fields
 from utils.additional_variables.additional_variables import table_list_for_checking_message_in_db, short_session_database
 import psycopg2
 from datetime import datetime
@@ -1197,6 +1197,14 @@ class DataBaseOperations:
         query = f"""UPDATE {table_name} SET {field}='{value}' {param}"""
         self.run_free_request(request=query, output_text=output_text)
 
+    def update_table_multi(self, table_name, param, values_dict, output_text='vacancy has updated'):
+        query = f"""UPDATE {table_name} SET"""
+        for key in values_dict:
+            if key != 'id':
+                query += f" {key}='{values_dict[key]}',"
+        query = f"{query[:-1]} {param}"
+        self.run_free_request(request=query, output_text=output_text)
+
     def check_exists_message(self, title=None, body=None, table_list=None):
         if not title and not body:
             return -1
@@ -1245,3 +1253,27 @@ class DataBaseOperations:
         with self.con:
             cur.execute(query)
         return cur.fetchall()
+
+    def transfer_vacancy(self, table_from, table_to, id):
+        keys_str = ''
+        values_str = ''
+        response_dict = {}
+        response = self.get_all_from_db(
+            table_name=table_from,
+            param=f"WHERE id={id}",
+            field=admin_table_fields
+        )
+        if response:
+            response = response[0]
+            response_dict = helper.to_dict_from_admin_response_sync(response, admin_table_fields)
+
+            for keys in response_dict:
+                if keys != 'id':
+                    keys_str += f"{keys}, "
+                    values_str += f"'{response_dict[keys]}', "
+            query = f"INSERT INTO {table_to} ({keys_str[:-2]}) VALUES ({values_str[:-2]})"
+            self.run_free_request(query)
+            return True
+        else:
+            return  False
+

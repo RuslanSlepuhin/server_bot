@@ -172,6 +172,40 @@ async def main_endpoints():
             print(f"get each vacancy len={len(responses)} id={response_dict['id']} offset={request_data['offset']}")
         return response_dict
 
+    @app.route("/change_vacancy", methods = ['POST'])
+    async def change_vacancy():
+        response_dict = {}
+        request_data = request.json
+        if request_data['method'].lower() == 'put':
+            keys = set(request_data['vacancy'].keys())
+            admin_fields = set(variable.admin_table_fields.split(", "))
+            if 'vacancy' in request_data and keys.issubset(admin_fields):
+                try:
+                    db.update_table_multi(
+                        table_name=variable.admin_database,
+                        param=f"WHERE id={request_data['vacancy']['id']}",
+                        values_dict=request_data['vacancy']
+                    )
+                except Exception as e:
+                    return {'response': f"error: {e}"}
+            else:
+                return {'response': "json fields are not correct"}
+        if request_data['method'].lower() == 'delete':
+            answer = db.transfer_vacancy(
+                table_from=variable.admin_database,
+                table_to=variable.archive_database,
+                id=request_data['vacancy']['id']
+            )
+            if not answer:
+                return {'response': 'Wrong id'}
+            db.delete_data(
+                table_name=variable.admin_database,
+                param=f"WHERE id={request_data['vacancy']['id']}"
+            )
+
+        return {'response': 'Done'}
+
+
 
     async def get_from_db():
         cur = con.cursor()
