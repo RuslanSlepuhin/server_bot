@@ -267,7 +267,10 @@ class WriteToDbMessages():
                 'contacts': '',
                 'time_of_public': date,
                 'created_at': '',
-                'session': self.current_session
+                'session': self.current_session,
+                'tags': '',
+                'full_tags': '',
+                'full_anti_tags': ''
             }
 
             print(f"----------------\nchannel = {channel}")
@@ -295,6 +298,7 @@ class WriteToDbMessages():
                         results_dict[key] = params[key]
                     # write to profession's tables. Returns dict with professions as a key and False, if it was written and True if existed
                     # -------------------------------- write all message for admin in one table--------------------------------
+
                 DataBaseOperations(None).push_to_admin_table(
                     results_dict=results_dict,
                     profession=profession,
