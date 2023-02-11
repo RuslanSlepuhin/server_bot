@@ -254,6 +254,10 @@ class InviteBot():
         async def get_logs(message: types.Message):
             await self.bot_aiogram.send_message(message.chat.id, variable.help_text)
 
+        @self.dp.message_handler(commands=['get_and_write_level'])
+        async def get_from_admin_command(message: types.Message):
+            await get_and_write_level(message)
+
         @self.dp.message_handler(commands=['get_from_admin'])
         async def get_from_admin_command(message: types.Message):
             await get_from_admin(message)
@@ -4374,10 +4378,6 @@ class InviteBot():
             #     table_list=table_list,
             #     column_name_type="short_session_numbers VARCHAR (300)"
             # )
-            self.db.add_columns_to_tables(
-                table_list=table_list,
-                column_name_type="level VARCHAR (70)"
-            )
 
             # get tags from sort_profession and write to each vacancy
             responses = self.db.get_all_from_db(
@@ -4613,6 +4613,48 @@ class InviteBot():
                     path=f"{variable.path_to_excel}{profession}.txt"
                 )
 
+        async def get_and_write_level(message):
+            response_dict = {}
+            level = ''
+            table_list = []
+            table_list.extend(variable.valid_professions)
+            table_list.append(variable.admin_database)
+            table_list.append(variable.archive_database)
+            self.db.add_columns_to_tables(
+                table_list=table_list,
+                column_name_type="level VARCHAR (70)"
+            )
+
+            responses = self.db.get_all_from_db(
+                table_name=variable.admin_database,
+                param="WHERE profession <> 'no_sort'",
+                field=variable.admin_table_fields
+            )
+            if responses:
+                for response in responses:
+                    response_dict = await helper.to_dict_from_admin_response(
+                        response=response,
+                        fields=variable.admin_table_fields
+                    )
+                    level = VacancyFilter().sort_profession(
+                        title=response_dict['title'],
+                        body=response_dict['body'],
+                        check_contacts=False,
+                        check_vacancy=False,
+                        check_profession=False,
+                        get_params=False,
+                        check_level=True
+                    )['profession']['level']
+                    pass
+                    self.db.update_table(
+                        table_name=variable.admin_database,
+                        param=f"WHERE id={response_dict['id']}",
+                        field="level",
+                        value=level,
+                        output_text=level
+                    )
+            await self.bot_aiogram.send_message(message.chat.id, "Done!")
+
         async def get_from_admin(message):
             path = "./excel/vacancy_from_admin.txt"
             with open(path, 'w', encoding='utf-8') as file:
@@ -4620,7 +4662,7 @@ class InviteBot():
 
             history_messages = await get_tg_history_messages(message)
             for vacancy in history_messages:
-                with open(path, 'a', encoding='utf-8') as file:
+                with open(path, 'w', encoding='utf-8') as file:
                     text = vacancy['message'].split('\n')[0]
                     file.write(f"{text}\n")
 
