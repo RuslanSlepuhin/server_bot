@@ -84,6 +84,12 @@ export_pattern = {
             'mex': '',
             'sub': ''
         }
+    },
+    'level': {
+        'junior': junior,
+        'middle': pattern['middle'],
+        'senior': pattern['senior'],
+        'trainee': pattern['trainee']
     }
 }
 

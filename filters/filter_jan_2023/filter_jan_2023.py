@@ -31,13 +31,16 @@ class VacancyFilter:
             check_contacts=True,
             check_profession=True,
             check_vacancy=True,
-            get_params=True
+            get_params=True,
+            check_level=True
     ):
         # profession = dict()
         self.profession['tag'] = ''
         self.profession['anti_tag'] = ''
         self.profession['profession'] = []
         self.profession['sub'] = []
+        self.profession['level'] = ""
+
         params = {}
         vacancy = f"{title}\n{body}"
 
@@ -75,6 +78,8 @@ class VacancyFilter:
                     print(f"not contacts {self.profession['profession']}")
                     print("= contacts not found =")
                     return {'profession': self.profession, 'params': {}}
+
+
 
             # ---------------- professions -----------------
             vacancy_name = self.get_vacancy_name(
@@ -144,6 +149,24 @@ class VacancyFilter:
             params = self.get_params(text=vacancy)
 
         print(f"\nFound next professions:\n{self.profession['profession']}\n")
+
+        if check_level:
+            level_list = []
+
+            for item in self.export_pattern['level']:
+                result = self.search_profession(
+                    vacancy=vacancy,
+                    item=item,
+                    mex=True,
+                    pattern_key='level'
+                )
+                pass
+                if result['result']:
+                    level_list.append(result['result'])
+            if level_list:
+                self.profession['level'] = ", ".join(level_list)
+            else:
+                self.profession['level'] = 'undefined'
 
         return {'profession': self.profession, 'params': params}
 
@@ -393,7 +416,7 @@ class VacancyFilter:
                     self.profession['sub'][key_word].append(key)
         return self.profession
 
-    def search_profession(self, vacancy, item, mex=True):
+    def search_profession(self, vacancy, item, mex=True, pattern_key=None):
             if item in self.not_lower_professions:
                 low = False
             else:
@@ -402,8 +425,11 @@ class VacancyFilter:
             if item == 'product':
                 item = 'pm'
 
+            if not pattern_key:
+                pattern_key = 'professions'
+
             result = self.check_parameter(
-                pattern=self.export_pattern['professions'][item],
+                pattern=self.export_pattern[pattern_key][item],
                 vacancy=vacancy,
                 low=low,
                 key=item,
