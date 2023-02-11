@@ -254,6 +254,10 @@ class InviteBot():
         async def get_logs(message: types.Message):
             await self.bot_aiogram.send_message(message.chat.id, variable.help_text)
 
+        @self.dp.message_handler(commands=['get_from_admin'])
+        async def get_from_admin_command(message: types.Message):
+            await get_from_admin(message)
+
         @self.dp.message_handler(commands=['get_vacancies_name_by_profession'])
         async def get_vacancies_name_by_profession_command(message: types.Message):
             await Form_vacancy_names.profession.set()
@@ -292,7 +296,6 @@ class InviteBot():
                 message=message,
                 short_session_number=short_session_name
             )
-
 
         @self.dp.message_handler(commands=['add_tags_to_DB'])
         async def add_tags_to_db_command(message: types.Message):
@@ -4351,25 +4354,29 @@ class InviteBot():
             table_list.append(variable.admin_database)
             table_list.append(variable.archive_database)
 
+            # self.db.add_columns_to_tables(
+            #     table_list=table_list,
+            #     column_name_type="sended_to_agregator VARCHAR (30)"
+            # )
+            # self.db.add_columns_to_tables(
+            #     table_list=table_list,
+            #     column_name_type="tags VARCHAR (700)"
+            # )
+            # self.db.add_columns_to_tables(
+            #     table_list=table_list,
+            #     column_name_type="full_tags VARCHAR (700)"
+            # )
+            # self.db.add_columns_to_tables(
+            #     table_list=table_list,
+            #     column_name_type="full_anti_tags VARCHAR (700)"
+            # )
+            # self.db.add_columns_to_tables(
+            #     table_list=table_list,
+            #     column_name_type="short_session_numbers VARCHAR (300)"
+            # )
             self.db.add_columns_to_tables(
                 table_list=table_list,
-                column_name_type="sended_to_agregator VARCHAR (30)"
-            )
-            self.db.add_columns_to_tables(
-                table_list=table_list,
-                column_name_type="tags VARCHAR (700)"
-            )
-            self.db.add_columns_to_tables(
-                table_list=table_list,
-                column_name_type="full_tags VARCHAR (700)"
-            )
-            self.db.add_columns_to_tables(
-                table_list=table_list,
-                column_name_type="full_anti_tags VARCHAR (700)"
-            )
-            self.db.add_columns_to_tables(
-                table_list=table_list,
-                column_name_type="short_session_numbers VARCHAR (300)"
+                column_name_type="level VARCHAR (70)"
             )
 
             # get tags from sort_profession and write to each vacancy
@@ -4606,7 +4613,15 @@ class InviteBot():
                     path=f"{variable.path_to_excel}{profession}.txt"
                 )
 
+        async def get_from_admin(message):
+            path = "./excel/vacancy_from_admin.txt"
+            history_messages = await get_tg_history_messages(message)
+            for vacancy in history_messages:
+                with open(path, 'a', encoding='utf-8') as file:
+                    text = vacancy['message'].split('\n')[0]
+                    file.write(f"{text}\n")
 
+            await send_file_to_user(message, path=path)
 
 
         # start_polling(self.dp)
