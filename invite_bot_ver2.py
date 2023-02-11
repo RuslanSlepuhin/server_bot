@@ -4615,9 +4615,12 @@ class InviteBot():
 
         async def get_from_admin(message):
             path = "./excel/vacancy_from_admin.txt"
+            with open(path, 'w', encoding='utf-8') as file:
+                file.write(f"")
+
             history_messages = await get_tg_history_messages(message)
             for vacancy in history_messages:
-                with open(path, 'w', encoding='utf-8') as file:
+                with open(path, 'a', encoding='utf-8') as file:
                     text = vacancy['message'].split('\n')[0]
                     file.write(f"{text}\n")
 
