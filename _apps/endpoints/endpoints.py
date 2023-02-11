@@ -204,10 +204,24 @@ async def main_endpoints():
             table_name=variable.admin_database,
             param=f"WHERE id={request_data['vacancy']['id']}"
         )
-
         return {'response': 'Done'}
 
-
+    @app.route("/three-last-vacancies", methods=['GET'])
+    async def three_last_vacancies():
+        result_dict = {}
+        result_dict['vacancies'] = {}
+        responses = db.get_all_from_db(
+            table_name=variable.admin_database,
+            param="WHERE level LIKE '%trainee%' ORDER BY id DESC LIMIT 3",
+            field=variable.admin_table_fields,
+            without_sort=True
+        )
+        if responses:
+            count = 0
+            for response in responses:
+                result_dict['vacancies'][str(count)] = helper.to_dict_from_admin_response_sync(response, variable.admin_table_fields)
+                count += 1
+        return result_dict
 
     async def get_from_db():
         cur = con.cursor()
