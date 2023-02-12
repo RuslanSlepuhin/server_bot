@@ -214,7 +214,7 @@ async def main_endpoints():
 
     async def compose_request_to_db(response_data):
         query_profession = ""
-        common_query = "WHERE "
+        common_query = "WHERE ("
         query_job_type = ""
         if response_data['profession']:
             for item in response_data['profession']:
@@ -263,7 +263,7 @@ async def main_endpoints():
                 else:
                     param += ") "
         else:
-            param += "("
+            param += ""
             field_count = 0
             for field in search_fields:
                 field += f" LIKE '%{request_data_key}%' "
@@ -294,36 +294,38 @@ async def main_endpoints():
         #     "companySize": ["1-200", "201-500", "501-1000", "1000+"],
         #     "job_type": ["remote", "fulltime", "flexible", "office", "office/remote"]
         # }
+        param = ""
         request_data = request.json
-        param = "WHERE "
+        start_word = "WHERE ("
+        param += start_word
         search_title_body_fields = ['direction', 'specialization', 'programmingLanguage', 'technologies',
                                     'country', 'city', 'state', 'salaryOption', 'companyScope', 'typeOfEmployment',
                                     'companyType']
         for key in request_data:
             if request_data[key]:
                 if key in search_title_body_fields:
-                    if len(param) > 6:
+                    if len(param) > len(start_word):
                         param += "AND ("
                     param += await compose_query_loop(
                         request_data_key=request_data[key],
                         search_fields=['body', 'title', 'vacancy']
                     )
         if request_data['level']:
-            if len(param) > 6:
+            if len(param) > len(start_word):
                 param += "AND ("
             param += await compose_query_loop(
                 request_data_key=request_data['level'],
                 search_fields=['level', 'body', 'title']
             )
         if request_data['job_type']:
-            if len(param) > 6:
+            if len(param) > len(start_word):
                 param += "AND ("
             param += await compose_query_loop(
                 request_data_key=request_data['job_type'],
                 search_fields=['job_type', 'body', 'title']
             )
         if request_data['salary']:
-            if len(param) > 6:
+            if len(param) > len(start_word):
                 pass
 
         today = datetime.datetime.now()
