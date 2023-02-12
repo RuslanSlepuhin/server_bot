@@ -85,74 +85,11 @@ async def main_endpoints():
 
     @app.route("/search-by-text", methods = ['POST'])
     async def search_by_text():
-        responses_dict = {}
-        request_data = request.json
-        # profession = vacancy_search.sort_profession(
-        #     title=request_data['filter_request'],
-        #     body='',
-        #     check_contacts=False,
-        #     check_vacancy=False,
-        #     check_profession=True
-        # )
-        param = "WHERE"
-        if request_data['vacancy']:
-            request_data['vacancy'] = request_data['vacancy'].lower()
-            if param[-1:] == "'":
-                param += f" AND"
-            param += f" LOWER(vacancy) LIKE '%{request_data['vacancy']}%'"
-
-        if request_data['level']:
-            request_data['level'] = request_data['level'].lower()
-            if param[-1:] == "'":
-                param += f" AND"
-            param += f" LOWER(profession) LIKE '%{request_data['level']}%'"
-
-
-        if request_data['profession']:
-            request_data['profession'] = request_data['profession'].lower()
-            if param[-1:] == "'":
-                param += f" AND"
-            param += f" LOWER(profession) LIKE '%{request_data['profession']}%'"
-
-        if request_data['language']:
-            request_data['language'] = request_data['language'].lower()
-            if param[-1:] == "'":
-                param += " AND"
-            param += f" (LOWER(title) LIKE '%{request_data['language']}%' or LOWER(body) LIKE '%{request_data['language']}%')"
-
-        today = datetime.datetime.now()
-        date_from = (today - datetime.timedelta(days=variable.vacancy_fresh_time_days)).strftime("%Y-%m-%d")
-        param += f" AND DATE(created_at) > '{date_from}'"
-        # param = f"WHERE DATE(created_at) > '{date_from}'"
-
-        responses = db.get_all_from_db(
-            table_name=variable.admin_database,
-            param=param,
-            without_sort=False,
-            field=variable.admin_table_fields
+        responses_dict = await search_by_text_func(
+            request=request
         )
-        if responses and type(responses) is not str:
-            count = 0
-            for response in responses:
-                response_dict = await helper.to_dict_from_admin_response(
-                    response=response,
-                    fields=variable.admin_table_fields
-                )
-                responses_dict[count] = {}
-                responses_dict[count] = response_dict
-                count +=1
-                if count>=10:
-                    break
-            # await write_to_file(text=request_data)
-            print(len(responses))
-            return {
-                "vacancies_number": len(responses),
-                "vacancies": responses_dict
-            }
-        return {
-            "vacancies_number": 0,
-            "vacancies": ""
-        }
+        return responses_dict
+
 
     @app.route("/get-vacancy-offset", methods = ['POST'])
     async def get_vacancy_offset():
@@ -305,6 +242,117 @@ async def main_endpoints():
 
         return all_vacancies
 
+    async def compose_query_loop(request_data_key, search_fields: list):
+        param = ''
+        if type(request_data_key) is not str:
+            param += "("
+            count = 0
+            for element in request_data_key:
+                field_count = 0
+                for field in search_fields:
+                    field += f" LIKE '%{element}%' "
+                    field_count += 1
+                    param += field
+                    if field_count < len(search_fields):
+                        param += "OR "
+                    else:
+                        param += ") "
+                count += 1
+                if count < len(request_data_key):
+                    param += "OR ( "
+                else:
+                    param += ") "
+        else:
+            param += "("
+            field_count = 0
+            for field in search_fields:
+                field += f" LIKE '%{request_data_key}%' "
+                field_count += 1
+                param += field
+                if field_count < len(search_fields):
+                    param += "OR "
+                else:
+                    param += ") "
+        return param
+
+    async def search_by_text_func(request):
+        # req_dict = {
+        #     "direction": "",
+        #     "specialization": [],
+        #     "programmingLanguage": [],
+        #     "technologies": [],
+        #     "level": ["all", "trainee", "entry level", "junior", "middle", "senior", "director", "lead"],
+        #     "country": "",
+        #     "city": "",
+        #     "state": "",
+        #     "salary": ["", ""],
+        #     "salaryOption": ["hourly", "perMonth", "perYear", "beforeTaxes", "inHand"],
+        #     "companyScope": "",
+        #     "typeOfEmployment": ["all", "fulltime", "parttime", "tempJob", "contract", "freelance", "internship",
+        #                          "volunteering"],
+        #     "companyType": ["all", "product", "outsourcing", "outstaff", "consulting", "notTechnical", "startup"],
+        #     "companySize": ["1-200", "201-500", "501-1000", "1000+"],
+        #     "job_type": ["remote", "fulltime", "flexible", "office", "office/remote"]
+        # }
+        request_data = request.json
+        param = "WHERE "
+        search_title_body_fields = ['direction', 'specialization', 'programmingLanguage', 'technologies',
+                                    'country', 'city', 'state', 'salaryOption', 'companyScope', 'typeOfEmployment',
+                                    'companyType']
+        for key in request_data:
+            if request_data[key]:
+                if key in search_title_body_fields:
+                    if len(param) > 6:
+                        param += "AND ("
+                    param += await compose_query_loop(
+                        request_data_key=request_data[key],
+                        search_fields=['body', 'title', 'vacancy']
+                    )
+        if request_data['level']:
+            if len(param) > 6:
+                param += "AND ("
+            param += await compose_query_loop(
+                request_data_key=request_data['level'],
+                search_fields=['level', 'body', 'title']
+            )
+        if request_data['job_type']:
+            if len(param) > 6:
+                param += "AND ("
+            param += await compose_query_loop(
+                request_data_key=request_data['job_type'],
+                search_fields=['job_type', 'body', 'title']
+            )
+        if request_data['salary']:
+            if len(param) > 6:
+                pass
+
+        today = datetime.datetime.now()
+        date_from = today - datetime.timedelta(days=variable.vacancy_fresh_time_days)
+        date_from = date_from.strftime('%Y-%m-%d')
+        param += f"AND (DATE(time_of_public)>'{date_from}')"
+        print(param)
+        responses_list = []
+
+        for table_name in variable.valid_professions:
+            responses = db.get_all_from_db(
+                table_name=table_name,
+                param=param,
+                field=variable.admin_table_fields
+            )
+            responses_list.extend(responses)
+        if responses_list:
+            return await get_http_response(responses_list)
+        return {'vacancies': {}}
+
+    async def get_http_response(responses):
+        responses_dict = {}
+        responses_dict['vacancies'] = {}
+        responses_dict['quantity'] = len(responses)
+        count = 0
+        for response in responses:
+            responses_dict['vacancies'][str(count)] = await helper.to_dict_from_admin_response(response, variable.admin_table_fields)
+            count += 1
+        return responses_dict
 
 
     app.run(host=localhost, port=int(os.environ.get('PORT', 5000)))
