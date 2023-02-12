@@ -229,6 +229,9 @@ class InviteBot():
         class Form_vacancy_name(StatesGroup):
             profession = State()
 
+        class Form_add_field(StatesGroup):
+            field = State()
+
         @self.dp.message_handler(commands=['start'])
         async def send_welcome(message: types.Message):
 
@@ -253,6 +256,24 @@ class InviteBot():
         @self.dp.message_handler(commands=['help'])
         async def get_logs(message: types.Message):
             await self.bot_aiogram.send_message(message.chat.id, variable.help_text)
+
+
+        @self.dp.message_handler(commands=['add_field_into_tables_db'])
+        async def add_field_into_tables_db_command(message: types.Message):
+            await Form_add_field.field.set()
+            await self.bot_aiogram.send_message(message.chat.id, 'Type the name and field type')
+
+        @self.dp.message_handler(state=Form_add_field.field)
+        async def add_field_into_tables_db_form(message: types.Message, state: FSMContext):
+            async with state.proxy() as data:
+                data['profession'] = message.text
+                field = message.text
+            await state.finish()
+            try:
+                await add_field_into_tables_db(message, field)
+                await self.bot_aiogram.send_message(message.chat.id, 'Done!')
+            except Exception as e:
+                await self.bot_aiogram.send_message(message.chat.id, str(e))
 
         @self.dp.message_handler(commands=['get_and_write_level'])
         async def get_from_admin_command(message: types.Message):
@@ -4668,7 +4689,16 @@ class InviteBot():
 
             await send_file_to_user(message, path=path)
 
+        async def add_field_into_tables_db(message, field):
+            table_list = []
+            table_list.extend(variable.valid_professions)
+            table_list.append(variable.admin_database)
+            table_list.append(variable.archive_database)
 
+            self.db.add_columns_to_tables(
+                table_list=table_list,
+                column_name_type=field
+            )
 
         # start_polling(self.dp)
         executor.start_polling(self.dp, skip_updates=True)
