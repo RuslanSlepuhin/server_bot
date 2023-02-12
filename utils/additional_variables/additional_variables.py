@@ -129,7 +129,8 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '⛔️/ --- refresh_pattern - to get the modify pattern from DB\n' \
             '⛔️/get_and_write_level - define field level and rewrite to admin DB\n' \
             '⛔️/get_from_admin - get all vacancy_names from admin channel\n' \
-            '⛔️/add_field_into_tables_db - type name and field type\n' \
+            '⛔️/add_field_into_tables_db - type name and field type\n\n' \
+            '⛔️/copy_prof_tables_to_archive_prof_tables - type name and field type\n\n' \
             '⛔️/peerchannel - useful for a developer to get id channel\n' \
             '⛔️/getdata - get channel data\n' \
             '⛔️/check_parameters - get vacancy\'s parameters\n' \

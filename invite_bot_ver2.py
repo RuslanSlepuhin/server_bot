@@ -257,6 +257,9 @@ class InviteBot():
         async def get_logs(message: types.Message):
             await self.bot_aiogram.send_message(message.chat.id, variable.help_text)
 
+        @self.dp.message_handler(commands=['copy_prof_tables_to_archive_prof_tables'])
+        async def copy_prof_tables_to_archive_prof_tables_command(message: types.Message):
+            await copy_prof_tables_to_archive_prof_tables()
 
         @self.dp.message_handler(commands=['add_field_into_tables_db'])
         async def add_field_into_tables_db_command(message: types.Message):
@@ -4699,6 +4702,9 @@ class InviteBot():
                 table_list=table_list,
                 column_name_type=field
             )
+
+        async def copy_prof_tables_to_archive_prof_tables():
+            pass
 
         # start_polling(self.dp)
         executor.start_polling(self.dp, skip_updates=True)
