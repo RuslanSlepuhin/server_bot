@@ -8,11 +8,12 @@ shorts_session_database = 'short_session_numbers'
 short_session_database = 'shorts_session_name'
 admin_table_fields = "id, chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, " \
                              "job_type, city, salary, experience, contacts, time_of_public, created_at, agregator_link, " \
-                             "session, sended_to_agregator, sub, tags, full_tags, full_anti_tags, short_session_numbers, level"
+                             "session, sended_to_agregator, sub, tags, full_tags, full_anti_tags, short_session_numbers, " \
+                     "level, approved"
 
 profession_table_fields = "id, chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, " \
                              "job_type, city, salary, experience, contacts, time_of_public, created_at, agregator_link, " \
-                             "session, sub, tags, full_tags, full_anti_tags, short_session_numbers, level"
+                             "session, sub, tags, full_tags, full_anti_tags, short_session_numbers, level, approved"
 
 
 fields_admin_temporary = "id_admin_channel, id_admin_last_session_table, sended_to_agregator"
@@ -126,6 +127,9 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '⛔️/rollback_by_number_short_session - one step back (shorts) you type number short_session (you can see)\n' \
             '⛔️/get_vacancies_name_by_profession - get vacancies name from DB to file with fields\n' \
             '⛔️/ --- refresh_pattern - to get the modify pattern from DB\n' \
+            '⛔️/get_and_write_level - define field level and rewrite to admin DB\n' \
+            '⛔️/get_from_admin - get all vacancy_names from admin channel\n' \
+            '⛔️/add_field_into_tables_db - type name and field type\n' \
             '⛔️/peerchannel - useful for a developer to get id channel\n' \
             '⛔️/getdata - get channel data\n' \
             '⛔️/check_parameters - get vacancy\'s parameters\n' \
