@@ -296,6 +296,7 @@ async def main_endpoints():
         # }
         param = ""
         request_data = request.json
+        print(request_data)
         start_word = "WHERE ("
         param += start_word
         search_title_body_fields = ['direction', 'specialization', 'programmingLanguage', 'technologies',
@@ -332,7 +333,7 @@ async def main_endpoints():
         date_from = today - datetime.timedelta(days=variable.vacancy_fresh_time_days)
         date_from = date_from.strftime('%Y-%m-%d')
         param += f"AND (DATE(time_of_public)>'{date_from}')"
-        print(param)
+        # print(param)
         responses_list = []
 
         for table_name in variable.valid_professions:
@@ -343,10 +344,10 @@ async def main_endpoints():
             )
             responses_list.extend(responses)
         if responses_list:
-            return await get_http_response(responses_list)
+            return await get_http_response(responses_list, param)
         return {'vacancies': {}}
 
-    async def get_http_response(responses):
+    async def get_http_response(responses, param=None):
         responses_dict = {}
         responses_dict['vacancies'] = {}
         responses_dict['quantity'] = len(responses)
@@ -354,6 +355,8 @@ async def main_endpoints():
         for response in responses:
             responses_dict['vacancies'][str(count)] = await helper.to_dict_from_admin_response(response, variable.admin_table_fields)
             count += 1
+        if param:
+            responses_dict['query'] = param
         return responses_dict
 
 
