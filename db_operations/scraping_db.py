@@ -1409,6 +1409,7 @@ class DataBaseOperations:
         df['All']=df[all].sum(axis=1)
         df = df[sorted(df.columns )]
         df = df[['chat_name'] + [x for x in df.columns if x!='chat_name']]
+        df.loc[f'Total for period {date1}-{date2}']=df.sum(axis=0, numeric_only=True)
         df2=df.groupby('chat_name').sum(numeric_only=True)
         len=df.shape[0]
 
