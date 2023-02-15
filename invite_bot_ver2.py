@@ -229,6 +229,11 @@ class InviteBot():
         class Form_vacancy_name(StatesGroup):
             profession = State()
 
+
+        class Form_report(StatesGroup):
+            date_in = State()
+            date_out = State()
+
         class Form_add_field(StatesGroup):
             field = State()
 
@@ -420,6 +425,53 @@ class InviteBot():
                 await self.bot_aiogram.send_message(message.chat.id, f'{len(response)} records')
             else:
                 await self.bot_aiogram.send_message(message.chat.id, f'{str(response)}')
+
+        @self.dp.message_handler(commands=['how_many_vacancies_published'])
+        async def how_many_vacancies_published_commands(message: types.Message):
+
+            # self.db.check_or_create_stats_table()
+            # self.db.add_old_vacancies_to_stat_db()
+
+            await Form_report.date_in.set()
+            await self.bot_aiogram.send_message(message.chat.id, 'Type the starting date in format: YYYY-MM-DD')
+
+        @self.dp.message_handler(state=Form_report.date_in)
+        async def report_published (message: types.Message, state: FSMContext):
+            async with state.proxy() as data:
+                data['date_in'] = message.text
+                date = data['date_in']
+                try:
+                    valid_date = datetime.strptime(date, '%Y-%m-%d')
+                    await Form_report.date_out.set()
+                    await self.bot_aiogram.send_message(message.chat.id, 'Type the ending date in format: YYYY-MM-DD \n or put 1 for one-day report')
+                except ValueError:
+                    await self.bot_aiogram.send_message(message.chat.id, 'Invalid date!')
+                    await Form_report.date_in.set()
+                    await self.bot_aiogram.send_message(message.chat.id, 'Type the starting date in format: YYYY-MM-DD')
+
+        @self.dp.message_handler(state=Form_report.date_out)
+        async def report_published (message: types.Message, state: FSMContext):
+            async with state.proxy() as data:
+                data['date_out'] = message.text
+                date_in = data['date_in']
+                date_out = data['date_out']
+                if date_out != '1':
+                    try:
+                        valid_date = datetime.strptime(date_out, '%Y-%m-%d')
+                    except ValueError:
+                        await self.bot_aiogram.send_message(message.chat.id, 'Invalid date!')
+                        await Form_report.date_out.set()
+                        await self.bot_aiogram.send_message(message.chat.id, 'Type the ending date in format: YYYY-MM-DD')
+                if date_out != '1' and datetime.strptime(date_in, '%Y-%m-%d') > datetime.strptime(date_out, '%Y-%m-%d'):
+                    await self.bot_aiogram.send_message(message.chat.id, 'Check the dates! Ending date should be later than starting date.')
+                    await Form_report.date_in.set()
+                    await self.bot_aiogram.send_message(message.chat.id, 'Type the starting date in format: YYYY-MM-DD')
+            await state.finish()
+            if date_out == '1':
+                date_out = date_in
+            self.db.make_report_published_vacancies_excel(date1=date_in, date2=date_out)
+
+            await send_file_to_user(message, f'./excel/report_{date_in}_{date_out}.xlsx')
 
         @self.dp.message_handler(commands=['invite_people'])
         async def invite_people_command(message: types.Message):
@@ -3212,18 +3264,18 @@ class InviteBot():
 
                 # response = response[0]
                 query = f"""INSERT INTO {table_to} (
-                        chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, 
-                        job_type, city, salary, experience, contacts, time_of_public, created_at, agregator_link, 
-                        session, sended_to_agregator, sub, tags, full_tags, full_anti_tags, short_session_numbers) 
+                        chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation,
+                        job_type, city, salary, experience, contacts, time_of_public, created_at, agregator_link,
+                        session, sended_to_agregator, sub, tags, full_tags, full_anti_tags, short_session_numbers)
                                 VALUES (
-                                '{response_dict['chat_name']}', '{response_dict['title']}', '{response_dict['body']}', 
-                                '{response_dict['profession']}', '{response_dict['vacancy']}', '{response_dict['vacancy_url']}', 
-                                '{response_dict['company']}', 
-                                '{response_dict['english']}', '{response_dict['relocation']}', '{response_dict['job_type']}', 
-                                '{response_dict['city']}', '{response_dict['salary']}', '{response_dict['experience']}', 
-                                '{response_dict['contacts']}', '{response_dict['time_of_public']}', '{response_dict['created_at']}', 
-                                '{response_dict['agregator_link']}', '{response_dict['session']}', '{response_dict['sended_to_agregator']}', 
-                                '{response_dict['sub']}', '{response_dict['tags']}', '{response_dict['full_tags']}', 
+                                '{response_dict['chat_name']}', '{response_dict['title']}', '{response_dict['body']}',
+                                '{response_dict['profession']}', '{response_dict['vacancy']}', '{response_dict['vacancy_url']}',
+                                '{response_dict['company']}',
+                                '{response_dict['english']}', '{response_dict['relocation']}', '{response_dict['job_type']}',
+                                '{response_dict['city']}', '{response_dict['salary']}', '{response_dict['experience']}',
+                                '{response_dict['contacts']}', '{response_dict['time_of_public']}', '{response_dict['created_at']}',
+                                '{response_dict['agregator_link']}', '{response_dict['session']}', '{response_dict['sended_to_agregator']}',
+                                '{response_dict['sub']}', '{response_dict['tags']}', '{response_dict['full_tags']}',
                                 '{response_dict['full_anti_tags']}', '{response_dict['short_session_numbers']}');"""
                 self.db.run_free_request(
                     request=query,
@@ -3735,9 +3787,9 @@ class InviteBot():
             bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
 
             psites = ParseSites(client=self.client, bot_dict=bot_dict)
-            await main(self.client, bot_dict=bot_dict)
             # self.bot_aiogram.send_message(message.chat.id, "TG channels parsing has finished")
             await psites.call_sites()
+            await main(self.client, bot_dict=bot_dict)
             await self.bot_aiogram.send_message(message.chat.id, '----- PARSING HAS BEEN DONE! -----')
             await send_file_to_user(
                 message=message,
