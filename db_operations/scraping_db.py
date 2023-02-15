@@ -1398,19 +1398,20 @@ class DataBaseOperations:
         if not table_name:
             table_name='stats_db'
 
-        param=f"WHERE DATE(time_of_public) BETWEEN '{date1}' AND '{date2}'"
+        param = f"WHERE DATE(time_of_public) BETWEEN '{date1}' AND '{date2}'"
         data = self.get_all_from_stat_db(param=param, table_name=table_name)
-        columns=data['column_names']
-        all=[i for i in columns if 'all' in i]
-        unique=[i for i in columns if 'unique' in i]
-        df=pd.DataFrame(data['response'], columns=columns)
-        df=df.set_index(['time_of_public'])
-        df['Unique']=df[unique].sum(axis=1)
-        df['All']=df[all].sum(axis=1)
-        df = df[sorted(df.columns )]
-        df = df[['chat_name'] + [x for x in df.columns if x!='chat_name']]
-        df2=df.groupby('chat_name').sum(numeric_only=True)
-        len=df.shape[0]
+        columns = data['column_names']
+        all = [i for i in columns if 'all' in i]
+        unique = [i for i in columns if 'unique' in i]
+        df = pd.DataFrame(data['response'], columns=columns)
+        df = df.set_index(['time_of_public'])
+        df['Unique'] = df[unique].sum(axis=1)
+        df['All'] = df[all].sum(axis=1)
+        df = df[sorted(df.columns)]
+        df = df[['chat_name'] + [x for x in df.columns if x != 'chat_name']]
+        df.loc[f'Total for period {date1}-{date2}'] = df.sum(axis=0, numeric_only=True)
+        df2 = df.groupby('chat_name').sum(numeric_only=True)
+        len = df.shape[0]
 
         with pd.ExcelWriter(f'./excel/report_{date1}_{date2}.xlsx') as writer:
             df.to_excel(writer, sheet_name="Sheet1")
