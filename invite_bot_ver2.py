@@ -429,8 +429,8 @@ class InviteBot():
         @self.dp.message_handler(commands=['how_many_vacancies_published'])
         async def how_many_vacancies_published_commands(message: types.Message):
 
-            self.db.check_or_create_stats_table()
-            self.db.add_old_vacancies_to_stat_db()
+            # self.db.check_or_create_stats_table()
+            # self.db.add_old_vacancies_to_stat_db()
 
             await Form_report.date_in.set()
             await self.bot_aiogram.send_message(message.chat.id, 'Type the starting date in format: YYYY-MM-DD')
