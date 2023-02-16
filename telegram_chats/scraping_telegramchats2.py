@@ -243,12 +243,20 @@ class WriteToDbMessages():
         # body = one_message['message'].replace(title, '').replace(f'\n\n', f'\n')
         title = response_dict['title']
         body = response_dict['body']
-        response = DataBaseOperations(None).check_exists_message(
-            title=title,
-            body=body
+        vacancy_url = f"{channel}/{one_message['id']}"
+
+        # response_exists = DataBaseOperations(None).check_exists_message(
+        #     title=title,
+        #     body=body
+        # )
+
+        response_exists = DataBaseOperations(None).check_exists_message(
+            vacancy_url=vacancy_url
         )
-        print('response ', response)
-        if response:
+
+        # response_exists = True
+        print('vacancy_url: ', response_exists)
+        if response_exists:
             date = (one_message['date'] + timedelta(hours=3))
             results_dict = {
                 'chat_name': channel,
@@ -256,7 +264,7 @@ class WriteToDbMessages():
                 'body': body,
                 'profession': '',
                 'vacancy': '',
-                'vacancy_url': '',
+                'vacancy_url': vacancy_url,
                 'company': '',
                 'english': '',
                 'relocation': '',
@@ -270,7 +278,9 @@ class WriteToDbMessages():
                 'session': self.current_session,
                 'tags': '',
                 'full_tags': '',
-                'full_anti_tags': ''
+                'full_anti_tags': '',
+                'level': '',
+                'sub': ''
             }
 
             print(f"----------------\nchannel = {channel}")
@@ -299,13 +309,16 @@ class WriteToDbMessages():
                     # write to profession's tables. Returns dict with professions as a key and False, if it was written and True if existed
                     # -------------------------------- write all message for admin in one table--------------------------------
 
-                DataBaseOperations(None).push_to_admin_table(
+                db_response = DataBaseOperations(None).push_to_admin_table(
                     results_dict=results_dict,
                     profession=profession,
                     check_or_exists=True,
                     params=params
                 )
-                self.exist_dict['written'] += 1
+                if db_response:
+                    self.exist_dict['existed'] += 1
+                else:
+                    self.exist_dict['written'] += 1
         else:
             print(f'{title[:40]}:\nthis vacancy has existed already\n---------\n')
             self.exist_dict['existed'] += 1
