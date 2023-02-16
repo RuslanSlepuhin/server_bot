@@ -1343,7 +1343,7 @@ class DataBaseOperations:
         cur = self.con.cursor()
         with self.con:
             cur.execute(f"""CREATE TABLE IF NOT EXISTS {table_name} (
-                                time_of_public DATE,
+                                created_at DATE,
                                 chat_name VARCHAR(150)
                                 );"""
                             )
@@ -1360,7 +1360,7 @@ class DataBaseOperations:
 
         if not table_name:
             table_name='stats_db'
-        time_of_public = dict['time_of_public']
+        created_at = dict['created_at']
         chat_name = dict['chat_name']
         subs_list=helper.decompose_from_str_to_subs_list(dict['sub'])
         profession = dict['profession']
@@ -1370,14 +1370,13 @@ class DataBaseOperations:
         cur = self.con.cursor()
         for sub in subs_list:
             self.add_columns_to_tables(table_list=[table_name], column_name_type = f'{sub} INT DEFAULT 0')
-            # можно добавить если предполагается, что профессии тоже могут появиться новые:
-            # self.add_columns_to_tables(table_list=[table_name], column_name_type = f'{all} INT DEFAULT 0')
-            # self.add_columns_to_tables(table_list=[table_name], column_name_type = f'{unique} INT DEFAULT 0')
-            query = f"""SELECT * FROM {table_name} WHERE time_of_public='{time_of_public}' AND chat_name='{chat_name}'"""
+            self.add_columns_to_tables(table_list=[table_name], column_name_type = f'{all} INT DEFAULT 0')
+            self.add_columns_to_tables(table_list=[table_name], column_name_type = f'{unique} INT DEFAULT 0')
+            query = f"""SELECT * FROM {table_name} WHERE created_at='{created_at}' AND chat_name='{chat_name}'"""
             cur.execute(query)
 
             if not cur.fetchall():
-                query = f"""INSERT INTO {table_name} (chat_name, time_of_public, {sub}, {all}) VALUES ('{chat_name}','{time_of_public}','1', '1')"""
+                query = f"""INSERT INTO {table_name} (chat_name, created_at, {sub}, {all}) VALUES ('{chat_name}','{created_at}','1', '1')"""
                 with self.con:
                     try:
                         cur.execute(query)
@@ -1386,7 +1385,7 @@ class DataBaseOperations:
                         print('error', e)
 
             else:
-                query = f"""UPDATE {table_name} SET {sub} = {sub}+1, {all} = {all}+1 WHERE chat_name = '{chat_name}' AND time_of_public = '{time_of_public}'"""
+                query = f"""UPDATE {table_name} SET {sub} = {sub}+1, {all} = {all}+1 WHERE chat_name = '{chat_name}' AND created_at = '{created_at}'"""
                 with self.con:
                     try:
                         cur.execute(query)
@@ -1394,7 +1393,7 @@ class DataBaseOperations:
                     except Exception as e:
                         print('error', e)
 
-        query = f"""UPDATE {table_name} SET {unique}={unique}+1 WHERE chat_name = '{chat_name}' AND time_of_public = '{time_of_public}'"""
+        query = f"""UPDATE {table_name} SET {unique}={unique}+1 WHERE chat_name = '{chat_name}' AND created_at = '{created_at}'"""
         with self.con:
             try:
                 cur.execute(query)
@@ -1414,7 +1413,7 @@ class DataBaseOperations:
         cur = self.con.cursor()
 
         if not order:
-            order = "ORDER BY time_of_public"
+            order = "ORDER BY created_at"
 
         query = f"""SELECT {field} FROM {table_name} {param} {order}"""
         with self.con:
@@ -1432,7 +1431,7 @@ class DataBaseOperations:
 
         if not table_list:
             table_list=['designer', 'game', 'product', 'mobile', 'pm', 'sales_manager', 'analyst', 'frontend', 'marketing', 'devops', 'hr', 'backend', 'qa', 'junior']
-        fields='time_of_public, chat_name, profession, sub'
+        fields='created_at, chat_name, profession, sub'
         for i in table_list:
             response=self.get_all_from_db(table_name=i, field=fields)
             for j in response:
@@ -1446,13 +1445,13 @@ class DataBaseOperations:
         if not table_name:
             table_name='stats_db'
 
-        param=f"WHERE DATE(time_of_public) BETWEEN '{date1}' AND '{date2}'"
+        param=f"WHERE DATE(created_at) BETWEEN '{date1}' AND '{date2}'"
         data = self.get_all_from_stat_db(param=param, table_name=table_name)
         columns=data['column_names']
         all=[i for i in columns if 'all' in i]
         unique=[i for i in columns if 'unique' in i]
         df=pd.DataFrame(data['response'], columns=columns)
-        df=df.set_index(['time_of_public'])
+        df=df.set_index(['created_at'])
         df['Unique']=df[unique].sum(axis=1)
         df['All']=df[all].sum(axis=1)
         df = df[sorted(df.columns )]
@@ -1465,5 +1464,4 @@ class DataBaseOperations:
             df.to_excel(writer, sheet_name="Sheet1")
             df2.to_excel(writer, sheet_name="Sheet1", startrow=len+2,startcol=1, header=False)
             print('Report is done, saved')
-
 
