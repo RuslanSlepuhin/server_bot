@@ -241,6 +241,8 @@ class HHGetInformation:
 
     async def get_content_from_link(self, i, links, word):
         vacancy_url = i.get('href')
+        print("vacancy_url: ", vacancy_url)
+
         try:
             vacancy_url = re.findall(r'https:\/\/hh.ru\/vacancy\/[0-9]{6,12}', vacancy_url)[0]
         except Exception as e:
@@ -248,6 +250,7 @@ class HHGetInformation:
             return e
         print('vacancy_url = ', vacancy_url)
         links.append(vacancy_url)
+        time.sleep(5)
 
         print('self.broswer.get(vacancy_url)')
         # await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
