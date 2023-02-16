@@ -1,7 +1,11 @@
+import asyncio
 import re
 import time
 from datetime import datetime
 
+from asgiref.sync import async_to_sync
+
+from filters.filter_jan_2023.filter_jan_2023 import VacancyFilter
 from patterns._export_pattern import export_pattern
 from patterns.pseudo_pattern.pseudo_export_pattern import export_pattern as pseudo_export_pattern
 from utils.additional_variables.additional_variables import flood_control_logs_path, admin_table_fields
@@ -113,7 +117,149 @@ async def transformTitleBodyBeforeDb(text=None, title=None, body=None):
             body = body.replace(f'\n\n', f'\n')
     return {'title': title, 'body': body}
 
+def get_additional_values_fields(dict_in):
+
+    results_dict = {}
+
+    for key in dict_in:
+        results_dict[key] = dict_in[key]
+
+    params = VacancyFilter().sort_profession(
+        title=results_dict['title'],
+        body=results_dict['body'],
+        check_contacts=False,
+        check_level=False,
+        check_vacancy=False,
+        check_profession=False,
+        get_params=True
+    )['params']
+
+    # english
+    english = get_field_for_shorts_sync(
+        presearch_results=[results_dict['english'], results_dict['title'], results_dict['body']],
+        pattern=export_pattern['others']['english_for_shorts']['ma'],
+        return_value='english'
+    )
+
+    if english['match']:
+        results_dict['english'] = english['match']
+    elif english['element_is_not_empty']:
+        results_dict['english'] = 'B1+'
+    else:
+        results_dict['english'] = ''
+
+    #job_type
+    job_type_shorts = ''
+    remote_shorts = get_field_for_shorts_sync(
+        presearch_results=[
+            results_dict['job_type'],
+            results_dict['title'] + results_dict['body'],
+        ],
+        pattern=export_pattern['others']['remote']['ma'],
+        return_value='remote',
+    )
+    remote_shorts = remote_shorts['return_value']
+    if remote_shorts:
+        job_type_shorts += remote_shorts
+
+    full_time_shorts = get_field_for_shorts_sync(
+        presearch_results=[
+            results_dict['job_type'],
+            results_dict['title'] + results_dict['body'],
+        ],
+        pattern=export_pattern['others']['full_time']['ma'],
+        return_value='fulltime',
+    )
+    full_time_shorts = full_time_shorts['return_value']
+    if full_time_shorts:
+        if len(job_type_shorts) > 0:
+            job_type_shorts += ", "
+        job_type_shorts += full_time_shorts
+    if job_type_shorts:
+        results_dict['job_type'] = job_type_shorts
+
+    #relocation
+    relocate_shorts = get_field_for_shorts_sync(
+        presearch_results=[
+            results_dict['job_type'],
+            results_dict['relocation'],
+            results_dict['title'] + results_dict['body'],
+            params['relocation']
+        ],
+        pattern=export_pattern['others']['relocate']['ma'],
+        return_value='relocate'
+    )
+    relocate_shorts = relocate_shorts['return_value']
+    if relocate_shorts:
+        results_dict['relocation'] = relocate_shorts
+
+    experience_shorts = get_field_for_shorts_sync(
+        presearch_results=[
+            results_dict['experience'],
+            results_dict['job_type']
+        ],
+        pattern=export_pattern['others']['experience']['ma'],
+        return_value='experience'
+    )
+    if experience_shorts['match']:
+        experience_shorts = experience_shorts['match']
+        experience_shorts = re.findall(r'[0-9]{1,2}', experience_shorts)
+        if experience_shorts:
+            experience_shorts = experience_shorts[0]
+    else:
+        experience_shorts = ''
+    if experience_shorts:
+        results_dict['experience'] = experience_shorts
+
+    salary_shorts = get_field_for_shorts_sync(
+        presearch_results=[
+            results_dict['salary'],
+            results_dict['title'] + results_dict['body']
+        ],
+        pattern=export_pattern['others']['salary_for_shorts']['ma'],
+        return_value='salary'
+    )
+    salary_shorts = salary_shorts['match']
+    salary_shorts = salary_shorts.replace('до', '-').replace('  ', ' ')
+    if salary_shorts:
+        results_dict['salary'] = salary_shorts
+    # print('salary = ', salary_shorts)
+
+    city_shorts = get_city_vacancy_for_shorts_sync(
+        presearch_results=[
+            results_dict['city'],
+            results_dict['job_type'],
+            results_dict['title'] + results_dict['body'],
+        ],
+        pattern=export_pattern['others']['city_for_shorts']['ma'],
+        return_value='match'
+    )
+    if city_shorts['return_value']:
+        city_shorts = city_shorts['return_value']
+    elif city_shorts['element_is_not_empty']:
+        if results_dict['city']:
+            city_shorts = results_dict['city']
+        else:
+            city_shorts = ''
+    else:
+        city_shorts = ''
+    if city_shorts:
+        results_dict['city'] = city_shorts
+
+    return results_dict
+
 async def get_field_for_shorts(presearch_results: list, pattern: str, return_value='match'):
+    element_is_not_empty = False
+    for element in presearch_results:
+        if element:
+            element_is_not_empty = True
+            for pattern_item in pattern:
+                match = re.findall(rf"{pattern_item}", element)
+                if match:
+                    return {'return_value': return_value, 'element_is_not_empty': element_is_not_empty, 'match': match[0]}
+    return {'return_value': '', 'element_is_not_empty': element_is_not_empty, 'match': ''}
+
+def get_field_for_shorts_sync(presearch_results: list, pattern: str, return_value='match'):
     element_is_not_empty = False
     for element in presearch_results:
         if element:
@@ -141,6 +287,26 @@ async def get_city_vacancy_for_shorts(presearch_results: list, pattern: str, ret
                     if match:
                         return {'return_value': f"{key}, {key}", 'element_is_not_empty': element_is_not_empty,
                                 'match': match[0]}
+    return {'return_value': "", 'element_is_not_empty': "", 'match': ""}
+
+def get_city_vacancy_for_shorts_sync(presearch_results: list, pattern: str, return_value='match'):
+    element_is_not_empty = False
+    for element in presearch_results:
+        if element:
+            element_is_not_empty = True
+            for key in pattern:
+                if type(pattern[key]) is not str:
+                    for value in pattern[key]:
+                        match = re.findall(rf"{value}", element)
+                        if match:
+                            return {'return_value': f"{key}, {value}", 'element_is_not_empty': element_is_not_empty,
+                                    'match': match[0]}
+                else:
+                    match = re.findall(rf"{pattern[key]}", element)
+                    if match:
+                        return {'return_value': f"{key}, {key}", 'element_is_not_empty': element_is_not_empty,
+                                'match': match[0]}
+
 
     return {'return_value': '', 'element_is_not_empty': element_is_not_empty, 'match': ''}
 
@@ -211,7 +377,6 @@ async def get_short_session_name(prefix):
 
 
 def decompose_from_str_to_subs_list(data_str):
-
     data_list=data_str.split(': ')
     profession=data_list[0]
     i=data_list[1].strip()
@@ -220,3 +385,7 @@ def decompose_from_str_to_subs_list(data_str):
     i=i.split(', ')
     subs_list=[f'{profession}_{j}' for j in i]
     return subs_list
+
+def add_to_report_file(path, write_mode, text):
+    with open(path, write_mode, encoding='utf-8') as file:
+        file.write(text)

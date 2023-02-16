@@ -1,7 +1,7 @@
 import re
 
 # from __backup__ import pattern_Alex2809
-from db_operations.scraping_db import DataBaseOperations
+# from db_operations.scraping_db import DataBaseOperations
 # from patterns.pattern_Alex2809 import search_companies, search_companies2, english_pattern, remote_pattern, \
 #     relocate_pattern, middle_pattern, senior_pattern, vacancy_name, vacancy_pattern, contacts_pattern, profession_new_pattern
 from patterns._export_pattern import export_pattern
@@ -148,7 +148,7 @@ class VacancyFilter:
         if get_params:
             params = self.get_params(text=vacancy)
 
-        print(f"\nFound next professions:\n{self.profession['profession']}\n")
+        # print(f"\nFound next professions:\n{self.profession['profession']}\n")
 
         if check_level:
             level_list = []
@@ -273,24 +273,25 @@ class VacancyFilter:
         # return profession
 
     def get_company_new(self, text):
-        companies_from_db = DataBaseOperations(None).get_all_from_db(
-            table_name='companies',
-            without_sort=True,
-            field='company'
-        )
-        for company in companies_from_db:
-            company = company[0]
-            if company and company in text:
-                return company
-
-        match = re.findall(rf"{self.export_pattern['others']['company']['ma']}", text)
-        if match:
-            return self.clean_company_new(match[0])
-
-        match = re.findall(rf"{self.export_pattern['others']['company2']['ma']}", text)
-        if match:
-            return match[0]
-        return ''
+        pass
+        # companies_from_db = DataBaseOperations(None).get_all_from_db(
+        #     table_name='companies',
+        #     without_sort=True,
+        #     field='company'
+        # )
+        # for company in companies_from_db:
+        #     company = company[0]
+        #     if company and company in text:
+        #         return company
+        #
+        # match = re.findall(rf"{self.export_pattern['others']['company']['ma']}", text)
+        # if match:
+        #     return self.clean_company_new(match[0])
+        #
+        # match = re.findall(rf"{self.export_pattern['others']['company2']['ma']}", text)
+        # if match:
+        #     return match[0]
+        # return ''
 
     def english_requirements_new(self, text):
         english_pattern = "|".join(self.export_pattern['others']['english']['ma'])
@@ -351,12 +352,12 @@ class VacancyFilter:
                 pattern = self.export_pattern['others']['vacancy']['sub'][f'{pro}_vacancy']
                 if pattern:
                     match = re.findall(rf"{pattern}", text)
-                    print('pro = ', pro)
-                    print('match = ', match)
-                    print("type(match) = ", type(match))
+                    # print('pro = ', pro)
+                    # print('match = ', match)
+                    # print("type(match) = ", type(match))
                     try:
                         match_str = ''.join(match)
-                        print("''.join(match) = ", match_str)
+                        # print("''.join(match) = ", match_str)
                         if len(''.join(match)) > 0:
                             vacancy = match[0]
                             break
@@ -367,12 +368,12 @@ class VacancyFilter:
             vacancy_pattern = self.export_pattern['others']['vacancy']['sub']['common_vacancy']
             if vacancy_pattern:
                 match = re.findall(rf"{vacancy_pattern}", text)
-                print('pro = common')
-                print('match = ', match)
-                print("type(match) = ", type(match))
+                # print('pro = common')
+                # print('match = ', match)
+                # print("type(match) = ", type(match))
                 try:
                     match_str = ''.join(match)
-                    print("''.join(match) = ", match_str)
+                    # print("''.join(match) = ", match_str)
                     if len(''.join(match)) > 0:
                         vacancy = match[0]
                 except Exception as e:
@@ -405,7 +406,7 @@ class VacancyFilter:
         # for i in trash_list:
         #     if i in vacancy:
         vacancy = re.sub(rf"{variables.clear_vacancy_trash_pattern}", "", vacancy)
-        print("vacancy_final = ", vacancy.strip())
+        # print("vacancy_final = ", vacancy.strip())
         return vacancy.strip()
 
     def compose_junior_sub(self, key_word):

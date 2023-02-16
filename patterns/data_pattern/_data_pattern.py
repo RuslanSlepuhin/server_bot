@@ -1155,6 +1155,15 @@ pattern = {
         'mincl': ()
     },
 
+    'full_time': {
+        'ma': {'[Пп]олная занятость', '[Ff]ull[-\s]?[Tt]ime'},
+        'ma2': (),
+        'mdef': (),
+        'mex': (),
+        'mex2': (),
+        'mincl': ()
+    },
+
     'relocate': {
         'ma': ("relocate", "relocation", "релокация"),
         'ma2': (),

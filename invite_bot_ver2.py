@@ -262,6 +262,37 @@ class InviteBot():
         async def get_logs(message: types.Message):
             await self.bot_aiogram.send_message(message.chat.id, variable.help_text)
 
+        @self.dp.message_handler(commands=['rewrite_additional_db_fields'])
+        async def rewrite_additional_db_fields_commands(message: types.Message):
+            tables_list = []
+            tables_list.extend(variable.valid_professions)
+            tables_list.extend(variable.admin_database)
+            for table_name in tables_list:
+                responses = self.db.get_all_from_db(
+                    table_name=table_name,
+                    param="WHERE profession NOT LIKE '%no_sort%'",
+                    field=variable.admin_table_fields
+                )
+                count = 0
+                for vacancy in responses:
+                    print(count, '.')
+                    count += 1
+                    vacancy_dict = await helper.to_dict_from_admin_response(vacancy, variable.admin_table_fields)
+                    updated_vacancy_dict = helper.get_additional_values_fields(vacancy_dict)
+                    data_for_change = {}
+                    for field in variable.db_fields_for_update_in_parsing:
+                        # print(f"regular {field}: {vacancy_dict[field]}")
+                        # print(f"updated {field}: {updated_vacancy_dict[field]}")
+                        if vacancy_dict[field] != updated_vacancy_dict[field]:
+                            data_for_change[field] = updated_vacancy_dict[field]
+                    if data_for_change:
+                        self.db.update_table_multi(
+                            table_name=variable.admin_database,
+                            param=f"WHERE id={updated_vacancy_dict['id']}",
+                            values_dict=data_for_change,
+                            output_text="multi update has done"
+                        )
+
         @self.dp.message_handler(commands=['copy_prof_tables_to_archive_prof_tables'])
         async def copy_prof_tables_to_archive_prof_tables_command(message: types.Message):
             await copy_prof_tables_to_archive_prof_tables()
@@ -1291,6 +1322,12 @@ class InviteBot():
 
             if callback.data[0:5] == 'admin':
 
+                helper.add_to_report_file(
+                    path=variable.path_push_shorts_report_file,
+                    write_mode='a',
+                    text=f"----------{datetime.now().strftime('%d-%m-%Y')}-----------\n[BUTTON] admin callback.data: {callback.data}\n"
+                )
+
                 try:
                     DataBaseOperations(None).delete_table('admin_temporary')
                 except Exception as e:
@@ -1413,7 +1450,13 @@ class InviteBot():
                 markup.row(button_all_vacancies, button_each_vacancy)
                 await self.bot_aiogram.send_message(callback.message.chat.id, "It's the pushing without admin", reply_markup=markup)
 
-            elif 'PUSH' in callback.data:
+            elif 'PUSH' in callback.data and 'shorts' in callback.data:
+
+                helper.add_to_report_file(
+                    path=variable.path_push_shorts_report_file,
+                    write_mode='a',
+                    text=f"[BUTTON] shorts callback.data: {callback.data}\n"
+                )
 
                 await push_shorts(
                     message = callback.message,
@@ -2744,7 +2787,7 @@ class InviteBot():
             markup.row(button_dict['backend'], button_dict['qa'], button_dict['junior'])
             return markup
 
-        async def compose_message(one_profession, vacancy_from_admin_dict, full=False, message=None):
+        async def compose_message(one_profession, vacancy_from_admin_dict, full=False, write_changes_to_db=True, message=None):
             profession_list = {}
 
             if vacancy_from_admin_dict['profession']:
@@ -2774,8 +2817,8 @@ class InviteBot():
                 if vacancy_from_admin_dict['sub']:
                     sub = helper.decompose_from_str_to_list(vacancy_from_admin_dict['sub'])
                     print(sub.values())
-                    if sub.values():
-                        pass
+                    # if sub.values():
+                    #     pass
                 else:
                     sub = VacancyFilter().sort_profession(
                         title=vacancy_from_admin_dict['title'],
@@ -2795,8 +2838,9 @@ class InviteBot():
             # code for transpose in shorts like reference
 
                 remote_pattern = export_pattern['others']['remote']['ma']
+                full_time_pattern = export_pattern['others']['full_time']['ma']
                 relocate_pattern = export_pattern['others']['relocate']['ma']
-                experience_pattern = export_pattern['others']['relocate']['ma']
+                experience_pattern = export_pattern['others']['experience']['ma']
                 english_pattern = export_pattern['others']['english_for_shorts']['ma']
                 salary_patterns = export_pattern['others']['salary_for_shorts']['ma']
                 city_pattern = export_pattern['others']['city_for_shorts']['ma']
@@ -2810,6 +2854,8 @@ class InviteBot():
                 city_shorts = ''
 
                 if not full:
+                    job_type_shorts = ''
+
                     remote_shorts = await helper.get_field_for_shorts(
                         presearch_results=[
                             vacancy_from_admin_dict['job_type'],
@@ -2819,6 +2865,31 @@ class InviteBot():
                         return_value='remote',
                     )
                     remote_shorts = remote_shorts['return_value']
+                    if remote_shorts:
+                        job_type_shorts += remote_shorts
+
+                    full_time_shorts = await helper.get_field_for_shorts(
+                        presearch_results=[
+                            vacancy_from_admin_dict['job_type'],
+                            vacancy_from_admin_dict['title']+vacancy_from_admin_dict['body'],
+                        ],
+                        pattern=full_time_pattern,
+                        return_value='fulltime',
+                    )
+                    full_time_shorts = full_time_shorts['return_value']
+                    if full_time_shorts:
+                        if len(job_type_shorts)>0:
+                            job_type_shorts += ", "
+                        job_type_shorts += full_time_shorts
+
+                    if job_type_shorts and write_changes_to_db:
+                        self.db.update_table(
+                            table_name=variable.admin_database,
+                            param=f"WHERE id={vacancy_from_admin_dict['id']}",
+                            field='job_type',
+                            value=job_type_shorts,
+                            output_text='job_type has updated'
+                        )
 
                     relocate_shorts = await helper.get_field_for_shorts(
                         presearch_results=[
@@ -2854,7 +2925,7 @@ class InviteBot():
                             params['english']
                         ],
                         pattern=english_pattern,
-                        return_value = 'relocate'
+                        return_value = 'english'
                     )
                     if english_shorts['match']:
                         english_shorts = english_shorts['match']
@@ -2874,7 +2945,7 @@ class InviteBot():
                     salary_shorts = salary_shorts['match']
                     salary_shorts = salary_shorts.replace('до', '-').replace('  ', ' ')
 
-                    print('///////////////////\nsalary = ', salary_shorts, '\n///////////////////')
+                    print('salary = ', salary_shorts)
 
                     city_shorts = await helper.get_city_vacancy_for_shorts(
                         presearch_results=[
@@ -2940,8 +3011,12 @@ class InviteBot():
                     if relocate_shorts:
                         message_for_send += f"{relocate_shorts.capitalize()[:40]}, "
 
-                    if remote_shorts:
-                        message_for_send += f"{remote_shorts.capitalize()[:40]}, "
+                    # if remote_shorts:
+                    #     message_for_send += f"{remote_shorts.capitalize()[:40]}, "
+
+                    if job_type_shorts:
+                        message_for_send += f"{job_type_shorts.capitalize()[:40]}, "
+
 
                     if salary_shorts:
                         message_for_send += f"{salary_shorts[:40]}, "
@@ -3031,11 +3106,11 @@ class InviteBot():
                 print('-------------------------------------')
                 print('db_remote = ', vacancy_from_admin_dict['job_type'])
                 print('db_relocation = ', vacancy_from_admin_dict['relocation'])
-                print('db_relocation = ', params['relocation'])
+                print('params_relocation = ', params['relocation'])
                 print('db_salary = ', vacancy_from_admin_dict['salary'])
                 print('db_english = ', vacancy_from_admin_dict['english'])
                 print('params_english = ', params['english'])
-                print('message_for_send ', message_for_send)
+                print('message_for_send ', message_for_send[:100])
                 print('-------------------------------------')
 
                 return {'composed_message': message_for_send, 'sub_list': sub_list, 'db_id': vacancy_from_admin_dict['id'], 'all_subs': sub}
@@ -3785,11 +3860,11 @@ class InviteBot():
 
             # # -----------------------parsing telegram channels -------------------------------------
             bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
+            await main(self.client, bot_dict=bot_dict)
 
             psites = ParseSites(client=self.client, bot_dict=bot_dict)
             # self.bot_aiogram.send_message(message.chat.id, "TG channels parsing has finished")
             await psites.call_sites()
-            await main(self.client, bot_dict=bot_dict)
             await self.bot_aiogram.send_message(message.chat.id, '----- PARSING HAS BEEN DONE! -----')
             await send_file_to_user(
                 message=message,
@@ -3857,6 +3932,13 @@ class InviteBot():
             message_for_send_dict = {}
             profession = callback_data.split(' ')[-1]
 
+            helper.add_to_report_file(
+                path=variable.path_push_shorts_report_file,
+                write_mode='a',
+                text=f"callback_data.split()[-1]: {profession}\n"
+            )
+
+
             short_session_name = await helper.get_short_session_name(prefix=profession)
             self.db.write_short_session(short_session_name)
 
@@ -3881,6 +3963,12 @@ class InviteBot():
             self.quantity_entered_to_shorts = 0
 
             for vacancy in history_messages:
+                helper.add_to_report_file(
+                    path=variable.path_push_shorts_report_file,
+                    write_mode='a',
+                    text=f"Message_ID: {vacancy['id']}\n"
+                )
+
                 print('\npush vacancy\n')
                 response = DataBaseOperations(None).get_all_from_db(
                     table_name='admin_temporary',
@@ -3890,6 +3978,11 @@ class InviteBot():
                 )
                 response_temp_dict = await helper.to_dict_from_temporary_response(response[0],
                                                                                   variable.fields_admin_temporary)
+                helper.add_to_report_file(
+                    path=variable.path_push_shorts_report_file,
+                    write_mode='a',
+                    text=f"Temporary data: {response_temp_dict}\n"
+                )
 
                 if response:
                     # id_admin_last_session_table = int(response[0][2])
@@ -3903,6 +3996,11 @@ class InviteBot():
                     vacancy_from_admin_dict = await helper.to_dict_from_admin_response(vacancy_from_admin[0],
                                                                                        variable.admin_table_fields)
 
+                    helper.add_to_report_file(
+                        path=variable.path_push_shorts_report_file,
+                        write_mode='a',
+                        text=f"DB ID vacancy: {vacancy_from_admin_dict['id']}\nTITLE: {vacancy_from_admin_dict['title']}\nSUB: {vacancy_from_admin_dict['sub']}\n"
+                    )
 
                     # if vacancy has sent in agregator already, it doesn't push again. And remove profess from profs or drop vacancy if there is profession alone
                     await push_vacancies_to_agregator_from_admin(
@@ -3990,6 +4088,16 @@ class InviteBot():
                 f'- out from admin {self.out_from_admin_channel}\n'
                 f'- in to shorts {self.quantity_entered_to_shorts}',
                 parse_mode='html'
+            )
+            helper.add_to_report_file(
+                path=variable.path_push_shorts_report_file,
+                write_mode='a',
+                text=f"------------------------\n"
+            )
+
+            await send_file_to_user(
+                message=message,
+                path=variable.path_push_shorts_report_file
             )
 
         async def shorts_public(message):

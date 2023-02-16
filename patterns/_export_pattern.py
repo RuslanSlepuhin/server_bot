@@ -53,6 +53,7 @@ export_pattern = {
     },
     'others': {
         'remote': pattern['remote'],
+        'full_time': pattern['full_time'],
         'relocate': pattern['relocate'],
         'english': {
             'ma': params['english_level']

@@ -144,20 +144,9 @@ async def main_endpoints():
         return {'response': 'Done'}
 
     @app.route("/three-last-vacancies", methods=['GET'])
-    async def three_last_vacancies():
-        result_dict = {}
-        result_dict['vacancies'] = {}
-        responses = db.get_all_from_db(
-            table_name=variable.admin_database,
-            param="WHERE level LIKE '%trainee%' ORDER BY id DESC LIMIT 3",
-            field=variable.admin_table_fields,
-            without_sort=True
-        )
-        if responses:
-            count = 0
-            for response in responses:
-                result_dict['vacancies'][str(count)] = helper.to_dict_from_admin_response_sync(response, variable.admin_table_fields)
-                count += 1
+    async def three_last_vacancies_request():
+        result_dict = await three_last_vacancies()
+
         return result_dict
 
     async def get_from_db():
@@ -296,7 +285,7 @@ async def main_endpoints():
         # }
         param = ""
         request_data = request.json
-        print(request_data)
+        print(f"{request_data}")
         start_word = "WHERE ("
         param += start_word
         search_title_body_fields = ['direction', 'specialization', 'programmingLanguage', 'technologies',
@@ -333,31 +322,75 @@ async def main_endpoints():
         date_from = today - datetime.timedelta(days=variable.vacancy_fresh_time_days)
         date_from = date_from.strftime('%Y-%m-%d')
         param += f"AND (DATE(time_of_public)>'{date_from}')"
-        # print(param)
         responses_list = []
 
         for table_name in variable.valid_professions:
-            responses = db.get_all_from_db(
+            responses = await db.get_all_from_db_async(
                 table_name=table_name,
                 param=param,
                 field=variable.admin_table_fields
             )
             responses_list.extend(responses)
         if responses_list:
-            return await get_http_response(responses_list, param)
+            return await get_http_response(
+                responses=responses_list,
+                common_key='vacancies',
+                param=param
+            )
         return {'vacancies': {}}
 
-    async def get_http_response(responses, param=None):
+    async def get_http_response(responses, common_key=None, param=None):
+        """
+        if you want to receive in response query, you must give 'param'
+        """
         responses_dict = {}
-        responses_dict['vacancies'] = {}
+        if not common_key:
+            common_key = 'vacancies'
+        responses_dict[common_key] = {}
         responses_dict['quantity'] = len(responses)
         count = 0
         for response in responses:
-            responses_dict['vacancies'][str(count)] = await helper.to_dict_from_admin_response(response, variable.admin_table_fields)
+            responses_dict[common_key][str(count)] = await helper.to_dict_from_admin_response(response, variable.admin_table_fields)
             count += 1
         if param:
             responses_dict['query'] = param
         return responses_dict
+
+    async def three_last_vacancies():
+        trainee = 'vacancies'
+        common_vacancies = 'common_vacancies'
+        result_dict = {}
+        result_dict[trainee] = {}
+
+        # get 3 trainee vacancies
+        responses = db.get_all_from_db(
+            table_name=variable.admin_database,
+            param="WHERE level LIKE '%trainee%' ORDER BY id DESC LIMIT 3",
+            field=variable.admin_table_fields,
+            without_sort=True
+        )
+        result_dict[trainee] = await package_list_to_dict(responses_list=responses)
+
+        # get 3 common vacancies
+        responses = db.get_all_from_db(
+            table_name=variable.admin_database,
+            param="WHERE level NOT LIKE '%trainee%' ORDER BY id DESC LIMIT 3",
+            field=variable.admin_table_fields,
+            without_sort=True
+        )
+        result_dict[common_vacancies] = await package_list_to_dict(responses_list=responses)
+
+        return result_dict
+
+    async def package_list_to_dict(responses_list):
+        result_dict = {}
+        if responses_list:
+            count = 0
+            for response in responses_list:
+                result_dict[str(count)] = helper.to_dict_from_admin_response_sync(response,
+                                                                                               variable.admin_table_fields)
+                count += 1
+        return result_dict
 
 
     app.run(host=localhost, port=int(os.environ.get('PORT', 5000)))

@@ -7,6 +7,7 @@ import psycopg2
 from datetime import datetime
 from logs.logs import Logs
 from helper_functions import helper_functions as helper
+from patterns._export_pattern import export_pattern
 import pandas as pd
 logs = Logs()
 
@@ -251,19 +252,13 @@ class DataBaseOperations:
 
         if not self.con:
             self.connect_db()
-
         cur = self.con.cursor()
-
         if not order:
             order = "ORDER BY time_of_public"
-
         if not without_sort:
             query = f"""SELECT {field} FROM {table_name} {param} {order}"""
         else:
             query = f"""SELECT {field} FROM {table_name} {param} """
-
-        # print('query = ', query)
-
         with self.con:
             try:
                 cur.execute(query)
@@ -275,6 +270,27 @@ class DataBaseOperations:
             return cur
         return response
 
+    async def get_all_from_db_async(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
+
+        if not self.con:
+            self.connect_db()
+        cur = self.con.cursor()
+        if not order:
+            order = "ORDER BY time_of_public"
+        if not without_sort:
+            query = f"""SELECT {field} FROM {table_name} {param} {order}"""
+        else:
+            query = f"""SELECT {field} FROM {table_name} {param} """
+        with self.con:
+            try:
+                cur.execute(query)
+                response = cur.fetchall()
+            except Exception as e:
+                print(e)
+                return str(e)
+        if curs:
+            return cur
+        return response
     def write_current_session(self, current_session):
 
         logs.write_log(f"scraping_db: function: write_current_session")
@@ -737,6 +753,11 @@ class DataBaseOperations:
                     body=results_dict['body']):
                 return True
 
+        results_dict['company'] = self.clear_title_or_body(results_dict['company'])
+        results_dict['profession'] = helper.compose_simple_list_to_str(
+            data_list=profession['profession'],
+            separator=', '
+        )
         results_dict['sub'] = helper.compose_to_str_from_list(data_list=profession['sub'])
         print('unawaited compose to str = ', results_dict['sub'])
         if not results_dict['time_of_public']:
@@ -752,6 +773,12 @@ class DataBaseOperations:
         full_anti_tags = profession['anti_tag'].replace("'", "")
         level = profession['level']
 
+        # -------------------------------------------------------------------------------------------------------------
+        results_dict = helper.get_additional_values_fields(
+            dict_in=results_dict
+        )
+        # -------------------------------------------------------------------------------------------------------------
+
         new_post = f"""INSERT INTO {table_name} (
                             chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, job_type,
                             city, salary, experience, contacts, time_of_public, created_at, session, sub,
@@ -763,6 +790,7 @@ class DataBaseOperations:
                                         '{results_dict['contacts']}', '{results_dict['time_of_public']}', '{datetime.now()}',
                                         '{results_dict['session']}', '{results_dict['sub']}',
                                         '{tags}', '{full_tags}', '{full_anti_tags}', '{level}');"""
+
         with self.con:
             try:
                 cur.execute(new_post)
@@ -1204,7 +1232,7 @@ class DataBaseOperations:
         query = f"""UPDATE {table_name} SET {field}='{value}' {param}"""
         self.run_free_request(request=query, output_text=output_text)
 
-    def update_table_multi(self, table_name, param, values_dict, output_text='vacancy has updated'):
+    def update_table_multi(self, table_name: str, param: str, values_dict: dict, output_text='vacancy has updated'):
         query = f"""UPDATE {table_name} SET"""
         for key in values_dict:
             if key != 'id':
@@ -1212,23 +1240,43 @@ class DataBaseOperations:
         query = f"{query[:-1]} {param}"
         self.run_free_request(request=query, output_text=output_text)
 
-    def check_exists_message(self, title=None, body=None, table_list=None):
-        if not title and not body:
-            return -1
-        vacancy_exists = 0
-        title = self.clear_title_or_body(title)
-        body = self.clear_title_or_body(body)
+    def check_exists_message(self, title=None, body=None, vacancy_url=None, table_list=None):
+        param = "WHERE "
+        length = len(param)
         if not table_list:
             table_list = table_list_for_checking_message_in_db
+        if vacancy_url:
+            param += f"vacancy_url LIKE '%{vacancy_url}%'"
+        elif body or title:
+            if title:
+                param += f"title='{self.clear_title_or_body(title)}'"
+            if body:
+                if len(param) > length:
+                    param += ' AND '
+                param += f"body='{self.clear_title_or_body(body)}'"
+        else:
+            return {''}
+
+        # if not title and not body:
+        #     return -1
+        # vacancy_exists = 0
+        # title = self.clear_title_or_body(title)
+        # body = self.clear_title_or_body(body)
+        # for table in table_list:
+        #     response = self.get_all_from_db(
+        #         table_name=table,
+        #         param=f"WHERE title='{title}' and body='{body}'",
+        #         field='id'
+        #     )
         for table in table_list:
             response = self.get_all_from_db(
                 table_name=table,
-                param=f"WHERE title='{title}' and body='{body}'",
-                field='id'
+                param=param,
+                field='id, vacancy_url'
             )
             if response:
-                vacancy_exists += 1
-        return vacancy_exists == 0
+                return False
+        return True
 
     def write_short_session(self, short_session_name):
         if not self.con:
@@ -1398,20 +1446,20 @@ class DataBaseOperations:
         if not table_name:
             table_name='stats_db'
 
-        param = f"WHERE DATE(time_of_public) BETWEEN '{date1}' AND '{date2}'"
+        param=f"WHERE DATE(time_of_public) BETWEEN '{date1}' AND '{date2}'"
         data = self.get_all_from_stat_db(param=param, table_name=table_name)
-        columns = data['column_names']
-        all = [i for i in columns if 'all' in i]
-        unique = [i for i in columns if 'unique' in i]
-        df = pd.DataFrame(data['response'], columns=columns)
-        df = df.set_index(['time_of_public'])
-        df['Unique'] = df[unique].sum(axis=1)
-        df['All'] = df[all].sum(axis=1)
-        df = df[sorted(df.columns)]
-        df = df[['chat_name'] + [x for x in df.columns if x != 'chat_name']]
-        df.loc[f'Total for period {date1}-{date2}'] = df.sum(axis=0, numeric_only=True)
-        df2 = df.groupby('chat_name').sum(numeric_only=True)
-        len = df.shape[0]
+        columns=data['column_names']
+        all=[i for i in columns if 'all' in i]
+        unique=[i for i in columns if 'unique' in i]
+        df=pd.DataFrame(data['response'], columns=columns)
+        df=df.set_index(['time_of_public'])
+        df['Unique']=df[unique].sum(axis=1)
+        df['All']=df[all].sum(axis=1)
+        df = df[sorted(df.columns )]
+        df = df[['chat_name'] + [x for x in df.columns if x!='chat_name']]
+        df.loc[f'Total for period {date1}-{date2}']=df.sum(axis=0, numeric_only=True)
+        df2=df.groupby('chat_name').sum(numeric_only=True)
+        len=df.shape[0]
 
         with pd.ExcelWriter(f'./excel/report_{date1}_{date2}.xlsx') as writer:
             df.to_excel(writer, sheet_name="Sheet1")
