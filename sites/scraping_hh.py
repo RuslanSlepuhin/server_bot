@@ -6,7 +6,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from db_operations.scraping_db import DataBaseOperations
-from __backup__.pattern_Alex2809 import cities_pattern, params
+from patterns.data_pattern._data_pattern import cities_pattern, params
 from sites.write_each_vacancy_to_db import write_each_vacancy
 from settings.browser_settings import options
 from utils.additional_variables.additional_variables import sites_search_words, how_much_pages
