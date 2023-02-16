@@ -1,14 +1,17 @@
 import re
 from datetime import datetime
 import pandas as pd
+import requests
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from db_operations.scraping_db import DataBaseOperations
-from patterns.data_pattern._data_pattern import cities_pattern, params
+from patterns.pattern_Alex2809 import cities_pattern, params
 from sites.write_each_vacancy_to_db import write_each_vacancy
-from settings.browser_settings import options
+from settings.browser_settings import options, chrome_driver_path
 from utils.additional_variables.additional_variables import sites_search_words, how_much_pages
 from helper_functions.helper_functions import edit_message, send_message
 from sites.send_log_txt import send_log_txt
@@ -93,10 +96,12 @@ class HHGetInformation:
             #
             till = how_much_pages
 
-            for self.page_number in range(0, till-1):
+            for self.page_number in range(0, till - 1):
                 try:
-                    await self.bot.send_message(self.chat_id, f"https://hh.ru/search/vacancy?text={word}&salary=&area=1002&ored_clusters=true&enable_snippets=true&search_period=3&page={self.page_number}")
-                    self.browser.get(f"https://hh.ru/search/vacancy?text={word}&salary=&area=1002&ored_clusters=true&enable_snippets=true&search_period=3&page={self.page_number}")
+                    await self.bot.send_message(self.chat_id,
+                                                f"https://hh.ru/search/vacancy?text={word}&salary=&area=1002&ored_clusters=true&enable_snippets=true&search_period=3&page={self.page_number}")
+                    self.browser.get(
+                        f"https://hh.ru/search/vacancy?text={word}&salary=&area=1002&ored_clusters=true&enable_snippets=true&search_period=3&page={self.page_number}")
                     # self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                     vacancy_exists_on_page = await self.get_link_message(self.browser.page_source, word)
                     if not vacancy_exists_on_page:
@@ -104,10 +109,12 @@ class HHGetInformation:
                 except:
                     break
 
-            for self.page_number in range(0, till-1):
+            for self.page_number in range(0, till - 1):
                 try:
-                    await self.bot.send_message(self.chat_id, f"https://hh.ru/search/vacancy?area=1002&area=16&area=113&area=40&schedule=remote&search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={word}&ored_clusters=true&search_period=3&page={self.page_number}")
-                    self.browser.get(f"https://hh.ru/search/vacancy?area=1002&area=16&area=113&area=40&schedule=remote&search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={word}&ored_clusters=true&search_period=3&page={self.page_number}")
+                    await self.bot.send_message(self.chat_id,
+                                                f"https://hh.ru/search/vacancy?area=1002&area=16&area=113&area=40&schedule=remote&search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={word}&ored_clusters=true&search_period=3&page={self.page_number}")
+                    self.browser.get(
+                        f"https://hh.ru/search/vacancy?area=1002&area=16&area=113&area=40&schedule=remote&search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={word}&ored_clusters=true&search_period=3&page={self.page_number}")
                     # self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                     vacancy_exists_on_page = await self.get_link_message(self.browser.page_source, word)
                     if not vacancy_exists_on_page:
@@ -115,20 +122,19 @@ class HHGetInformation:
                 except:
                     break
 
-
-            for self.page_number in range(0, till-1):
+            for self.page_number in range(0, till - 1):
                 try:
-                    await self.bot.send_message(self.chat_id, f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text=&page={self.page_number}&hhtmFrom=vacancy_search_list',
-                                          disable_web_page_preview=True)
-                    self.browser.get(f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text=&page={self.page_number}&hhtmFrom=vacancy_search_list')
+                    await self.bot.send_message(self.chat_id,
+                                                f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text=&page={self.page_number}&hhtmFrom=vacancy_search_list',
+                                                disable_web_page_preview=True)
+                    self.browser.get(
+                        f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text=&page={self.page_number}&hhtmFrom=vacancy_search_list')
                     self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                     vacancy_exists_on_page = await self.get_link_message(self.browser.page_source, word)
                     if not vacancy_exists_on_page:
                         break
                 except:
                     break
-
-
 
         await self.bot.send_message(self.chat_id, 'hh.ru parsing: Done!', disable_web_page_preview=True)
 
@@ -235,7 +241,11 @@ class HHGetInformation:
 
     async def get_content_from_link(self, i, links, word):
         vacancy_url = i.get('href')
-        vacancy_url = re.findall(r'https:\/\/hh.ru\/vacancy\/[0-9]{6,12}', vacancy_url)[0]
+        try:
+            vacancy_url = re.findall(r'https:\/\/hh.ru\/vacancy\/[0-9]{6,12}', vacancy_url)[0]
+        except Exception as e:
+            print('/////////////////// ALARM in hh scraper /////////////////////')
+            return e
         print('vacancy_url = ', vacancy_url)
         links.append(vacancy_url)
 
@@ -419,10 +429,10 @@ class HHGetInformation:
             text_for_log = f"{vacancy}\n+w: {prof_str}\n{vacancy_url}\n{profession['tag']}\n{profession['anti_tag']}\n-------\n"
             await send_log_txt(text_for_log)
 
-            # if 'no_sort' not in profession['profession']:
-            #     self.written_vacancies += 1
-            # else:
-            #     self.written_vacancies += 1
+            if 'no_sort' not in profession['profession']:
+                self.written_vacancies += 1
+            else:
+                self.written_vacancies += 1
 
         if len(f"{self.current_message}\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}") < 4096:
             new_text = f"\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}"
