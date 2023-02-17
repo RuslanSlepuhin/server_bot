@@ -126,10 +126,10 @@ class HHGetInformation:
             for self.page_number in range(0, till - 1):
                 try:
                     await self.bot.send_message(self.chat_id,
-                                                f'https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={word}&no_magic=true&ored_clusters=true&search_period=1&page={self.page_number}',
+                                                f'https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={word}&ored_clusters=true&search_period=3&page={self.page_number}',
                                                 disable_web_page_preview=True)
                     self.browser.get(
-                        f'https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={word}&no_magic=true&ored_clusters=true&search_period=1&page={self.page_number}')
+                        f'https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={word}&ored_clusters=true&search_period=3&page={self.page_number}')
                     self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                     # print('await asyncio.sleep(10)')
                     # await asyncio.sleep(10)
