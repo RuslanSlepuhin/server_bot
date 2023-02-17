@@ -127,11 +127,11 @@ for sub_profession in frontend['sub']:
     frontend['sub'][sub_profession]['mex'] = set(frontend['sub'][sub_profession]['mex']).union(set(frontend['sub'][sub_profession]['mincl']))
 
 # print(f"\n********************\n{frontend}\n****************\n")
-print('\nFRONTEND:')
-for i in frontend:
-    if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
-        print(f"{i}: {frontend[i]}")
-    else:
-        print('sub: ')
-        for j in frontend[i]:
-            print(f"   * {j}: {frontend[i][j]}")
+# print('\nFRONTEND:')
+# for i in frontend:
+#     if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
+#         print(f"{i}: {frontend[i]}")
+#     else:
+#         print('sub: ')
+#         for j in frontend[i]:
+#             print(f"   * {j}: {frontend[i][j]}")

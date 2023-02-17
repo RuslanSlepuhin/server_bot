@@ -142,11 +142,11 @@ for sub_profession in marketing['sub']:
     marketing['sub'][sub_profession]['mex'] = set(marketing['sub'][sub_profession]['mex']).union(set(marketing['sub'][sub_profession]['mincl']))
 
 # print(f"\n********************\n{frontend}\n****************\n")
-print('\nMARKETING:')
-for i in marketing:
-    if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
-        print(f"{i}: {marketing[i]}")
-    else:
-        print('sub: ')
-        for j in marketing[i]:
-            print(f"   * {j}: {marketing[i][j]}")
+# print('\nMARKETING:')
+# for i in marketing:
+#     if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
+#         print(f"{i}: {marketing[i]}")
+#     else:
+#         print('sub: ')
+#         for j in marketing[i]:
+#             print(f"   * {j}: {marketing[i][j]}")

@@ -50,11 +50,11 @@ for sub_profession in pm['sub']:
 
 # print(f"\n********************\n{backend}\n****************\n")
 
-print('\nPM')
-for i in pm:
-    if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
-        print(f"{i}: {pm[i]}")
-    else:
-        print('sub: ')
-        for j in pm[i]:
-            print(f"   * {j}: {pm[i][j]}")
+# print('\nPM')
+# for i in pm:
+#     if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
+#         print(f"{i}: {pm[i]}")
+#     else:
+#         print('sub: ')
+#         for j in pm[i]:
+#             print(f"   * {j}: {pm[i][j]}")
