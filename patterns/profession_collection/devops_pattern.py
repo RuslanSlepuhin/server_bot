@@ -23,11 +23,11 @@ for sub_profession in devops['sub']:
 
 # print(f"\n********************\n{backend}\n****************\n")
 
-print('\nDEV')
-for i in devops:
-    if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
-        print(f"{i}: {devops[i]}")
-    else:
-        print('sub: ')
-        for j in devops[i]:
-            print(f"   * {j}: {devops[i][j]}")
+# print('\nDEV')
+# for i in devops:
+#     if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
+#         print(f"{i}: {devops[i]}")
+#     else:
+#         print('sub: ')
+#         for j in devops[i]:
+#             print(f"   * {j}: {devops[i][j]}")

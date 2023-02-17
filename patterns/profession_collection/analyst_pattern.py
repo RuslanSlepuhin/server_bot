@@ -69,11 +69,11 @@ for sub_profession in analyst['sub']:
 
 # print(f"\n********************\n{backend}\n****************\n")
 
-print('\nANALYST')
-for i in analyst:
-    if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
-        print(f"{i}: {analyst[i]}")
-    else:
-        print('sub: ')
-        for j in analyst[i]:
-            print(f"   * {j}: {analyst[i][j]}")
+# print('\nANALYST')
+# for i in analyst:
+#     if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
+#         print(f"{i}: {analyst[i]}")
+#     else:
+#         print('sub: ')
+#         for j in analyst[i]:
+#             print(f"   * {j}: {analyst[i][j]}")
