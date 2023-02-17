@@ -23,12 +23,12 @@ for sub_profession in dev['sub']:
 
 # print(f"\n********************\n{backend}\n****************\n")
 
-print('\nDEV')
-for i in dev:
-    if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
-        print(f"{i}: {dev[i]}")
-    else:
-        print('sub: ')
-        for j in dev[i]:
-            print(f"   * {j}: {dev[i][j]}")
+# print('\nDEV')
+# for i in dev:
+#     if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
+#         print(f"{i}: {dev[i]}")
+#     else:
+#         print('sub: ')
+#         for j in dev[i]:
+#             print(f"   * {j}: {dev[i][j]}")
 

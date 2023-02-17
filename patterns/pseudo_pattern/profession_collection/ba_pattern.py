@@ -3,12 +3,12 @@ from patterns.pseudo_pattern.profession_collection.analyst_pattern import analys
 
 ba = analyst
 
-print('\nDETAILED DESIGNER:')
-for i in ba:
-    if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
-        print(f"{i}: {ba[i]}")
-    else:
-        print('sub: ')
-        for j in ba[i]:
-            print(f"   * {j}: {ba[i][j]}")
+# print('\nDETAILED DESIGNER:')
+# for i in ba:
+#     if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
+#         print(f"{i}: {ba[i]}")
+#     else:
+#         print('sub: ')
+#         for j in ba[i]:
+#             print(f"   * {j}: {ba[i][j]}")
 

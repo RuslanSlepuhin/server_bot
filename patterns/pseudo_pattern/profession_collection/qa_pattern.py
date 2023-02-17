@@ -56,11 +56,11 @@ for sub_profession in qa['sub']:
 
 # print(f"\n********************\n{backend}\n****************\n")
 
-print('\nQA')
-for i in qa:
-    if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
-        print(f"{i}: {qa[i]}")
-    else:
-        print('sub: ')
-        for j in qa[i]:
-            print(f"   * {j}: {qa[i][j]}")
+# print('\nQA')
+# for i in qa:
+#     if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
+#         print(f"{i}: {qa[i]}")
+#     else:
+#         print('sub: ')
+#         for j in qa[i]:
+#             print(f"   * {j}: {qa[i][j]}")

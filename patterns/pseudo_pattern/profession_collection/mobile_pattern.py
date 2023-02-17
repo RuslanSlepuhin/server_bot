@@ -89,11 +89,11 @@ for sub_profession in mobile['sub']:
 
 # print(f"\n********************\n{backend}\n****************\n")
 
-print('\nMOBILE')
-for i in mobile:
-    if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
-        print(f"{i}: {mobile[i]}")
-    else:
-        print('sub: ')
-        for j in mobile[i]:
-            print(f"   * {j}: {mobile[i][j]}")
+# print('\nMOBILE')
+# for i in mobile:
+#     if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
+#         print(f"{i}: {mobile[i]}")
+#     else:
+#         print('sub: ')
+#         for j in mobile[i]:
+#             print(f"   * {j}: {mobile[i][j]}")

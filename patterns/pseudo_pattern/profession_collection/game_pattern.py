@@ -22,11 +22,11 @@ for sub_profession in game['sub']:
     game['sub'][sub_profession]['mex'] = set(game['sub'][sub_profession]['mex']).union(set(game['sub'][sub_profession]['mincl']))
 
 # print(f"\n********************\n{frontend}\n****************\n")
-print('\nGAME:')
-for i in game:
-    if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
-        print(f"{i}: {game[i]}")
-    else:
-        print('sub: ')
-        for j in game[i]:
-            print(f"   * {j}: {game[i][j]}")
+# print('\nGAME:')
+# for i in game:
+#     if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
+#         print(f"{i}: {game[i]}")
+#     else:
+#         print('sub: ')
+#         for j in game[i]:
+#             print(f"   * {j}: {game[i][j]}")

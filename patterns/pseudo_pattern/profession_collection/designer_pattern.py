@@ -124,11 +124,11 @@ for sub_profession in designer['sub']:
 
 # print(f"\n********************\n{backend}\n****************\n")
 
-print('\nDESIGNER')
-for i in designer:
-    if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
-        print(f"{i}: {designer[i]}")
-    else:
-        print('sub: ')
-        for j in designer[i]:
-            print(f"   * {j}: {designer[i][j]}")
+# print('\nDESIGNER')
+# for i in designer:
+#     if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
+#         print(f"{i}: {designer[i]}")
+#     else:
+#         print('sub: ')
+#         for j in designer[i]:
+#             print(f"   * {j}: {designer[i][j]}")
