@@ -9,7 +9,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from db_operations.scraping_db import DataBaseOperations
-from patterns.pattern_Alex2809 import cities_pattern, params
+from patterns.data_pattern._data_pattern import cities_pattern, params
 from sites.write_each_vacancy_to_db import write_each_vacancy
 from settings.browser_settings import options, chrome_driver_path
 from utils.additional_variables.additional_variables import sites_search_words, how_much_pages
@@ -77,6 +77,7 @@ class HHGetInformation:
             executable_path=chrome_driver_path,
             options=options
         )
+
         for word in self.search_words:
             # self.page_number = 0
             # link = f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text='
@@ -241,8 +242,6 @@ class HHGetInformation:
 
     async def get_content_from_link(self, i, links, word):
         vacancy_url = i.get('href')
-        print("vacancy_url: ", vacancy_url)
-
         try:
             vacancy_url = vacancy_url.split('?')[0]
         except Exception as e:
@@ -263,17 +262,29 @@ class HHGetInformation:
         print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
 
         # get vacancy ------------------------
-        vacancy = soup.find('div', class_='vacancy-title').find('span').get_text()
+        vacancy = ''
+        try:
+            vacancy = soup.find('div', class_='vacancy-title').find('span').get_text()
+        except Exception as e:
+            print(f"error vacancy: {e}")
         print('vacancy = ', vacancy)
 
         # get title --------------------------
-        title = vacancy
+        title = ''
+        try:
+            title = vacancy
+        except Exception as e:
+            print(f"error title: {e}")
         print('title = ',title)
 
         # get body --------------------------
-        body = soup.find('div', class_='vacancy-section').get_text()
-        body = body.replace('\n\n', '\n')
-        body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
+        body = ''
+        try:
+            body = soup.find('div', class_='vacancy-section').get_text()
+            body = body.replace('\n\n', '\n')
+            body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
+        except Exception as e:
+            print(f"error body: {e}")
         print('body = ',body)
 
         # get tags --------------------------
@@ -283,8 +294,9 @@ class HHGetInformation:
             for i in tags_list:
                 tags += f'{i.get_text()}, '
             tags = tags[0:-2]
-        except:
-            pass
+        except Exception as e:
+            print(f"error tags: {e}")
+
         print('tags = ',tags)
 
         english = ''
@@ -294,7 +306,8 @@ class HHGetInformation:
         # get city --------------------------
         try:
             city = soup.find('a', class_='bloko-link bloko-link_kind-tertiary bloko-link_disable-visited').get_text()
-        except:
+        except Exception as e:
+            print(f"error city: {e}")
             city = ''
         print('city = ',city)
 
@@ -302,21 +315,24 @@ class HHGetInformation:
         try:
             company = soup.find('span', class_='vacancy-company-name').get_text()
             company = company.replace('\xa0', ' ')
-        except:
+        except Exception as e:
+            print(f"error company: {e}")
             company = ''
         print('company = ',company)
 
         # get salary --------------------------
         try:
             salary = soup.find('span', class_='bloko-header-section-2 bloko-header-section-2_lite').get_text()
-        except:
+        except Exception as e:
+            print(f"error salary: {e}")
             salary = ''
         print('salary = ',salary)
 
         # get experience --------------------------
         try:
             experience = soup.find('p', class_='vacancy-description-list-item').find('span').get_text()
-        except:
+        except Exception as e:
+            print(f"error experience: {e}")
             experience = ''
         print('experience = ',experience)
 
@@ -341,7 +357,8 @@ class HHGetInformation:
 
         try:
             date = soup.find('p', class_="vacancy-creation-time-redesigned").get_text()
-        except:
+        except Exception as e:
+            print(f"error date: {e}")
             date = ''
         if date:
             date = re.findall(r'[0-9]{1,2}\W[а-я]{3,}\W[0-9]{4}', date)
