@@ -40,7 +40,7 @@ class ParseSites:
         await HabrGetInformation(bot_dict).get_content()
         await FinderGetInformation(bot_dict).get_content()
         await GeekGetInformation(bot_dict).get_content()
-        await SvyaziGetInformation(bot_dict).get_content()
+        # await SvyaziGetInformation(bot_dict).get_content()
         await HHGetInformation(bot_dict).get_content()
         await HHKzGetInformation(bot_dict).get_content()
 
