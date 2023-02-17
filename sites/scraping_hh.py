@@ -1,3 +1,4 @@
+import asyncio
 import re
 from datetime import datetime
 import pandas as pd
@@ -79,31 +80,16 @@ class HHGetInformation:
         )
 
         for word in self.search_words:
-            # self.page_number = 0
-            # link = f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text='
-            # await self.bot.send_message(self.chat_id, link, disable_web_page_preview=True)
-            #
-            # print('page link: ', link)
-            # try:
-            #     self.browser.get(link)
-            # except Exception as e:
-            #     print('bot could not to get the link', e)
-            #
-            # try:
-            #     self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            # except:
-            #     pass
-            # await self.get_link_message(self.browser.page_source, word)
-            #
             till = how_much_pages
 
             for self.page_number in range(0, till - 1):
                 try:
                     await self.bot.send_message(self.chat_id,
-                                                f"https://hh.ru/search/vacancy?text={word}&salary=&area=1002&ored_clusters=true&enable_snippets=true&search_period=3&page={self.page_number}")
+                                                f'https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={word}&ored_clusters=true&search_period=3&page={self.page_number}',
+                                                disable_web_page_preview=True)
                     self.browser.get(
-                        f"https://hh.ru/search/vacancy?text={word}&salary=&area=1002&ored_clusters=true&enable_snippets=true&search_period=3&page={self.page_number}")
-                    # self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                        f'https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={word}&ored_clusters=true&search_period=3&page={self.page_number}')
+                    self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                     vacancy_exists_on_page = await self.get_link_message(self.browser.page_source, word)
                     if not vacancy_exists_on_page:
                         break
