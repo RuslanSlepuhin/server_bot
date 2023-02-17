@@ -899,7 +899,7 @@ class InviteBot():
                 body = data['body']
             await state.finish()
             results = await search_vacancy_in_db(title, body)
-            if not results['len']:
+            if not results:
                 await self.bot_aiogram.send_message(message.chat.id, f"not found")
             else:
                 message_for_send = ''
