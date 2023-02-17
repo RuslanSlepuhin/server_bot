@@ -23,11 +23,11 @@ for sub_profession in sales_manager['sub']:
 
 # print(f"\n********************\n{backend}\n****************\n")
 
-print('\nSALES MANAGER')
-for i in sales_manager:
-    if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
-        print(f"{i}: {sales_manager[i]}")
-    else:
-        print('sub: ')
-        for j in sales_manager[i]:
-            print(f"   * {j}: {sales_manager[i][j]}")
+# print('\nSALES MANAGER')
+# for i in sales_manager:
+#     if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
+#         print(f"{i}: {sales_manager[i]}")
+#     else:
+#         print('sub: ')
+#         for j in sales_manager[i]:
+#             print(f"   * {j}: {sales_manager[i][j]}")

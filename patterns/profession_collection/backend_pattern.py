@@ -234,11 +234,11 @@ for sub_profession in backend['sub']:
 
 
 # print(f"\n********************\n{backend}\n****************\n")
-print('\nBACKEND')
-for i in backend:
-    if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
-        print(f"{i}: {backend[i]}")
-    else:
-        print('sub: ')
-        for j in backend[i]:
-            print(f"   * {j}: {backend[i][j]}")
+# print('\nBACKEND')
+# for i in backend:
+#     if i in ['mex', 'mex2', 'ma', 'ma2', 'mdef', 'mincl']:
+#         print(f"{i}: {backend[i]}")
+#     else:
+#         print('sub: ')
+#         for j in backend[i]:
+#             print(f"   * {j}: {backend[i][j]}")
