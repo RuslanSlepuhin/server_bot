@@ -68,7 +68,7 @@ path_last_pattern = "./patterns/last_changes/pattern_Alex2809 (6).py"
 path_data_pattern = "./patterns/data_pattern/_data_pattern.py"
 
 path_filter_error_file = "./excel/filter_jan_errors.txt"
-
+db_fields_for_update_in_parsing = ['job_type', 'relocation', 'city', 'experience', 'english']
 
 cities_file_path = './utils/additional_data/data.xlsx'
 # cities_file_path = './../utils/additional_data/data.xlsx' # for tests
@@ -94,6 +94,7 @@ path_post_request_file = "./excel/path_post_request_file.txt"
 till = 5
 vacancy_fresh_time_days = 7
 path_to_excel = "./excel/"
+path_push_shorts_report_file = "./excel/report_push_shorts.txt"
 
 post_request_for_example = {
     'profession': '',
@@ -150,6 +151,7 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '⛔️/add_and_push_subs - add subs and fill them\n' \
             '⛔️/get_random_vacancy_by_profession \n' \
             '⛔️/get_post_request \n' \
+            '⛔️/rewrite_additional_db_fields - like job_type, english, experience, relocation, city\n' \
             '----------------------------------------------------\n\n' \
             '---------------- PARSING: ----------------\n' \
             '🔆/magic_word - input word and get results from hh.ru\n' \
