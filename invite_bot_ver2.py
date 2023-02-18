@@ -26,6 +26,8 @@ from telethon.tl.functions.messages import GetHistoryRequest
 from telethon.tl.types import InputUser, InputChannel, ChannelParticipantsSearch, PeerChannel
 from db_operations.scraping_db import DataBaseOperations
 from sites.scraping_hhkz import HHKzGetInformation
+from sites.scraping_remotehub import RemotehubGetInformation
+from sites.scraping_remotejob import RemoteJobGetInformation
 from telegram_chats.scraping_telegramchats2 import WriteToDbMessages, main
 from sites.parsing_sites_runner import ParseSites
 from logs.logs import Logs
@@ -122,7 +124,7 @@ class InviteBot():
             self.client = TelegramClient(username_double, int(api_id_double), api_hash_double)
         else:
             self.client = TelegramClient(username, int(api_id), api_hash)
-        self.client.connect()
+        self.client.start()
 
         logging.basicConfig(level=logging.INFO)
         if token_in:
@@ -758,6 +760,22 @@ class InviteBot():
                 bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
             )
             await svyazi.get_content()
+
+        @self.dp.message_handler(commands=['remotehub'])
+        async def geek(message: types.Message):
+            remotehub = RemotehubGetInformation(
+                search_word=None,
+                bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
+            )
+            await remotehub.get_content()
+
+        @self.dp.message_handler(commands=['remotejob'])
+        async def geek(message: types.Message):
+            remotejob = RemoteJobGetInformation(
+                search_word=None,
+                bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
+            )
+            await remotejob.get_content()
 
         @self.dp.message_handler(commands=['rabota'])
         async def geek(message: types.Message):
@@ -2724,7 +2742,7 @@ class InviteBot():
             df.to_excel(f'./excel/excel/followers_statistics.xlsx', sheet_name='Sheet1')
             print(f'\nExcel was writting')
 
-            await send_file_to_user(message, path='excel/excel/excel/followers_statistics.xlsx')
+            await send_file_to_user(message, path='./excel/followers_statistics.xlsx')
 
         async def send_file_to_user(message, path, caption='Please take it'):
 
@@ -3856,12 +3874,12 @@ class InviteBot():
             await asyncio.sleep(1)
             self.start_time_scraping_channels = datetime.now()
             print('time_start = ', self.start_time_scraping_channels)
-            # await bot_aiogram.send_message(message.chat.id, 'Scraping is starting')
+            # await self.bot_aiogram.send_message(message.chat.id, 'Scraping is starting')
             await asyncio.sleep(1)
 
             # # -----------------------parsing telegram channels -------------------------------------
             bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
-            await main(self.client, bot_dict=bot_dict)
+            # await main(self.client, bot_dict=bot_dict)
 
             psites = ParseSites(client=self.client, bot_dict=bot_dict)
             # self.bot_aiogram.send_message(message.chat.id, "TG channels parsing has finished")
