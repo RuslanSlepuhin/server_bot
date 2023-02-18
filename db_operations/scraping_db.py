@@ -281,13 +281,16 @@ class DataBaseOperations:
             query = f"""SELECT {field} FROM {table_name} {param} {order}"""
         else:
             query = f"""SELECT {field} FROM {table_name} {param} """
-        with self.con:
-            try:
-                cur.execute(query)
-                response = cur.fetchall()
-            except Exception as e:
-                print(e)
-                return str(e)
+        try:
+            with self.con:
+                try:
+                    cur.execute(query)
+                    response = cur.fetchall()
+                except Exception as e:
+                    print(e)
+                    return str(e)
+        except Exception as e:
+            print(e)
         if curs:
             return cur
         return response
