@@ -43,8 +43,11 @@ def list_to_string(raw_list, separator):
 async def to_dict_from_admin_response(response, fields):
     response_dict = {}
     fields = fields.split(', ')
-    for i in range(0, len(fields)):
-        response_dict[fields[i]] = response[i]
+    try:
+        for i in range(0, len(fields)):
+            response_dict[fields[i]] = response[i]
+    except Exception as e:
+        return {'response 500': str(e)}
     return response_dict
 
 def to_dict_from_admin_response_sync(response, fields):
