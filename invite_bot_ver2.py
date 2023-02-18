@@ -4915,7 +4915,7 @@ class InviteBot():
                     sources_dict[vacancy_url] += 1
 
             for source in sources_dict:
-                sources_message += f"{source}: {sources_dict[source]}"
+                sources_message += f"{source}: {sources_dict[source]}\n"
             return sources_message
 
 
