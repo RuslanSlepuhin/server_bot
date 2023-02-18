@@ -295,6 +295,12 @@ class InviteBot():
                             output_text="multi update has done"
                         )
 
+        @self.dp.message_handler(commands=['vacancies_from'])
+        async def vacancies_from_command(message: types.Message):
+            for date in ['2023-02-18', '2023-02-17']:
+                sources_message = await vacancies_from(date)
+                await self.bot_aiogram.send_message(message.chat.id, f"{date}:\n{sources_message}")
+
         @self.dp.message_handler(commands=['copy_prof_tables_to_archive_prof_tables'])
         async def copy_prof_tables_to_archive_prof_tables_command(message: types.Message):
             await copy_prof_tables_to_archive_prof_tables()
@@ -4884,6 +4890,35 @@ class InviteBot():
 
         async def copy_prof_tables_to_archive_prof_tables():
             pass
+
+        async def vacancies_from(date_in):
+            sources_message = ''
+            sources_dict = {}
+            fields = 'id, vacancy_url'
+            param = f"WHERE profession LIKE '%junior%' AND DATE(created_at) = '{date_in}'"
+            responses = self.db.get_all_from_db(
+                table_name=variable.admin_database,
+                param=param,
+                field=fields
+            )
+            if not responses:
+                return 'vacancies not found'
+            for vacancy in responses:
+                vacancy_dict = await helper.to_dict_from_admin_response(vacancy, fields)
+                if vacancy_dict['vacancy_url'].split('//')[1].split('/')[0] == 't.me':
+                    vacancy_url = vacancy_dict['vacancy_url'].split('//')[1].split('/')[1]
+                else:
+                    vacancy_url = vacancy_dict['vacancy_url'].split('//')[1].split('/')[0]
+                if vacancy_url not in sources_dict:
+                    sources_dict[vacancy_url] = 1
+                else:
+                    sources_dict[vacancy_url] += 1
+
+            for source in sources_dict:
+                sources_message += f"{source}: {sources_dict[source]}"
+            return sources_message
+
+
 
         # start_polling(self.dp)
         executor.start_polling(self.dp, skip_updates=True)
