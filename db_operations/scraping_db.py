@@ -271,7 +271,7 @@ class DataBaseOperations:
         return response
 
     async def get_all_from_db_async(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
-
+        response = {'data': 'response 500'}
         if not self.con:
             self.connect_db()
         cur = self.con.cursor()
@@ -293,7 +293,10 @@ class DataBaseOperations:
             print(e)
         if curs:
             return cur
+
         return response
+
+
     def write_current_session(self, current_session):
 
         logs.write_log(f"scraping_db: function: write_current_session")
