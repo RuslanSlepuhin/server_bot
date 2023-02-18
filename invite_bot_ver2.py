@@ -300,7 +300,7 @@ class InviteBot():
             today = datetime.now()
             for date in [today.strftime('%Y-%m-%d'), (today-timedelta(days=1)).strftime('%Y-%m-%d')]:
                 sources_message = await vacancies_from(date)
-                await self.bot_aiogram.send_message(message.chat.id, f"{date}:\n{sources_message}")
+                await self.bot_aiogram.send_message(message.chat.id, f"{date}:\n{sources_message}", disable_web_page_preview=True)
 
         @self.dp.message_handler(commands=['copy_prof_tables_to_archive_prof_tables'])
         async def copy_prof_tables_to_archive_prof_tables_command(message: types.Message):
