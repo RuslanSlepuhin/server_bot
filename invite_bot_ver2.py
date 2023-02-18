@@ -297,7 +297,8 @@ class InviteBot():
 
         @self.dp.message_handler(commands=['vacancies_from'])
         async def vacancies_from_command(message: types.Message):
-            for date in ['2023-02-18', '2023-02-17']:
+            today = datetime.now()
+            for date in [today.strftime('%Y-%m-%d'), (today-timedelta(days=1)).strftime('%Y-%m-%d')]:
                 sources_message = await vacancies_from(date)
                 await self.bot_aiogram.send_message(message.chat.id, f"{date}:\n{sources_message}")
 
