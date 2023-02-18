@@ -183,6 +183,7 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '---------------------------------------------------\n\n' \
              '---------------- STATISTICS: ----------------\n' \
             '/how_many_vacancies_published - get the statistic file (created by Anna)\n' \
+            '/vacancies_from - how many juniors have been written today and tomorrow\n' \
             '/check_title_body\n' \
             '/get_profession_parsing_tags_log - send the file with tags and antitags' \
             '/add_statistics\n\n' \
