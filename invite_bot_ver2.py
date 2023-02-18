@@ -4907,7 +4907,7 @@ class InviteBot():
             for vacancy in responses:
                 vacancy_dict = await helper.to_dict_from_admin_response(vacancy, fields)
                 if vacancy_dict['vacancy_url'].split('//')[1].split('/')[0] == 't.me':
-                    vacancy_url = vacancy_dict['vacancy_url'].split('//')[1].split('/')[1]
+                    vacancy_url = f"{vacancy_dict['vacancy_url'].split('//')[1].split('/')[0]}/{vacancy_dict['vacancy_url'].split('//')[1].split('/')[1]}"
                 else:
                     vacancy_url = vacancy_dict['vacancy_url'].split('//')[1].split('/')[0]
                 if vacancy_url not in sources_dict:
