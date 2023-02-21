@@ -279,9 +279,11 @@ class InviteBot():
                     date_in=date_in
                 )
                 if statistics_message:
-                    await self.bot_aiogram.send_message(message.chat.id, f"{date_in}:\n{table}\n{statistics_message}")
+                    await self.bot_aiogram.send_message(message.chat.id, f"{date_in}:\n{table}\n{statistics_message}",
+                                                        disable_web_page_preview=True)
                 else:
-                    await self.bot_aiogram.send_message(message.chat.id, f"{date_in}:\n{table}\ndb is empty")
+                    await self.bot_aiogram.send_message(message.chat.id, f"{date_in}:\n{table}\ndb is empty",
+                                                        disable_web_page_preview=True)
 
 
         @self.dp.message_handler(commands=['rewrite_additional_db_fields'])
