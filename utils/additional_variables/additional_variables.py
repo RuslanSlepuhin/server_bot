@@ -153,6 +153,9 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '⛔️/get_post_request \n' \
             '⛔️/rewrite_additional_db_fields - like job_type, english, experience, relocation, city\n' \
             '----------------------------------------------------\n\n' \
+            '---------------- FILES: ----------------\n' \
+            '/report_push_shorts - shorts report \n' \
+            '----------------------------------------------------\n\n' \
             '---------------- PARSING: ----------------\n' \
             '🔆/magic_word - input word and get results from hh.ru\n' \
             '🔆/hh_kz - input word and get results from hh.ru\n' \
