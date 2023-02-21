@@ -270,6 +270,20 @@ class InviteBot():
                 caption="take the shorts report"
             )
 
+        @self.dp.message_handler(commands=['vacancies_from'])
+        async def vacancies_from_commands(message: types.Message):
+            date_in = datetime.now().strftime('%Y-%m-%d')
+            for table in variable.tables_list_for_report:
+                statistics_message = await vacancies_from(
+                    profession=table,
+                    date_in=date_in
+                )
+                if statistics_message:
+                    await self.bot_aiogram.send_message(message.chat.id, f"{date_in}:\n{table}\n{statistics_message}")
+                else:
+                    await self.bot_aiogram.send_message(message.chat.id, f"{date_in}:\n{table}\ndb is empty")
+
+
         @self.dp.message_handler(commands=['rewrite_additional_db_fields'])
         async def rewrite_additional_db_fields_commands(message: types.Message):
             tables_list = []
@@ -4873,6 +4887,40 @@ class InviteBot():
                 column_name_type=field
             )
 
+        async def vacancies_from(profession, date_in):
+            statistics_dict = {}
+            today = datetime.now().strftime('%Y-%m-%d')
+            statistics_message = ''
+            fields = 'id, vacancy_url'
+
+            if profession == '*':
+                param = f"WHERE DATE(time_of_public) = '{date_in}'"
+            else:
+                param = f"WHERE profession LIKE '%{profession}%' and DATE(time_of_public) = '{date_in}'"
+
+            responses = self.db.get_all_from_db(
+                table_name=variable.admin_database,
+                param=param,
+                field=fields
+            )
+            for response in responses:
+                response_dict = await helper.to_dict_from_admin_response(
+                    response=response,
+                    fields=fields
+                )
+                if 't.me' in response_dict['vacancy_url']:
+                    key = "t.me/" + response_dict['vacancy_url'].split('/')[3]
+                else:
+                    key = response_dict['vacancy_url'].split('/')[2]
+                if key not in statistics_dict:
+                    statistics_dict[key] = 1
+                else:
+                    statistics_dict[key] += 1
+            for key in statistics_dict:
+                statistics_message += f"{key}: {statistics_dict[key]}\n"
+            return statistics_message
+
+
         async def copy_prof_tables_to_archive_prof_tables():
             pass
 
@@ -4886,5 +4934,5 @@ def run(double=False, token_in=None):
         double=double
     ).main_invitebot()
 
-if __name__ == '__main__':
-   run()
+# if __name__ == '__main__':
+#    run()
