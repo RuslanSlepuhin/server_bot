@@ -4903,7 +4903,7 @@ class InviteBot():
             sources_message = ''
             sources_dict = {}
             fields = 'id, vacancy_url'
-            param = f"WHERE profession LIKE '%junior%' AND DATE(created_at) = '{date_in}'"
+            param = f"WHERE profession LIKE '%junior%' AND DATE(time_of_public) = '{date_in}'"
             responses = self.db.get_all_from_db(
                 table_name=variable.admin_database,
                 param=param,
