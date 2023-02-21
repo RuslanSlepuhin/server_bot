@@ -26,8 +26,6 @@ from telethon.tl.functions.messages import GetHistoryRequest
 from telethon.tl.types import InputUser, InputChannel, ChannelParticipantsSearch, PeerChannel
 from db_operations.scraping_db import DataBaseOperations
 from sites.scraping_hhkz import HHKzGetInformation
-from sites.scraping_remotehub import RemotehubGetInformation
-from sites.scraping_remotejob import RemoteJobGetInformation
 from telegram_chats.scraping_telegramchats2 import WriteToDbMessages, main
 from sites.parsing_sites_runner import ParseSites
 from logs.logs import Logs
@@ -294,20 +292,6 @@ class InviteBot():
                             values_dict=data_for_change,
                             output_text="multi update has done"
                         )
-        @self.dp.message_handler(commands=['report_push_shorts'])
-        async def report_push_shorts_command(message: types.Message):
-            await send_file_to_user(
-                message=message,
-                path=variable.path_log_check_profession,
-                caption="take the profession logs"
-            )
-
-        @self.dp.message_handler(commands=['vacancies_from'])
-        async def vacancies_from_command(message: types.Message):
-            today = datetime.now()
-            for date in [today.strftime('%Y-%m-%d'), (today-timedelta(days=1)).strftime('%Y-%m-%d')]:
-                sources_message = await vacancies_from(date)
-                await self.bot_aiogram.send_message(message.chat.id, f"{date}:\n{sources_message}", disable_web_page_preview=True)
 
         @self.dp.message_handler(commands=['copy_prof_tables_to_archive_prof_tables'])
         async def copy_prof_tables_to_archive_prof_tables_command(message: types.Message):
@@ -476,7 +460,6 @@ class InviteBot():
         @self.dp.message_handler(commands=['how_many_vacancies_published'])
         async def how_many_vacancies_published_commands(message: types.Message):
 
-            # self.db.delete_table(table_name='stats_db')
             # self.db.check_or_create_stats_table()
             # self.db.add_old_vacancies_to_stat_db()
 
@@ -775,22 +758,6 @@ class InviteBot():
             )
             await svyazi.get_content()
 
-        @self.dp.message_handler(commands=['remotehub'])
-        async def geek(message: types.Message):
-            remotehub = RemotehubGetInformation(
-                search_word=None,
-                bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
-            )
-            await remotehub.get_content()
-
-        @self.dp.message_handler(commands=['remotejob'])
-        async def geek(message: types.Message):
-            remotejob = RemoteJobGetInformation(
-                search_word=None,
-                bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
-            )
-            await remotejob.get_content()
-
         @self.dp.message_handler(commands=['rabota'])
         async def geek(message: types.Message):
 
@@ -931,7 +898,7 @@ class InviteBot():
                 body = data['body']
             await state.finish()
             results = await search_vacancy_in_db(title, body)
-            if not results:
+            if not results['len']:
                 await self.bot_aiogram.send_message(message.chat.id, f"not found")
             else:
                 message_for_send = ''
@@ -2756,7 +2723,7 @@ class InviteBot():
             df.to_excel(f'./excel/excel/followers_statistics.xlsx', sheet_name='Sheet1')
             print(f'\nExcel was writting')
 
-            await send_file_to_user(message, path='./excel/followers_statistics.xlsx')
+            await send_file_to_user(message, path='excel/excel/excel/followers_statistics.xlsx')
 
         async def send_file_to_user(message, path, caption='Please take it'):
 
@@ -3888,7 +3855,7 @@ class InviteBot():
             await asyncio.sleep(1)
             self.start_time_scraping_channels = datetime.now()
             print('time_start = ', self.start_time_scraping_channels)
-            # await self.bot_aiogram.send_message(message.chat.id, 'Scraping is starting')
+            # await bot_aiogram.send_message(message.chat.id, 'Scraping is starting')
             await asyncio.sleep(1)
 
             # # -----------------------parsing telegram channels -------------------------------------
@@ -4056,6 +4023,7 @@ class InviteBot():
                     # ------------------- end of  pushing to prof channel full message -----------------
 
                     elif "shorts" in callback_data:
+                        self.message_for_send_dict = {}
                         # I need to get the newest vacancy
                         vacancy_from_admin = DataBaseOperations(None).get_all_from_db(
                             table_name='admin_last_session',
@@ -4063,21 +4031,21 @@ class InviteBot():
                             without_sort=True,
                             field=variable.admin_table_fields
                         )
+                        # transfer response to dict
                         vacancy_from_admin_dict = await helper.to_dict_from_admin_response(
                             response=vacancy_from_admin[0],
                             fields=variable.admin_table_fields
                         )
+                        # collect to self.message_for_send_dict by subs
                         composed_message_dict = await compose_message(
-                            # message=vacancy_from_admin[0],
                             one_profession=profession,
                             vacancy_from_admin_dict=vacancy_from_admin_dict
                         )
-
                         await compose_message_for_send_dict(
                             composed_message_dict,
                             profession
                         )
-
+                        # push to profession tables
                         await compose_data_and_push_to_db(
                             vacancy_from_admin_dict=vacancy_from_admin_dict,
                             profession=profession,
@@ -4086,6 +4054,7 @@ class InviteBot():
                         prof_list = vacancy_from_admin_dict['profession'].split(', ')
                         profession_list['profession'] = [profession, ]
 
+                        # update vacancy by profession field
                         await update_vacancy_admin_last_session(
                             results_dict=None,
                             profession=profession,
@@ -4898,35 +4867,6 @@ class InviteBot():
 
         async def copy_prof_tables_to_archive_prof_tables():
             pass
-
-        async def vacancies_from(date_in):
-            sources_message = ''
-            sources_dict = {}
-            fields = 'id, vacancy_url'
-            param = f"WHERE profession LIKE '%junior%' AND DATE(time_of_public) = '{date_in}'"
-            responses = self.db.get_all_from_db(
-                table_name=variable.admin_database,
-                param=param,
-                field=fields
-            )
-            if not responses:
-                return 'vacancies not found'
-            for vacancy in responses:
-                vacancy_dict = await helper.to_dict_from_admin_response(vacancy, fields)
-                if vacancy_dict['vacancy_url'].split('//')[1].split('/')[0] == 't.me':
-                    vacancy_url = vacancy_dict['vacancy_url'].split('//')[1].split('/')[1]
-                else:
-                    vacancy_url = f"{vacancy_dict['vacancy_url'].split('//')[1].split('/')[0]}/{vacancy_dict['vacancy_url'].split('//')[1].split('/')[1]}"
-                if vacancy_url not in sources_dict:
-                    sources_dict[vacancy_url] = 1
-                else:
-                    sources_dict[vacancy_url] += 1
-
-            for source in sources_dict:
-                sources_message += f"{source}: {sources_dict[source]}\n"
-            return sources_message
-
-
 
         # start_polling(self.dp)
         executor.start_polling(self.dp, skip_updates=True)
