@@ -3886,7 +3886,7 @@ class InviteBot():
 
             # # -----------------------parsing telegram channels -------------------------------------
             bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
-            # await main(self.client, bot_dict=bot_dict)
+            await main(self.client, bot_dict=bot_dict)
 
             psites = ParseSites(client=self.client, bot_dict=bot_dict)
             # self.bot_aiogram.send_message(message.chat.id, "TG channels parsing has finished")
@@ -4907,9 +4907,9 @@ class InviteBot():
             for vacancy in responses:
                 vacancy_dict = await helper.to_dict_from_admin_response(vacancy, fields)
                 if vacancy_dict['vacancy_url'].split('//')[1].split('/')[0] == 't.me':
-                    vacancy_url = f"{vacancy_dict['vacancy_url'].split('//')[1].split('/')[0]}/{vacancy_dict['vacancy_url'].split('//')[1].split('/')[1]}"
+                    vacancy_url = vacancy_dict['vacancy_url'].split('//')[1].split('/')[1]
                 else:
-                    vacancy_url = vacancy_dict['vacancy_url'].split('//')[1].split('/')[0]
+                    vacancy_url = f"{vacancy_dict['vacancy_url'].split('//')[1].split('/')[0]}/{vacancy_dict['vacancy_url'].split('//')[1].split('/')[1]}"
                 if vacancy_url not in sources_dict:
                     sources_dict[vacancy_url] = 1
                 else:
