@@ -294,6 +294,13 @@ class InviteBot():
                             values_dict=data_for_change,
                             output_text="multi update has done"
                         )
+        @self.dp.message_handler(commands=['report_push_shorts'])
+        async def report_push_shorts_command(message: types.Message):
+            await send_file_to_user(
+                message=message,
+                path=variable.path_log_check_profession,
+                caption="take the profession logs"
+            )
 
         @self.dp.message_handler(commands=['vacancies_from'])
         async def vacancies_from_command(message: types.Message):
