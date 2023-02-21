@@ -262,6 +262,14 @@ class InviteBot():
         async def get_logs(message: types.Message):
             await self.bot_aiogram.send_message(message.chat.id, variable.help_text)
 
+        @self.dp.message_handler(commands=['report_push_shorts'])
+        async def report_push_shorts_commands(message: types.Message):
+            await send_file_to_user(
+                message=message,
+                path=variable.path_push_shorts_report_file,
+                caption="take the shorts report"
+            )
+
         @self.dp.message_handler(commands=['rewrite_additional_db_fields'])
         async def rewrite_additional_db_fields_commands(message: types.Message):
             tables_list = []
@@ -4878,5 +4886,5 @@ def run(double=False, token_in=None):
         double=double
     ).main_invitebot()
 
-# if __name__ == '__main__':
-#    run()
+if __name__ == '__main__':
+   run()
