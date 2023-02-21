@@ -95,6 +95,7 @@ till = 5
 vacancy_fresh_time_days = 7
 path_to_excel = "./excel/"
 path_push_shorts_report_file = "./excel/report_push_shorts.txt"
+tables_list_for_report = ['junior', '*']
 
 post_request_for_example = {
     'profession': '',
