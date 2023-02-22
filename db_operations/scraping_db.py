@@ -562,16 +562,17 @@ class DataBaseOperations:
 
     def delete_table(self, table_name):
 
-        logs.write_log(f"scraping_db: function: delete_table")
-
         if not self.con:
             self.connect_db()
         cur = self.con.cursor()
 
         query = f"""DROP TABLE {table_name};"""
         with self.con:
-            cur.execute(query)
-            print(f'{table_name} was deleted')
+            try:
+                cur.execute(query)
+                print(f'{table_name} was deleted')
+            except Exception as e:
+                print(e)
 
     def append_columns(self, table_name_list, column):
 
