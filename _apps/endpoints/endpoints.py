@@ -95,6 +95,7 @@ async def main_endpoints():
     async def get_vacancy_offset():
         response_dict = {}
         request_data = request.json
+        print(request_data)
         responses = db.get_all_from_db(
             # table_name=admin_database, # while frontend in developing
             table_name=variable.admin_copy,
@@ -113,6 +114,7 @@ async def main_endpoints():
     @app.route("/change_vacancy", methods = ['PUT'])
     async def change_vacancy():
         request_data = request.json
+        print(request_data)
         keys = set(request_data['vacancy'].keys())
         admin_fields = set(variable.admin_table_fields.split(", "))
         if 'vacancy' in request_data and keys.issubset(admin_fields):
@@ -132,6 +134,7 @@ async def main_endpoints():
     @app.route("/delete_vacancy", methods=['DELETE'])
     async def delete_vacancy():
         request_data = request.json
+        print(request_data)
         # answer = db.transfer_vacancy(
         #     table_from=variable.admin_database,
         #     table_to=variable.archive_database,
