@@ -43,11 +43,8 @@ def list_to_string(raw_list, separator):
 async def to_dict_from_admin_response(response, fields):
     response_dict = {}
     fields = fields.split(', ')
-    try:
-        for i in range(0, len(fields)):
-            response_dict[fields[i]] = response[i]
-    except Exception as e:
-        return {'response 500': str(e)}
+    for i in range(0, len(fields)):
+        response_dict[fields[i]] = response[i]
     return response_dict
 
 def to_dict_from_admin_response_sync(response, fields):
@@ -378,7 +375,6 @@ def get_tags(profession):
 async def get_short_session_name(prefix):
     return f"{prefix.strip()}: {datetime.now().strftime('%Y%m%d%H%M%S')}"
 
-
 def decompose_from_str_to_subs_list(data_str):
     data_list=data_str.split(': ')
     profession=data_list[0]
@@ -392,3 +388,4 @@ def decompose_from_str_to_subs_list(data_str):
 def add_to_report_file(path, write_mode, text):
     with open(path, write_mode, encoding='utf-8') as file:
         file.write(text)
+

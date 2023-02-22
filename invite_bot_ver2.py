@@ -125,6 +125,7 @@ class InviteBot():
         self.client.start()
 
         logging.basicConfig(level=logging.INFO)
+
         if token_in:
             self.token = token_in
         else:
@@ -134,12 +135,6 @@ class InviteBot():
         self.dp = Dispatcher(self.bot_aiogram, storage=storage)
 
     def main_invitebot(self):
-        # bot_aiogram = self.bot_aiogram
-        # dp = self.dp
-        # bot_aiogram = Bot(token=token)
-        # storage = MemoryStorage()
-        # dp = Dispatcher(bot_aiogram, storage=storage)
-
 
         async def connect_with_client(message, id_user):
 
@@ -269,6 +264,10 @@ class InviteBot():
                 path=variable.path_push_shorts_report_file,
                 caption="take the shorts report"
             )
+
+        @self.dp.message_handler(commands=['add_copy_admin_table'])
+        async def add_copy_admin_table_commands(message: types.Message):
+            await add_copy_admin_table(message)
 
         @self.dp.message_handler(commands=['vacancies_from'])
         async def vacancies_from_commands(message: types.Message):
@@ -2749,17 +2748,16 @@ class InviteBot():
 
             await send_file_to_user(message, path='excel/excel/excel/followers_statistics.xlsx')
 
-        async def send_file_to_user(message, path, caption='Please take it'):
-
+        async def send_file_to_user(message, path, caption='Please take it', send_to_developer=False):
             logs.write_log(f"invite_bot_2: function: send_file_to_user")
-
             with open(path, 'rb') as file:
                 await self.bot_aiogram.send_document(message.chat.id, file, caption=caption)
+                if send_to_developer and message.chat.id != variable.developer_chat_id:
+                    await self.bot_aiogram.send_document(variable.developer_chat_id, file, caption=caption)
+
 
         async def get_last_session():
-
-            logs.write_log(f"invite_bot_2: function: get_last_session")
-
+            last_session = ''
             current_session = DataBaseOperations(None).get_all_from_db(
                 table_name='current_session',
                 param='ORDER BY id DESC LIMIT 1',
@@ -4123,7 +4121,8 @@ class InviteBot():
 
             await send_file_to_user(
                 message=message,
-                path=variable.path_push_shorts_report_file
+                path=variable.path_push_shorts_report_file,
+                send_to_developer=True
             )
 
         async def shorts_public(message):
@@ -4922,6 +4921,39 @@ class InviteBot():
                 statistics_message += f"{key}: {statistics_dict[key]}\n"
             return statistics_message
 
+        async def add_copy_admin_table(message):
+            # # check DB for existing
+            # text_tables = ''
+            # tables_list = self.db.output_tables()
+            #
+            # # output for user
+            # for element in tables_list:
+            #     text_tables += f"{element}\n"
+            # await self.bot_aiogram.send_message(message.chat.id, text_tables)
+            #
+            # if exists, delete
+            # if variable.admin_copy in tables_list:
+            self.db.delete_table(variable.admin_copy)
+
+            # create new
+            self.db.check_or_create_table_admin(table_name=variable.admin_copy)
+
+            # transfer from admin to admin_copy
+            responses = self.db.get_all_from_db(
+                table_name=variable.admin_database,
+                param="WHERE profession <> 'no_sort'",
+                field='id'
+            )
+            for response in responses:
+                response_dict = await helper.to_dict_from_admin_response(
+                    response=response,
+                    fields='id'
+                )
+                self.db.transfer_vacancy(
+                    table_from=variable.admin_database,
+                    table_to=variable.admin_copy,
+                    id=response_dict['id']
+                )
 
         async def copy_prof_tables_to_archive_prof_tables():
             pass
