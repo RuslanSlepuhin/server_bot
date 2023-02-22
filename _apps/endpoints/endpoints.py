@@ -96,7 +96,8 @@ async def main_endpoints():
         response_dict = {}
         request_data = request.json
         responses = db.get_all_from_db(
-            table_name=admin_database,
+            # table_name=admin_database, # while frontend in developing
+            table_name=variable.admin_copy,
             param=f"WHERE profession LIKE '%, {request_data['profession']}%' "
                   f"OR profession LIKE '%{request_data['profession']}, %' "
                   f"OR profession = '{request_data['profession']}' "
@@ -117,7 +118,8 @@ async def main_endpoints():
         if 'vacancy' in request_data and keys.issubset(admin_fields):
             try:
                 db.update_table_multi(
-                    table_name=variable.admin_database,
+                    # table_name=variable.admin_database, # while frontend in developing
+                    table_name=variable.admin_copy,
                     param=f"WHERE id={request_data['vacancy']['id']}",
                     values_dict=request_data['vacancy']
                 )
@@ -130,11 +132,12 @@ async def main_endpoints():
     @app.route("/delete_vacancy", methods=['DELETE'])
     async def delete_vacancy():
         request_data = request.json
-        answer = db.transfer_vacancy(
-            table_from=variable.admin_database,
-            table_to=variable.archive_database,
-            id=request_data['vacancy']['id']
-        )
+        # answer = db.transfer_vacancy(
+        #     table_from=variable.admin_database,
+        #     table_to=variable.archive_database,
+        #     id=request_data['vacancy']['id']
+        # )
+        answer = True # while frontend in developing
         if not answer:
             return {'response': 'Wrong id'}
         db.delete_data(

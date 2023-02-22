@@ -4,11 +4,12 @@ import pandas
 admin_database = 'admin_last_session'
 archive_database = 'archive'
 shorts_session_database = 'short_session_numbers'
+admin_copy = 'admin_copy'
 
 short_session_database = 'shorts_session_name'
 admin_table_fields = "id, chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, " \
-                             "job_type, city, salary, experience, contacts, time_of_public, created_at, agregator_link, " \
-                             "session, sended_to_agregator, sub, tags, full_tags, full_anti_tags, short_session_numbers, " \
+                     "job_type, city, salary, experience, contacts, time_of_public, created_at, agregator_link, " \
+                     "session, sended_to_agregator, sub, tags, full_tags, full_anti_tags, short_session_numbers, " \
                      "level, approved"
 
 profession_table_fields = "id, chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, " \
@@ -96,6 +97,7 @@ vacancy_fresh_time_days = 7
 path_to_excel = "./excel/"
 path_push_shorts_report_file = "./excel/report_push_shorts.txt"
 tables_list_for_report = ['junior', '*']
+developer_chat_id = 5884559465
 
 post_request_for_example = {
     'profession': '',

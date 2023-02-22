@@ -271,7 +271,7 @@ class DataBaseOperations:
         return response
 
     async def get_all_from_db_async(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
-        response = {'data': 'response 500'}
+
         if not self.con:
             self.connect_db()
         cur = self.con.cursor()
@@ -293,10 +293,7 @@ class DataBaseOperations:
             print(e)
         if curs:
             return cur
-
         return response
-
-
     def write_current_session(self, current_session):
 
         logs.write_log(f"scraping_db: function: write_current_session")
@@ -549,15 +546,17 @@ class DataBaseOperations:
             result = cur.fetchall()
         summ = 0
         for i in result:
-            # print(i[2])
             query = f"SELECT MAX(id) FROM {i[2]}"
             with self.con:
-                cur.execute(query)
-                result = cur.fetchall()[0][0]
-                print(f"{i[2]} = {result}")
-                if result:
-                    summ += result
-                    tables_list.append(i[2])
+                try:
+                    cur.execute(query)
+                    result = cur.fetchall()[0][0]
+                    print(f"{i[2]} = {result}")
+                    if result:
+                        summ += result
+                        tables_list.append(i[2])
+                except Exception as e:
+                    print(e)
         print(f'\nвсего записей: {summ}')
         return tables_list
 
@@ -731,6 +730,8 @@ class DataBaseOperations:
                                 full_tags VARCHAR (700),
                                 full_anti_tags VARCHAR (700),
                                 short_session_numbers VARCHAR (300),
+                                level VARCHAR (70),
+                                approved VARCHAR (100),
                                 FOREIGN KEY (session) REFERENCES current_session(session)
                                 );"""
                             )
@@ -817,6 +818,15 @@ class DataBaseOperations:
                 table_name=f'{one_element}',
                 param=f"WHERE title='{title}' AND body='{body}'"
             )
+            response_like = self.get_all_from_db(
+                table_name=f'{one_element}',
+                param=f"WHERE title LIKE '{title}' AND body LIKE '{body}'"
+            )
+            if response != response_like:
+                print("\n\nALARM!! ALARM!! ALARM!\n\n")
+                print(f"response True") if response else print(f"response False")
+                print(f"response_like True") if response_like else print(f"response_like False")
+
             if response:
                 print(f'!!!!!!!!!!! Vacancy exists in {one_element} table\n')
                 return True
