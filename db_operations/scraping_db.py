@@ -264,7 +264,7 @@ class DataBaseOperations:
                 cur.execute(query)
                 response = cur.fetchall()
             except Exception as e:
-                print(e)
+                # print(e)
                 return str(e)
         if curs:
             return cur
@@ -290,7 +290,8 @@ class DataBaseOperations:
                     print(e)
                     return str(e)
         except Exception as e:
-            print(e)
+            # print(e)
+            pass
         if curs:
             return cur
         return response
