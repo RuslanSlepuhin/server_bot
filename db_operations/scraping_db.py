@@ -264,14 +264,14 @@ class DataBaseOperations:
                 cur.execute(query)
                 response = cur.fetchall()
             except Exception as e:
-                # print(e)
+                print(e)
                 return str(e)
         if curs:
             return cur
         return response
 
     async def get_all_from_db_async(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
-        response = []
+
         if not self.con:
             self.connect_db()
         cur = self.con.cursor()
@@ -290,13 +290,10 @@ class DataBaseOperations:
                     print(e)
                     return str(e)
         except Exception as e:
-            # print(e)
-            pass
+            print(e)
         if curs:
             return cur
         return response
-
-
     def write_current_session(self, current_session):
 
         logs.write_log(f"scraping_db: function: write_current_session")
@@ -564,7 +561,6 @@ class DataBaseOperations:
         return tables_list
 
     def delete_table(self, table_name):
-
         if not self.con:
             self.connect_db()
         cur = self.con.cursor()
