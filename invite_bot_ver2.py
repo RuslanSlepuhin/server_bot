@@ -3948,6 +3948,7 @@ class InviteBot():
             )
 
         async def push_shorts(message, callback_data):
+            self.message_for_send_dict = {}
 
             profession_list = {}
             self.percent = 0
@@ -4045,7 +4046,6 @@ class InviteBot():
                     # ------------------- end of  pushing to prof channel full message -----------------
 
                     elif "shorts" in callback_data:
-                        self.message_for_send_dict = {}
                         # I need to get the newest vacancy
                         vacancy_from_admin = DataBaseOperations(None).get_all_from_db(
                             table_name='admin_last_session',
