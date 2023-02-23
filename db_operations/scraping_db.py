@@ -249,7 +249,6 @@ class DataBaseOperations:
         return text
 
     def get_all_from_db(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
-
         if not self.con:
             self.connect_db()
         cur = self.con.cursor()
