@@ -320,21 +320,19 @@ class DataBaseOperations:
 
     def delete_data(self, table_name, param):
 
-        logs.write_log(f"scraping_db: function: delete_data")
-
         if not self.con:
             self.connect_db()
-
         cur = self.con.cursor()
 
         query = f"""DELETE FROM {table_name} {param}"""
-        # print('query: ', query)
         with self.con:
             try:
                 cur.execute(query)
                 print(f'got it, delete data from {table_name}')
             except Exception as e:
-                print(f'didnt delete the data from {table_name}: {e}')
+                print(f'did not delete the data from {table_name}: {e}')
+                return False
+        return True
 
 #-----------просто в одну таблицу записать все сообщения без професии, чтобы потом достать, рассортировать и записать в файл ------------------
     def write_to_one_table(self, results_dict):
@@ -1253,7 +1251,14 @@ class DataBaseOperations:
             if key != 'id':
                 query += f" {key}='{values_dict[key]}',"
         query = f"{query[:-1]} {param}"
-        self.run_free_request(request=query, output_text=output_text)
+        try:
+            self.run_free_request(request=query, output_text=output_text)
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
+
 
     def check_exists_message(self, title=None, body=None, vacancy_url=None, table_list=None):
         param = "WHERE "

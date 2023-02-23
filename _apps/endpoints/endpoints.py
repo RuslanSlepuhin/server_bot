@@ -39,6 +39,8 @@ con = psycopg2.connect(
     port=port
 )
 
+db = DataBaseOperations(None)
+admin_table = variable.admin_copy
 
 async def main_endpoints():
     app = Flask(__name__)
@@ -48,6 +50,10 @@ async def main_endpoints():
     async def hello_world():
         return "It's the empty page"
 
+    @app.route("/get-all-vacancies_trainee")
+    async def get_all_vacancies_trainee():
+        return await get_all_vacancies_from_db_trainee()
+
     @app.route("/get-all-vacancies")
     async def get_all_vacancies():
         return await get_all_vacancies_from_db()
@@ -55,7 +61,6 @@ async def main_endpoints():
     @app.route("/get-all-vacancies-admin")
     async def get_all_vacancies_admin():
         response = await get_all_vacancies_from_db()
-        # response['pattern'] = await get_export_pattern_dict()
         return response
 
     @app.route("/get")
@@ -78,9 +83,7 @@ async def main_endpoints():
     async def post_data():
         request_data = request.json
         await write_to_file(text=request_data)
-        # request_data = post_request_for_example
         all_vacancies = await compose_request_to_db(request_data)
-        # return {'It works': request_data}
         return all_vacancies
 
     @app.route("/search-by-text", methods = ['POST'])
@@ -90,14 +93,12 @@ async def main_endpoints():
         )
         return responses_dict
 
-
     @app.route("/get-vacancy-offset", methods = ['POST'])
     async def get_vacancy_offset():
         response_dict = {}
         request_data = request.json
         print(request_data)
         responses = db.get_all_from_db(
-            # table_name=admin_database, # while frontend in developing
             table_name=variable.admin_copy,
             param=f"WHERE profession LIKE '%, {request_data['profession']}%' "
                   f"OR profession LIKE '%{request_data['profession']}, %' "
@@ -111,48 +112,79 @@ async def main_endpoints():
             print(f"get each vacancy len={len(responses)} id={response_dict['id']} offset={request_data['offset']}")
         return response_dict
 
-    @app.route("/change_vacancy", methods = ['PUT'])
-    async def change_vacancy():
-        request_data = request.json
-        print(request_data)
-        keys = set(request_data['vacancy'].keys())
-        admin_fields = set(variable.admin_table_fields.split(", "))
-        if 'vacancy' in request_data and keys.issubset(admin_fields):
-            try:
-                db.update_table_multi(
-                    # table_name=variable.admin_database, # while frontend in developing
-                    table_name=variable.admin_copy,
-                    param=f"WHERE id={request_data['vacancy']['id']}",
-                    values_dict=request_data['vacancy']
-                )
-            except Exception as e:
-                return {'response': f"error: {e}"}
-        else:
-            return {'response': "json fields are not correct"}
-        return {'response': 'Done'}
 
-    @app.route("/delete_vacancy", methods=['DELETE'])
-    async def delete_vacancy():
+# ---------------- endpoints by trainee database (Sasha frontend) ------------------
+    @app.route("/delete_vacancy/<int:id>", methods=['DELETE'])
+    async def delete_vacancy(id):
+        temporary_variable = True
+        # if db.transfer_vacancy(
+        #     table_from=admin_table,
+        #     table_to=variable.archive_database,
+        #     id=id
+        # ):
+        if temporary_variable:
+            if db.delete_data(
+                table_name=admin_table,
+                param=f"WHERE id={id}"
+            ):
+                return {'response': f'the vacancy id={id} has been removed to the archive'}
+            else:
+                return {'response': 'vacancy has not been deleted'}
+        else:
+            return {'response': 'vacancy does not exist in DB'}
+
+    @app.route("/change_vacancy/<int:id>", methods=['PUT'])
+    async def change_vacancy(id):
         request_data = request.json
         print(request_data)
-        # answer = db.transfer_vacancy(
-        #     table_from=variable.admin_database,
-        #     table_to=variable.archive_database,
-        #     id=request_data['vacancy']['id']
-        # )
-        answer = True # while frontend in developing
-        if not answer:
-            return {'response': 'Wrong id'}
-        db.delete_data(
-            table_name=variable.admin_database,
-            param=f"WHERE id={request_data['vacancy']['id']}"
+        vacancy = db.get_all_from_db(
+            table_name=admin_table,
+            param=f"WHERE id={id}",
+            field='id'
         )
-        return {'response': 'Done'}
+        if vacancy:
+            try:
+                from_db = db.update_table_multi(
+                    table_name=admin_table,
+                    param=f"WHERE id={id}",
+                    values_dict=request_data
+                )
+                if from_db:
+                    return {'response': f'id {id} vacancy has been updated'}
+                else:
+                    return {'response': 'something wrong'}
+            except Exception as e:
+                return {'response': str(e)}
+        else:
+            return {'response': 'vacancy does not exist in DB'}
+
+    async def get_all_vacancies_from_db_trainee(param="WHERE profession <> 'no_sort'"):
+        all_vacancies = {}
+        all_vacancies['vacancies'] = {}
+        response = db.get_all_from_db(
+            table_name=admin_table,
+            param=param,
+            field=admin_table_fields
+        )
+        if type(response) is list:
+            number = 0
+            print(param)
+            for vacancy in response:
+                vacancy_dict = await to_dict_from_admin_response(
+                    response=vacancy,
+                    fields=admin_table_fields
+                )
+                if number < 100:
+                    all_vacancies['vacancies'][str(number)] = vacancy_dict
+                number += 1
+        elif type(response) is str:
+            return {'error': response}
+        return all_vacancies
+# ---------------- endpoints by trainee database END (Sasha frontend) ------------------
 
     @app.route("/three-last-vacancies", methods=['GET'])
     async def three_last_vacancies_request():
         result_dict = await three_last_vacancies()
-
         return result_dict
 
     async def get_from_db():
@@ -167,7 +199,7 @@ async def main_endpoints():
         all_vacancies = {}
         all_vacancies['vacancies'] = {}
         response = db.get_all_from_db(
-            table_name=admin_database,
+            table_name=variable.admin_database,
             param=param,
             field=admin_table_fields
         )
@@ -213,7 +245,6 @@ async def main_endpoints():
     async def compose_request_to_db(response_data):
         query_profession = ""
         common_query = "WHERE ("
-        query_job_type = ""
         if response_data['profession']:
             for item in response_data['profession']:
                 query_profession += f"OR profession LIKE '%{item}%' "
@@ -229,13 +260,6 @@ async def main_endpoints():
 
         if response_data['city']:
             common_query += f" AND city LIKE '%{response_data['city']}%'"
-
-        # if response_data['job_type']:
-        #     for item in response_data['job_type']:
-        #         query_job_type += f"OR job_type LIKE '%{item}%' "
-        #         query_job_type = query_job_type[3:]
-        #     common_query += f"AND {query_job_type}"
-
         all_vacancies = await get_all_vacancies_from_db(param=common_query)
 
         return all_vacancies
@@ -400,7 +424,6 @@ async def main_endpoints():
                                                                                                variable.admin_table_fields)
                 count += 1
         return result_dict
-
 
     app.run(host=localhost, port=int(os.environ.get('PORT', 5000)))
 

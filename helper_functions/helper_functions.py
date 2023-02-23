@@ -44,7 +44,10 @@ async def to_dict_from_admin_response(response, fields):
     response_dict = {}
     fields = fields.split(', ')
     for i in range(0, len(fields)):
-        response_dict[fields[i]] = response[i]
+        try:
+            response_dict[fields[i]] = response[i]
+        except Exception as e:
+            return False
     return response_dict
 
 def to_dict_from_admin_response_sync(response, fields):
@@ -389,3 +392,14 @@ def add_to_report_file(path, write_mode, text):
     with open(path, write_mode, encoding='utf-8') as file:
         file.write(text)
 
+async def remove_one_profession(professions: str, remove_profession: str):
+    prof_list = professions.split(', ')
+    try:
+        prof_list.remove(remove_profession)
+    except Exception as e:
+        print(e)
+    professions = ", ".join(prof_list)
+
+
+
+    return professions
