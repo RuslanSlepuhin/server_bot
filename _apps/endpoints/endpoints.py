@@ -114,7 +114,7 @@ async def main_endpoints():
 
 
 # ---------------- endpoints by trainee database (Sasha frontend) ------------------
-    @app.route("/delete_vacancy/<int:id>", methods=['DELETE'])
+    @app.route("/delete_vacancy_trainee/<int:id>", methods=['DELETE'])
     async def delete_vacancy(id):
         temporary_variable = True
         # if db.transfer_vacancy(
@@ -133,7 +133,7 @@ async def main_endpoints():
         else:
             return {'response': 'vacancy does not exist in DB'}
 
-    @app.route("/change_vacancy/<int:id>", methods=['PUT'])
+    @app.route("/change_vacancy_trainee/<int:id>", methods=['PUT'])
     async def change_vacancy(id):
         request_data = request.json
         print(request_data)
