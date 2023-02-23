@@ -182,7 +182,7 @@ async def main_endpoints():
                 if number < 100:
                     all_vacancies['vacancies'][str(number)] = vacancy_dict
                 number += 1
-        else:
+        elif type(response) is str:
             return {'error': response}
         return all_vacancies
 
