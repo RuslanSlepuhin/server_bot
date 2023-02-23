@@ -171,16 +171,19 @@ async def main_endpoints():
             param=param,
             field=admin_table_fields
         )
-        number = 0
-        print(param)
-        for vacancy in response:
-            vacancy_dict = await to_dict_from_admin_response(
-                response=vacancy,
-                fields=admin_table_fields
-            )
-            if number < 100:
-                all_vacancies['vacancies'][str(number)] = vacancy_dict
-            number += 1
+        if type(response) is list:
+            number = 0
+            print(param)
+            for vacancy in response:
+                vacancy_dict = await to_dict_from_admin_response(
+                    response=vacancy,
+                    fields=admin_table_fields
+                )
+                if number < 100:
+                    all_vacancies['vacancies'][str(number)] = vacancy_dict
+                number += 1
+        else:
+            return {'error': response}
         return all_vacancies
 
     async def write_to_file(text):
