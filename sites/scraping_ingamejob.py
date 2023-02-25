@@ -80,7 +80,7 @@ class IngameJobGetInformation:
                 await self.bot.send_message(self.chat_id, f'https://ru.ingamejob.com/ru/jobs?page={self.page_number}',
                                       disable_web_page_preview=True)
                 self.browser.get(f'https://ru.ingamejob.com/ru/jobs?page={self.page_number}')
-                self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                # self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
                 if not vacancy_exists_on_page:
                     break

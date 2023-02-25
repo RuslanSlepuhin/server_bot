@@ -230,6 +230,10 @@ class InviteBot():
             date_in = State()
             date_out = State()
 
+        class Form_report_total(StatesGroup):
+            date_in = State()
+            date_out = State()
+
         class Form_add_field(StatesGroup):
             field = State()
 
@@ -527,6 +531,55 @@ class InviteBot():
             self.db.make_report_published_vacancies_excel(date1=date_in, date2=date_out)
 
             await send_file_to_user(message, f'./excel/report_{date_in}_{date_out}.xlsx')
+
+        @self.dp.message_handler(commands=['how_many_vacancies_total'])
+        async def how_many_vacancies_total(message: types.Message):
+            await Form_report_total.date_in.set()
+            await self.bot_aiogram.send_message(message.chat.id, 'Type the starting date in format: YYYY-MM-DD not earlier than 2023-01-01')
+
+        @self.dp.message_handler(state=Form_report_total.date_in)
+        async def report_total (message: types.Message, state: FSMContext):
+            async with state.proxy() as data:
+                data['date_in'] = message.text
+                date = data['date_in']
+                try:
+                    valid_date = datetime.strptime(date, '%Y-%m-%d')
+                except ValueError:
+                    await self.bot_aiogram.send_message(message.chat.id, 'Invalid date!')
+                    await Form_report_total.date_in.set()
+                    await self.bot_aiogram.send_message(message.chat.id, 'Type the starting date in format: YYYY-MM-DD')
+                if datetime.strptime(date, '%Y-%m-%d') < datetime(2023, 1, 1):
+                    await self.bot_aiogram.send_message(message.chat.id, 'Check the dates! Starting date should be later 2023-01-01')
+                    await Form_report_total.date_in.set()
+                    await self.bot_aiogram.send_message(message.chat.id, 'Type the starting date in format: YYYY-MM-DD')
+                else:
+                    await Form_report_total.date_out.set()
+                    await self.bot_aiogram.send_message(message.chat.id, 'Type the ending date in format: YYYY-MM-DD \n or put 1 for one-day report')
+        @self.dp.message_handler(state=Form_report_total.date_out)
+        async def report_total (message: types.Message, state: FSMContext):
+            async with state.proxy() as data:
+                data['date_out'] = message.text
+                date_in = data['date_in']
+                date_out = data['date_out']
+                if date_out != '1':
+                    try:
+                        valid_date = datetime.strptime(date_out, '%Y-%m-%d')
+                    except ValueError:
+                        await self.bot_aiogram.send_message(message.chat.id, 'Invalid date!')
+                        await Form_report_total.date_out.set()
+                        await self.bot_aiogram.send_message(message.chat.id, 'Type the ending date in format: YYYY-MM-DD')
+                if date_out != '1' and datetime.strptime(date_in, '%Y-%m-%d') > datetime.strptime(date_out, '%Y-%m-%d'):
+                    await self.bot_aiogram.send_message(message.chat.id, 'Check the dates! Ending date should be later than starting date.')
+                    await Form_report_total.date_in.set()
+                    await self.bot_aiogram.send_message(message.chat.id, 'Type the starting date in format: YYYY-MM-DD')
+
+            await state.finish()
+            if date_out == '1':
+                date_out = date_in
+            self.db.statistics_total(date_in=date_in, date_out=date_out)
+
+            await send_file_to_user(message, f'./excel/report_total_{date_in}_{date_out}.xlsx')
+
 
         @self.dp.message_handler(commands=['invite_people'])
         async def invite_people_command(message: types.Message):
