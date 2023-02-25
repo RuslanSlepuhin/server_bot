@@ -7,8 +7,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from db_operations.scraping_db import DataBaseOperations
 from sites.write_each_vacancy_to_db import write_each_vacancy
-from settings.browser_settings import options
-from utils.additional_variables.additional_variables import sites_search_words
+from settings.browser_settings import options, chrome_driver_path
+from utils.additional_variables.additional_variables import sites_search_words, chro
 from helper_functions.helper_functions import edit_message, send_message
 
 class IngameJobGetInformation:
