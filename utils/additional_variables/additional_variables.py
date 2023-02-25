@@ -73,7 +73,7 @@ db_fields_for_update_in_parsing = ['job_type', 'relocation', 'city', 'experience
 
 cities_file_path = './utils/additional_data/data.xlsx'
 # cities_file_path = './../utils/additional_data/data.xlsx' # for tests
-
+callback_for_push_shorts = ['*', 'all']
 
 excel_data_df = pandas.read_excel(f'{cities_file_path}', sheet_name='Cities')
 excel_dict = {
