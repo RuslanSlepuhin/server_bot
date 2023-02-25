@@ -39,6 +39,7 @@ from sites.scrapping_finder import FinderGetInformation
 from sites.scraping_habr import HabrGetInformation
 from sites.scraping_rabota import RabotaGetInformation
 from sites.scraping_ingamejob import IngameJobGetInformation
+from sites.scraping_praca import PracaGetInformation
 from filters.filter_jan_2023.filter_jan_2023 import VacancyFilter
 from helper_functions import helper_functions as helper
 from utils.additional_variables import additional_variables as variable
@@ -903,6 +904,18 @@ class InviteBot():
                 await state.finish()
                 info = await self.client.get_entity(user_data)
                 await self.bot_aiogram.send_message(message.chat.id, info)
+
+        @self.dp.message_handler(commands=['praca'])
+        async def praca_commands(message: types.Message):
+            praca = PracaGetInformation(
+                bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
+            )
+            await praca.get_content()
+            await send_file_to_user(
+                message=message,
+                path=variable.path_log_check_profession,
+                caption=""
+            )
 
         @self.dp.message_handler(commands=['hh_kz'])
         async def hh_kz_commands(message: types.Message):
