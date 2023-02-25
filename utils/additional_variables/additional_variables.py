@@ -171,7 +171,8 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '🔆/geek - get data from geek.ru\n' \
             '🔆/remotehub - get data from www.remotehub.com\n' \
             '🔆/remotejob - get data from remote-job.ru\n' \
-            '🔆/ingame - get data from ingame' \
+            '🔆/ingame - get data from ingame\n' \
+            '🔆/praca - get data from praca.by\n' \
             '---------------------------------------------------\n\n' \
             '/download - ❗️you get excel from admin vacancies with search tags\n' \
             '/ambulance - if bot gets accident in hard pushing and you think you loose the shorts\n\n' \
