@@ -238,6 +238,9 @@ class InviteBot():
         class Form_add_field(StatesGroup):
             field = State()
 
+        class Form_profession_name(StatesGroup):
+            profession = State()
+
         @self.dp.message_handler(commands=['start'])
         async def send_welcome(message: types.Message):
 
@@ -262,6 +265,32 @@ class InviteBot():
         @self.dp.message_handler(commands=['help'])
         async def get_logs(message: types.Message):
             await self.bot_aiogram.send_message(message.chat.id, variable.help_text)
+
+        @self.dp.message_handler(commands=['show_db_records'])
+        async def show_db_records_command(message: types.Message):
+            await Form_profession_name.profession.set()
+            await self.bot_aiogram.send_message(message.chat.id, 'type the profession')
+
+        @self.dp.message_handler(state=Form_profession_name.profession)
+        async def show_db_records_form(message: types.Message, state: FSMContext):
+            async with state.proxy() as data:
+                data['profession'] = message.text
+                profession = message.text
+            await state.finish()
+            message_for_send = ''
+            responses = self.db.get_all_from_db(
+                table_name=variable.admin_database,
+                param=f"WHERE profession LIKE '%{profession}%'",
+                field=variable.admin_table_fields
+            )
+            if responses:
+                number = random.randrange(0, len(responses))
+                response_dict = await helper.to_dict_from_admin_response(responses[number], variable.admin_table_fields)
+                for key in response_dict:
+                    message_for_send += f"{key}: {response_dict[key]}\n"
+                await self.bot_aiogram.send_message(message.chat.id, message_for_send)
+            else:
+                await self.bot_aiogram.send_message(message.chat.id, 'No vacancies')
 
         @self.dp.message_handler(commands=['report_push_shorts'])
         async def report_push_shorts_commands(message: types.Message):
@@ -472,7 +501,7 @@ class InviteBot():
             await self.bot_aiogram.send_message(message.chat.id, 'Type the table name like the profession')
 
         @self.dp.message_handler(state=Form_db.name)
-        async def emeggency_push_profession(message: types.Message, state: FSMContext):
+        async def emergency_push_profession(message: types.Message, state: FSMContext):
             async with state.proxy() as data:
                 data['name'] = message.text
                 db_name = message.text
@@ -661,7 +690,7 @@ class InviteBot():
             await self.bot_aiogram.send_message(message.chat.id, 'Type the profession')
 
         @self.dp.message_handler(state=Form_emergency_push.profession)
-        async def emergency_push_profession(message: types.Message, state: FSMContext):
+        async def emeggency_push_profession(message: types.Message, state: FSMContext):
             async with state.proxy() as data:
                 data['profession'] = message.text
                 profession = message.text
@@ -3200,7 +3229,8 @@ class InviteBot():
 
                     if vacancy_from_admin_dict['contacts']:
                         message_for_send += f"Контакты: {vacancy_from_admin_dict['contacts']}\n"
-                    elif vacancy_from_admin_dict['vacancy_url']:
+
+                    elif vacancy_from_admin_dict['vacancy_url'] and 't.me' not in vacancy_from_admin_dict['vacancy_url']:
                         message_for_send += f"Ссылка на вакансию: {vacancy_from_admin_dict['vacancy_url']}\n"
 
                     if vacancy_from_admin_dict['vacancy'].strip() != vacancy_from_admin_dict['title'].strip() or (vacancy_from_admin_dict['vacancy'] and vacancy_from_admin_dict['title']):
@@ -3821,11 +3851,11 @@ class InviteBot():
             sub = []
 
             await self.bot_aiogram.send_message(message.chat.id, 'It will rewrite the professions in all vacancies through the new filter logic\nPlease wait few seconds for start')
-
+            fields = 'id, title, body, vacancy, profession, chat_name, sub, level, tags, full_tags, full_anti_tags'
             response = self.db.get_all_from_db(
-                table_name='admin_last_session',
-                param="""WHERE profession<>'no_sort'""",
-                field='id, title, body, vacancy, profession, chat_name'
+                table_name=variable.admin_database,
+                # param="""WHERE profession<>'no_sort'""",
+                field=fields
             )
             await self.bot_aiogram.send_message(message.chat.id, f"{len(response)} vacancies founded")
             show = ShowProgress(bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})
@@ -3833,21 +3863,28 @@ class InviteBot():
             length = len(response)
             msg = await self.bot_aiogram.send_message(message.chat.id, 'progress 0%')
             for one_vacancy in response:
-                id = one_vacancy[0]
-                title = one_vacancy[1]
-                body = one_vacancy[2]
-                vacancy = one_vacancy[3]
-                old_profession = one_vacancy[4]
-                chat_name = one_vacancy[5]
 
-                if 'https://t.me' in chat_name:
+                one_vacancy_dict = await helper.to_dict_from_admin_response(
+                    response=one_vacancy,
+                    fields=fields
+                )
+                # id = one_vacancy[0]
+                # title = one_vacancy[1]
+                # body = one_vacancy[2]
+                # vacancy = one_vacancy[3]
+                # old_profession = one_vacancy[4]
+                # chat_name = one_vacancy[5]
+
+                if 'https://t.me' in one_vacancy_dict['chat_name']:
                     profession = VacancyFilter().sort_profession(
-                        title, body,
+                        one_vacancy_dict['title'],
+                        one_vacancy_dict['body'],
                         get_params=False
                     )
                 else:
                     profession = VacancyFilter().sort_profession(
-                        title, body,
+                        one_vacancy_dict['title'],
+                        one_vacancy_dict['body'],
                         check_contacts=False,
                         check_vacancy=False,
                         get_params=False
@@ -3863,14 +3900,23 @@ class InviteBot():
                     profession_str += f"{prof}, "
                 profession_str = profession_str[:-2]
 
-                print('title = ', title)
-                print(f'old prof [{old_profession}]')
+
+                print('title = ', one_vacancy_dict['title'])
+                print(f"old prof [{one_vacancy_dict['profession']}]")
                 print(f'new prof [{profession_str}]')
                 print(f"subs {profession['profession']['sub']}")
 
-                title_list.append(title)
-                body_list.append(body)
-                old_prof_list.append(old_profession)
+                # change the old values to news
+                one_vacancy_dict['profession'] = profession_str
+                one_vacancy_dict['sub'] = helper.compose_to_str_from_list(profession['profession']['sub'])
+                one_vacancy_dict['level'] = profession['profession']['level']
+                one_vacancy_dict['tags'] = helper.get_tags(profession['profession'])
+                one_vacancy_dict['anti_tags'] = profession['profession']['anti_tag'].replace("'", "")
+                one_vacancy_dict['full_tags'] = profession['profession']['anti_tag'].replace("'", "")
+
+                title_list.append(one_vacancy_dict['title'])
+                body_list.append(one_vacancy_dict['body'])
+                old_prof_list.append(one_vacancy_dict['profession'])
                 new_prof_list.append(profession_str)
                 sub.append(profession['profession']['sub'])
                 tag_list.append(profession['profession']['tag'])
@@ -3878,10 +3924,22 @@ class InviteBot():
                 print('\n________________\n')
 
                 if save_changes:
-                    self.db.run_free_request(
-                        request=f"""UPDATE admin_last_session SET profession='{profession_str}' WHERE id={id}""",
-                        output_text='updated\n___________\n\n'
-                    )
+                    query = ''
+                    for field in fields.split(', '):
+                        if one_vacancy_dict[field]:
+                            if field not in ['id', 'chat_name']:
+                                query  += f"{field}='{one_vacancy_dict[field]}', "
+                    if query:
+                        query = f"UPDATE {variable.admin_database} SET " + query
+                        query = query[:-2] + f" WHERE id={one_vacancy_dict['id']}"
+                        print(query)
+
+                        self.db.run_free_request(
+                            request=query,
+                            output_text='updated successfully\n___________\n\n'
+                        )
+                    else:
+                        print('no changes')
                 n += 1
                 await show.show_the_progress(msg, n, length)
 

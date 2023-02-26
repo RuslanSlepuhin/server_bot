@@ -21,8 +21,8 @@ fields_admin_temporary = "id_admin_channel, id_admin_last_session_table, sended_
 
 additional_elements = {'admin_last_session', 'archive'}
 
-valid_professions = ['designer', 'game', 'product', 'mobile', 'pm', 'sales_manager', 'analyst', 'frontend',
-                     'marketing', 'devops', 'hr', 'backend', 'qa', 'junior']
+valid_professions = ['junior', 'backend', 'frontend', 'qa', 'devops', 'designer', 'game', 'mobile', 'product', 'pm', 'analyst',
+                     'marketing', 'sales_manager', 'hr']
 valid_professions_extended = []
 valid_professions_extended.extend(valid_professions)
 valid_professions_extended.extend(['fullstack'])
@@ -155,6 +155,7 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '⛔️/get_random_vacancy_by_profession \n' \
             '⛔️/get_post_request \n' \
             '⛔️/rewrite_additional_db_fields - like job_type, english, experience, relocation, city\n' \
+            '⛔️/show_db_records - random vacancy from db\n' \
             '----------------------------------------------------\n\n' \
             '---------------- FILES: ----------------\n' \
             '/report_push_shorts - shorts report \n' \
