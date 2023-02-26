@@ -50,6 +50,22 @@ async def main_endpoints():
     async def hello_world():
         return "It's the empty page"
 
+    # the endpoint for get vacancies by SQL request
+    @app.route("/get-vacancies-by-query", methods = ['POST'])
+    async def get_vacancies_by_query():
+        """
+        request layout
+        {'query': '<str>'}
+        """
+        request_data = request.json
+        all_vacancies = db.get_all_from_db(
+            table_name=variable.admin_database,
+            param=f"{request_data['query']}",
+            field=variable.admin_table_fields
+        )
+        return {'vacancies': await package_list_to_dict(all_vacancies), "query": request_data}
+
+
     @app.route("/get-all-vacancies_trainee")
     async def get_all_vacancies_trainee():
         return await get_all_vacancies_from_db_trainee()
@@ -426,6 +442,7 @@ async def main_endpoints():
         return result_dict
 
     app.run(host=localhost, port=int(os.environ.get('PORT', 5000)))
+
 
 
 def run_endpoints():
