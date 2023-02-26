@@ -2884,7 +2884,10 @@ class InviteBot():
             with open(path, 'rb') as file:
                 await self.bot_aiogram.send_document(message.chat.id, file, caption=caption)
                 if send_to_developer and message.chat.id != variable.developer_chat_id:
-                    await self.bot_aiogram.send_document(variable.developer_chat_id, file, caption=caption)
+                    try:
+                        await self.bot_aiogram.send_document(variable.developer_chat_id, file, caption=caption)
+                    except Exception as e:
+                        print(e)
 
 
         async def get_last_session():
