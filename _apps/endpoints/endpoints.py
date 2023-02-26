@@ -63,7 +63,7 @@ async def main_endpoints():
             param=f"{request_data['query']}",
             field=variable.admin_table_fields
         )
-        return {'vacancies': await package_list_to_dict(all_vacancies), "query": request_data}
+        return {'vacancies': await package_list_to_dict(all_vacancies), "query": request_data, "quantity": len(all_vacancies)}
 
 
     @app.route("/get-all-vacancies_trainee")
