@@ -1,16 +1,12 @@
 import re
+import time
 
-# from __backup__ import pattern_Alex2809
-# from db_operations.scraping_db import DataBaseOperations
-# from patterns.pattern_Alex2809 import search_companies, search_companies2, english_pattern, remote_pattern, \
-#     relocate_pattern, middle_pattern, senior_pattern, vacancy_name, vacancy_pattern, contacts_pattern, profession_new_pattern
 from patterns._export_pattern import export_pattern
 from utils.additional_variables import additional_variables as variables
 
 class VacancyFilter:
 
     def __init__(self):
-        # self.pattern_alex = pattern_Alex2809.pattern
         self.capitalize = variables.not_lower_professions
 
         self.result_dict2 = {'vacancy': 0, 'contacts': 0, 'fullstack': 0, 'frontend': 0, 'backend': 0, 'pm': 0,
@@ -32,7 +28,8 @@ class VacancyFilter:
             check_profession=True,
             check_vacancy=True,
             get_params=True,
-            check_level=True
+            check_level=True,
+            only_one_profession_sub=True
     ):
         # profession = dict()
         self.profession['tag'] = ''
@@ -79,8 +76,6 @@ class VacancyFilter:
                     print("= contacts not found =")
                     return {'profession': self.profession, 'params': {}}
 
-
-
             # ---------------- professions -----------------
             vacancy_name = self.get_vacancy_name(
                 text=vacancy
@@ -97,26 +92,7 @@ class VacancyFilter:
                     self.profession['profession'].append(result['result'])
                     self.profession['tag'] += result['tags']
                     self.profession['anti_tag'] += result['anti_tags']
-            # for item in self.valid_profession_list:
-            #     if item in self.not_lower_professions:
-            #         low = False
-            #     else:
-            #         low = True
-            #
-            #     if item == 'product':
-            #         item = 'pm'
-            #
-            #     result = self.check_parameter(
-            #         pattern=self.export_pattern['professions'][item],
-            #         vacancy=vacancy,
-            #         low=low,
-            #         key=item
-            #     )
-            #     if result['result']:
-            #         profession['profession'].append(result['result'])
-            #         # print(f"in loop: {profession['profession']}")
-            #     profession['tag'] += result['tags']
-            #     profession['anti_tag'] += result['anti_tags']
+
             if not self.profession['profession']:
                 for item in self.valid_profession_list:
                     result = self.search_profession(vacancy=vacancy, item=item)
@@ -168,6 +144,9 @@ class VacancyFilter:
             else:
                 self.profession['level'] = ''
 
+        if only_one_profession_sub and check_profession:
+            self.reduce_profession()
+
         return {'profession': self.profession, 'params': params}
 
     def get_sub_profession(self, text):
@@ -197,7 +176,7 @@ class VacancyFilter:
         pass
         # return profession
 
-    def check_parameter(self, pattern, vacancy, key, low=True, mex=True):
+    def check_parameter(self, pattern, vacancy, key, low=True, mex=True, only_one_profession_sub=False):
         result = 0
         tags = ''
         anti_tags = ''
@@ -438,3 +417,28 @@ class VacancyFilter:
             )
             return result
 
+    def reduce_profession(self):
+        junior = False
+        new_sub = {}
+        prof_list = []
+        subs = []
+
+        prof_list.extend(self.profession['profession'])
+        if 'junior' in prof_list:
+            junior = True
+            prof_list.remove('junior')
+        if prof_list:
+            self.profession['profession'] = set()
+            self.profession['profession'].add(prof_list[0])
+        if junior:
+            self.profession['profession'].add('junior')
+        print('reduce_profession profession: ', self.profession['profession'])
+        # time.sleep(5)
+
+        subs.extend(self.profession['sub'])
+        for sub in subs:
+            if sub in self.profession['profession']:
+                new_sub[sub] = self.profession['sub'][sub][0] if self.profession['sub'][sub] else []
+        self.profession['sub'] = new_sub
+        print('reduce_profession sub: ', self.profession['sub'])
+        # time.sleep(5)

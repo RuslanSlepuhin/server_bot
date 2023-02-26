@@ -13,7 +13,10 @@ from utils.additional_variables.additional_variables import flood_control_logs_p
 def compose_to_str_from_list(data_list):
     sub_str = ''
     for key in data_list:
-        sub_str += f"{key}: {', '.join(data_list[key])}; "
+        if type(data_list[key]) is list:
+            sub_str += f"{key}: {', '.join(data_list[key])}; "
+        elif type(data_list[key]) is str:
+            sub_str += f"{key}: {data_list[key]}; "
     sub_str = sub_str[:-2]
     pass
     return sub_str
