@@ -39,6 +39,7 @@ con = psycopg2.connect(
     port=port
 )
 
+
 db = DataBaseOperations(None)
 admin_table = variable.admin_copy
 
