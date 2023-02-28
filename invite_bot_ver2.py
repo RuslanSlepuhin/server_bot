@@ -5427,6 +5427,7 @@ class InviteBot():
                     )
                     time_dict['17'] = False
                     time_dict['09'] = True
+                    time_dict['12'] = False
 
                 if current_time >= 12 and current_time < 17 and not time_dict['12']:
                     await push_shorts_attempt_to_make_multi_function(
@@ -5438,6 +5439,8 @@ class InviteBot():
                     )
                     time_dict['09'] = False
                     time_dict['12'] = True
+                    time_dict['17'] = False
+
 
                 if current_time >= 17 and current_time < 9 and not time_dict['17']:
                     await push_shorts_attempt_to_make_multi_function(
@@ -5449,6 +5452,7 @@ class InviteBot():
                     )
                     time_dict['12'] = False
                     time_dict['17'] = True
+                    time_dict['09'] = False
 
                 await asyncio.sleep(40*60)
 
