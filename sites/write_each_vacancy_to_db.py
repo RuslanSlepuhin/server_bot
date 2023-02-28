@@ -19,7 +19,8 @@ def write_each_vacancy(results_dict):
             title=results_dict['title'],
             body=results_dict['body'],
             get_params=False,
-            check_vacancy=False,
+            check_vacancy=True,
+            check_vacancy_only_mex=True,
             check_contacts=False
         )
         profession = profession['profession']
