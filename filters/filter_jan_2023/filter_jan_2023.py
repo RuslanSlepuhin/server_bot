@@ -27,6 +27,7 @@ class VacancyFilter:
             check_contacts=True,
             check_profession=True,
             check_vacancy=True,
+            check_vacancy_only_mex=False,
             get_params=True,
             check_level=True,
             only_one_profession_sub=True
@@ -47,7 +48,8 @@ class VacancyFilter:
                 result = self.check_parameter(
                     pattern=self.export_pattern['data']['vacancy'],
                     vacancy=vacancy,
-                    key='vacancy'
+                    key='vacancy',
+                    check_only_mex=check_vacancy_only_mex
                 )
                 self.result_dict2['vacancy'] = result['result']
                 self.profession['tag'] += result['tags']
@@ -176,36 +178,34 @@ class VacancyFilter:
         pass
         # return profession
 
-    def check_parameter(self, pattern, vacancy, key, low=True, mex=True, only_one_profession_sub=False):
+    def check_parameter(self, pattern, vacancy, key, low=True, mex=True, only_one_profession_sub=False, check_only_mex=False):
         result = 0
         tags = ''
         anti_tags = ''
 
         # if low:
         #     vacancy = vacancy.lower()
-        for word in pattern['ma']:
-            if len(word) == 1:
-                pass
-            # if low:
-            #     word = word.lower()
-            match = []
-            try:
-                match = set(re.findall(rf"{word}", vacancy))
-            except Exception as e:
-                with open('./excel/filter_jan_errors.txt', 'a+', encoding='utf-8') as f:
-                    f.write(f"word = {word}\nvacancy = {vacancy}\nerror = {e}\n------------\n\n")
+        if not check_only_mex:
+            for word in pattern['ma']:
+                # if low:
+                #     word = word.lower()
+                match = []
+                try:
+                    match = set(re.findall(rf"{word}", vacancy))
+                except Exception as e:
+                    with open('./excel/filter_jan_errors.txt', 'a+', encoding='utf-8') as f:
+                        f.write(f"word = {word}\nvacancy = {vacancy}\nerror = {e}\n------------\n\n")
 
-            if match:
-                result += len(match)
-                tags += f'MA {key}={match}\n'
+                if match:
+                    result += len(match)
+                    tags += f'MA {key}={match}\n'
+        else:
+            result = 1
 
         if result and mex:
             for anti_word in pattern['mex']:
                 # if low:
                 #     anti_word = anti_word.lower()
-                if len(anti_word) == 1:
-                    pass
-
                 match = []
                 try:
                     match = set(re.findall(rf"{anti_word}", vacancy))
