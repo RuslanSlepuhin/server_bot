@@ -5407,6 +5407,7 @@ class InviteBot():
                 )
 
         async def hard_pushing_by_schedule(message, profession_list):
+            await self.bot_aiogram.send_messages(message.chat.id, f"professions in the list: {profession_list}")
             time_dict = {
                 '09': False,
                 '12': False,
