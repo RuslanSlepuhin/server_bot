@@ -30,6 +30,7 @@ tables_for_search_vacancy_existing = [admin_database, 'archive']
 # all_tables_for_vacancy_search = ['designer', 'game', 'product', 'mobile', 'pm', 'sales_manager', 'analyst', 'frontend',
 #                      'marketing', 'devops', 'hr', 'backend', 'qa', 'junior', admin_database, archive_database]
 
+profession_list_for_pushing_by_schedule = ['qa']
 all_tables_for_vacancy_search = []
 all_tables_for_vacancy_search.extend([admin_database, archive_database])
 all_tables_for_vacancy_search.extend(valid_professions)
@@ -197,5 +198,8 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '/check_title_body\n' \
             '/get_profession_parsing_tags_log - send the file with tags and antitags' \
             '/add_statistics\n\n' \
+            '---------------------------------------------------\n\n' \
+            '---------------- PUSHING BY SCHEDULE: ----------------\n' \
+            '/hard_pushing_by_schedule - run pushing by schedule' \
             '---------------------------------------------------\n\n' \
             '❗️- it is admin options'

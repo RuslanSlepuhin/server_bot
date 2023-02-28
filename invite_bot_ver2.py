@@ -292,6 +292,17 @@ class InviteBot():
             else:
                 await self.bot_aiogram.send_message(message.chat.id, 'No vacancies')
 
+
+        @self.dp.message_handler(commands=['hard_pushing_by_schedule'])
+        async def hard_pushing_by_schedule_commands(message: types.Message):
+            if message.from_user.id in variable.white_admin_list:
+                profession_list = variable.profession_list_for_pushing_by_schedule
+                await hard_pushing_by_schedule(
+                    message=message,
+                    profession_list=profession_list
+                )
+
+
         @self.dp.message_handler(commands=['report_push_shorts'])
         async def report_push_shorts_commands(message: types.Message):
             await send_file_to_user(
@@ -2987,9 +2998,10 @@ class InviteBot():
                 # compose message_to_send
 
                 sub_list = []
-                for sub_pro in sub:
-                    if sub_pro:
-                        sub_list.append(sub_pro)
+                if type(sub) in [list, set, tuple, dict]:
+                    for sub_pro in sub:
+                        if sub_pro:
+                            sub_list.append(sub_pro)
 
             # code for transpose in shorts like reference
 
@@ -3256,7 +3268,10 @@ class InviteBot():
 
 
                 try:
-                    sub_list = sub[one_profession]
+                    if one_profession in sub_list:
+                        sub_list = sub[one_profession]
+                    else:
+                        sub_list = []
                 except:
                     sub_list = []
 
@@ -4242,7 +4257,13 @@ class InviteBot():
                 send_to_developer=True
             )
 
-        async def push_shorts_attempt_to_make_multi_function(message, callback_data, hard_pushing=False, hard_push_profession=None):
+        async def push_shorts_attempt_to_make_multi_function(
+                message,
+                callback_data,
+                hard_pushing=False,
+                hard_push_profession=None,
+                channel_for_pushing=False
+        ):
             """
             function push shorts in 3 cases:
                 1. compose shorts without admin for all professions
@@ -4274,6 +4295,9 @@ class InviteBot():
                 prof_list = [callback_data.split(' ')[-1],]
 
             for profession in prof_list:
+
+                self.message_for_send_dict = {}
+
                 await sp.reset_percent()
                 helper.add_to_report_file(
                     path=variable.path_push_shorts_report_file,
@@ -4447,7 +4471,11 @@ class InviteBot():
                         # await show_progress(message, n, length)
 
                     if "shorts" in callback_data:
-                        await shorts_public(message)
+                        if channel_for_pushing:
+                            await shorts_public(message, profession_channel=profession)
+                        else:
+                            await shorts_public(message, profession_channel=None)
+
 
                     if not hard_pushing:
                         await delete_and_change_waste_vacancy(message=message,
@@ -4517,7 +4545,7 @@ class InviteBot():
             #     send_to_developer=True
             # )
 
-        async def shorts_public(message):
+        async def shorts_public(message, channel_for_pushing=False, profession_channel=None):
             pre_message = variable.pre_message_for_shorts
             add_pre_message = True
             for key in self.message_for_send_dict:
@@ -4527,24 +4555,53 @@ class InviteBot():
                     add_pre_message = False
                 vacancies_list = await cut_message_for_send(message_for_send)
                 for short in vacancies_list:
-                    try:
-                        await write_to_logs_error(f"Results:\n{short}\n")
+                    if profession_channel:
                         try:
-                            await self.bot_aiogram.send_message(
-                                variable.channel_id_for_shorts,
-                                short,
-                                parse_mode='html',
-                                disable_web_page_preview=True
-                            )
-                        except:
-                            await self.bot_aiogram.send_message(
-                                message.chat.id,
-                                short,
-                                parse_mode='html',
-                                disable_web_page_preview=True
-                            )
-                    except Exception as e:
-                        await self.bot_aiogram.send_message(message.chat.id, str(e))
+                            await write_to_logs_error(f"Results:\n{short}\n")
+                            try:
+                                await self.bot_aiogram.send_message(
+                                    config['My_channels'][f'{profession_channel}_channel'],
+                                    short,
+                                    parse_mode='html',
+                                    disable_web_page_preview=True
+                                )
+                            except:
+                                try:
+                                    await self.bot_aiogram.send_message(
+                                        variable.channel_id_for_shorts,
+                                        short,
+                                        parse_mode='html',
+                                        disable_web_page_preview=True
+                                    )
+                                except:
+                                    await self.bot_aiogram.send_message(
+                                        variable.channel_id_for_shorts,
+                                        short,
+                                        parse_mode='html',
+                                        disable_web_page_preview=True
+                                    )
+                        except Exception as e:
+                            await self.bot_aiogram.send_message(message.chat.id, str(e))
+
+                    else:
+                        try:
+                            await write_to_logs_error(f"Results:\n{short}\n")
+                            try:
+                                await self.bot_aiogram.send_message(
+                                    variable.channel_id_for_shorts,
+                                    short,
+                                    parse_mode='html',
+                                    disable_web_page_preview=True
+                                )
+                            except:
+                                await self.bot_aiogram.send_message(
+                                    message.chat.id,
+                                    short,
+                                    parse_mode='html',
+                                    disable_web_page_preview=True
+                                )
+                        except Exception as e:
+                            await self.bot_aiogram.send_message(message.chat.id, str(e))
 
         async def clear_db_table(profession, quantity_leave):
             updated = 0
@@ -4588,10 +4645,12 @@ class InviteBot():
 
         async def compose_message_for_send_dict(composed_message_dict, profession):
             if composed_message_dict['sub_list']:
+                n = 0
                 for sub in composed_message_dict['sub_list']:
+                    print(f'~~~~~~~~ iterations from compose_message_for_send_dict: {n}')
+                    n += 1
                     if sub not in self.message_for_send_dict.keys():
-                        self.message_for_send_dict[
-                            sub] = f"Дайджест вакансий для {sub.capitalize()} за {datetime.now().strftime('%d.%m.%Y')}\n\n"
+                        self.message_for_send_dict[sub] = f"Дайджест вакансий для {sub.capitalize()} за {datetime.now().strftime('%d.%m.%Y')}\n\n"
                     self.message_for_send_dict[sub] += f"{composed_message_dict['composed_message']}\n"
             else:
                 if profession not in self.message_for_send_dict.keys():
@@ -5346,6 +5405,52 @@ class InviteBot():
                     table_to=variable.admin_copy,
                     id=response_dict['id']
                 )
+
+        async def hard_pushing_by_schedule(message, profession_list):
+            time_dict = {
+                '09': False,
+                '12': False,
+                '17': False,
+            }
+            while True:
+                print('the checking pushing schedule time')
+                current_time = int(datetime.now().time().strftime("%H"))
+
+                if current_time >= 9 and current_time <= 12 and not time_dict['09'] and not time_dict['09']:
+                    await push_shorts_attempt_to_make_multi_function(
+                        message=message,
+                        callback_data="each",
+                        hard_pushing=True,
+                        hard_push_profession=profession_list,
+                        channel_for_pushing=True
+                    )
+                    time_dict['17'] = False
+                    time_dict['09'] = True
+
+                if current_time >= 12 and current_time < 17 and not time_dict['12']:
+                    await push_shorts_attempt_to_make_multi_function(
+                        message=message,
+                        callback_data="each",
+                        hard_pushing=True,
+                        hard_push_profession=profession_list,
+                        channel_for_pushing=True
+                    )
+                    time_dict['09'] = False
+                    time_dict['12'] = True
+
+                if current_time >= 17 and current_time < 9 and not time_dict['17']:
+                    await push_shorts_attempt_to_make_multi_function(
+                        message=message,
+                        callback_data="each",
+                        hard_pushing=True,
+                        hard_push_profession=profession_list,
+                        channel_for_pushing=True
+                    )
+                    time_dict['12'] = False
+                    time_dict['17'] = True
+
+                await asyncio.sleep(40*60)
+
 
         async def copy_prof_tables_to_archive_prof_tables():
             pass
