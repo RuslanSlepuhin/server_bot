@@ -58,12 +58,15 @@ async def main_endpoints():
         {'query': '<str>'}
         """
         request_data = request.json
-        all_vacancies = db.get_all_from_db(
+        all_vacancies = await db.get_all_from_db_async(
             table_name=variable.admin_database,
             param=f"{request_data['query']}",
             field=variable.admin_table_fields
         )
-        return {'vacancies': await package_list_to_dict(all_vacancies), "query": request_data, "quantity": len(all_vacancies)}
+        if type(all_vacancies) is list:
+            return {'vacancies': await package_list_to_dict(all_vacancies), "query": request_data, "quantity": len(all_vacancies)}
+        elif type(all_vacancies) is str:
+            return {'vacancies': f"query error: {all_vacancies}", "query": request_data, "quantity": len(all_vacancies)}
 
 
     @app.route("/get-all-vacancies_trainee")
