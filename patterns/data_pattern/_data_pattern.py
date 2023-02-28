@@ -691,7 +691,7 @@ pattern = {
                     'ma2': (),
                     'mdef': ("[Mm]otion [Dd]esigner",),
                     'mex': (),
-                    'mex2': ("[Mm]otion [Dd]esign", "3D будет преимуществом"),
+                    'mex2': ("3D будет преимуществом",),
                     'mincl': ()
                     # pattern['Motion']['mex']=set(pattern['designer']['mex']).union(set(pattern['Motion']['mex2'])),
                 },
