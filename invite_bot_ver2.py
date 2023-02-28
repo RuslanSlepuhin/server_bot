@@ -3872,7 +3872,7 @@ class InviteBot():
             fields = 'id, title, body, vacancy, profession, chat_name, sub, level, tags, full_tags, full_anti_tags'
             response = self.db.get_all_from_db(
                 table_name=variable.admin_database,
-                # param="""WHERE profession<>'no_sort'""",
+                param="""WHERE profession<>'no_sort'""",
                 field=fields
             )
             await self.bot_aiogram.send_message(message.chat.id, f"{len(response)} vacancies founded")
