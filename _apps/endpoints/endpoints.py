@@ -152,7 +152,7 @@ async def main_endpoints():
         else:
             return {'response': 'vacancy does not exist in DB'}
 
-    @app.route("/change_vacancy_trainee/<int:id>", methods=['PUT'])
+    @app.route("/change_vacancy_trainee/<int:id>", methods=['PATCH'])
     async def change_vacancy(id):
         request_data = request.json
         print(request_data)
