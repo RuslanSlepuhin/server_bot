@@ -199,13 +199,14 @@ class DataBaseOperations:
         if not r and not r2:
 
             # to get the one sub only
-            results_dict['sub'] = helper.decompose_from_str_to_list(
-                data_str=results_dict['sub']
-            )
-            if pro in results_dict['sub']:
-                results_dict['sub'] = f"{pro}: {', '.join(results_dict['sub'][pro])}"
-            else:
-                results_dict['sub'] = f"{pro}: "
+            if results_dict['sub']:
+                results_dict['sub'] = helper.decompose_from_str_to_list(
+                    data_str=results_dict['sub']
+                )
+                if pro in results_dict['sub']:
+                    results_dict['sub'] = f"{pro}: {', '.join(results_dict['sub'][pro])}"
+                else:
+                    results_dict['sub'] = f"{pro}: "
 
             response_dict[pro] = False
 

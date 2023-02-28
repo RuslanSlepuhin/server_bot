@@ -22,17 +22,20 @@ def compose_to_str_from_list(data_list):
     return sub_str
 
 def decompose_from_str_to_list(data_str):
-    data_dict = {}
-    data_list = data_str.split('; ')
-    for i in data_list:
-        i = i.split(': ')
-        key = i[0]
-        sub_items = i[1]
-        if sub_items:
-            data_dict[key] = sub_items.split(', ')
-        else:
-            data_dict[key] = []
-    return data_dict
+    if data_str:
+        data_dict = {}
+        data_list = data_str.split('; ')
+        for i in data_list:
+            i = i.split(': ')
+            key = i[0]
+            sub_items = i[1]
+            if sub_items:
+                data_dict[key] = sub_items.split(', ')
+            else:
+                data_dict[key] = []
+        return data_dict
+    else:
+        return {}
 
 def compose_simple_list_to_str(data_list, separator):
     return f'{separator}'.join(data_list)
