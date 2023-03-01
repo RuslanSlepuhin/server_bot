@@ -5003,7 +5003,7 @@ class InviteBot():
             response_all_vacancies = self.db.get_all_from_db(
                 table_name=self.show_vacancies['table'],
                 field=variable.profession_table_fields,
-                param=f"WHERE profession = '%{self.show_vacancies['profession']}%'"
+                param=f"WHERE profession LIKE '%{self.show_vacancies['profession']}%'"
             )
             if self.show_vacancies['offset'] > len(response_all_vacancies) -1:
                 self.show_vacancies['offset'] = 0
