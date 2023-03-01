@@ -1243,7 +1243,7 @@ class DataBaseOperations:
 
         return answer_dict
 
-    def update_table(self, table_name, param, field, value, output_text='vacancy has updated'):
+    def update_table(self, table_name, field, value, output_text='vacancy has updated', param=""):
         query = f"""UPDATE {table_name} SET {field}='{value}' {param}"""
         self.run_free_request(request=query, output_text=output_text)
 
@@ -1545,3 +1545,31 @@ class DataBaseOperations:
             df_total.to_excel(writer, sheet_name="Total", index= False)
             df_total_channels.to_excel(writer, sheet_name="Channels", index= False)
             print('Report is done, saved')
+
+    def create_table_common(self, field_list, table_name):
+        query = f"""Create TABLE IF NOT EXISTS {table_name} (id SERIAL PRIMARY KEY, """
+        for field in field_list:
+            query += f"{field}, "
+        query = query[:-2] + ");"
+
+        cur = self.con.cursor()
+        with self.con:
+            cur.execute(query)
+            print(f'table {table_name} has been crated or exists')
+
+    def push_to_db_common(self, table_name, fields_values_dict):
+        keys_str = ''
+        values_str = ''
+        for key in fields_values_dict:
+            keys_str += f"{key}, "
+            values_str += f"{fields_values_dict[key]}, "
+        keys_str = keys_str[:-2]
+        values_str = values_str[:-2]
+
+        query = f"INSERT INTO {table_name} ({keys_str}) VALUES ({values_str})"
+        print(query)
+        cur = self.con.cursor()
+        with self.con:
+            cur.execute(query)
+            print('Done')
+
