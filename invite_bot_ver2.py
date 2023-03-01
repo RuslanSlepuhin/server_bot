@@ -116,6 +116,7 @@ class InviteBot():
         self.db = DataBaseOperations(con=None)
         self.admin_check_file = variable.admin_check_file_path
         self.message_for_send_dict = {}
+        self.schedule_pushing_shorts = True
         # self.token = token
         # self.bot_aiogram = Bot(token=token)
         # self.storage = MemoryStorage()
@@ -304,6 +305,9 @@ class InviteBot():
                     profession_list=profession_list
                 )
 
+        @self.dp.message_handler(commands=['stop_hard_pushing_by_schedule'])
+        async def hard_pushing_by_schedule_commands(message: types.Message):
+            self.schedule_pushing_shorts = False
 
         @self.dp.message_handler(commands=['report_push_shorts'])
         async def report_push_shorts_commands(message: types.Message):
@@ -2999,11 +3003,6 @@ class InviteBot():
                     )['profession']['sub']
                 # compose message_to_send
 
-                sub_list = []
-                if type(sub) in [list, set, tuple, dict]:
-                    for sub_pro in sub:
-                        if sub_pro:
-                            sub_list.append(sub_pro)
 
             # code for transpose in shorts like reference
 
@@ -3268,9 +3267,18 @@ class InviteBot():
                         message_for_send = message_for_send[0:-2]
                         message_for_send += ')\n'
 
+                sub_list = []
+                if type(sub) in [list, set, tuple, dict]:
+                    for sub_pro in sub:
+                        if sub_pro:
+                            sub_list.append(sub_pro)
+                elif type(sub) is str:
+                    pass
 
                 try:
                     if one_profession in sub_list:
+                        if type(sub[one_profession]) is str:
+                            sub[one_profession] = sub[one_profession].split(", ")
                         sub_list = sub[one_profession]
                     else:
                         sub_list = []
@@ -5391,6 +5399,7 @@ class InviteBot():
             # create new
             self.db.check_or_create_table_admin(table_name=variable.admin_copy)
 
+
             # transfer from admin to admin_copy
             responses = self.db.get_all_from_db(
                 table_name=variable.admin_database,
@@ -5409,16 +5418,47 @@ class InviteBot():
                 )
 
         async def hard_pushing_by_schedule(message, profession_list):
+            table_set = set()
+            time_marker = ''
+            tables_list = self.db.get_information_about_tables_and_fields()
+            for i in tables_list:
+                table_set.add(i[0])
+
+            if variable.last_autopushing_time_database not in table_set:
+                # get the last pushing time from db
+                self.db.create_table_common(
+                    field_list=["time VARCHAR (10)",],
+                    table_name=variable.last_autopushing_time_database
+                )
+                self.db.push_to_db_common(
+                    table_name=variable.last_autopushing_time_database,
+                    fields_values_dict={'time': '0'}
+                )
+            last_autopushing_time = self.db.get_all_from_db(
+                table_name=variable.last_autopushing_time_database,
+                field='time',
+                param="WHERE id=1",
+                without_sort=True
+            )
+
             time_dict = {
                 '09': False,
                 '12': False,
                 '17': False,
             }
+            if last_autopushing_time:
+                last_autopushing_time = last_autopushing_time[0][0]
+                time_dict[last_autopushing_time] = True
+
             while True:
+                if not self.schedule_pushing_shorts:
+                    break
+
                 print('the checking pushing schedule time')
                 current_time = int(datetime.now().time().strftime("%H"))
 
-                if current_time >= 9 and current_time <= 12 and not time_dict['09'] and not time_dict['09']:
+                if current_time >= 9 and current_time < 12 and not time_dict['09'] and not time_dict['09']:
+                    print('hard pushing 09 is starting')
                     await push_shorts_attempt_to_make_multi_function(
                         message=message,
                         callback_data="each",
@@ -5426,24 +5466,13 @@ class InviteBot():
                         hard_push_profession=profession_list,
                         channel_for_pushing=True
                     )
-                    time_dict['17'] = False
                     time_dict['09'] = True
-                    time_dict['12'] = False
-
-                if current_time >= 12 and current_time < 17 and not time_dict['12']:
-                    await push_shorts_attempt_to_make_multi_function(
-                        message=message,
-                        callback_data="each",
-                        hard_pushing=True,
-                        hard_push_profession=profession_list,
-                        channel_for_pushing=True
-                    )
-                    time_dict['09'] = False
-                    time_dict['12'] = True
                     time_dict['17'] = False
+                    time_dict['12'] = False
+                    time_marker = '9'
 
-
-                if current_time >= 17 and current_time < 9 and not time_dict['17']:
+                elif current_time >= 12 and current_time < 17 and not time_dict['12']:
+                    print('hard pushing 12 is starting')
                     await push_shorts_attempt_to_make_multi_function(
                         message=message,
                         callback_data="each",
@@ -5451,11 +5480,44 @@ class InviteBot():
                         hard_push_profession=profession_list,
                         channel_for_pushing=True
                     )
-                    time_dict['12'] = False
-                    time_dict['17'] = True
+                    time_dict['12'] = True
                     time_dict['09'] = False
+                    time_dict['17'] = False
+                    time_marker = '12'
 
-                await asyncio.sleep(40*60)
+                elif current_time >= 17 and current_time < 18 and not time_dict['17']:
+                    print('hard pushing 17 is starting')
+                    await push_shorts_attempt_to_make_multi_function(
+                        message=message,
+                        callback_data="each",
+                        hard_pushing=True,
+                        hard_push_profession=profession_list,
+                        channel_for_pushing=True
+                    )
+                    time_dict['17'] = True
+                    time_dict['12'] = False
+                    time_dict['09'] = False
+                    time_marker = '17'
+
+                if time_marker:
+                    self.db.update_table(
+                        table_name=variable.last_autopushing_time_database,
+                        param="WHERE id=1",
+                        field='time',
+                        value=time_marker,
+                        output_text='time has been updated'
+                    )
+                time_marker = ''
+
+                if (current_time >= 0 and current_time < 7) or current_time >= 18 and current_time < 24:
+                    print('the long pause')
+                    await asyncio.sleep(1*60*60*2)
+                else:
+                    print('the short pause')
+                    await asyncio.sleep(1*60)
+
+            return print('Shedule pushing has been stopped')
+
 
 
         async def copy_prof_tables_to_archive_prof_tables():
