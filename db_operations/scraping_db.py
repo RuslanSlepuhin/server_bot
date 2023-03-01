@@ -271,7 +271,6 @@ class DataBaseOperations:
         return response
 
     async def get_all_from_db_async(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
-
         if not self.con:
             self.connect_db()
         cur = self.con.cursor()
@@ -294,10 +293,8 @@ class DataBaseOperations:
         if curs:
             return cur
         return response
+
     def write_current_session(self, current_session):
-
-        logs.write_log(f"scraping_db: function: write_current_session")
-
         if not self.con:
             self.connect_db()
         cur = self.con.cursor()
@@ -603,6 +600,7 @@ class DataBaseOperations:
             except Exception as e:
                 print('ERROR ', e)
             pass
+        return cur.fetchall()
 
     def write_pattern_new(self, key, ma, mex, value, table_name='pattern'):
 

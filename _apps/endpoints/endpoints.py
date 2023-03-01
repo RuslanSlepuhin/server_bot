@@ -58,11 +58,18 @@ async def main_endpoints():
         {'query': '<str>'}
         """
         request_data = request.json
-        all_vacancies = await db.get_all_from_db_async(
-            table_name=variable.admin_database,
-            param=f"{request_data['query']}",
-            field=variable.admin_table_fields,
-            without_sort=True
+        # all_vacancies = await db.get_all_from_db_async(
+        #     table_name=variable.admin_database,
+        #     param=f"{request_data['query']}",
+        #     field=variable.admin_table_fields,
+        #     without_sort=True
+        # )
+        if request_data['query'].lower().split(' ', 1)[0] != 'select':
+            return {'vacancies': f"query error: 'Allowed only SELECT method'", "query": request_data, "quantity": 0}
+
+        all_vacancies = db.run_free_request(
+            request=f"{request_data['query']}",
+            output_text="Done"
         )
         if type(all_vacancies) is list:
             return {'vacancies': await package_list_to_dict(all_vacancies), "query": request_data, "quantity": len(all_vacancies)}
