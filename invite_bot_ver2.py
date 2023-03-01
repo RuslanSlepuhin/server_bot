@@ -117,6 +117,12 @@ class InviteBot():
         self.admin_check_file = variable.admin_check_file_path
         self.message_for_send_dict = {}
         self.schedule_pushing_shorts = True
+        self.show_vacancies = {
+            'table': '',
+            'offset': 0,
+            'message': '',
+            'profession': ''
+        }
         # self.token = token
         # self.bot_aiogram = Bot(token=token)
         # self.storage = MemoryStorage()
@@ -293,6 +299,12 @@ class InviteBot():
             else:
                 await self.bot_aiogram.send_message(message.chat.id, 'No vacancies')
 
+        @self.dp.message_handler(commands=['get_channel_members'])
+        async def get_channel_members_commands(message: types.Message):
+            dialogs = await self.client.get_dialogs(200)
+            groups = [dialog.entity for dialog in dialogs if dialog.is_group]
+            for group in groups:
+                print(group.title)
 
         @self.dp.message_handler(commands=['hard_pushing_by_schedule'])
         async def hard_pushing_by_schedule_commands(message: types.Message):
@@ -463,7 +475,10 @@ class InviteBot():
 
         @self.dp.message_handler(commands=['get_vacancy_from_backend'])
         async def get_vacancy_from_backend_command(message: types.Message):
-            await get_vacancy_from_backend(message, table_name='backend')
+            self.message = None
+            self.show_vacancies['table'] = variable.admin_database
+            self.show_vacancies['profession'] = variable.admin_database
+            await get_vacancy_from_backend(message)
 
         @self.dp.message_handler(commands=['add_and_push_subs'])
         async def add_and_push_subs_command(message: types.Message):
@@ -1444,6 +1459,13 @@ class InviteBot():
         async def catch_callback(callback: types.CallbackQuery):
             short_digest = ''
             response = []
+            if callback.data == '>>':
+                self.show_vacancies['offset'] += 1
+                await get_vacancy_from_backend(callback.message)
+
+            if callback.data == '<<':
+                self.show_vacancies['offset'] -= 1
+                await get_vacancy_from_backend(callback.message)
 
             if callback.data == 'personal':
                 await invite_users(
@@ -4972,20 +4994,43 @@ class InviteBot():
                 else:
                     await self.bot_aiogram.send_message(message.chat.id, "Sorry, but it has not any response")
 
-        async def get_vacancy_from_backend(message, table_name):
+        async def get_vacancy_from_backend(message):
+            button_next = InlineKeyboardButton(">>", callback_data='>>')
+            button_previous = InlineKeyboardButton("<<", callback_data='<<')
+            markup = InlineKeyboardMarkup()
+            markup.row(button_previous, button_next)
+
             response_all_vacancies = self.db.get_all_from_db(
-                table_name=table_name,
-                field=variable.profession_table_fields
+                table_name=self.show_vacancies['table'],
+                field=variable.profession_table_fields,
+                param=f"WHERE profession = '%{self.show_vacancies['profession']}%'"
             )
+            if self.show_vacancies['offset'] > len(response_all_vacancies) -1:
+                self.show_vacancies['offset'] = 0
+            if self.show_vacancies['offset'] < 0:
+                self.show_vacancies['offset'] =  len(response_all_vacancies) -1
+
             if response_all_vacancies:
                 response_dict = await helper.to_dict_from_admin_response(
-                    response=response_all_vacancies[random.randrange(0, len(response_all_vacancies))],
+                    response=response_all_vacancies[self.show_vacancies['offset']],
                     fields=variable.profession_table_fields
                 )
+                if len(response_dict['body'])>100:
+                    response_dict['body'] = response_dict['body'][:97] + '...'
+                message_for_send = ''
+                for key in response_dict:
+                    message_for_send += f"<b>{key}</b>: {response_dict[key]}\n"
+
                 if len(str(response_dict))<4096:
-                    await self.bot_aiogram.send_message(message.chat.id, str(response_dict))
+                    if not self.message:
+                        self.message = await self.bot_aiogram.send_message(message.chat.id, message_for_send, reply_markup=markup, parse_mode='html', disable_web_page_preview=True)
+                    else:
+                        await self.message.edit_text(message_for_send, reply_markup=markup, parse_mode='html', disable_web_page_preview=True)
+
                 else:
                     await self.bot_aiogram.send_message(message.chat.id, "Sorry, but it has not any response")
+            else:
+                await self.bot_aiogram.send_message(message.chat.id, "Sorry, but it has not any response")
 
         async def get_vacancy_names(message, profession):
             message_for_send = ''
