@@ -39,7 +39,6 @@ con = psycopg2.connect(
     port=port
 )
 
-
 db = DataBaseOperations(None)
 admin_table = variable.admin_copy
 
@@ -62,7 +61,8 @@ async def main_endpoints():
         all_vacancies = await db.get_all_from_db_async(
             table_name=variable.admin_database,
             param=f"{request_data['query']}",
-            field=variable.admin_table_fields
+            field=variable.admin_table_fields,
+            without_sort=True
         )
         if type(all_vacancies) is list:
             return {'vacancies': await package_list_to_dict(all_vacancies), "query": request_data, "quantity": len(all_vacancies)}
