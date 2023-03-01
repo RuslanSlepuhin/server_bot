@@ -5514,7 +5514,7 @@ class InviteBot():
                     await asyncio.sleep(1*60*60*2)
                 else:
                     print('the short pause')
-                    await asyncio.sleep(1*60)
+                    await asyncio.sleep(1*60*10)
 
             return print('Shedule pushing has been stopped')
 
