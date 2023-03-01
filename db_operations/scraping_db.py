@@ -271,6 +271,7 @@ class DataBaseOperations:
         return response
 
     async def get_all_from_db_async(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
+        response = []
         if not self.con:
             self.connect_db()
         cur = self.con.cursor()
