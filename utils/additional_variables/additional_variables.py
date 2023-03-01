@@ -30,14 +30,12 @@ tables_for_search_vacancy_existing = [admin_database, 'archive']
 # all_tables_for_vacancy_search = ['designer', 'game', 'product', 'mobile', 'pm', 'sales_manager', 'analyst', 'frontend',
 #                      'marketing', 'devops', 'hr', 'backend', 'qa', 'junior', admin_database, archive_database]
 
-profession_list_for_pushing_by_schedule = ['qa']
-# profession_list_for_pushing_by_schedule = ['qa', 'designer', 'sales_manager', 'marketing', 'game', 'mobile', 'devops', 'backend']
-
+profession_list_for_pushing_by_schedule = ['qa', 'designer', 'sales_manager', 'marketing', 'game', 'mobile', 'devops', 'backend']
 all_tables_for_vacancy_search = []
 all_tables_for_vacancy_search.extend([admin_database, archive_database])
 all_tables_for_vacancy_search.extend(valid_professions)
 
-not_lower_professions = ['pm', 'game', 'designer', 'hr', 'analyst', 'qa', 'ba' 'devops', 'product']
+not_lower_professions = ['pm', 'game', 'designer', 'hr', 'analyst', 'qa', 'ba', 'devops', 'product']
 
 white_admin_list = [1763672666, 556128576, 758905227, 945718420, 5755261667, 5884559465]
 
@@ -159,6 +157,7 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '⛔️/get_post_request \n' \
             '⛔️/rewrite_additional_db_fields - like job_type, english, experience, relocation, city\n' \
             '⛔️/show_db_records - random vacancy from db\n' \
+            '⛔️/get_channel_members - get user\'s channels name\n' \
             '----------------------------------------------------\n\n' \
             '---------------- FILES: ----------------\n' \
             '/report_push_shorts - shorts report \n' \
