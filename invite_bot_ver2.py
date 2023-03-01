@@ -477,7 +477,7 @@ class InviteBot():
         async def get_vacancy_from_backend_command(message: types.Message):
             self.message = None
             self.show_vacancies['table'] = variable.admin_database
-            self.show_vacancies['profession'] = variable.admin_database
+            self.show_vacancies['profession'] = 'junior'
             await get_vacancy_from_backend(message)
 
         @self.dp.message_handler(commands=['add_and_push_subs'])
