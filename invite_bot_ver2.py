@@ -5573,10 +5573,13 @@ class InviteBot():
 
                 if (current_time >= 0 and current_time < 7) or current_time >= 18 and current_time < 24:
                     print('the long pause')
+                    await self.bot_aiogram.send_message(message.chat.id, ('the long pause')
                     await asyncio.sleep(1*60*60*2)
                 else:
                     print('the short pause')
+                    await self.bot_aiogram.send_message(message.chat.id, ('the short pause')
                     await asyncio.sleep(1*60*10)
+
 
             return print('Shedule pushing has been stopped')
 
