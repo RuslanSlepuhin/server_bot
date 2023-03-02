@@ -406,7 +406,22 @@ async def remove_one_profession(professions: str, remove_profession: str):
     except Exception as e:
         print(e)
     professions = ", ".join(prof_list)
-
-
-
     return professions
+
+async def cut_message_for_parts(text, separator):
+    one_text_part = ''
+    result_list = []
+    if not separator:
+        separator = ' '
+    if len(text)> 4096:
+        text_list = text.split(separator)
+        for text_part in text_list:
+            if len(f"{one_text_part}{separator}{text_part}") < 4096:
+                one_text_part += text_part
+            else:
+                result_list.append(one_text_part)
+                one_text_part = text_part
+    else:
+        return [text]
+    return result_list
+
