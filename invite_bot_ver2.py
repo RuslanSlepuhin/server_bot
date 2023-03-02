@@ -5668,12 +5668,12 @@ class InviteBot():
                                         write_mode='a',
                                         text=f"id: {vacancy_dict['id']}\nurl: {vacancy_url}\n----------\n\n"
                                     )
-                                    # self.db.update_table(
-                                    #     table_name=variable.admin_database,
-                                    #     field='closed',
-                                    #     value='TRUE',
-                                    #     output_text='field closed updated +'
-                                    # )
+                                    self.db.update_table(
+                                        table_name=variable.admin_database,
+                                        field='closed',
+                                        value='TRUE',
+                                        output_text='field closed updated +'
+                                    )
                                     # self.db.transfer_vacancy(
                                     #     table_from=variable.admin_database,
                                     #     table_to=variable.archive_database,
