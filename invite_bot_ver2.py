@@ -272,16 +272,14 @@ class InviteBot():
 
         @self.dp.message_handler(commands=['help'])
         async def get_logs(message: types.Message):
-            @self.dp.message_handler(commands=['help'])
-            async def get_logs(message: types.Message):
-                text_list = []
-                if len(variable.help_text) > 4096:
-                    separator = "\n\n"
-                    text_list = await helper.cut_message_for_parts(text=variable.help_text, separator=separator)
-                else:
-                    text_list = [variable.help_text]
-                for text in text_list:
-                    await self.bot_aiogram.send_message(message.chat.id, text)
+            text_list = []
+            if len(variable.help_text) > 4096:
+                separator = "\n\n"
+                text_list = await helper.cut_message_for_parts(text=variable.help_text, separator=separator)
+            else:
+                text_list = [variable.help_text]
+            for text in text_list:
+                await self.bot_aiogram.send_message(message.chat.id, text)
 
         @self.dp.message_handler(commands=['check_vacancies_for_relevance'])
         async def check_vacancies_for_relevance_command(message: types.Message):
