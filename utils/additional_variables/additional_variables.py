@@ -30,12 +30,12 @@ tables_for_search_vacancy_existing = [admin_database, 'archive']
 # all_tables_for_vacancy_search = ['designer', 'game', 'product', 'mobile', 'pm', 'sales_manager', 'analyst', 'frontend',
 #                      'marketing', 'devops', 'hr', 'backend', 'qa', 'junior', admin_database, archive_database]
 
-profession_list_for_pushing_by_schedule = ['qa']
+profession_list_for_pushing_by_schedule = ['qa', 'designer', 'sales_manager', 'marketing', 'game', 'mobile', 'devops', 'backend']
 all_tables_for_vacancy_search = []
 all_tables_for_vacancy_search.extend([admin_database, archive_database])
 all_tables_for_vacancy_search.extend(valid_professions)
 
-not_lower_professions = ['pm', 'game', 'designer', 'hr', 'analyst', 'qa', 'ba', 'devops', 'product']
+not_lower_professions = ['pm', 'game', 'designer', 'hr', 'analyst', 'qa', 'ba' 'devops', 'product']
 
 white_admin_list = [1763672666, 556128576, 758905227, 945718420, 5755261667, 5884559465]
 
@@ -150,7 +150,7 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '⛔️/numbers_of_archive\n' \
             '⛔️/get_flood_error_logs\n' \
             '⛔️/how_many_records_in_db_table - shows quantity of records in db table\n' \
-            '⛔️/get_vacancy_for_example - receivw the random vacncy from admin\n' \
+            '⛔️/get_vacancy_for_example - receivw the random vacancy from admin\n' \
             '⛔️/get_vacancy_from_backend - random vacancy from backend\n' \
             '⛔️/add_and_push_subs - add subs and fill them\n' \
             '⛔️/get_random_vacancy_by_profession \n' \
@@ -158,6 +158,7 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '⛔️/rewrite_additional_db_fields - like job_type, english, experience, relocation, city\n' \
             '⛔️/show_db_records - random vacancy from db\n' \
             '⛔️/get_channel_members - get user\'s channels name\n' \
+            '⛔️/transpose_no_sort_to_archive - all no_sort to archive\n' \
             '----------------------------------------------------\n\n' \
             '---------------- FILES: ----------------\n' \
             '/report_push_shorts - shorts report \n' \

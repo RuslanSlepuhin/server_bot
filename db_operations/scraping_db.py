@@ -601,7 +601,8 @@ class DataBaseOperations:
             except Exception as e:
                 print('ERROR ', e)
             pass
-        return cur.fetchall()
+        if "select" in query.lower()[:10]:
+            return cur.fetchall()
 
     def write_pattern_new(self, key, ma, mex, value, table_name='pattern'):
 
@@ -783,6 +784,10 @@ class DataBaseOperations:
             dict_in=results_dict
         )
         # -------------------------------------------------------------------------------------------------------------
+
+        # if profession is no_sort than to write it to archive without admin_last_session
+        if results_dict['profession'] == 'no_sort':
+            table_name = archive_database
 
         new_post = f"""INSERT INTO {table_name} (
                             chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, job_type,
@@ -1330,17 +1335,22 @@ class DataBaseOperations:
             cur.execute(query)
         return cur.fetchall()
 
-    def transfer_vacancy(self, table_from, table_to, id):
+    def transfer_vacancy(self, table_from, table_to, id=None, response_from_db=None):
         keys_str = ''
         values_str = ''
-        response_dict = {}
-        response = self.get_all_from_db(
-            table_name=table_from,
-            param=f"WHERE id={id}",
-            field=admin_table_fields
-        )
+
+        if not response_from_db:
+            response = self.get_all_from_db(
+                table_name=table_from,
+                param=f"WHERE id={id}",
+                field=admin_table_fields
+            )
+            if response:
+                response = response[0]
+        else:
+            response = response_from_db
+
         if response:
-            response = response[0]
             response_dict = helper.to_dict_from_admin_response_sync(response, admin_table_fields)
 
             for keys in response_dict:
@@ -1348,8 +1358,11 @@ class DataBaseOperations:
                     keys_str += f"{keys}, "
                     values_str += f"'{response_dict[keys]}', "
             query = f"INSERT INTO {table_to} ({keys_str[:-2]}) VALUES ({values_str[:-2]})"
-            self.run_free_request(query)
-            return True
+            try:
+                self.run_free_request(query)
+                return True
+            except Exception:
+                return False
         else:
             return  False
 

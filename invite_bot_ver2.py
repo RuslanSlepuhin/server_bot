@@ -273,6 +273,10 @@ class InviteBot():
         async def get_logs(message: types.Message):
             await self.bot_aiogram.send_message(message.chat.id, variable.help_text)
 
+        @self.dp.message_handler(commands=['transpose_no_sort_to_archive'])
+        async def transpose_no_sort_to_archive_command(message: types.Message):
+            await transpose_no_sort_to_archive(message)
+
         @self.dp.message_handler(commands=['show_db_records'])
         async def show_db_records_command(message: types.Message):
             await Form_profession_name.profession.set()
@@ -3472,7 +3476,7 @@ class InviteBot():
                 len_prof_list = len(prof_list)
                 if len_prof_list < 2:
 
-                    await transfer_vacancy_admin_archive(id_admin_last_session_table)
+                    await transfer_vacancy_from_to_table(id_admin_last_session_table)
                     self.db.delete_data(
                         table_name='admin_last_session',
                         param=f"WHERE id={id_admin_last_session_table}"
@@ -3520,7 +3524,7 @@ class InviteBot():
 
             # await asyncio.sleep(1)
 
-        async def transfer_vacancy_admin_archive(
+        async def transfer_vacancy_from_to_table(
                 id_admin_last_session_table,
                 table_from=variable.admin_database,
                 table_to=variable.archive_database,
@@ -4666,7 +4670,7 @@ class InviteBot():
                     )
                     updated += 1
                 else:
-                    await transfer_vacancy_admin_archive(
+                    await transfer_vacancy_from_to_table(
                         id_admin_last_session_table=response[index][1],
                     )
                     self.db.delete_data(
@@ -4914,7 +4918,7 @@ class InviteBot():
                             field='profession',
                             value=new_profession
                         )
-                        await transfer_vacancy_admin_archive(
+                        await transfer_vacancy_from_to_table(
                             id_admin_last_session_table=id,
                             table_from='archive',
                             table_to='admin_last_session'
@@ -5003,7 +5007,7 @@ class InviteBot():
             response_all_vacancies = self.db.get_all_from_db(
                 table_name=self.show_vacancies['table'],
                 field=variable.profession_table_fields,
-                param=f"WHERE profession LIKE '%{self.show_vacancies['profession']}%'"
+                param=f"WHERE profession = '%{self.show_vacancies['profession']}%'"
             )
             if self.show_vacancies['offset'] > len(response_all_vacancies) -1:
                 self.show_vacancies['offset'] = 0
@@ -5279,7 +5283,7 @@ class InviteBot():
                                 value=new_profession,
                                 output_text="profession was updated"
                             )
-                            await transfer_vacancy_admin_archive(
+                            await transfer_vacancy_from_to_table(
                                 id_admin_last_session_table=response_dict['id'],
                                 table_from=variable.archive_database,
                                 table_to=variable.admin_database,
@@ -5563,7 +5567,45 @@ class InviteBot():
 
             return print('Shedule pushing has been stopped')
 
-
+        async def transpose_no_sort_to_archive(message):
+            no_sort_messages = self.db.get_all_from_db(
+                table_name=variable.admin_database,
+                param="WHERE profession = 'no_sort'",
+                field=variable.admin_table_fields
+            )
+            no_sort_archive = self.db.get_all_from_db(
+                table_name=variable.archive_database,
+                param="WHERE profession = 'no_sort'",
+                field=variable.admin_table_fields
+            )
+            message_for_send = f"Previous:\nadmin: {len(no_sort_messages)}\narchive: {len(no_sort_archive)}\n------------\n"
+            count = 0
+            for vacancy in no_sort_messages:
+                if self.db.transfer_vacancy(
+                        table_from=variable.admin_database,
+                        table_to=variable.archive_database,
+                        response_from_db=vacancy
+                ):
+                    print(count, 'transfer +')
+                    self.db.delete_data(
+                        table_name=variable.admin_database,
+                        param=f"WHERE id={vacancy[0]}"
+                    )
+                else:
+                    print(count, "something is wrong")
+                count += 1
+            no_sort_messages = self.db.get_all_from_db(
+                table_name=variable.admin_database,
+                param="WHERE profession = 'no_sort'",
+                field=variable.admin_table_fields
+            )
+            no_sort_archive = self.db.get_all_from_db(
+                table_name=variable.archive_database,
+                param="WHERE profession = 'no_sort'",
+                field=variable.admin_table_fields
+            )
+            message_for_send += f"processed {count} vacancies\n------\nActual:\nadmin: {len(no_sort_messages)}\narchive: {len(no_sort_archive)}"
+            await self.bot_aiogram.send_message(message.chat.id, message_for_send)
 
         async def copy_prof_tables_to_archive_prof_tables():
             pass
