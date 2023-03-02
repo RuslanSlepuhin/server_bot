@@ -3940,7 +3940,8 @@ class InviteBot():
                         one_vacancy_dict['title'],
                         one_vacancy_dict['body'],
                         check_contacts=False,
-                        check_vacancy=False,
+                        check_vacancy=True,
+                        check_vacancy_only_mex=True,
                         get_params=False
                     )
 
