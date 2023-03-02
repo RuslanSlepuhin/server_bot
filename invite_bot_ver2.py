@@ -9,6 +9,7 @@ import re
 import urllib
 from datetime import datetime, timedelta
 import pandas
+import requests
 from aiogram import Bot, Dispatcher, types
 import logging
 import configparser
@@ -272,6 +273,10 @@ class InviteBot():
         @self.dp.message_handler(commands=['help'])
         async def get_logs(message: types.Message):
             await self.bot_aiogram.send_message(message.chat.id, variable.help_text)
+
+        @self.dp.message_handler(commands=['check_vacancies_for_relevance'])
+        async def check_vacancies_for_relevance_command(message: types.Message):
+            await check_vacancies_for_relevance(message)
 
         @self.dp.message_handler(commands=['transpose_no_sort_to_archive'])
         async def transpose_no_sort_to_archive_command(message: types.Message):
@@ -5607,6 +5612,79 @@ class InviteBot():
             )
             message_for_send += f"processed {count} vacancies\n------\nActual:\nadmin: {len(no_sort_messages)}\narchive: {len(no_sort_archive)}"
             await self.bot_aiogram.send_message(message.chat.id, message_for_send)
+
+
+        async def check_vacancies_for_relevance(message):
+            not_relevance = 0
+            relevance = 0
+            helper.add_to_report_file(
+                path=variable.report_file_not_actual_vacancy,
+                write_mode='w',
+                text=''
+            )
+            table_list = []
+            table_list.extend([variable.admin_database, variable.archive_database])
+            table_list.extend(variable.valid_professions)
+            self.db.add_columns_to_tables(
+                table_list=table_list,
+                column_name_type="closed BOOLEAN"
+            )
+
+            all_vacancies = self.db.get_all_from_db(
+                table_name=variable.admin_database,
+                field=variable.admin_table_fields,
+                param="WHERE profession <> 'no_sort'"
+            )
+
+            for vacancy in all_vacancies:
+                vacancy_dict = await helper.to_dict_from_temporary_response(
+                    response=vacancy,
+                    fields=variable.admin_table_fields
+                )
+                vacancy_url = vacancy_dict['vacancy_url']
+                if vacancy_url:
+                    if 't.me' not in vacancy_url:
+                        print(vacancy_url)
+                        response = requests.get(vacancy_url)
+                        if response.status_code != 200:
+                            for i in range(0, 1):
+                                response = requests.get(vacancy_url)
+                                if response.status_code == 200:
+                                    print('Good')
+                                    relevance += 1
+                                    break
+                                else:
+                                    helper.add_to_report_file(
+                                        path=variable.report_file_not_actual_vacancy,
+                                        write_mode='a',
+                                        text=f"id: {vacancy_dict['id']}\nurl: {vacancy_url}\n----------\n\n"
+                                    )
+                                    # self.db.update_table(
+                                    #     table_name=variable.admin_database,
+                                    #     field='closed',
+                                    #     value='TRUE',
+                                    #     output_text='field closed updated +'
+                                    # )
+                                    # self.db.transfer_vacancy(
+                                    #     table_from=variable.admin_database,
+                                    #     table_to=variable.archive_database,
+                                    #     response_from_db=vacancy
+                                    # )
+                                    # self.db.delete_data(
+                                    #     table_name=variable.admin_database,
+                                    #     param=f"WHERE id={vacancy_dict['id']}"
+                                    # )
+                                    not_relevance += 1
+                                    print('Wrong')
+                        else:
+                            relevance += 1
+                            print('Good')
+
+            await self.bot_aiogram.send_message(message.chat.id, f"Relevance: {relevance} vacancies\nNot relevance: {not_relevance} vacancies")
+            await send_file_to_user(
+                path=variable.report_file_not_actual_vacancy,
+                send_to_developer=True
+            )
 
         async def copy_prof_tables_to_archive_prof_tables():
             pass

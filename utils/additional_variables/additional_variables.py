@@ -56,6 +56,7 @@ flood_control_logs_path = "./excel/flood_control.txt"
 pattern_path = "./excel/pattern.txt"
 admin_check_file_path = './logs/check_file.txt'
 path_log_check_profession = "./excel/send_log_txt.txt"
+report_file_not_actual_vacancy = "./excel/not_actual_vacancies.txt"
 
 sites_search_words = ['designer', 'ui', 'junior', 'стажер', 'стажировка', 'product manager', 'project manager', 'python', 'php']
 
@@ -179,7 +180,8 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '🔆/praca - get data from praca.by\n' \
             '---------------------------------------------------\n\n' \
             '/download - ❗️you get excel from admin vacancies with search tags\n' \
-            '/ambulance - if bot gets accident in hard pushing and you think you loose the shorts\n\n' \
+            '/ambulance - if bot gets accident in hard pushing and you think you loose the shorts\n' \
+            '/check_vacancies_for_relevance - to mark not actual vacancies id DB (closed will be TRUE)\n\n' \
             '---------------- TOOLS: ----------------\n' \
             '🛠/edit_pattern - stop proccess\n' \
             '/db_check_url_vacancy - does vacancy exist by link\n' \
