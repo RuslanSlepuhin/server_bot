@@ -34,7 +34,9 @@ if __name__ == "__main__":
     # p1.start()
     # p4.start()
     # p2.start()
-    p3.start()
+    # p3.start()
+
+    start_bot(double=True, token_in=settings.token_red)
 
     # p1.join()
     # p2.join()
