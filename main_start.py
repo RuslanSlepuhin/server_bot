@@ -1,7 +1,7 @@
 import os
 import time
-from invite_bot_ver2 import run as run_parser_bot
 from _apps.talking_bot.mvp_connect_talking_bot import talking_bot_run
+from invite_bot_ver2 import run as run_parser_bot
 from _apps.endpoints import endpoints
 from multiprocessing import Process, Pool
 import settings.os_getenv as settings
@@ -32,9 +32,9 @@ if __name__ == "__main__":
     p4 = Process(target=talking_bot_run, args=())
 
     p1.start()
+    p4.start()
     p2.start()
     p3.start()
-    p4.start()
 
     # p1.join()
     # p2.join()
