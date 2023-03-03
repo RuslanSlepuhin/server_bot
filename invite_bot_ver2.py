@@ -148,9 +148,7 @@ class InviteBot():
 
         async def connect_with_client(message, id_user):
 
-            # global client, hash_phone
             e=None
-
             self.client = TelegramClient(str(id_user), int(self.api_id), self.api_hash)
 
             await self.client.connect()
@@ -349,10 +347,14 @@ class InviteBot():
                 profession_list = variable.profession_list_for_pushing_by_schedule
                 await self.bot_aiogram.send_message(message.chat.id, f"professions in the list: {profession_list}")
 
-                await hard_pushing_by_schedule(
-                    message=message,
-                    profession_list=profession_list
-                )
+                my_thread = threading.Thread(
+                    target=start_hard_pushing_by_schedule, args=(message, profession_list))
+                my_thread.start()
+
+                # await hard_pushing_by_schedule(
+                #     message=message,
+                #     profession_list=profession_list
+                # )
 
         @self.dp.message_handler(commands=['stop_hard_pushing_by_schedule'])
         async def hard_pushing_by_schedule_commands(message: types.Message):
@@ -5503,9 +5505,16 @@ class InviteBot():
                     id=response_dict['id']
                 )
 
+        def start_hard_pushing_by_schedule(message, profession_list):
+            asyncio.run(hard_pushing_by_schedule(message, profession_list))
+
         async def hard_pushing_by_schedule(message, profession_list):
             table_set = set()
             time_marker = ''
+
+            self.bot_aiogram.send_message(message.chat.id, 'schedule shorts posting has started')
+            print('schedule shorts posting has started')
+
             tables_list = self.db.get_information_about_tables_and_fields()
             for i in tables_list:
                 table_set.add(i[0])
@@ -5571,7 +5580,7 @@ class InviteBot():
                     time_dict['17'] = False
                     time_marker = '12'
 
-                elif current_time >= 17 and current_time < 18 and not time_dict['17']:
+                elif current_time >= 17 and current_time < 19 and not time_dict['17']:
                     print('hard pushing 17 is starting')
                     await push_shorts_attempt_to_make_multi_function(
                         message=message,
@@ -5598,7 +5607,7 @@ class InviteBot():
                 if (current_time >= 0 and current_time < 7) or current_time >= 18 and current_time < 24:
                     print('the long pause')
                     await self.bot_aiogram.send_message(message.chat.id, 'the long pause')
-                    await asyncio.sleep(1*60*60*2)
+                    await asyncio.sleep(1*60*30)
                 else:
                     print('the short pause')
                     await self.bot_aiogram.send_message(message.chat.id, 'the short pause')
