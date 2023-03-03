@@ -204,6 +204,7 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '/add_statistics\n\n' \
             '---------------------------------------------------\n\n' \
             '---------------- PUSHING BY SCHEDULE: ----------------\n' \
-            '/hard_pushing_by_schedule - run pushing by schedule' \
-            '---------------------------------------------------\n\n' \
+            '/hard_pushing_by_schedule - run pushing by schedule\n' \
+            '/pick_up_forcibly_from_admin - if vacancies has been sent to the admin channel already and code has stopped\n' \
+          '---------------------------------------------------\n\n' \
             '❗️- it is admin options'

@@ -249,6 +249,9 @@ class InviteBot():
         class Form_profession_name(StatesGroup):
             profession = State()
 
+        class Form_pick_up_forcibly_from_admin(StatesGroup):
+            profession = State()
+
         @self.dp.message_handler(commands=['start'])
         async def send_welcome(message: types.Message):
 
@@ -272,14 +275,32 @@ class InviteBot():
 
         @self.dp.message_handler(commands=['help'])
         async def get_logs(message: types.Message):
-            text_list = []
-            if len(variable.help_text) > 4096:
+            if len(variable.help_text) >4096:
                 separator = "\n\n"
                 text_list = await helper.cut_message_for_parts(text=variable.help_text, separator=separator)
             else:
                 text_list = [variable.help_text]
             for text in text_list:
                 await self.bot_aiogram.send_message(message.chat.id, text)
+
+        @self.dp.message_handler(commands=['pick_up_forcibly_from_admin'])
+        async def pick_up_forcibly_from_admin_command(message: types.Message):
+            await Form_pick_up_forcibly_from_admin.profession.set()
+            await self.bot_aiogram.send_message(message.chat.id, 'type the profession')
+
+        @self.dp.message_handler(state=Form_pick_up_forcibly_from_admin.profession)
+        async def pick_up_forcibly_from_admin_command_form(message: types.Message, state: FSMContext):
+            async with state.proxy() as data:
+                data['profession'] = message.text
+                profession = message.text
+            await state.finish()
+            await push_shorts_attempt_to_make_multi_function(
+                message=message,
+                callback_data='each',
+                hard_push_profession=profession,
+                only_pick_up_from_admin=True
+            )
+
 
         @self.dp.message_handler(commands=['check_vacancies_for_relevance'])
         async def check_vacancies_for_relevance_command(message: types.Message):
@@ -4311,7 +4332,8 @@ class InviteBot():
                 callback_data,
                 hard_pushing=False,
                 hard_push_profession=None,
-                channel_for_pushing=False
+                channel_for_pushing=False,
+                only_pick_up_from_admin=False
         ):
             """
             function push shorts in 3 cases:
@@ -4319,6 +4341,7 @@ class InviteBot():
                 2. compose shorts without admin for one profession
                 3. compose shorts
             """
+            response_temp_dict = {}
             sp = ShowProgress(
                 bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
             )
@@ -4402,14 +4425,15 @@ class InviteBot():
                                 without_sort=True,
                                 field=variable.fields_admin_temporary
                             )
-                            response = response[0]
-                            response_temp_dict = await helper.to_dict_from_temporary_response(response,
-                                                                                              variable.fields_admin_temporary)
-                            helper.add_to_report_file(
-                                path=variable.path_push_shorts_report_file,
-                                write_mode='a',
-                                text=f"Temporary data: {response_temp_dict}\n"
-                            )
+                            if response:
+                                response = response[0]
+                                response_temp_dict = await helper.to_dict_from_temporary_response(response,
+                                                                                                  variable.fields_admin_temporary)
+                                helper.add_to_report_file(
+                                    path=variable.path_push_shorts_report_file,
+                                    write_mode='a',
+                                    text=f"Temporary data: {response_temp_dict}\n"
+                                )
 
                             if response:
                                 # id_admin_last_session_table = int(response[0][2])
@@ -5579,7 +5603,6 @@ class InviteBot():
                     print('the short pause')
                     await self.bot_aiogram.send_message(message.chat.id, 'the short pause')
                     await asyncio.sleep(1*60*10)
-
 
             return print('Shedule pushing has been stopped')
 
