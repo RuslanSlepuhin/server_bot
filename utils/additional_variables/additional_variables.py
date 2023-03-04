@@ -189,7 +189,7 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '/restore_from_admin - restory the lost vacancies\n' \
             '/invite_people - start to invite followers\n' \
             '/get_news - start to invite followers\n' \
-            '🖐️/stop - stop proccess\n' \
+            '🖐️/stop - stop process\n' \
             '➡️/refresh_and_save_changes - One click for the correct refresh. Includes:\n' \
             '✅/refresh - to get the professions in excel format in all vacancies throgh the new filters logic (without rewriting)\n' \
             '✅/check_doubles - remove the vacancy"s doubles\n' \
