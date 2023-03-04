@@ -416,12 +416,13 @@ async def cut_message_for_parts(text, separator):
     if len(text)> 4096:
         text_list = text.split(separator)
         for text_part in text_list:
-            if len(f"{one_text_part}{separator}{text_part}") < 4096:
-                one_text_part += text_part
+            if len(f"{one_text_part}{text_part}{separator}") < 4096:
+                one_text_part += f'{text_part}{separator}'
             else:
                 result_list.append(one_text_part)
                 one_text_part = text_part
     else:
         return [text]
     return result_list
+
 

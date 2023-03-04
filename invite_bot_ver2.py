@@ -5432,6 +5432,7 @@ class InviteBot():
             table_list.extend(variable.valid_professions)
             table_list.append(variable.admin_database)
             table_list.append(variable.archive_database)
+            table_list.append(variable.admin_copy)
 
             self.db.add_columns_to_tables(
                 table_list=table_list,
@@ -5658,7 +5659,6 @@ class InviteBot():
             )
             message_for_send += f"processed {count} vacancies\n------\nActual:\nadmin: {len(no_sort_messages)}\narchive: {len(no_sort_archive)}"
             await self.bot_aiogram.send_message(message.chat.id, message_for_send)
-
 
         async def check_vacancies_for_relevance(message):
             not_relevance = 0
