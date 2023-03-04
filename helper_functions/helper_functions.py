@@ -421,6 +421,7 @@ async def cut_message_for_parts(text, separator):
             else:
                 result_list.append(one_text_part)
                 one_text_part = text_part
+        result_list.append(one_text_part)
     else:
         return [text]
     return result_list

@@ -195,7 +195,7 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '✅/check_doubles - remove the vacancy"s doubles\n' \
             '✅/remove_completed_professions - remove complete professions\n' \
             '---------------------------------------------------\n\n' \
-             '---------------- STATISTICS: ----------------\n' \
+            '---------------- STATISTICS: ----------------\n' \
             '/how_many_vacancies_published - get the statistic file (created by Anna)\n' \
             '/how_many_vacancies_total - new report (created by Anna)\n' \
             '/vacancies_from - how many juniors have been written today and tomorrow\n' \
