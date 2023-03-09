@@ -4344,6 +4344,7 @@ class InviteBot():
                 2. compose shorts without admin for one profession
                 3. compose shorts
             """
+            vacancy = None
             response_temp_dict = {}
             sp = ShowProgress(
                 bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
@@ -4447,104 +4448,109 @@ class InviteBot():
                                     without_sort=True,
                                     field=variable.admin_table_fields
                                 )
-                                vacancy_from_admin = vacancy_from_admin[0]
-                                vacancy_from_admin_dict = await helper.to_dict_from_admin_response(vacancy_from_admin,
+                                if vacancy_from_admin:
+                                    vacancy_from_admin = vacancy_from_admin[0]
+                                    vacancy_from_admin_dict = await helper.to_dict_from_admin_response(vacancy_from_admin,
                                                                                                    variable.admin_table_fields)
+                                else:
+                                    vacancy_from_admin_dict = {}
+                                    await self.bot_aiogram.send_message(message.chat.id,
+                                                                        'There is not response from admin temporary table')
                             else:
                                 await self.bot_aiogram.send_message(message.chat.id,
                                                                     'There is not response from admin temporary table')
                         else:
                             vacancy_from_admin_dict = vacancy
 
+                        if vacancy_from_admin_dict:
 
-
-                        helper.add_to_report_file(
-                            path=variable.path_push_shorts_report_file,
-                            write_mode='a',
-                            text=f"DB ID vacancy: {vacancy_from_admin_dict['id']}\nTITLE: {vacancy_from_admin_dict['title']}\nSUB: {vacancy_from_admin_dict['sub']}\n"
-                        )
-
-                        # if vacancy has sent in agregator already, it doesn't push again. And remove profess from profs or drop vacancy if there is profession alone
-                        vacancy_message = {}
-                        if type(vacancy) is dict and 'message' in vacancy:
-                            vacancy_message['message'] = vacancy['message']
-                        else:
-                            vacancy_message['message'] = f"{vacancy['title']}\n\n{vacancy['body']}"
-
-
-                        pass
-                        await push_vacancies_to_agregator_from_admin(
-                            message=message,
-                            vacancy_message=vacancy_message,
-                            # prof_stack=vacancy_from_admin_dict['profession'],
-                            # response_temp_dict=response_temp_dict,
-                            vacancy_from_admin_dict=vacancy_from_admin_dict,
-                            links_on_prof_channels=True,
-                            # id_admin_last_session_table=response_temp_dict['id_admin_last_session_table']
-                        )
-
-                        if "full" in callback_data:
-                            # ---------- the unique operation block for fulls = pushing to prof channel full message ----------
-                            print('push vacancy in channel\n')
-                            print(f"\n{vacancy['message'][0:40]}")
-                            await self.bot_aiogram.send_message(int(config['My_channels'][f'{profession}_channel']),
-                                                                vacancy['message'])
-                            await asyncio.sleep(random.randrange(3, 4))
-                        # ------------------- end of  pushing to prof channel full message -----------------
-
-                        elif "shorts" in callback_data:
-                            # I need to get the newest vacancy
-                            vacancy_from_admin = DataBaseOperations(None).get_all_from_db(
-                                table_name=variable.admin_database,
-                                # param=f"WHERE id={response_temp_dict['id_admin_last_session_table']}",
-                                param=f"WHERE id={vacancy_from_admin_dict['id']}",
-                                without_sort=True,
-                                field=variable.admin_table_fields
+                            helper.add_to_report_file(
+                                path=variable.path_push_shorts_report_file,
+                                write_mode='a',
+                                text=f"DB ID vacancy: {vacancy_from_admin_dict['id']}\nTITLE: {vacancy_from_admin_dict['title']}\nSUB: {vacancy_from_admin_dict['sub']}\n"
                             )
-                            # transfer response to dict
-                            vacancy_from_admin_dict = await helper.to_dict_from_admin_response(
-                                response=vacancy_from_admin[0],
-                                fields=variable.admin_table_fields
-                            )
-                            # collect to self.message_for_send_dict by subs
-                            composed_message_dict = await compose_message(
-                                one_profession=profession,
-                                vacancy_from_admin_dict=vacancy_from_admin_dict
-                            )
-                            await compose_message_for_send_dict(
-                                composed_message_dict,
-                                profession
-                            )
-                            # push to profession tables
-                            await compose_data_and_push_to_db(
+
+                            # if vacancy has sent in agregator already, it doesn't push again. And remove profess from profs or drop vacancy if there is profession alone
+                            vacancy_message = {}
+                            if type(vacancy) is dict and 'message' in vacancy:
+                                vacancy_message['message'] = vacancy['message']
+                            else:
+                                vacancy_message['message'] = f"{vacancy['title']}\n\n{vacancy['body']}"
+
+
+                            pass
+                            await push_vacancies_to_agregator_from_admin(
+                                message=message,
+                                vacancy_message=vacancy_message,
+                                # prof_stack=vacancy_from_admin_dict['profession'],
+                                # response_temp_dict=response_temp_dict,
                                 vacancy_from_admin_dict=vacancy_from_admin_dict,
-                                profession=profession,
-                                shorts_session_name=short_session_name
+                                links_on_prof_channels=True,
+                                # id_admin_last_session_table=response_temp_dict['id_admin_last_session_table']
                             )
-                            prof_list = vacancy_from_admin_dict['profession'].split(', ')
-                            profession_list['profession'] = [profession, ]
 
-                            # update vacancy by profession field
-                            await update_vacancy_admin_last_session(
-                                results_dict=None,
-                                profession=profession,
-                                prof_list=prof_list,
-                                # id_admin_last_session_table=response_temp_dict['id_admin_last_session_table'],
-                                id_admin_last_session_table=vacancy_from_admin_dict['id'],
-                                update_profession=True,
-                                update_id_agregator=False,
-                                shorts_session_name=short_session_name,
+                            if "full" in callback_data:
+                                # ---------- the unique operation block for fulls = pushing to prof channel full message ----------
+                                print('push vacancy in channel\n')
+                                print(f"\n{vacancy['message'][0:40]}")
+                                await self.bot_aiogram.send_message(int(config['My_channels'][f'{profession}_channel']),
+                                                                    vacancy['message'])
+                                await asyncio.sleep(random.randrange(3, 4))
+                            # ------------------- end of  pushing to prof channel full message -----------------
+
+                            elif "shorts" in callback_data:
+                                # I need to get the newest vacancy
+                                vacancy_from_admin = DataBaseOperations(None).get_all_from_db(
+                                    table_name=variable.admin_database,
+                                    # param=f"WHERE id={response_temp_dict['id_admin_last_session_table']}",
+                                    param=f"WHERE id={vacancy_from_admin_dict['id']}",
+                                    without_sort=True,
+                                    field=variable.admin_table_fields
+                                )
+                                # transfer response to dict
+                                vacancy_from_admin_dict = await helper.to_dict_from_admin_response(
+                                    response=vacancy_from_admin[0],
+                                    fields=variable.admin_table_fields
+                                )
+                                # collect to self.message_for_send_dict by subs
+                                composed_message_dict = await compose_message(
+                                    one_profession=profession,
+                                    vacancy_from_admin_dict=vacancy_from_admin_dict
+                                )
+                                await compose_message_for_send_dict(
+                                    composed_message_dict,
+                                    profession
+                                )
+                                # push to profession tables
+                                await compose_data_and_push_to_db(
+                                    vacancy_from_admin_dict=vacancy_from_admin_dict,
+                                    profession=profession,
+                                    shorts_session_name=short_session_name
+                                )
+                                prof_list = vacancy_from_admin_dict['profession'].split(', ')
+                                profession_list['profession'] = [profession, ]
+
+                                # update vacancy by profession field
+                                await update_vacancy_admin_last_session(
+                                    results_dict=None,
+                                    profession=profession,
+                                    prof_list=prof_list,
+                                    # id_admin_last_session_table=response_temp_dict['id_admin_last_session_table'],
+                                    id_admin_last_session_table=vacancy_from_admin_dict['id'],
+                                    update_profession=True,
+                                    update_id_agregator=False,
+                                    shorts_session_name=short_session_name,
+                                )
+                            if not hard_pushing:
+                                await delete_used_vacancy_from_admin_temporary(vacancy,
+                                                                            vacancy_from_admin_dict['id'])
+                            n += 1
+                            await sp.show_the_progress(
+                                message=self.message,
+                                current_number=n,
+                                end_number=length
                             )
-                        if not hard_pushing:
-                            await delete_used_vacancy_from_admin_temporary(vacancy,
-                                                                        vacancy_from_admin_dict['id'])
-                        n += 1
-                        await sp.show_the_progress(
-                            message=self.message,
-                            current_number=n,
-                            end_number=length
-                        )
-                        # await show_progress(message, n, length)
+                            # await show_progress(message, n, length)
 
                     if "shorts" in callback_data:
                         if channel_for_pushing:
