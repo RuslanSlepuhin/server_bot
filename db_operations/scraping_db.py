@@ -281,14 +281,16 @@ class DataBaseOperations:
             query = f"""SELECT {field} FROM {table_name} {param} {order}"""
         else:
             query = f"""SELECT {field} FROM {table_name} {param} """
-
-        with self.con:
-            try:
-                cur.execute(query)
-                response = cur.fetchall()
-            except Exception as e:
-                print(e)
-                return str(e)
+        try:
+            with self.con:
+                try:
+                    cur.execute(query)
+                    response = cur.fetchall()
+                except Exception as e:
+                    print(e)
+                    return str(e)
+        except Exception as e:
+            print(e)
         if curs:
             return cur
         return response
@@ -1409,29 +1411,26 @@ class DataBaseOperations:
 
             if not cur.fetchall():
                 query = f"""INSERT INTO {table_name} (chat_name, created_at, {sub}, {all}) VALUES ('{chat_name}','{created_at}','1', '1')"""
-                with self.con:
-                    try:
-                        cur.execute(query)
-                        print("Vacancy was added to subs_stats")
-                    except Exception as e:
-                        print('error', e)
+                try:
+                    cur.execute(query)
+                    print("Vacancy was added to subs_stats")
+                except Exception as e:
+                    print('error', e)
 
             else:
                 query = f"""UPDATE {table_name} SET {sub} = {sub}+1, {all} = {all}+1 WHERE chat_name = '{chat_name}' AND created_at = '{created_at}'"""
-                with self.con:
-                    try:
-                        cur.execute(query)
-                        print(f"Vacancy was added to subs_stats")
-                    except Exception as e:
-                        print('error', e)
+                try:
+                    cur.execute(query)
+                    print(f"Vacancy was added to subs_stats")
+                except Exception as e:
+                    print('error', e)
 
         query = f"""UPDATE {table_name} SET {unique}={unique}+1 WHERE chat_name = '{chat_name}' AND created_at = '{created_at}'"""
-        with self.con:
-            try:
-                cur.execute(query)
-                print("Vacancy was added to subs_stats")
-            except Exception as e:
-                print('error', e)
+        try:
+            cur.execute(query)
+            print("Vacancy was added to subs_stats")
+        except Exception as e:
+            print('error', e)
 
         return dict
 

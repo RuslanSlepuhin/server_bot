@@ -30,7 +30,7 @@ tables_for_search_vacancy_existing = [admin_database, 'archive']
 # all_tables_for_vacancy_search = ['designer', 'game', 'product', 'mobile', 'pm', 'sales_manager', 'analyst', 'frontend',
 #                      'marketing', 'devops', 'hr', 'backend', 'qa', 'junior', admin_database, archive_database]
 
-profession_list_for_pushing_by_schedule = ['designer', 'pm', 'qa', 'devops', 'mobile', 'game', 'frontend', 'backend', 'marketing']
+profession_list_for_pushing_by_schedule = ['pm', 'qa', 'devops', 'mobile', 'game', 'frontend', 'backend', 'marketing']
 all_tables_for_vacancy_search = []
 all_tables_for_vacancy_search.extend([admin_database, archive_database])
 all_tables_for_vacancy_search.extend(valid_professions)
@@ -40,6 +40,7 @@ not_lower_professions = ['pm', 'game', 'designer', 'hr', 'analyst', 'qa', 'ba' '
 white_admin_list = [1763672666, 556128576, 758905227, 945718420, 5755261667, 5884559465]
 
 id_owner = 1763672666
+id_developer = 5884559465
 
 #admin database name
 channel_id_for_shorts = -1001671844820
@@ -189,7 +190,7 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '/restore_from_admin - restory the lost vacancies\n' \
             '/invite_people - start to invite followers\n' \
             '/get_news - start to invite followers\n' \
-            '🖐️/stop - stop process\n' \
+            '🖐️/stop - stop proccess\n' \
             '➡️/refresh_and_save_changes - One click for the correct refresh. Includes:\n' \
             '✅/refresh - to get the professions in excel format in all vacancies throgh the new filters logic (without rewriting)\n' \
             '✅/check_doubles - remove the vacancy"s doubles\n' \

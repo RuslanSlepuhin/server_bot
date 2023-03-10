@@ -76,7 +76,10 @@ class AngelGetInformation:
 
     async def get_info(self, link):
 
-        self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
+        self.browser = webdriver.Chrome(
+            executable_path=chrome_driver_path,
+            options=options
+        )
 
 
 

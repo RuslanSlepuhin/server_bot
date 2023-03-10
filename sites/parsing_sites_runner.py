@@ -1,6 +1,7 @@
 
 import configparser
 from logs.logs import Logs
+from sites.scraping_designer import DesignerGetInformation
 from sites.scraping_dev import DevGetInformation
 from sites.scraping_geekjob import GeekGetInformation
 from sites.scraping_habr import HabrGetInformation
@@ -43,6 +44,7 @@ class ParseSites:
         await HabrGetInformation(bot_dict).get_content()
         await FinderGetInformation(bot_dict).get_content()
         await GeekGetInformation(bot_dict).get_content()
+        await DesignerGetInformation(bot_dict).get_content()
         # await SvyaziGetInformation(bot_dict).get_content()
         await HHGetInformation(bot_dict).get_content()
         await HHKzGetInformation(bot_dict).get_content()
