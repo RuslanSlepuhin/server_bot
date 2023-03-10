@@ -141,7 +141,7 @@ async def main_endpoints():
         #     request=request
         # )
         query = Predictive().get_full_query(request_from_frontend=request.json)
-        responses_from_db = db.get_all_from_db(
+        responses_from_db = await db.get_all_from_db_async(
             table_name=admin_database,
             param=query,
             field=admin_table_fields
