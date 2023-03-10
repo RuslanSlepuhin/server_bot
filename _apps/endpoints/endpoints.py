@@ -147,7 +147,7 @@ async def main_endpoints():
             param=query,
             field=admin_table_fields
         )
-        responses_dict = await package_list_to_dict_sync(responses_from_db)
+        responses_dict = await package_list_to_dict(responses_from_db)
         responses_dict = {'numbers': len(responses_dict), 'vacancies': responses_dict}
         return responses_dict
 
