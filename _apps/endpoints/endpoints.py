@@ -146,7 +146,7 @@ async def main_endpoints():
             param=query,
             field=admin_table_fields
         )
-        responses_dict = await package_list_to_dict(responses_from_db)
+        responses_dict = package_list_to_dict_sync(responses_from_db)
         responses_dict = {'numbers': len(responses_dict), 'vacancies': responses_dict}
         return responses_dict
 
@@ -473,6 +473,16 @@ async def main_endpoints():
         return result_dict
 
     async def package_list_to_dict(responses_list):
+        result_dict = {}
+        if responses_list:
+            count = 0
+            for response in responses_list:
+                result_dict[str(count)] = helper.to_dict_from_admin_response_sync(response,
+                                                                                               variable.admin_table_fields)
+                count += 1
+        return result_dict
+
+    def package_list_to_dict_sync(responses_list):
         result_dict = {}
         if responses_list:
             count = 0
