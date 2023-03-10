@@ -226,6 +226,7 @@ class DataBaseOperations:
                 try:
                     cur.execute(new_post)
                     print(self.quant, f'+++++++++++++ The vacancy has been added to DB {pro}\n')
+
                     try:
                         self.push_vacancy_to_main_stats(dict=results_dict)
                         print(f'+++++++++++++ Added to statistics\n')
@@ -525,7 +526,17 @@ class DataBaseOperations:
                     print(f'Added {column_name_type} to {table_name}')
                 except Exception as e:
                     print(e)
+    def add_columns_to_stat(self, cur, table_name, column_name_type=None):
 
+        if not table_name:
+            table_name = 'stat_db'
+
+        query = f"""ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS {column_name_type}"""
+        try:
+            cur.execute(query)
+            print(f'Added {column_name_type} to {table_name}')
+        except Exception as e:
+            print(e)
     def output_tables(self):
 
         logs.write_log(f"scraping_db: function: output_tables")
@@ -1391,7 +1402,6 @@ class DataBaseOperations:
     def push_vacancy_to_main_stats(self, dict, table_name=None):
         if not self.con:
             self.connect_db()
-
         if not table_name:
             table_name='stats_db'
         created_at = dict['created_at']
@@ -1403,14 +1413,17 @@ class DataBaseOperations:
 
         cur = self.con.cursor()
         for sub in subs_list:
-            self.add_columns_to_tables(table_list=[table_name], column_name_type = f'{sub} INT DEFAULT 0')
-            self.add_columns_to_tables(table_list=[table_name], column_name_type = f'{all} INT DEFAULT 0')
-            self.add_columns_to_tables(table_list=[table_name], column_name_type = f'{unique} INT DEFAULT 0')
+            self.add_columns_to_stat(cur,table_name, column_name_type = f'{sub} INT DEFAULT 0')
+            self.add_columns_to_stat(cur,table_name, column_name_type = f'{all} INT DEFAULT 0')
+            self.add_columns_to_stat(cur,table_name, column_name_type = f'{unique} INT DEFAULT 0')
             query = f"""SELECT * FROM {table_name} WHERE created_at='{created_at}' AND chat_name='{chat_name}'"""
+
+            cur = self.con.cursor()
             cur.execute(query)
 
             if not cur.fetchall():
                 query = f"""INSERT INTO {table_name} (chat_name, created_at, {sub}, {all}) VALUES ('{chat_name}','{created_at}','1', '1')"""
+
                 try:
                     cur.execute(query)
                     print("Vacancy was added to subs_stats")
@@ -1419,6 +1432,7 @@ class DataBaseOperations:
 
             else:
                 query = f"""UPDATE {table_name} SET {sub} = {sub}+1, {all} = {all}+1 WHERE chat_name = '{chat_name}' AND created_at = '{created_at}'"""
+
                 try:
                     cur.execute(query)
                     print(f"Vacancy was added to subs_stats")
@@ -1426,6 +1440,7 @@ class DataBaseOperations:
                     print('error', e)
 
         query = f"""UPDATE {table_name} SET {unique}={unique}+1 WHERE chat_name = '{chat_name}' AND created_at = '{created_at}'"""
+
         try:
             cur.execute(query)
             print("Vacancy was added to subs_stats")
