@@ -140,7 +140,6 @@ async def main_endpoints():
         # responses_dict = await search_by_text_func(
         #     request=request
         # )
-        print('request: ', request.json)
         query = Predictive().get_full_query(request_from_frontend=request.json)
         responses_from_db = await db.get_all_from_db_async(
             table_name=admin_database,
@@ -456,7 +455,7 @@ async def main_endpoints():
         # get 3 trainee vacancies
         responses = db.get_all_from_db(
             table_name=variable.admin_database,
-            param="WHERE level LIKE '%trainee%' ORDER BY id DESC LIMIT 3",
+            param="WHERE level LIKE '%trainee%' ORDER BY id DESC LIMIT 4",
             field=variable.admin_table_fields,
             without_sort=True
         )
@@ -465,7 +464,7 @@ async def main_endpoints():
         # get 3 common vacancies
         responses = db.get_all_from_db(
             table_name=variable.admin_database,
-            param="WHERE level NOT LIKE '%trainee%' ORDER BY id DESC LIMIT 3",
+            param="WHERE level NOT LIKE '%trainee%' ORDER BY id DESC LIMIT 4",
             field=variable.admin_table_fields,
             without_sort=True
         )
@@ -482,7 +481,6 @@ async def main_endpoints():
                                                                                                variable.admin_table_fields)
                 count += 1
         return result_dict
-
 
     app.run(host=localhost, port=int(os.environ.get('PORT', 5000)))
 
