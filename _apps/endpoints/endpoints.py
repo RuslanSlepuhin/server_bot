@@ -136,12 +136,12 @@ async def main_endpoints():
         return all_vacancies
 
     @app.route("/search-by-text", methods = ['POST'])
-    async def search_by_text():
+    def search_by_text():
         # responses_dict = await search_by_text_func(
         #     request=request
         # )
         query = Predictive().get_full_query(request_from_frontend=request.json)
-        responses_from_db = await db.get_all_from_db_async(
+        responses_from_db = db.get_all_from_db(
             table_name=admin_database,
             param=query,
             field=admin_table_fields
