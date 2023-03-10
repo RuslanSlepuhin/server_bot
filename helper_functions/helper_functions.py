@@ -426,4 +426,3 @@ async def cut_message_for_parts(text, separator):
         return [text]
     return result_list
 
-
