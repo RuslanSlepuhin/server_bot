@@ -136,17 +136,18 @@ async def main_endpoints():
         return all_vacancies
 
     @app.route("/search-by-text", methods = ['POST'])
-    def search_by_text():
+    async def search_by_text():
         # responses_dict = await search_by_text_func(
         #     request=request
         # )
+        print('request: ', request.json)
         query = Predictive().get_full_query(request_from_frontend=request.json)
-        responses_from_db = db.get_all_from_db(
+        responses_from_db = await db.get_all_from_db_async(
             table_name=admin_database,
             param=query,
             field=admin_table_fields
         )
-        responses_dict = package_list_to_dict_sync(responses_from_db)
+        responses_dict = await package_list_to_dict_sync(responses_from_db)
         responses_dict = {'numbers': len(responses_dict), 'vacancies': responses_dict}
         return responses_dict
 
@@ -482,15 +483,6 @@ async def main_endpoints():
                 count += 1
         return result_dict
 
-    def package_list_to_dict_sync(responses_list):
-        result_dict = {}
-        if responses_list:
-            count = 0
-            for response in responses_list:
-                result_dict[str(count)] = helper.to_dict_from_admin_response_sync(response,
-                                                                                               variable.admin_table_fields)
-                count += 1
-        return result_dict
 
     app.run(host=localhost, port=int(os.environ.get('PORT', 5000)))
 
