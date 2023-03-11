@@ -502,6 +502,11 @@ class InviteBot():
                 profession = message.text
             await state.finish()
             await get_vacancy_names(message, profession)
+        
+        @self.dp.message_handler(commands=['update_stats'])
+        async def full_update_stats_table(message: types.Message):
+            self.db.check_or_create_stats_table(table_name='stats_db')
+            self.db.add_old_vacancies_to_stat_db()
 
         @self.dp.message_handler(commands=['get_post_request'])
         async def get_post_request_command(message: types.Message):
@@ -6062,10 +6067,10 @@ class InviteBot():
             else:
                 print('no vacancies')
         if "shorts" in callback_data:
-            await shorts_public(message)
+            await self.shorts_public(message)
 
         if not hard_pushing:
-            await delete_and_change_waste_vacancy(message=message,
+            await self.delete_and_change_waste_vacancy(message=message,
                                                   last_id_message_agregator=self.last_id_message_agregator,
                                                   profession=profession)
 

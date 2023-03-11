@@ -1384,7 +1384,7 @@ class DataBaseOperations:
             table_name='stats_db'
         if not profession_list:
             profession_list=['designer', 'game', 'product', 'mobile', 'pm', 'sales_manager', 'analyst', 'frontend', 'marketing', 'devops', 'hr', 'backend', 'qa', 'junior']
-
+        self.delete_table(table_name)
         cur = self.con.cursor()
         with self.con:
             cur.execute(f"""CREATE TABLE IF NOT EXISTS {table_name} (
