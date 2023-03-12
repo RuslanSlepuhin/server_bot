@@ -3526,7 +3526,7 @@ class InviteBot():
                 await self.show_progress(message, n, length)
 
             if "shorts" in callback_data:
-                await self.shorts_public(message)
+                await self.shorts_public(message, profession_channel=hard_push_profession)
 
             await self.delete_and_change_waste_vacancy(message=message,
                                                   last_id_message_agregator=self.last_id_message_agregator,
@@ -5067,7 +5067,7 @@ class InviteBot():
                                 )
                             except:
                                 await self.bot_aiogram.send_message(
-                                    variable.channel_id_for_shorts,
+                                    message.chat.id,
                                     short,
                                     parse_mode='html',
                                     disable_web_page_preview=True
@@ -6024,7 +6024,7 @@ class InviteBot():
                     # await show_progress(message, n, length)
 
                 if "shorts" in callback_data:
-                    if channel_for_pushing:
+                    if hard_push_profession:
                         await self.shorts_public(message, profession_channel=profession)
                     else:
                         await self.shorts_public(message, profession_channel=None)
@@ -6092,11 +6092,11 @@ class InviteBot():
             text=f"------------------------\n"
         )
 
-        await send_file_to_user(
-            message=message,
-            path=variable.path_push_shorts_report_file,
-            send_to_developer=True
-        )
+        # await send_file_to_user(
+        #     message=message,
+        #     path=variable.path_push_shorts_report_file,
+        #     send_to_developer=True
+        # )
 
 
 
