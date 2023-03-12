@@ -5052,8 +5052,7 @@ class InviteBot():
                         await self.write_to_logs_error(f"Results:\n{short}\n")
                         try:
                             await self.bot_aiogram.send_message(
-                                # config['My_channels'][f'{profession_channel}_channel'],
-                                variable.channel_id_for_shorts,
+                                config['My_channels'][f'{profession_channel}_channel'],
                                 short,
                                 parse_mode='html',
                                 disable_web_page_preview=True
