@@ -5112,12 +5112,21 @@ class InviteBot():
                 )
                 await asyncio.sleep(random.randrange(1, 2))
             except:
-                await self.bot_aiogram.send_message(
-                    message.chat.id,
-                    linkedin_message,
-                    parse_mode='html',
-                    disable_web_page_preview=True
-                )
+                try:
+                    await self.bot_aiogram.send_message(
+                        message.chat.id,
+                        linkedin_message,
+                        parse_mode='html',
+                        disable_web_page_preview=True
+                    )
+                except Exception as e:
+                    await self.bot_aiogram.send_message(
+                        message.chat.id,
+                        str(e),
+                        parse_mode='html',
+                        disable_web_page_preview=True
+                    )
+
 
     async def write_to_logs_error(self, text):
         with open("./logs/logs_errors.txt", "a", encoding='utf-8') as file:
