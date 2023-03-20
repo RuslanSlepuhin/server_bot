@@ -4917,15 +4917,15 @@ class InviteBot():
     async def send_file_to_user(self, message, path, caption='Please take it', send_to_developer=False):
         logs.write_log(f"invite_bot_2: function: send_file_to_user")
         with open(path, 'rb') as file:
-            # try:
-            #     await self.bot_aiogram.send_document(message.chat.id, file, caption=caption)
-            #     if send_to_developer and message.chat.id != variable.developer_chat_id:
-            #         try:
-            #             await self.bot_aiogram.send_document(variable.developer_chat_id, file, caption=caption)
-            #         except Exception as e:
-            #             print(e)
-            # except:
-            await self.client.send_file(int(variable.developer_chat_id), file, caption=caption)
+            try:
+                await self.bot_aiogram.send_document(message.chat.id, file, caption=caption)
+                if send_to_developer and message.chat.id != variable.developer_chat_id:
+                    try:
+                        await self.bot_aiogram.send_document(variable.developer_chat_id, file, caption=caption)
+                    except Exception as e:
+                        print(e)
+            except:
+                await self.client.send_file(int(variable.developer_chat_id), file, caption=caption)
 
     async def show_progress(self, message, n, len):
         check = n * 100 // len
@@ -5652,7 +5652,7 @@ class InviteBot():
                     send_message = vacancy_message['message']
                 try:
                     await self.bot_aiogram.send_message(int(config['My_channels']['agregator_channel']), send_message,
-                                                        parse_mode='html', disable_notification=True)
+                                                        parse_mode='html', disable_notification=True, disable_web_page_preview=True)
                     self.last_id_message_agregator += 1
                     await asyncio.sleep(random.randrange(3, 4))
                 except Exception as e:
@@ -5824,6 +5824,7 @@ class InviteBot():
             3. compose shorts
         """
         # chat_id = variable.id_owner if not message else message.chat.id
+        composed_message_dict = {}
         if not self.client.is_connected():
             await self.client.connect()
 
@@ -5944,9 +5945,13 @@ class InviteBot():
                             await self.bot_aiogram.send_message(message.chat.id,
                                                                 'There is not response from admin temporary table')
                     else:
+                        composed_message_dict = await self.compose_message(
+                            vacancy_from_admin_dict=vacancy,
+                            one_profession=profession,
+                            full=True,
+                            message=vacancy,
+                        )
                         vacancy_from_admin_dict = vacancy
-
-
 
                     helper.add_to_report_file(
                         path=variable.path_push_shorts_report_file,
@@ -5959,7 +5964,7 @@ class InviteBot():
                     if type(vacancy) is dict and 'message' in vacancy:
                         vacancy_message['message'] = vacancy['message']
                     else:
-                        vacancy_message['message'] = f"{vacancy['title']}\n\n{vacancy['body']}"
+                        vacancy_message['message'] = composed_message_dict['composed_message']
 
 
                     pass
