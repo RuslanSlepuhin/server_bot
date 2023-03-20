@@ -4917,15 +4917,15 @@ class InviteBot():
     async def send_file_to_user(self, message, path, caption='Please take it', send_to_developer=False):
         logs.write_log(f"invite_bot_2: function: send_file_to_user")
         with open(path, 'rb') as file:
-            try:
-                await self.bot_aiogram.send_document(message.chat.id, file, caption=caption)
-                if send_to_developer and message.chat.id != variable.developer_chat_id:
-                    try:
-                        await self.bot_aiogram.send_document(variable.developer_chat_id, file, caption=caption)
-                    except Exception as e:
-                        print(e)
-            except:
-                await self.client.send_file(int(variable.developer_chat_id), file, caption=caption)
+            # try:
+            #     await self.bot_aiogram.send_document(message.chat.id, file, caption=caption)
+            #     if send_to_developer and message.chat.id != variable.developer_chat_id:
+            #         try:
+            #             await self.bot_aiogram.send_document(variable.developer_chat_id, file, caption=caption)
+            #         except Exception as e:
+            #             print(e)
+            # except:
+            await self.client.send_file(int(variable.developer_chat_id), file, caption=caption)
 
     async def show_progress(self, message, n, len):
         check = n * 100 // len
