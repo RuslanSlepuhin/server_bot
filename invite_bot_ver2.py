@@ -5136,6 +5136,7 @@ class InviteBot():
         return vacancies_list
 
     async def shorts_public(self, message, profession, channel_for_pushing=False, profession_channel=None):
+        chat_id = config['My_channels'][f'{profession_channel}_channel']
         it_has_sent_picture = True
         pre_message = variable.pre_message_for_shorts
         add_pre_message = True
@@ -5164,78 +5165,25 @@ class InviteBot():
                         await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file)
                 except Exception as e:
                     print(e)
+                    # it_has_sent_picture = False
                     chat_id = message.chat.id
                     try:
                         with open(photo_path, 'rb') as file:
                             await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file)
                     except Exception as e:
                         print(e)
-                        it_has_sent_picture = False
+                        # it_has_sent_picture = False
                         await self.bot_aiogram.send_message(message.chat.id, str(e))
 
-                if it_has_sent_picture:
-                    for short in vacancies_list:
-                        await self.bot_aiogram.send_message(
-                            chat_id,
-                            short,
-                            parse_mode='html',
-                            disable_web_page_preview=True
-                        )
-                        await asyncio.sleep(1)
 
-            # for short in vacancies_list:
-            #     if profession_channel:
-            #         try:
-            #             await self.write_to_logs_error(f"Results:\n{short}\n")
-            #             try:
-            #                 photo_path = await helper.get_picture_path(key, profession)
-            #                 await self.bot_aiogram.send_photo(
-            #                     chat_id=config['My_channels'][f'{profession_channel}_channel'],
-            #                     photo=photo_path
-            #                 )
-            #                 await self.bot_aiogram.send_message(
-            #                     config['My_channels'][f'{profession_channel}_channel'],
-            #                     short,
-            #                     parse_mode='html',
-            #                     disable_web_page_preview=True
-            #                 )
-            #             except:
-            #                 try:
-            #                     await self.bot_aiogram.send_message(
-            #                         variable.channel_id_for_shorts,
-            #                         short,
-            #                         parse_mode='html',
-            #                         disable_web_page_preview=True
-            #                     )
-            #                 except:
-            #                     await self.bot_aiogram.send_message(
-            #                         message.chat.id,
-            #                         short,
-            #                         parse_mode='html',
-            #                         disable_web_page_preview=True
-            #                     )
-            #         except Exception as e:
-            #             await self.bot_aiogram.send_message(message.chat.id, str(e))
-            #
-            #     else:
-            #         try:
-            #             await self.write_to_logs_error(f"Results:\n{short}\n")
-            #             try:
-            #                 await self.bot_aiogram.send_message(
-            #                     variable.channel_id_for_shorts,
-            #                     short,
-            #                     parse_mode='html',
-            #                     disable_web_page_preview=True
-            #                 )
-            #             except:
-            #                 await self.bot_aiogram.send_message(
-            #                     message.chat.id,
-            #                     short,
-            #                     parse_mode='html',
-            #                     disable_web_page_preview=True
-            #                 )
-            #         except Exception as e:
-            #             await self.bot_aiogram.send_message(message.chat.id, str(e))
+            for short in vacancies_list:
+                await self.bot_aiogram.send_message(
+                    chat_id,
+                    short,
+                    parse_mode='html',
+                    disable_web_page_preview=True
+                )
+                await asyncio.sleep(1)
 
             try:
                 shorts_id=None
@@ -5840,11 +5788,14 @@ class InviteBot():
             await self.client.connect()
         # print('client_id', await self.client.get_peer_id(channel))
         print('code is in get entity')
-        peer = await self.client.get_entity(int(channel))
-        channel = PeerChannel(peer.id)
-        await asyncio.sleep(2)
+        try:
+            peer = await self.client.get_entity(int(channel))
+            channel = PeerChannel(peer.id)
+            await asyncio.sleep(2)
+        except:
+            channel = int(channel)
         # channel = PeerChannel(int(config['My_channels']['admin_channel']))
-        channel = PeerChannel(peer.id)
+        # channel = PeerChannel(peer.id)
         if not limit_msg:
             limit_msg = 3000
         logs.write_log(f"scraping_telethon2: function: dump_all_messages")
@@ -5899,50 +5850,6 @@ class InviteBot():
             if (total_count_limit != 0 and total_messages >= total_count_limit) or not len(all_messages):
                 break
             await asyncio.sleep(2)
-
-        # logs.write_log(f"scraping_telethon2: function: get_admin_history_messages")
-        #
-        # print('get_admin_history_messages')
-        # offset_msg = 0  # номер записи, с которой начинается считывание
-        # # limit_msg = 1   # максимальное число записей, передаваемых за один раз
-        # # limit_msg = 100
-        # all_messages = []  # список всех сообщений
-        # total_messages = 0
-        # total_count_limit = limit_msg  # значение 0 = все сообщения
-        # history = None
-        #
-        # peer = await client.get_entity(int(channel))
-        # await asyncio.sleep(2)
-        # channel = PeerChannel(peer.id)
-        #
-        # # channel = int(config['My_channels']['admin_channel'])
-        # # while True:
-        # try:
-        #     history = await client(GetHistoryRequest(
-        #         peer=channel,
-        #         offset_id=offset_msg,
-        #         offset_date=None, add_offset=0,
-        #         limit=limit_msg, max_id=0, min_id=0,
-        #         hash=0))
-        # except Exception as telethon:
-        #     await bot_aiogram.send_message(
-        #         message.chat.id,
-        #         f"Getting history:\n{str(telethon)}: {channel}\npause 25-30 seconds...",
-        #         parse_mode="HTML",
-        #         disable_web_page_preview=True)
-        #     time.sleep(2)
-        #
-        # # if not history.messages:
-        # if not history:
-        #     print(f'Not history for channel {channel}')
-        #     await bot_aiogram.send_message(message.chat.id, f'Not history for channel {channel}')
-        #     # break
-        # messages = history.messages
-        # for message in messages:
-        #     if not message.message:  # если сообщение пустое, например "Александр теперь в группе"
-        #         pass
-        #     else:
-        #         all_messages.append(message.to_dict())
 
         return all_messages
 
@@ -6227,37 +6134,6 @@ class InviteBot():
             else:
                 print('no vacancies')
                 await self.bot_aiogram.send_message(message.chat.id, 'No vacancies')
-        # if "shorts" in callback_data:
-        #     await self.shorts_public(message)
-        #
-        # if not hard_pushing:
-        #     await self.delete_and_change_waste_vacancy(message=message,
-        #                                           last_id_message_agregator=self.last_id_message_agregator,
-        #                                           profession=profession)
-        #
-        #     DataBaseOperations(None).delete_table(
-        #         table_name='admin_temporary'
-        #     )
-        # await self.bot_aiogram.send_message(
-        #     message.chat.id,
-        #     f'<b>Done!</b>\n'
-        #     f'- in to statistics: {self.quantity_in_statistics}\n'
-        #     f'- in to admin {self.quantity_entered_to_admin_channel}\n'
-        #     f'- out from admin {self.out_from_admin_channel}\n'
-        #     f'- in to shorts {self.quantity_entered_to_shorts}',
-        #     parse_mode='html'
-        # )
-        # helper.add_to_report_file(
-        #     path=variable.path_push_shorts_report_file,
-        #     write_mode='a',
-        #     text=f"------------------------\n"
-        # )
-        #
-        # # await send_file_to_user(
-        # #     message=message,
-        # #     path=variable.path_push_shorts_report_file,
-        # #     send_to_developer=True
-        # # )
 
     async def hard_pushing_by_schedule(self, message, profession_list):
         table_set = set()
