@@ -102,6 +102,8 @@ path_push_shorts_report_file = "./excel/report_push_shorts.txt"
 tables_list_for_report = ['junior', '*']
 developer_chat_id = 5884559465
 
+pictures_separators_path = "./utils/pictures/shorts_separators"
+
 post_request_for_example = {
     'profession': '',
     'specialization':
@@ -190,7 +192,7 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '/restore_from_admin - restory the lost vacancies\n' \
             '/invite_people - start to invite followers\n' \
             '/get_news - start to invite followers\n' \
-            '🖐️/stop - stop proccess\n' \
+            '🖐️/stop - stop process\n' \
             '➡️/refresh_and_save_changes - One click for the correct refresh. Includes:\n' \
             '✅/refresh - to get the professions in excel format in all vacancies throgh the new filters logic (without rewriting)\n' \
             '✅/check_doubles - remove the vacancy"s doubles\n' \
@@ -206,6 +208,7 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '---------------------------------------------------\n\n' \
             '---------------- PUSHING BY SCHEDULE: ----------------\n' \
             '/hard_pushing_by_schedule - run pushing by schedule\n' \
+            '/hard_push_by_web - run pushing by schedule through web point\n' \
             '/pick_up_forcibly_from_admin - if vacancies has been sent to the admin channel already and code has stopped\n' \
           '---------------------------------------------------\n\n' \
             '❗️- it is admin options'

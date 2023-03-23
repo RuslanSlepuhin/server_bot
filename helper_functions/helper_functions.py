@@ -1,4 +1,5 @@
 import asyncio
+import os
 import re
 import time
 from datetime import datetime
@@ -8,7 +9,7 @@ from asgiref.sync import async_to_sync
 from filters.filter_jan_2023.filter_jan_2023 import VacancyFilter
 from patterns._export_pattern import export_pattern
 from patterns.pseudo_pattern.pseudo_export_pattern import export_pattern as pseudo_export_pattern
-from utils.additional_variables.additional_variables import flood_control_logs_path, admin_table_fields
+from utils.additional_variables.additional_variables import flood_control_logs_path, admin_table_fields, pictures_separators_path
 
 def compose_to_str_from_list(data_list):
     sub_str = ''
@@ -130,7 +131,7 @@ async def transformTitleBodyBeforeDb(text=None, title=None, body=None):
 def get_additional_values_fields(dict_in):
 
     results_dict = {}
-
+    hybrid_shorts = {}
     for key in dict_in:
         results_dict[key] = dict_in[key]
 
@@ -185,6 +186,51 @@ def get_additional_values_fields(dict_in):
         if len(job_type_shorts) > 0:
             job_type_shorts += ", "
         job_type_shorts += full_time_shorts
+
+    office_shorts = get_field_for_shorts_sync(
+        presearch_results=[
+            results_dict['job_type'], results_dict['body'],
+        ],
+        pattern=export_pattern['others']['office']['ma'],
+        return_value='office',
+    )
+    office_shorts = office_shorts['return_value']
+
+    if office_shorts:
+        if len(job_type_shorts) > 0:
+            job_type_shorts += ", "
+        job_type_shorts += office_shorts
+
+    flexible_shorts = get_field_for_shorts_sync(
+        presearch_results=[
+            results_dict['job_type'], results_dict['body'],
+        ],
+        pattern=export_pattern['others']['flexible']['ma'],
+        return_value='flexible',
+    )
+    flexible_shorts = flexible_shorts['return_value']
+
+    if flexible_shorts:
+        if len(job_type_shorts) > 0:
+            job_type_shorts += ", "
+        job_type_shorts += flexible_shorts
+
+    # hybrid_shorts = get_field_for_shorts_sync(
+    #     presearch_results=[
+    #         results_dict['job_type'], results_dict['body'],
+    #     ],
+    #     pattern=export_pattern['others']['hybrid']['ma'],
+    #     return_value='office/remote',
+    # )
+    if hybrid_shorts:
+        hybrid_shorts = hybrid_shorts['return_value']
+
+
+    if hybrid_shorts:
+        if len(job_type_shorts) > 0:
+            job_type_shorts += ", "
+        job_type_shorts += hybrid_shorts
+
     if job_type_shorts:
         results_dict['job_type'] = job_type_shorts
 
@@ -257,6 +303,81 @@ def get_additional_values_fields(dict_in):
         results_dict['city'] = city_shorts
 
     return results_dict
+def update_job_types(dict):
+    # function for one-time update, can be deleted later
+
+    job_type_new = ''
+    remote = get_field_for_shorts_sync(
+        presearch_results=[
+            dict['job_type'],
+            dict['title'] + dict['body'],
+        ],
+        pattern=export_pattern['others']['remote']['ma'],
+        return_value='remote',
+    )
+    remote = remote['return_value']
+    if remote:
+        job_type_new += remote
+
+    full_time = get_field_for_shorts_sync(
+        presearch_results=[
+            dict['job_type'],
+            dict['title'] + dict['body'],
+        ],
+        pattern=export_pattern['others']['full_time']['ma'],
+        return_value='fulltime',
+    )
+    full_time = full_time['return_value']
+    if full_time:
+        if len(job_type_new) > 0:
+            job_type_new += ", "
+        job_type_new += full_time
+
+    office = get_field_for_shorts_sync(
+        presearch_results=[
+            dict['job_type'], dict['body'],
+        ],
+        pattern=export_pattern['others']['office']['ma'],
+        return_value='office',
+    )
+    office = office['return_value']
+
+    if office:
+        if len(job_type_new) > 0:
+            job_type_new += ", "
+        job_type_new += office
+
+    flexible = get_field_for_shorts_sync(
+        presearch_results=[
+            dict['job_type'], dict['body'],
+        ],
+        pattern=export_pattern['others']['flexible']['ma'],
+        return_value='flexible',
+    )
+    flexible = flexible['return_value']
+
+    if flexible:
+        if len(job_type_new) > 0:
+            job_type_new += ", "
+        job_type_new += flexible
+
+    hybrid = get_field_for_shorts_sync(
+        presearch_results=[
+            dict['job_type'], dict['body'],
+        ],
+        pattern=export_pattern['others']['office/remote']['ma'],
+        return_value='office/remote',
+    )
+    hybrid = hybrid['return_value']
+
+    if hybrid:
+        if len(job_type_new) > 0:
+            job_type_new += ", "
+        job_type_new += hybrid
+    if job_type_new == '':
+        job_type_new = 'office'
+
+    return job_type_new
 
 async def get_field_for_shorts(presearch_results: list, pattern: str, return_value='match'):
     element_is_not_empty = False
@@ -425,4 +546,13 @@ async def cut_message_for_parts(text, separator):
     else:
         return [text]
     return result_list
+
+async def get_picture_path(sub, profession):
+    files = os.listdir(pictures_separators_path)
+    if f"{sub}.jpg" in files:
+        return f"{pictures_separators_path}/{sub}.jpg"
+    elif f"{profession}.jpg" in files:
+        return f"{pictures_separators_path}/{profession}.jpg"
+    else:
+        return f"{pictures_separators_path}/common.jpg"
 

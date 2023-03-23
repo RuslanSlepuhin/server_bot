@@ -84,7 +84,8 @@ logs.write_log(f'\n------------------ restart --------------------')
 
 class InviteBot():
 
-    def __init__(self, token_in=None, double=False):
+    def __init__(self, token_in=None, double=False, telethon_username=None):
+        username = telethon_username if telethon_username else settings.username
         self.chat_id = None
         self.start_time_listen_channels = datetime.now()
         self.start_time_scraping_channels = None
@@ -282,6 +283,13 @@ class InviteBot():
             for text in text_list:
                 await self.bot_aiogram.send_message(message.chat.id, text)
 
+        @self.dp.message_handler(commands=['hard_push_by_web'])
+        async def hard_push_by_web_command(message: types.Message):
+            for i in ["http://localhost:5000/hard-push", "http://1118013-cw00061.tw1.ru/hard-push"]:
+                response = requests.get(i)
+                if response.status_code == 200:
+                    break
+
         @self.dp.message_handler(commands=['pick_up_forcibly_from_admin'])
         async def pick_up_forcibly_from_admin_command(message: types.Message):
             await Form_pick_up_forcibly_from_admin.profession.set()
@@ -351,7 +359,7 @@ class InviteBot():
                 #     target=await hard_pushing_by_schedule, args=(message, profession_list))
                 # my_thread.start()
                 #
-                await hard_pushing_by_schedule(
+                await self.hard_pushing_by_schedule(
                     message=message,
                     profession_list=profession_list
                 )
@@ -442,6 +450,10 @@ class InviteBot():
         @self.dp.message_handler(commands=['get_and_write_level'])
         async def get_from_admin_command(message: types.Message):
             await get_and_write_level(message)
+
+        @self.dp.message_handler(commands=['update_level'])
+        async def get_from_admin_command(message: types.Message):
+            await update_level(message)
 
         @self.dp.message_handler(commands=['get_from_admin'])
         async def get_from_admin_command(message: types.Message):
@@ -1233,7 +1245,7 @@ class InviteBot():
         # ------------------------ fill parameters form ----------------------------------
         # parameters
         @self.dp.message_handler(state=Form_params.vacancy)
-        async def process_api_id(message: types.Message, state: FSMContext):
+        async def check_parameters_form(message: types.Message, state: FSMContext):
             async with state.proxy() as data:
                 data['vacancy'] = message.text
                 vacancy = data['vacancy']
@@ -1249,7 +1261,8 @@ class InviteBot():
                 body=body,
                 title=title,
                 check_contacts=True,
-                check_vacancy=True
+                check_vacancy=True,
+                # check_vacancy_only_mex=True
             )
 
             profession = dict_response['profession']
@@ -1265,6 +1278,10 @@ class InviteBot():
         async def get_logs(message: types.Message):
             path = './patterns/pattern_test.py'
             await refresh_pattern(path)
+
+        @self.dp.message_handler(commands=['update_job_types'])
+        async def update_job_types(message: types.Message):
+            await update_job_types(message)
 
         @self.dp.message_handler(commands=['id'])
         async def get_logs(message: types.Message):
@@ -4565,6 +4582,77 @@ class InviteBot():
                     )
             await self.bot_aiogram.send_message(message.chat.id, "Done!")
 
+        async def update_job_types(message):
+            tables_list = []
+            tables_list.extend(variable.valid_professions)
+            tables_list.append(variable.admin_database)
+            tables_list.append(variable.archive_database)
+            fields = "id, title, body, job_type"
+            for table_name in tables_list:
+                responses = self.db.get_all_from_db(
+                    table_name=table_name,
+                    param="WHERE profession NOT LIKE '%no_sort%'",
+                    field=fields
+                )
+                count = 0
+                for vacancy in responses:
+                    print(count, '.')
+                    count += 1
+                    vacancy_dict = await helper.to_dict_from_admin_response(vacancy, fields)
+                    job_type_new = helper.update_job_types(vacancy_dict)
+                    field = 'job_type'
+                    print(f"regular {field}: {vacancy_dict[field]}")
+                    print(f"updated {field}: {job_type_new}")
+                    if vacancy_dict['job_type'] != job_type_new:
+                        self.db.update_table(
+                            table_name=table_name,
+                            param=f"WHERE id={vacancy_dict['id']}",
+                            field='job_type',
+                            value=job_type_new,
+                            output_text="update has done"
+                        )
+
+            await self.bot_aiogram.send_message(message.chat.id, 'Job_types were updated')
+        async def update_level(message):
+            response_dict = {}
+            level = ''
+            table_list = []
+            table_list.extend(variable.valid_professions)
+            table_list.append(variable.admin_database)
+            table_list.append(variable.archive_database)
+            fields = 'id, title, body, level'
+
+            for table in table_list:
+                responses = self.db.get_all_from_db(
+                    table_name=table,
+                    param="WHERE profession <> 'no_sort'",
+                    field=fields
+                )
+                if responses:
+                    for response in responses:
+                        response_dict = await helper.to_dict_from_admin_response(
+                            response=response,
+                            fields=fields
+                        )
+                        level = VacancyFilter().sort_profession(
+                            title=f"{response_dict['title']}\n{response_dict['level']}",
+                            body=response_dict['body'],
+                            check_contacts=False,
+                            check_vacancy=False,
+                            check_profession=False,
+                            get_params=False,
+                            check_level=True
+                        )['profession']['level']
+
+                        self.db.update_table(
+                            table_name=table,
+                            param=f"WHERE id={response_dict['id']}",
+                            field="level",
+                            value=level,
+                            output_text=level
+                        )
+            await self.bot_aiogram.send_message(message.chat.id, "Level field was updated!")
+
         async def get_from_admin(message):
             path = "./excel/vacancy_from_admin.txt"
             with open(path, 'w', encoding='utf-8') as file:
@@ -4658,114 +4746,119 @@ class InviteBot():
                     id=response_dict['id']
                 )
 
-        async def hard_pushing_by_schedule(message, profession_list):
-            table_set = set()
-            time_marker = ''
-
-            await self.bot_aiogram.send_message(message.chat.id, 'schedule shorts posting has started')
-            print('schedule shorts posting has started')
-
-            tables_list = self.db.get_information_about_tables_and_fields()
-            for i in tables_list:
-                table_set.add(i[0])
-
-            if variable.last_autopushing_time_database not in table_set:
-                # get the last pushing time from db
-                self.db.create_table_common(
-                    field_list=["time VARCHAR (10)",],
-                    table_name=variable.last_autopushing_time_database
-                )
-                self.db.push_to_db_common(
-                    table_name=variable.last_autopushing_time_database,
-                    fields_values_dict={'time': '0'}
-                )
-            last_autopushing_time = self.db.get_all_from_db(
-                table_name=variable.last_autopushing_time_database,
-                field='time',
-                param="WHERE id=1",
-                without_sort=True
-            )
-
-            print('last_autopushing_time', last_autopushing_time)
-
-            time_dict = {
-                '09': False,
-                '12': False,
-                '17': False,
-            }
-            if last_autopushing_time:
-                last_autopushing_time = last_autopushing_time[0][0]
-                time_dict[last_autopushing_time] = True
-
-            while True:
-                if not self.schedule_pushing_shorts:
-                    break
-
-                print('the checking pushing schedule time')
-                current_time = int(datetime.now().time().strftime("%H"))
-
-                if current_time >= 9 and current_time < 12 and not time_dict['09'] and not time_dict['09']:
-                    print('hard pushing 09 is starting')
-                    await self.push_shorts_attempt_to_make_multi_function(
-                        message=message,
-                        callback_data="each",
-                        hard_pushing=True,
-                        hard_push_profession=profession_list,
-                        channel_for_pushing=True
-                    )
-                    time_dict['09'] = True
-                    time_dict['17'] = False
-                    time_dict['12'] = False
-                    time_marker = '9'
-
-                elif current_time >= 12 and current_time < 17 and not time_dict['12']:
-                    print('hard pushing 12 is starting')
-                    await self.push_shorts_attempt_to_make_multi_function(
-                        message=message,
-                        callback_data="each",
-                        hard_pushing=True,
-                        hard_push_profession=profession_list,
-                        channel_for_pushing=True
-                    )
-                    time_dict['12'] = True
-                    time_dict['09'] = False
-                    time_dict['17'] = False
-                    time_marker = '12'
-
-                elif current_time >= 17 and current_time < 19 and not time_dict['17']:
-                    print('hard pushing 17 is starting')
-                    await self.push_shorts_attempt_to_make_multi_function(
-                        message=message,
-                        callback_data="each",
-                        hard_pushing=True,
-                        hard_push_profession=profession_list,
-                        channel_for_pushing=True
-                    )
-                    time_dict['17'] = True
-                    time_dict['12'] = False
-                    time_dict['09'] = False
-                    time_marker = '17'
-
-                if time_marker:
-                    self.db.update_table(
-                        table_name=variable.last_autopushing_time_database,
-                        param="WHERE id=1",
-                        field='time',
-                        value=time_marker,
-                        output_text='time has been updated'
-                    )
-                time_marker = ''
-
-                if (current_time >= 0 and current_time < 7) or current_time >= 19 and current_time < 24:
-                    print('the long pause')
-                    await self.bot_aiogram.send_message(message.chat.id, 'the long pause')
-                    await asyncio.sleep(1*60*30)
-                else:
-                    print('the short pause')
-                    await self.bot_aiogram.send_message(message.chat.id, 'the short pause')
-                    await asyncio.sleep(1*60*10)
-
-            return print('Shedule pushing has been stopped')
+        # async def hard_pushing_by_schedule(message, profession_list):
+        #     table_set = set()
+        #     time_marker = ''
+        #
+        #     if not message:
+        #         message = Message()
+        #         message.chat = Chat()
+        #         message.chat.id = variable.id_developer
+        #
+        #     await self.bot_aiogram.send_message(message.chat.id, 'schedule shorts posting has started')
+        #     print('schedule shorts posting has started')
+        #
+        #     tables_list = self.db.get_information_about_tables_and_fields()
+        #     for i in tables_list:
+        #         table_set.add(i[0])
+        #
+        #     if variable.last_autopushing_time_database not in table_set:
+        #         # get the last pushing time from db
+        #         self.db.create_table_common(
+        #             field_list=["time VARCHAR (10)",],
+        #             table_name=variable.last_autopushing_time_database
+        #         )
+        #         self.db.push_to_db_common(
+        #             table_name=variable.last_autopushing_time_database,
+        #             fields_values_dict={'time': '0'}
+        #         )
+        #     last_autopushing_time = self.db.get_all_from_db(
+        #         table_name=variable.last_autopushing_time_database,
+        #         field='time',
+        #         param="WHERE id=1",
+        #         without_sort=True
+        #     )
+        #
+        #     print('last_autopushing_time', last_autopushing_time)
+        #
+        #     time_dict = {
+        #         '09': False,
+        #         '12': False,
+        #         '17': False,
+        #     }
+        #     if last_autopushing_time:
+        #         last_autopushing_time = last_autopushing_time[0][0]
+        #         time_dict[last_autopushing_time] = True
+        #
+        #     while True:
+        #         if not self.schedule_pushing_shorts:
+        #             break
+        #
+        #         print('the checking pushing schedule time')
+        #         current_time = int(datetime.now().time().strftime("%H"))
+        #
+        #         if current_time >= 9 and current_time < 12 and not time_dict['09'] and not time_dict['09']:
+        #             print('hard pushing 09 is starting')
+        #             await self.push_shorts_attempt_to_make_multi_function(
+        #                 message=message,
+        #                 callback_data="each",
+        #                 hard_pushing=True,
+        #                 hard_push_profession=profession_list,
+        #                 channel_for_pushing=True
+        #             )
+        #             time_dict['09'] = True
+        #             time_dict['17'] = False
+        #             time_dict['12'] = False
+        #             time_marker = '9'
+        #
+        #         elif current_time >= 12 and current_time < 17 and not time_dict['12']:
+        #             print('hard pushing 12 is starting')
+        #             await self.push_shorts_attempt_to_make_multi_function(
+        #                 message=message,
+        #                 callback_data="each",
+        #                 hard_pushing=True,
+        #                 hard_push_profession=profession_list,
+        #                 channel_for_pushing=True
+        #             )
+        #             time_dict['12'] = True
+        #             time_dict['09'] = False
+        #             time_dict['17'] = False
+        #             time_marker = '12'
+        #
+        #         elif current_time >= 17 and current_time < 19 and not time_dict['17']:
+        #             print('hard pushing 17 is starting')
+        #             await self.push_shorts_attempt_to_make_multi_function(
+        #                 message=message,
+        #                 callback_data="each",
+        #                 hard_pushing=True,
+        #                 hard_push_profession=profession_list,
+        #                 channel_for_pushing=True
+        #             )
+        #             time_dict['17'] = True
+        #             time_dict['12'] = False
+        #             time_dict['09'] = False
+        #             time_marker = '17'
+        #
+        #         if time_marker:
+        #             self.db.update_table(
+        #                 table_name=variable.last_autopushing_time_database,
+        #                 param="WHERE id=1",
+        #                 field='time',
+        #                 value=time_marker,
+        #                 output_text='time has been updated'
+        #             )
+        #         time_marker = ''
+        #
+        #         if (current_time >= 0 and current_time < 7) or (current_time >= 19 and current_time < 24):
+        #             print('the long pause')
+        #             await self.bot_aiogram.send_message(message.chat.id, 'the long pause')
+        #             await asyncio.sleep(1*60*30)
+        #         else:
+        #             print('the short pause')
+        #             await self.bot_aiogram.send_message(message.chat.id, 'the short pause')
+        #             await asyncio.sleep(1*60*10)
+        #
+        #     return print('Schedule pushing has been stopped')
 
         async def transpose_no_sort_to_archive(message):
             no_sort_messages = self.db.get_all_from_db(
@@ -4921,7 +5014,7 @@ class InviteBot():
                 await self.bot_aiogram.send_document(message.chat.id, file, caption=caption)
                 if send_to_developer and message.chat.id != variable.developer_chat_id:
                     try:
-                        await self.bot_aiogram.send_document(variable.developer_chat_id, file, caption=caption)
+                        await self.bot_aiogram.send_document(int(variable.developer_chat_id), file, caption=caption)
                     except Exception as e:
                         print(e)
             except:
@@ -4976,8 +5069,7 @@ class InviteBot():
             await self.show_progress(message, n, length)
             # -------------------end ----------------------------
 
-    async def compose_message_for_linkedin(self, key, message_for_send, profession, shorts_id):
-        link_to_short = f"{config['Links'][profession]}/{shorts_id}"
+    async def compose_message_for_linkedin(self, key, message_for_send, profession, shorts_id=None):
         message = message_for_send.strip()
         message_list = message.split('\n\n')[1:]
         vacancies = (len(message_list))
@@ -4994,16 +5086,20 @@ class InviteBot():
             i = re.sub(r'</\w>', '', i)
             if len(linkedin_message + f"{i}\n\n") < 2600:
                 linkedin_message += f"{i}\n\n"
-        links_message = f"Смотреть все вакансии: {link_to_short} \n\nПодписывайтесь на наш канал с вакансиями для Junior IT специалистов: {config['Links']['junior']}\n" \
-                        f"Subscribe to our Junior IT channel: {config['Links']['junior']}\n\n"
+        if shorts_id:
+            link_to_short = f"{config['Links'][profession]}/{shorts_id}"
+            linkedin_message += f"Смотреть все вакансии: {link_to_short} \n\n"
+        links_message = ''
         if profession != 'junior':
             links_message += f"Подписывайтесь на канал для {profession.capitalize()} IT специалистов: {config['Links'][profession]}\n" \
                              f"Subscribe to our {profession.capitalize()} IT channel {config['Links'][profession]}\n"
+        links_message += f"Подписывайтесь на наш канал с вакансиями для Junior IT специалистов: {config['Links']['junior']}\n" \
+                         f"Subscribe to our Junior IT channel: {config['Links']['junior']}\n\n"
         linkedin_message += links_message
 
         return linkedin_message
 
-    async def get_shorts_id(self, message, channel):
+    async def get_shorts_id(self, channel, message):
         shorts_id = None
         peer = await self.client.get_entity(int(channel))
         await asyncio.sleep(2)
@@ -5039,8 +5135,8 @@ class InviteBot():
             vacancies_list = [message_for_send]
         return vacancies_list
 
-    async def shorts_public(self, message, channel_for_pushing=False, profession_channel=None):
-        linkedin_message = ''
+    async def shorts_public(self, message, profession, channel_for_pushing=False, profession_channel=None):
+        it_has_sent_picture = True
         pre_message = variable.pre_message_for_shorts
         add_pre_message = True
         for key in self.message_for_send_dict:
@@ -5049,88 +5145,124 @@ class InviteBot():
                 message_for_send = pre_message + message_for_send
                 add_pre_message = False
             vacancies_list = await self.cut_message_for_send(message_for_send)
-            for short in vacancies_list:
-                if profession_channel:
-                    try:
-                        await self.write_to_logs_error(f"Results:\n{short}\n")
-                        try:
-                            await self.bot_aiogram.send_message(
-                                config['My_channels'][f'{profession_channel}_channel'],
-                                short,
-                                parse_mode='html',
-                                disable_web_page_preview=True
-                            )
-                        except:
-                            try:
-                                await self.bot_aiogram.send_message(
-                                    variable.channel_id_for_shorts,
-                                    short,
-                                    parse_mode='html',
-                                    disable_web_page_preview=True
-                                )
-                            except:
-                                await self.bot_aiogram.send_message(
-                                    message.chat.id,
-                                    short,
-                                    parse_mode='html',
-                                    disable_web_page_preview=True
-                                )
-                    except Exception as e:
-                        await self.bot_aiogram.send_message(message.chat.id, str(e))
 
-                else:
-                    try:
-                        await self.write_to_logs_error(f"Results:\n{short}\n")
-                        try:
-                            await self.bot_aiogram.send_message(
-                                variable.channel_id_for_shorts,
-                                short,
-                                parse_mode='html',
-                                disable_web_page_preview=True
-                            )
-                        except:
-                            await self.bot_aiogram.send_message(
-                                message.chat.id,
-                                short,
-                                parse_mode='html',
-                                disable_web_page_preview=True
-                            )
-                    except Exception as e:
-                        await self.bot_aiogram.send_message(message.chat.id, str(e))
+            photo_path = await helper.get_picture_path(key, profession)
 
             if profession_channel:
+                chat_id = config['My_channels'][f'{profession_channel}_channel']
                 try:
-                    shorts_id = await self.get_shorts_id(message, config['My_channels'][f'{profession_channel}_channel'])
-                    linkedin_message = await self.compose_message_for_linkedin(key, message_for_send, profession_channel,
-                                                                          shorts_id)
-                    await self.bot_aiogram.send_message(
-                        variable.channel_id_for_shorts,
-                        'Post for LinkedIn',
-                        parse_mode='html',
-                        disable_web_page_preview=True
-                    )
-                    await self.bot_aiogram.send_message(
-                        variable.channel_id_for_shorts,
-                        linkedin_message,
-                        parse_mode='html',
-                        disable_web_page_preview=True
-                    )
-                    await asyncio.sleep(random.randrange(1, 2))
-                except:
+                    with open(photo_path, 'rb') as file:
+                        await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file)
+                except Exception as e:
+                    print(e)
+                    profession_channel = False
+
+            if not profession_channel:
+                chat_id = variable.channel_id_for_shorts
+                try:
+                    with open(photo_path, 'rb') as file:
+                        await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file)
+                except Exception as e:
+                    print(e)
+                    chat_id = message.chat.id
                     try:
-                        await self.bot_aiogram.send_message(
-                            message.chat.id,
-                            linkedin_message,
-                            parse_mode='html',
-                            disable_web_page_preview=True
-                        )
+                        with open(photo_path, 'rb') as file:
+                            await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file)
                     except Exception as e:
+                        print(e)
+                        it_has_sent_picture = False
+                        await self.bot_aiogram.send_message(message.chat.id, str(e))
+
+                if it_has_sent_picture:
+                    for short in vacancies_list:
                         await self.bot_aiogram.send_message(
-                            message.chat.id,
-                            str(e),
+                            chat_id,
+                            short,
                             parse_mode='html',
                             disable_web_page_preview=True
                         )
+                        await asyncio.sleep(1)
+
+            # for short in vacancies_list:
+            #     if profession_channel:
+            #         try:
+            #             await self.write_to_logs_error(f"Results:\n{short}\n")
+            #             try:
+            #                 photo_path = await helper.get_picture_path(key, profession)
+            #                 await self.bot_aiogram.send_photo(
+            #                     chat_id=config['My_channels'][f'{profession_channel}_channel'],
+            #                     photo=photo_path
+            #                 )
+            #                 await self.bot_aiogram.send_message(
+            #                     config['My_channels'][f'{profession_channel}_channel'],
+            #                     short,
+            #                     parse_mode='html',
+            #                     disable_web_page_preview=True
+            #                 )
+            #             except:
+            #                 try:
+            #                     await self.bot_aiogram.send_message(
+            #                         variable.channel_id_for_shorts,
+            #                         short,
+            #                         parse_mode='html',
+            #                         disable_web_page_preview=True
+            #                     )
+            #                 except:
+            #                     await self.bot_aiogram.send_message(
+            #                         message.chat.id,
+            #                         short,
+            #                         parse_mode='html',
+            #                         disable_web_page_preview=True
+            #                     )
+            #         except Exception as e:
+            #             await self.bot_aiogram.send_message(message.chat.id, str(e))
+            #
+            #     else:
+            #         try:
+            #             await self.write_to_logs_error(f"Results:\n{short}\n")
+            #             try:
+            #                 await self.bot_aiogram.send_message(
+            #                     variable.channel_id_for_shorts,
+            #                     short,
+            #                     parse_mode='html',
+            #                     disable_web_page_preview=True
+            #                 )
+            #             except:
+            #                 await self.bot_aiogram.send_message(
+            #                     message.chat.id,
+            #                     short,
+            #                     parse_mode='html',
+            #                     disable_web_page_preview=True
+            #                 )
+            #         except Exception as e:
+            #             await self.bot_aiogram.send_message(message.chat.id, str(e))
+
+            try:
+                shorts_id=None
+                if profession_channel:
+                    channel = config['My_channels'][f'{profession_channel}_channel']
+                    shorts_id = await self.get_shorts_id(channel, message)
+
+                linkedin_message = await self.compose_message_for_linkedin(key, message_for_send, profession,
+                                                                      shorts_id)
+                await self.bot_aiogram.send_message(
+                    variable.channel_id_for_shorts,
+                    'Post for LinkedIn',
+                    parse_mode='html',
+                    disable_web_page_preview=True
+                )
+                await self.bot_aiogram.send_message(
+                    variable.channel_id_for_shorts,
+                    linkedin_message,
+                    parse_mode='html',
+                    disable_web_page_preview=True
+                )
+
+                await self.bot_aiogram.send_message(message.chat.id, 'Linkedin message sent to channel_for_shorts')
+                await asyncio.sleep(random.randrange(1, 2))
+
+            except Exception as e:
+                await self.bot_aiogram.send_message(message.chat.id, str(e))
 
     async def write_to_logs_error(self, text):
         with open("./logs/logs_errors.txt", "a", encoding='utf-8') as file:
@@ -5624,14 +5756,14 @@ class InviteBot():
         :param id_admin_last_session_table: last message id from agregator
         :return:
         """
-
+        # if not self.
         if not prof_stack and vacancy_from_admin_dict:
             prof_stack = vacancy_from_admin_dict['profession']
 
         if vacancy_from_admin_dict:
             if not vacancy_from_admin_dict['sended_to_agregator']:
-                print('\npush vacancy in agregator\n')
-                print(f"\n{vacancy_from_admin_dict['title'][0:40]}")
+                print('push vacancy in agregator')
+                print(f"{vacancy_from_admin_dict['title'][0:40]}")
 
                 if links_on_prof_channels:
                     links_message = '\n----\nВ этом канале выводятся все собранные вакансии (агрегатор), для вашего удобства мы рекомендуем подписаться на наиболее подходящие для вас каналы (ссылки подобраны в каждом из сообщений):\n'
@@ -5704,8 +5836,14 @@ class InviteBot():
             channel=config['My_channels']['admin_channel'],
             limit_msg=None):
 
+        if not self.client.is_connected():
+            await self.client.connect()
+        # print('client_id', await self.client.get_peer_id(channel))
+        print('code is in get entity')
         peer = await self.client.get_entity(int(channel))
+        channel = PeerChannel(peer.id)
         await asyncio.sleep(2)
+        # channel = PeerChannel(int(config['My_channels']['admin_channel']))
         channel = PeerChannel(peer.id)
         if not limit_msg:
             limit_msg = 3000
@@ -5723,6 +5861,7 @@ class InviteBot():
 
         while True:
             try:
+                print('code is in history getting')
                 history = await self.client(GetHistoryRequest(
                     peer=channel,
                     offset_id=offset_msg,
@@ -5825,8 +5964,8 @@ class InviteBot():
         """
         # chat_id = variable.id_owner if not message else message.chat.id
         composed_message_dict = {}
-        if not self.client.is_connected():
-            await self.client.connect()
+        # if not self.client.is_connected():
+        #     await self.client.connect()
 
         if not message:
             # object_1 = {"message_id": 7563, "from": {"id": 5884559465, "is_bot": False, "first_name": "Ruslan", "last_name": "Slepuhin", "username": "ruslanslp", "language_code": "ru"}, "chat": {"id": 5884559465, "first_name": "Ruslan", "last_name": "Slepuhin", "username": "ruslanslp", "type": "private"}, "date": 1678360839, "text": "/start", "entities": [{"type": "bot_command", "offset": 0, "length": 6}]}
@@ -5848,9 +5987,10 @@ class InviteBot():
         if callback_data.split('/')[0] in ['all', 'each']:
             callback_data = 'shorts'
 
+        # define the professions
         if hard_push_profession:
             if hard_push_profession in ['*', 'all']:
-                prof_list = variable.valid_professions
+                prof_list = variable.profession_list_for_pushing_by_schedule
             else:
                 if type(hard_push_profession) is str:
                     prof_list = [hard_push_profession,]
@@ -5953,11 +6093,14 @@ class InviteBot():
                         )
                         vacancy_from_admin_dict = vacancy
 
-                    helper.add_to_report_file(
-                        path=variable.path_push_shorts_report_file,
-                        write_mode='a',
-                        text=f"DB ID vacancy: {vacancy_from_admin_dict['id']}\nTITLE: {vacancy_from_admin_dict['title']}\nSUB: {vacancy_from_admin_dict['sub']}\n"
-                    )
+                    try:
+                        helper.add_to_report_file(
+                            path=variable.path_push_shorts_report_file,
+                            write_mode='a',
+                            text=f"DB ID vacancy: {vacancy_from_admin_dict['id']}\nTITLE: {vacancy_from_admin_dict['title']}\nSUB: {vacancy_from_admin_dict['sub']}\n"
+                        )
+                    except Exception as e:
+                        print(e)
 
                     # if vacancy has sent in agregator already, it doesn't push again. And remove profess from profs or drop vacancy if there is profession alone
                     vacancy_message = {}
@@ -5965,9 +6108,8 @@ class InviteBot():
                         vacancy_message['message'] = vacancy['message']
                     else:
                         vacancy_message['message'] = composed_message_dict['composed_message']
-
-
                     pass
+
                     await self.push_vacancies_to_agregator_from_admin(
                         message=message,
                         vacancy_message=vacancy_message,
@@ -6042,10 +6184,10 @@ class InviteBot():
                     # await show_progress(message, n, length)
 
                 if "shorts" in callback_data:
-                    if hard_push_profession:
-                        await self.shorts_public(message, profession_channel=profession)
+                    if channel_for_pushing:
+                        await self.shorts_public(message, profession=profession, profession_channel=profession)
                     else:
-                        await self.shorts_public(message)
+                        await self.shorts_public(message, profession=profession, profession_channel=None)
 
 
                 if not hard_pushing:
@@ -6084,45 +6226,173 @@ class InviteBot():
 
             else:
                 print('no vacancies')
-        if "shorts" in callback_data:
-            await self.shorts_public(message)
-
-        if not hard_pushing:
-            await self.delete_and_change_waste_vacancy(message=message,
-                                                  last_id_message_agregator=self.last_id_message_agregator,
-                                                  profession=profession)
-
-            DataBaseOperations(None).delete_table(
-                table_name='admin_temporary'
-            )
-        await self.bot_aiogram.send_message(
-            message.chat.id,
-            f'<b>Done!</b>\n'
-            f'- in to statistics: {self.quantity_in_statistics}\n'
-            f'- in to admin {self.quantity_entered_to_admin_channel}\n'
-            f'- out from admin {self.out_from_admin_channel}\n'
-            f'- in to shorts {self.quantity_entered_to_shorts}',
-            parse_mode='html'
-        )
-        helper.add_to_report_file(
-            path=variable.path_push_shorts_report_file,
-            write_mode='a',
-            text=f"------------------------\n"
-        )
-
-        # await send_file_to_user(
-        #     message=message,
-        #     path=variable.path_push_shorts_report_file,
-        #     send_to_developer=True
+                await self.bot_aiogram.send_message(message.chat.id, 'No vacancies')
+        # if "shorts" in callback_data:
+        #     await self.shorts_public(message)
+        #
+        # if not hard_pushing:
+        #     await self.delete_and_change_waste_vacancy(message=message,
+        #                                           last_id_message_agregator=self.last_id_message_agregator,
+        #                                           profession=profession)
+        #
+        #     DataBaseOperations(None).delete_table(
+        #         table_name='admin_temporary'
+        #     )
+        # await self.bot_aiogram.send_message(
+        #     message.chat.id,
+        #     f'<b>Done!</b>\n'
+        #     f'- in to statistics: {self.quantity_in_statistics}\n'
+        #     f'- in to admin {self.quantity_entered_to_admin_channel}\n'
+        #     f'- out from admin {self.out_from_admin_channel}\n'
+        #     f'- in to shorts {self.quantity_entered_to_shorts}',
+        #     parse_mode='html'
         # )
+        # helper.add_to_report_file(
+        #     path=variable.path_push_shorts_report_file,
+        #     write_mode='a',
+        #     text=f"------------------------\n"
+        # )
+        #
+        # # await send_file_to_user(
+        # #     message=message,
+        # #     path=variable.path_push_shorts_report_file,
+        # #     send_to_developer=True
+        # # )
 
+    async def hard_pushing_by_schedule(self, message, profession_list):
+        table_set = set()
+        time_marker = ''
 
+        if not message:
+            message = Message()
+            message.chat = Chat()
+            message.chat.id = variable.id_developer
+
+        await self.bot_aiogram.send_message(message.chat.id, 'schedule shorts posting has started')
+        print('schedule shorts posting has started')
+
+        tables_list = self.db.get_information_about_tables_and_fields()
+        for i in tables_list:
+            table_set.add(i[0])
+
+        if variable.last_autopushing_time_database not in table_set:
+            # get the last pushing time from db
+            self.db.create_table_common(
+                field_list=["time VARCHAR (10)", ],
+                table_name=variable.last_autopushing_time_database
+            )
+            self.db.push_to_db_common(
+                table_name=variable.last_autopushing_time_database,
+                fields_values_dict={'time': '0'}
+            )
+        last_autopushing_time = self.db.get_all_from_db(
+            table_name=variable.last_autopushing_time_database,
+            field='time',
+            param="WHERE id=1",
+            without_sort=True
+        )
+
+        print('last_autopushing_time', last_autopushing_time)
+
+        time_dict = {
+            '09': False,
+            '12': False,
+            '17': False,
+        }
+        if last_autopushing_time:
+            last_autopushing_time = last_autopushing_time[0][0]
+            time_dict[last_autopushing_time] = True
+
+        while True:
+            if not self.schedule_pushing_shorts:
+                break
+
+            print('the checking pushing schedule time')
+            current_time = int(datetime.now().time().strftime("%H"))
+
+            if current_time >= 9 and current_time < 12 and not time_dict['09'] and not time_dict['09']:
+                print('hard pushing 09 is starting')
+                await self.push_shorts_attempt_to_make_multi_function(
+                    message=message,
+                    callback_data="each",
+                    hard_pushing=True,
+                    hard_push_profession=profession_list,
+                    channel_for_pushing=True
+                )
+                time_dict['09'] = True
+                time_dict['17'] = False
+                time_dict['12'] = False
+                time_marker = '9'
+
+            elif current_time >= 12 and current_time < 17 and not time_dict['12']:
+                print('hard pushing 12 is starting')
+                await self.push_shorts_attempt_to_make_multi_function(
+                    message=message,
+                    callback_data="each",
+                    hard_pushing=True,
+                    hard_push_profession=profession_list,
+                    channel_for_pushing=True
+                )
+                time_dict['12'] = True
+                time_dict['09'] = False
+                time_dict['17'] = False
+                time_marker = '12'
+
+            elif current_time >= 17 and current_time < 19 and not time_dict['17']:
+                print('hard pushing 17 is starting')
+                await self.push_shorts_attempt_to_make_multi_function(
+                    message=message,
+                    callback_data="each",
+                    hard_pushing=True,
+                    hard_push_profession=profession_list,
+                    channel_for_pushing=True
+                )
+                time_dict['17'] = True
+                time_dict['12'] = False
+                time_dict['09'] = False
+                time_marker = '17'
+
+            if time_marker:
+                self.db.update_table(
+                    table_name=variable.last_autopushing_time_database,
+                    param="WHERE id=1",
+                    field='time',
+                    value=time_marker,
+                    output_text='time has been updated'
+                )
+            time_marker = ''
+
+            if (current_time >= 0 and current_time < 7) or (current_time >= 19 and current_time < 24):
+                print('the long pause')
+                await self.bot_aiogram.send_message(message.chat.id, 'the long pause')
+                await asyncio.sleep(1 * 60 * 30)
+            else:
+                print('the short pause')
+                await self.bot_aiogram.send_message(message.chat.id, 'the short pause')
+                await asyncio.sleep(1 * 60 * 10)
+
+        return print('Schedule pushing has been stopped')
 
 def run(double=False, token_in=None):
     InviteBot(
         token_in=token_in,
         double=double
     ).main_invitebot()
+
+def start_hardpushing():
+    message = None
+    bot = InviteBot()
+
+    if not message:
+        message = Message()
+        message.chat = Chat()
+        message.chat.id = variable.id_developer
+
+    asyncio.run(bot.hard_pushing_by_schedule(
+        message=message,
+        profession_list=variable.profession_list_for_pushing_by_schedule
+        )
+    )
 
 # if __name__ == '__main__':
 #    run()
