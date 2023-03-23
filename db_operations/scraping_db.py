@@ -228,7 +228,7 @@ class DataBaseOperations:
                     print(self.quant, f'+++++++++++++ The vacancy has been added to DB {pro}\n')
 
                     try:
-                        self.push_vacancy_to_main_stats(dict=results_dict)
+                        self.push_vacancy_to_main_stats(profession=pro, dict=results_dict)
                         print(f'+++++++++++++ Added to statistics\n')
                     except Exception as e:
                         print('Did not push to statistics', e)
@@ -1399,7 +1399,7 @@ class DataBaseOperations:
 
         print(f'table {table_name} has been created or exists')
 
-    def push_vacancy_to_main_stats(self, dict, table_name=None):
+    def push_vacancy_to_main_stats(self, profession, dict, table_name=None):
         if not self.con:
             self.connect_db()
         if not table_name:
@@ -1407,7 +1407,6 @@ class DataBaseOperations:
         created_at = dict['created_at']
         chat_name = dict['chat_name']
         subs_list=helper.decompose_from_str_to_subs_list(dict['sub'])
-        profession = dict['profession']
         all=f'{profession}_all'
         unique=f'{profession}_unique'
 
@@ -1482,7 +1481,7 @@ class DataBaseOperations:
             response=self.get_all_from_db(table_name=i, field=fields)
             for j in response:
                 result_dict=helper.to_dict_from_admin_response_sync(j, fields)
-                self.push_vacancy_to_main_stats(result_dict, table_name)
+                self.push_vacancy_to_main_stats(profession=i,dict=result_dict, table_name=i)
             print(f'All vacancies from {i} were added to stats db')
 
     def make_report_published_vacancies_excel(self, date1, date2, table_name=None):
@@ -1531,7 +1530,7 @@ class DataBaseOperations:
         param_archive=f"WHERE DATE (time_of_public) BETWEEN {period} GROUP BY group_date"
         data_archive=self.get_all_from_db(table_name=table_name2, field=field1, order=order1, param=param_archive)
         df_archive=pd.DataFrame(data_archive, columns=['date', 'archive'])
-        df_to_sort['to_sort'].fillna(0, inplace=True)
+        df_archive['archive'].fillna(0, inplace=True)
 
         df_total_admin=df_no_sort.merge(df_to_sort, how='outer', on='date').sort_values('date')
         df_total_admin.fillna(0, inplace=True)
@@ -1596,4 +1595,9 @@ class DataBaseOperations:
         with self.con:
             cur.execute(query)
             print('Done')
+
+    def update_job_types(self, table_list):
+        for table in table_list:
+            response = self.get_all_from_db(table)
+            print(response)
 
