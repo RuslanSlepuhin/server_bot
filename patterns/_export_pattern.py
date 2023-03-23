@@ -54,7 +54,11 @@ export_pattern = {
     'others': {
         'remote': pattern['remote'],
         'full_time': pattern['full_time'],
+        'office': pattern['office'],
+        'flexible': pattern['flexible'],
+        'office/remote': pattern['office/remote'],
         'relocate': pattern['relocate'],
+        'hybrid': (),
         'english': {
             'ma': params['english_level']
         },
@@ -90,7 +94,9 @@ export_pattern = {
         'junior': junior,
         'middle': pattern['middle'],
         'senior': pattern['senior'],
-        'trainee': pattern['trainee']
+        'trainee': pattern['trainee'],
+        'lead': pattern['lead'],
+        'director': pattern['director']
     }
 }
 

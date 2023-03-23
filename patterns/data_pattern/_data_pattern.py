@@ -1,8 +1,3 @@
-"""
-This pattern was made at night at 28/09/2022 with ALexander (online).
-"""
-from utils.additional_variables.additional_variables import result_excel_dict as cities_dict
-
 pattern = {
 
     'vacancy': {
@@ -156,7 +151,7 @@ pattern = {
                  "Elixir", "продюсер", "исследователь", "исследователя", "бизнес-ассистент",
                 "мебели","Producer"),
         'mincl': (),
-                
+
         # pattern['frontend']['mex']=set(pattern['Vue']['mex2']).union(set(pattern['frontend']['mex2']))
 
         'sub': {
@@ -255,7 +250,7 @@ pattern = {
             },
         }
     },
-                
+
     'backend': {
 
         'ma': (),
@@ -1202,13 +1197,27 @@ pattern = {
     },
 
     'trainee': {
-            'ma': ("[Tt]rainee", "[Сс]тажировк", "[Сс]таж[её]р"),
-            'ma2': (),
-            'mdef': (),
-            'mex': (),
-            'mex2': (),
-            'mincl': ()
-        },
+        'ma': ("[Tt]rainee", "[Сс]тажировк", "[Сс]таж[её]р"),
+        'ma2': (),
+        'mdef': (),
+        'mex': (),
+        'mex2': (),
+        'mincl': ()
+    },
+
+    'lead': {
+        'ma': ("[Tt]eam[-\s]?lead", "[Ll]ead", "[Тт]им[-\s]?лид", "[Ll]ead",),
+        'ma2': (),
+        'mdef': (),
+        'mex': ("Lead Generation Specialist", "#leadgeneration", "лид менеджер")
+    },
+
+    'director': {
+        'ma': ("[Dd]irector", "[Дд]иректор", "[Рр]уководитель",),
+        'ma2': (),
+        'mdef': (),
+        'mex': ()
+    },
 
     'remote': {
         'ma': ("[Уу]дал[её]н|remote", "remote", "удаленка", "удаленная", "удаленную работу", "удалённую работу", "удаленно", "удалённо"),
@@ -1220,7 +1229,33 @@ pattern = {
     },
 
     'full_time': {
-        'ma': {'[Пп]олная занятость', '[Ff]ull[-\s]?[Tt]ime'},
+        'ma': {"[Пп]олная занятость", "[Пп]олный \w* день", "[Ff]ull[-\s]?[Tt]ime", "[Пп]олн\w\w занятость"},
+        'ma2': (),
+        'mdef': (),
+        'mex': (),
+        'mex2': (),
+        'mincl': ()
+    },
+
+    'office': {
+        'ma': ("[Оо]фис", "[Oo]ffice"),
+        'ma2': (),
+        'mdef': (),
+        'mex': (),
+        'mex2': (),
+        'mincl': ()
+    },
+
+    'flexible': {
+        'ma': ("[Ff]lexible\sschedule", "[Ff]lexible\stime", "part[-\/\s]time", "[Гг]ибк\w+ график", "[Пп]роектн\w\w работ", "[Чч]астичн\w\w занятость]"),
+        'ma2': (),
+        'mdef': (),
+        'mex': (),
+        'mex2': (),
+        'mincl': ()
+    },
+    'office/remote': {
+        'ma': ("[Hh]ybrid", "[Гг]ибрид]", "[Оо]фис\/удал[её]н", "[Уу]дал[её]н\w\w[-\/]офис", "[Oo]ffice[-\/]remote", "[Rr]emote[-\/]office"),
         'ma2': (),
         'mdef': (),
         'mex': (),
@@ -1269,6 +1304,11 @@ pattern = {
         'mincl': ()
     },
 }
+"""
+This pattern was made at night at 28/09/2022 with ALexander (online).
+"""
+from utils.additional_variables.additional_variables import result_excel_dict as cities_dict
+
 
 params = {
     'company_hiring': ('[К,к]омпан[и,i][я,и,й][^\,"\n]{1,3}[#А-ЯA-Z][a-zA-Zа-яА-Я0-9]{2,20}[^\,"\n]{1}«{0,1}[А-ЯA-Z]{0,20}[A-ZА-Яa-zа-я]{0,20}',
