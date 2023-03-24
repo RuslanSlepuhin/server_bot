@@ -5136,8 +5136,8 @@ class InviteBot():
         return vacancies_list
 
     async def shorts_public(self, message, profession, channel_for_pushing=False, profession_channel=None):
-        chat_id = config['My_channels'][f'{profession_channel}_channel']
-        it_has_sent_picture = True
+
+        chat_id = config['My_channels'][f'{profession_channel}_channel'] if profession_channel else None
         pre_message = variable.pre_message_for_shorts
         add_pre_message = True
         for key in self.message_for_send_dict:
@@ -5165,14 +5165,12 @@ class InviteBot():
                         await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file)
                 except Exception as e:
                     print(e)
-                    # it_has_sent_picture = False
                     chat_id = message.chat.id
                     try:
                         with open(photo_path, 'rb') as file:
                             await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file)
                     except Exception as e:
                         print(e)
-                        # it_has_sent_picture = False
                         await self.bot_aiogram.send_message(message.chat.id, str(e))
 
 
