@@ -556,3 +556,17 @@ async def get_picture_path(sub, profession):
     else:
         return f"{pictures_separators_path}/common.jpg"
 
+async def send_file_to_user(
+        bot, chat_id, path, caption='Please take it',
+        client=None, send_to_developer=False, developer_chat_id=None
+):
+        with open(path, 'rb') as file:
+            try:
+                await bot.send_document(chat_id, file, caption=caption)
+                if send_to_developer and chat_id != developer_chat_id:
+                    try:
+                        await bot.send_document(int(developer_chat_id), file, caption=caption)
+                    except Exception as e:
+                        print(e)
+            except:
+                await client.send_file(int(developer_chat_id), file, caption=caption)

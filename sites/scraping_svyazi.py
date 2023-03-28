@@ -1,3 +1,4 @@
+import asyncio
 import re
 from datetime import datetime
 import pandas as pd
@@ -6,16 +7,20 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from db_operations.scraping_db import DataBaseOperations
-from sites.write_each_vacancy_to_db import write_each_vacancy
+from sites.write_each_vacancy_to_db import HelperSite_Parser
 from settings.browser_settings import options, chrome_driver_path
-from utils.additional_variables.additional_variables import sites_search_words
-from helper_functions.helper_functions import edit_message, send_message
-from sites.send_log_txt import send_log_txt
+from utils.additional_variables.additional_variables import sites_search_words, parsing_report_path
+from helper_functions.helper_functions import edit_message, send_message, send_file_to_user
 
 class SvyaziGetInformation:
 
-    def __init__(self, bot_dict, search_word=None):
+    def __init__(self, **kwargs):
 
+        self.report = kwargs['report'] if 'report' in kwargs else None
+        self.search_word = kwargs['search_word'] if 'search_word' in kwargs else None
+        self.bot_dict = kwargs['bot_dict'] if 'bot_dict' in kwargs else None
+        self.helper_parser_site = HelperSite_Parser(report=self.report)
+        self.db = DataBaseOperations(report=self.report)
         self.db_tables = None
         self.options = None
         self.page = None
@@ -36,38 +41,34 @@ class SvyaziGetInformation:
             'time_of_public': [],
             'contacts': []
         }
-        if not search_word:
+        if not self.search_word:
             self.search_words = sites_search_words
         else:
-            self.search_words=[search_word]
+            self.search_words=[self.search_word]
         self.page_number = 1
 
         self.current_message = None
         self.msg = None
         self.written_vacancies = 0
         self.rejected_vacancies = 0
-        if bot_dict:
-            self.bot = bot_dict['bot']
-            self.chat_id = bot_dict['chat_id']
+        if self.bot_dict:
+            self.bot = self.bot_dict['bot']
+            self.chat_id = self.bot_dict['chat_id']
         self.browser = None
         self.main_url = 'https://www.svyazi.app'
 
 
     async def get_content(self, db_tables=None):
-        """
-        If DB_tables = 'all', that it will push to all DB include professions.
-        If None (default), that will push in all_messages only
-        :param count_message_in_one_channel:
-        :param db_tables:
-        :return:
-        """
-        # self.browser.delete_all_cookies()
-        # print('all cookies have deleted')
         self.db_tables = db_tables
-
         self.count_message_in_one_channel = 1
-
+        await self.report.add_to_excel()
+        await send_file_to_user(
+            bot=self.bot,
+            chat_id=self.chat_id,
+            path=parsing_report_path,
+        )
         await self.get_info()
+        self.browser.quit()
 
     async def get_info(self):
         self.browser = webdriver.Chrome(
@@ -76,17 +77,17 @@ class SvyaziGetInformation:
         )
 
         try:
-            await self.bot.send_message(self.chat_id, f'https://www.svyazi.app/jobs',
+            await self.bot.send_message(self.chat_id, f'https://www.vseti.app/jobs',
                                   disable_web_page_preview=True)
-            self.browser.get(f'https://www.svyazi.app/jobs')
+            self.browser.get(f'https://www.vseti.app/jobs')
             self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
+            await asyncio.sleep(3)
             # if not vacancy_exists_on_page:
             #     break
         except:
             pass
-        await self.bot.send_message(self.chat_id, 'www.svyazi.app parsing: Done!', disable_web_page_preview=True)
-        self.browser.quit()
+        await self.bot.send_message(self.chat_id, 'www.vseti.app parsing: Done!', disable_web_page_preview=True)
 
     async def get_link_message(self, raw_content):
 
@@ -96,11 +97,11 @@ class SvyaziGetInformation:
         list_links = soup.find_all('div', role='listitem')
         if list_links:
             print(f'\nНайдено {len(list_links)} вакансий\n')
-            self.current_message = await self.bot.send_message(self.chat_id, f'www.svyazi.app:\nНайдено {len(list_links)} вакансий', disable_web_page_preview=True)
+            self.current_message = await self.bot.send_message(self.chat_id, f'www.vseti.app:\nНайдено {len(list_links)} вакансий', disable_web_page_preview=True)
 
             # -------------------- check what is current session --------------
 
-            current_session = DataBaseOperations(None).get_all_from_db(
+            current_session = self.db.get_all_from_db(
                 table_name='current_session',
                 param='ORDER BY id DESC LIMIT 1',
                 without_sort=True,
@@ -186,8 +187,7 @@ class SvyaziGetInformation:
 
         companies = set(companies)
 
-        db=DataBaseOperations(con=None)
-        db.write_to_db_companies(companies)
+        self.db.write_to_db_companies(companies)
 
     async def get_content_from_link(self, i, links):
         vacancy_url = i.find('a').get('href')
@@ -206,7 +206,7 @@ class SvyaziGetInformation:
         print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
 
         # get vacancy ------------------------
-        vacancy = soup.find('h2', class_='heading-2').get_text()
+        vacancy = soup.find('h', class_='heading-9').get_text()
         print('vacancy = ', vacancy)
 
         # get title --------------------------
@@ -325,7 +325,7 @@ class SvyaziGetInformation:
         # elif not english and english_additional:
         #     english = english_additional
 
-        DataBaseOperations(None).write_to_db_companies([company])
+        self.db.write_to_db_companies([company])
 
         #-------------------- compose one writting for ione vacancy ----------------
 
@@ -348,34 +348,33 @@ class SvyaziGetInformation:
             'session': self.current_session
         }
 
-        response_from_db = write_each_vacancy(results_dict)
+        response = self.helper_parser_site.write_each_vacancy(results_dict)
 
         await self.output_logs(
-            response_from_db=response_from_db,
+            about_vacancy=response,
             vacancy=vacancy,
             vacancy_url=vacancy_url
         )
 
-    async def output_logs(self, response_from_db, vacancy, word=None, vacancy_url=None):
-
+    async def output_logs(self, about_vacancy, vacancy, word=None, vacancy_url=None):
         additional_message = ''
-        profession = response_from_db['profession']
-        response_from_db = response_from_db['response_from_db']
 
-        if response_from_db:
-            additional_message = f'-exists in db\n'
+        if about_vacancy['response']['vacancy'] in ['found in db by link', 'found in db by title-body']:
+            additional_message = f'-exists in db\n\n'
             self.rejected_vacancies += 1
 
-        elif not response_from_db:
-            prof_str = ", ".join(profession['profession'])
-            additional_message = f"<b>+w: {prof_str}</b>\n{vacancy_url}\n{profession['tag']}\n{profession['anti_tag']}\n-------\n"
+        elif about_vacancy['response']['vacancy'] == 'no vacancy by anti-tags':
+            additional_message = f'-ANTI-TAG by vacancy\n\n'
+            self.rejected_vacancies += 1
 
-            text_for_log = f"{vacancy}\n+w: {prof_str}\n{vacancy_url}\n{profession['tag']}\n{profession['anti_tag']}\n-------\n"
-            await send_log_txt(text_for_log)
-
-            if 'no_sort' not in profession['profession']:
+        elif about_vacancy['response']['vacancy'] == 'written to db':
+            if about_vacancy['profession']:
+                profession = about_vacancy['profession']
+                prof_str = ", ".join(profession['profession'])
+                additional_message = f"<b>+w: {prof_str}</b>\n{vacancy_url}\n{profession['tag']}\n{profession['anti_tag']}\n\n"
                 self.written_vacancies += 1
             else:
+                additional_message = 'written to db'
                 self.written_vacancies += 1
 
         if len(f"{self.current_message}\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}") < 4096:
@@ -386,7 +385,6 @@ class SvyaziGetInformation:
                 text=new_text,
                 msg=self.current_message
             )
-
         else:
             new_text = f"{self.count_message_in_one_channel}. {vacancy}\n{additional_message}"
             self.current_message = await send_message(
@@ -395,10 +393,5 @@ class SvyaziGetInformation:
                 text=new_text
             )
 
-        print(f"\n{self.count_message_in_one_channel} from_channel hh.ru search {word}")
+        # print(f"\n{self.count_message_in_one_channel} from_channel remote-job.ru search {word}")
         self.count_message_in_one_channel += 1
-
-# loop = asyncio.new_event_loop()
-# loop.run_until_complete(HHGetInformation(bot_dict={}).get_content())
-
-

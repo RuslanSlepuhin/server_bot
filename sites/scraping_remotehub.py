@@ -7,67 +7,51 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from db_operations.scraping_db import DataBaseOperations
-from sites.write_each_vacancy_to_db import write_each_vacancy
+from sites.write_each_vacancy_to_db import HelperSite_Parser
 from settings.browser_settings import options, chrome_driver_path
 from utils.additional_variables.additional_variables import sites_search_words
-from helper_functions.helper_functions import edit_message, send_message
-
+from helper_functions.helper_functions import edit_message, send_message, send_file_to_user
+from utils.additional_variables import additional_variables as variables
 
 class RemotehubGetInformation:
 
-    def __init__(self, bot_dict, search_word=None):
+    def __init__(self, **kwargs):
 
+        self.report = kwargs['report'] if 'report' in kwargs else None
+        self.search_word = kwargs['search_word'] if 'search_word' in kwargs else None
+        self.bot_dict = kwargs['bot_dict'] if 'bot_dict' in kwargs else None
+        self.helper_parser_site = HelperSite_Parser(report=self.report)
+        self.db = DataBaseOperations(report=self.report)
         self.db_tables = None
         self.options = None
         self.page = None
-        self.to_write_excel_dict = {
-            'chat_name': [],
-            'title': [],
-            'body': [],
-            'vacancy': [],
-            'vacancy_url': [],
-            'company': [],
-            'company_link': [],
-            'english': [],
-            'relocation': [],
-            'job_type': [],
-            'city': [],
-            'salary': [],
-            'experience': [],
-            'time_of_public': [],
-            'contacts': []
-        }
-        if not search_word:
+        if not self.search_word:
             self.search_words = sites_search_words
         else:
-            self.search_words = [search_word]
+            self.search_words = [self.search_word]
         self.page_number = 1
-
         self.current_message = None
         self.msg = None
         self.written_vacancies = 0
         self.rejected_vacancies = 0
-        if bot_dict:
-            self.bot = bot_dict['bot']
-            self.chat_id = bot_dict['chat_id']
+        if self.bot_dict:
+            self.bot = self.bot_dict['bot']
+            self.chat_id = self.bot_dict['chat_id']
         self.browser = None
         self.main_url = 'https://remotehub.com'
 
     async def get_content(self, db_tables=None):
-        """
-        If DB_tables = 'all', that it will push to all DB include professions.
-        If None (default), that will push in all_messages only
-        :param count_message_in_one_channel:
-        :param db_tables:
-        :return:
-        """
-        # self.browser.delete_all_cookies()
-        # print('all cookies have deleted')
         self.db_tables = db_tables
-
         self.count_message_in_one_channel = 1
-
         await self.get_info()
+        await self.report.add_to_excel()
+        await send_file_to_user(
+            bot=self.bot,
+            chat_id=self.chat_id,
+            path=variables.parsing_report_path,
+        )
+        self.browser.quit()
+
 
     async def get_info(self):
         self.browser = webdriver.Chrome(
@@ -102,12 +86,7 @@ class RemotehubGetInformation:
             last_height = new_height
             till += 1
         vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
-            # if not vacancy_exists_on_page:
-            #     break
-        # except:
-            # break
         await self.bot.send_message(self.chat_id, 'remotehub.com parsing: Done!', disable_web_page_preview=True)
-        self.browser.quit()
 
     async def get_link_message(self, raw_content):
 
@@ -116,14 +95,13 @@ class RemotehubGetInformation:
 
         list_links = soup.find_all('smp-landings-entity', class_='ng-star-inserted')
         if list_links:
-            print(f'\nНайдено {len(list_links)} вакансий\n')
+            # print(f'\nНайдено {len(list_links)} вакансий\n')
             self.current_message = await self.bot.send_message(self.chat_id,
                                                                f'remotehub.com:\nНайдено {len(list_links)} вакансий',
                                                                disable_web_page_preview=True)
-
             # -------------------- check what is current session --------------
 
-            current_session = DataBaseOperations(None).get_all_from_db(
+            current_session = self.db.get_all_from_db(
                 table_name='current_session',
                 param='ORDER BY id DESC LIMIT 1',
                 without_sort=True,
@@ -192,46 +170,38 @@ class RemotehubGetInformation:
 
         companies = set(companies)
 
-        db = DataBaseOperations(con=None)
-        db.write_to_db_companies(companies)
+        self.db.write_to_db_companies(companies)
 
     async def get_content_from_link(self, i, links):
         vacancy_url = i.find('a', class_='entity-detailed-link').get('href')
         vacancy_url = self.main_url + vacancy_url
-        print('vacancy_url = ', vacancy_url)
+        # print('vacancy_url = ', vacancy_url)
         links.append(vacancy_url)
 
-        print('self.broswer.get(vacancy_url)')
-        # await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
-        # self.browser = browser
+        # print('self.broswer.get(vacancy_url)')
         self.browser.get(vacancy_url)
-        # self.browser.get('https://google.com')
         self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-        print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
         soup = BeautifulSoup(self.browser.page_source, 'lxml')
-        print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
 
         # get vacancy ------------------------
         vacancy = soup.find('h1', class_='title mat-headline').text
-        print('vacancy = ', vacancy)
+        # print('vacancy = ', vacancy)
 
         # get title --------------------------
         title = vacancy
-        print('title = ', title)
+        # print('title = ', title)
 
         # get body --------------------------
         body = soup.find('span', class_='mat-subheading-2').text
         body = body.replace('\n\n', '\n')
         body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
-        print('body = ', body)
+        # print('body = ', body)
 
         # get tags --------------------------
         level = ''
-        # try:
-        #     level = soup.find('div', class_='category').get_text()
-        # except:
-        #     pass
 
         tags = ''
         try:
@@ -241,7 +211,7 @@ class RemotehubGetInformation:
                 tags += tag.text
         except:
             pass
-        print('tags = ', tags)
+        # print('tags = ', tags)
 
         english = ''
         if re.findall(r'[Аа]нглийский', tags) or re.findall(r'[Ee]nglish', tags):
@@ -252,7 +222,7 @@ class RemotehubGetInformation:
             city = soup.find('span', class_='mat-body-2 text').text
         except:
             city = ''
-        print('city = ', city)
+        # print('city = ', city)
 
         # get company --------------------------
         try:
@@ -264,7 +234,7 @@ class RemotehubGetInformation:
 
         except:
             company = ''
-        print('company = ', company)
+        # print('company = ', company)
 
         # get salary --------------------------
         try:
@@ -274,7 +244,7 @@ class RemotehubGetInformation:
             salary = salary.text
         except:
             salary = ''
-        print('salary = ', salary)
+        # print('salary = ', salary)
 
         # get experience --------------------------
         raw_job_format = soup.find_all('a', class_="ng-star-inserted")
@@ -283,13 +253,8 @@ class RemotehubGetInformation:
             format = format.find('mat-basic-chip')
             if format:
                 job_format += format.text
-        # try:
-        #     experience = soup.find('p', class_='vacancy-description-list-item').find('span').get_text()
-        # except:
-        #     experience = ''
-        # print('experience = ',experience)
 
-        print('job_format = ', job_format)
+        # print('job_format = ', job_format)
 
         contacts = ''
 
@@ -299,7 +264,7 @@ class RemotehubGetInformation:
             date = ''
         if date:
             date = self.convert_date(date)
-        print('date = ', date)
+        # print('date = ', date)
 
         # ------------------------- search relocation ----------------------------
         relocation = ''
@@ -333,7 +298,7 @@ class RemotehubGetInformation:
         # elif not english and english_additional:
         #     english = english_additional
 
-        DataBaseOperations(None).write_to_db_companies([company])
+        self.db.write_to_db_companies([company])
 
         # -------------------- compose one writting for ione vacancy ----------------
 
@@ -356,31 +321,33 @@ class RemotehubGetInformation:
             'session': self.current_session
         }
 
-        response_from_db = write_each_vacancy(results_dict)
+        response = self.helper_parser_site.write_each_vacancy(results_dict)
 
         await self.output_logs(
-            response_from_db=response_from_db,
+            about_vacancy=response,
             vacancy=vacancy,
             vacancy_url=vacancy_url
         )
 
-    async def output_logs(self, response_from_db, vacancy, word=None, vacancy_url=None):
-
+    async def output_logs(self, about_vacancy, vacancy, word=None, vacancy_url=None):
         additional_message = ''
-        profession = response_from_db['profession']
-        response_from_db = response_from_db['response_from_db']
 
-        if response_from_db:
-            additional_message = f'-exists in db\n'
+        if about_vacancy['response']['vacancy'] in ['found in db by link', 'found in db by title-body']:
+            additional_message = f'-exists in db\n\n'
             self.rejected_vacancies += 1
 
-        elif not response_from_db:
-            prof_str = ", ".join(profession['profession'])
-            additional_message = f"<b>+w: {prof_str}</b>\n{vacancy_url}\n{profession['tag']}\n{profession['anti_tag']}\n"
+        elif about_vacancy['response']['vacancy'] == 'no vacancy by anti-tags':
+            additional_message = f'-ANTI-TAG by vacancy\n\n'
+            self.rejected_vacancies += 1
 
-            if 'no_sort' not in profession['profession']:
+        elif about_vacancy['response']['vacancy'] == 'written to db':
+            if about_vacancy['profession']:
+                profession = about_vacancy['profession']
+                prof_str = ", ".join(profession['profession'])
+                additional_message = f"<b>+w: {prof_str}</b>\n{vacancy_url}\n{profession['tag']}\n{profession['anti_tag']}\n\n"
                 self.written_vacancies += 1
             else:
+                additional_message = 'written to db'
                 self.written_vacancies += 1
 
         if len(f"{self.current_message}\n{self.count_message_in_one_channel}. {vacancy}\n{additional_message}") < 4096:
@@ -399,10 +366,7 @@ class RemotehubGetInformation:
                 text=new_text
             )
 
-            # self.current_message = await self.bot.send_message(self.chat_id,
-            #                                                    f"{self.count_message_in_one_channel}. {vacancy}\n{additional_message}")
-
-        print(f"\n{self.count_message_in_one_channel} from_channel remotehub.com search {word}")
+        # print(f"\n{self.count_message_in_one_channel} from_channel remote-job.ru search {word}")
         self.count_message_in_one_channel += 1
 
 # loop = asyncio.new_event_loop()

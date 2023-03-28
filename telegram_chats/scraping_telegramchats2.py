@@ -24,27 +24,12 @@ config.read("./settings/config.ini")
 
 quant = 1  # счетчик вывода количества запушенных в базу сообщений (для контроля в консоли)
 
-# database = config['DB3']['database']
-# user = config['DB3']['user']
-# password = config['DB3']['password']
-# host = config['DB3']['host']
-# port = config['DB3']['port']
-#
-# con = psycopg2.connect(
-#     database=database,
-#     user=user,
-#     password=password,
-#     host=host,
-#     port=port
-# )
-
-
 class WriteToDbMessages():
 
-    def __init__(self, client, bot_dict):
+    def __init__(self, **kwargs):
 
-        self.client = client
-        self.bot_dict = bot_dict
+        self.client = kwargs['client'] if 'client' in kwargs else None
+        self.bot_dict = kwargs['bot_dict'] if 'bot_dict' in kwargs else None
         self.last_id_agregator = 0
         self.valid_profession_list = ['marketing', 'ba', 'game', 'product', 'mobile',
                                       'pm', 'sales_manager', 'analyst', 'frontend',
@@ -61,9 +46,13 @@ class WriteToDbMessages():
             'existed': 0
         }
         self.msg = None
+        self.report = kwargs['report'] if 'report' in kwargs else None
+        self.db = DataBaseOperations(report=self.report)
 
-    async def dump_all_participants(self, channel):
 
+    async def dump_all_participants(self, channel, bot_dict=None):
+        if not self.bot_dict:
+            self.bot_dict = bot_dict
         logs.write_log(f"scraping_telethon2: function: dump_all_participants")
         path = ''
         """Записывает json-файл с информацией о всех участниках канала/чата"""
@@ -145,9 +134,7 @@ class WriteToDbMessages():
             print(f'Error для канала {channel}: {e}')
         return path
 
-    async def dump_all_messages(self, channel, limit_msg):
-
-        logs.write_log(f"scraping_telethon2: function: dump_all_messages")
+    async def get_all_messages(self, channel, limit_msg):
 
         print('dump')
         self.count_message_in_one_channel = 1
@@ -210,7 +197,7 @@ class WriteToDbMessages():
 
     async def process_messages(self, channel, all_messages):
 
-        current_session = DataBaseOperations(None).get_all_from_db(
+        current_session = self.db.get_all_from_db(
             table_name='current_session',
             param='ORDER BY id DESC LIMIT 1',
             without_sort=True,
@@ -230,32 +217,29 @@ class WriteToDbMessages():
             text=new_text,
             msg=self.msg
         )
-
-        # await self.msg.edit_text(f"{self.msg.text}\nhas written {self.exist_dict['written']}\nexist: {self.exist_dict['existed']}", disable_web_page_preview = True)
         self.exist_dict['written'] = 0
         self.exist_dict['existed'] = 0
 
-
     async def operations_with_each_message(self, channel, one_message):
-
         response_dict = await helper.transformTitleBodyBeforeDb(one_message['message'])
-        # title = one_message['message'].partition(f'\n')[0]
-        # body = one_message['message'].replace(title, '').replace(f'\n\n', f'\n')
         title = response_dict['title']
         body = response_dict['body']
         vacancy_url = f"{channel}/{one_message['id']}"
 
-        # response_exists = DataBaseOperations(None).check_exists_message(
-        #     title=title,
-        #     body=body
-        # )
+        # add to excel report
+        if self.report:
+            self.report.parsing_report(link_current_vacancy=vacancy_url)
+            self.report.parsing_report(title=title, body=body)
 
-        response_exists = DataBaseOperations(None).check_exists_message(
+        response_exists = self.db.check_exists_message_by_link_or_url(
             vacancy_url=vacancy_url
         )
-
-        # response_exists = True
         print('vacancy_url: ', response_exists)
+
+        if not response_exists and self.report:
+            self.report.parsing_report(has_been_added_to_db=False)
+            # self.report.parsing_switch_next(switch=True)
+
         if response_exists:
             date = (one_message['date'] + timedelta(hours=3))
             results_dict = {
@@ -295,7 +279,7 @@ class WriteToDbMessages():
             # STEP NEXT/ Get the profession/ previous it needs to get companies list from table companies
             #           I have got the companies previous. Look at up
 
-            response = VacancyFilter().sort_profession(title, body)
+            response = VacancyFilter(report=self.report).sort_profession(title, body)
             profession = response['profession']
             params = response['params']
 
@@ -309,7 +293,7 @@ class WriteToDbMessages():
                     # write to profession's tables. Returns dict with professions as a key and False, if it was written and True if existed
                     # -------------------------------- write all message for admin in one table--------------------------------
 
-                db_response = DataBaseOperations(None).push_to_admin_table(
+                db_response = self.db.push_to_admin_table(
                     results_dict=results_dict,
                     profession=profession,
                     check_or_exists=True,
@@ -319,9 +303,13 @@ class WriteToDbMessages():
                     self.exist_dict['existed'] += 1
                 else:
                     self.exist_dict['written'] += 1
+            else:
+                self.report.parsing_report(has_been_added_to_db=False)
         else:
             print(f'{title[:40]}:\nthis vacancy has existed already\n---------\n')
             self.exist_dict['existed'] += 1
+
+        return self.report.parsing_switch_next(switch=True)
 
     async def delete_messages(self):
 
@@ -331,14 +319,12 @@ class WriteToDbMessages():
             i.delete()
         self.msg = []
 
-
     async def show_process(self, n, len):
         check = n*100//len
         if check > self.percent:
             quantity = check // 5
             self.percent = check
             self.message = await self.bot_dict['bot'].edit_message_text(f"progress {'|'* quantity} {self.percent}%", self.bot_dict['chat_id'], self.message.message_id)
-
 
     async def get_last_id_agregator(self):
 
@@ -361,18 +347,17 @@ class WriteToDbMessages():
 
         if action == 'get_message':
             for url in list_links:
-                await self.dump_all_messages(url, limit_msg)  # resolve the problem of a wait seconds
+                await self.get_all_messages(url, limit_msg)  # resolve the problem of a wait seconds
 
         elif action == 'get_participants':
             for url in list_links:
                 await self.dump_all_participants(url)
 
-
     async def start(self, limit_msg, action):
         print('start')
         await self.main_start(list_links, limit_msg, action)
 
-async def main(client, bot_dict, action='get_message'):
-    get_messages = WriteToDbMessages(client, bot_dict)
+async def main(report, client, bot_dict, action='get_message'):
+    get_messages = WriteToDbMessages(client=client, bot_dict=bot_dict, report=report)
     await get_messages.start(limit_msg=20, action=action)  #get_participants get_message
 

@@ -13,13 +13,15 @@ logs = Logs()
 
 config = configparser.ConfigParser()
 config.read("./../settings/config.ini")
+
 # ---------------------DB operations ----------------------
 class DataBaseOperations:
 
-    def __init__(self, con):
-        self.con = con
-        if not con:
+    def __init__(self, **kwargs):
+        self.con = kwargs['con'] if 'con' in kwargs else None
+        if not self.con:
             self.connect_db()
+        self.report = kwargs['report'] if 'report' in kwargs else None
         self.admin_check_file = './logs/check_file.txt'
 
     def connect_db(self):
@@ -372,7 +374,6 @@ class DataBaseOperations:
                 # return response_dict['error', telethon]
             pass
 
-
     def collect_data_for_send_to_bot(self, profession):
         """
 
@@ -526,6 +527,7 @@ class DataBaseOperations:
                     print(f'Added {column_name_type} to {table_name}')
                 except Exception as e:
                     print(e)
+
     def add_columns_to_stat(self, cur, table_name, column_name_type=None):
 
         if not table_name:
@@ -537,6 +539,7 @@ class DataBaseOperations:
             print(f'Added {column_name_type} to {table_name}')
         except Exception as e:
             print(e)
+
     def output_tables(self):
 
         logs.write_log(f"scraping_db: function: output_tables")
@@ -758,7 +761,9 @@ class DataBaseOperations:
         )
 
         if check_or_exists:
-            tables_list_for_vacancy_searching = profession['profession']
+            tables_list_for_vacancy_searching = profession['profession'] \
+                if type(profession['profession']) is set \
+                else set(profession['profession'])
             from utils.additional_variables.additional_variables import additional_elements
             tables_list_for_vacancy_searching = tables_list_for_vacancy_searching.union(additional_elements)
             print('tables_list_for_vacancy_searching: ', tables_list_for_vacancy_searching)
@@ -776,7 +781,7 @@ class DataBaseOperations:
         )
         results_dict['sub'] = helper.compose_to_str_from_list(data_list=profession['sub'])
 
-        print('unawaited compose to str = ', results_dict['sub'])
+        print('unexpected compose to str = ', results_dict['sub'])
         if not results_dict['time_of_public']:
             results_dict['time_of_public'] = datetime.now()
 
@@ -816,8 +821,16 @@ class DataBaseOperations:
             try:
                 cur.execute(new_post)
                 print(f'+++++++++++++ The vacancy has been added to DB admin_last_session\n')
+                if self.report:
+                    self.report.parsing_report(profession=results_dict['profession'])
+                    self.report.parsing_report(has_been_added_to_db=True)
+
             except Exception as e:
-                print(f'-------------- Didn"t push in ADMIN LAST SESSION {e}\n')
+                if self.report:
+                    self.report.parsing_report(has_been_added_to_db=False)
+                    self.report.parsing_report(error=str(e))
+
+                print(f'-------------- Didn\'t push in ADMIN LAST SESSION {e}\n')
                 print('time_of_public ', results_dict['time_of_public'])
                 pass
 
@@ -827,25 +840,61 @@ class DataBaseOperations:
         title = self.clear_title_or_body(title)
         body = self.clear_title_or_body(body)
 
+        tables_fields = 'id, title, body, vacancy_url'
+
         for one_element in tables_list:
             response = self.get_all_from_db(
                 table_name=f'{one_element}',
-                param=f"WHERE title='{title}' AND body='{body}'"
+                param=f"WHERE title='{title}' AND body='{body}'",
+                field=tables_fields
             )
             response_like = self.get_all_from_db(
                 table_name=f'{one_element}',
-                param=f"WHERE title LIKE '{title}' AND body LIKE '{body}'"
+                param=f"WHERE title LIKE '{title}' AND body LIKE '{body}'",
+                field=tables_fields
             )
             if response != response_like:
                 print("\n\nALARM!! ALARM!! ALARM!\n\n")
                 print(f"response True") if response else print(f"response False")
                 print(f"response_like True") if response_like else print(f"response_like False")
 
+
             if response:
+                response_dict = helper.to_dict_from_admin_response_sync(
+                    response=response[0],
+                    fields=tables_fields
+                )
+                if self.report:
+                    self.report.parsing_report(
+                        found_title=response_dict['title'],
+                        found_body=response_dict['body'],
+                        found_id=response_dict['id'],
+                        found_vacancy_link=response_dict['vacancy_url']
+                    )
+                    self.report.parsing_report(has_been_added_to_db=False)
+
                 print(f'!!!!!!!!!!! Vacancy exists in {one_element} table\n')
                 return True
-        return False
 
+            if not response and response_like:
+                response_dict = helper.to_dict_from_admin_response_sync(
+                    response=response_like[0],
+                    fields=tables_fields
+                )
+                if self.report:
+                    self.report.parsing_report(
+                        found_title=response_dict['title'],
+                        found_body=response_dict['body'],
+                        found_id=response_dict['id'],
+                        found_vacancy_link=response_dict['vacancy_url']
+                    )
+                    self.report.parsing_report(has_been_added_to_db=False)
+                    # self.report.parsing_switch_next(switch=True)
+
+                print(f'!!!!!!!!!!! Vacancy exists in {one_element} table\n')
+                return True
+
+        return False
 
     def push_followers_statistics(self, channel_statistic_dict:dict):
 
@@ -971,7 +1020,6 @@ class DataBaseOperations:
                 );"""
                         )
 
-
     def write_user_without_password(self, id_user, api_id, api_hash, phone_number):
         logs.write_log(f"scraping_db: function: write_user_without_password")
 
@@ -1009,8 +1057,9 @@ class DataBaseOperations:
             query_for_change_type = f"""ALTER TABLE {table_name} ALTER COLUMN {name_and_type}"""
             with self.con:
                 try:
+                    print(query_for_change_type)
                     cur.execute(query_for_change_type)
-                    print(f'changed title in {table_name}')
+                    print(f'changed field in {table_name}')
                 except Exception as e:
                     print(f"field in {table_name} didn't change for reason {e}")
 
@@ -1275,11 +1324,10 @@ class DataBaseOperations:
             print(e)
             return False
 
-
-
-    def check_exists_message(self, title=None, body=None, vacancy_url=None, table_list=None):
+    def check_exists_message_by_link_or_url(self, title=None, body=None, vacancy_url=None, table_list=None):
         param = "WHERE "
         length = len(param)
+
         if not table_list:
             table_list = table_list_for_checking_message_in_db
         if vacancy_url:
@@ -1294,17 +1342,6 @@ class DataBaseOperations:
         else:
             return {''}
 
-        # if not title and not body:
-        #     return -1
-        # vacancy_exists = 0
-        # title = self.clear_title_or_body(title)
-        # body = self.clear_title_or_body(body)
-        # for table in table_list:
-        #     response = self.get_all_from_db(
-        #         table_name=table,
-        #         param=f"WHERE title='{title}' and body='{body}'",
-        #         field='id'
-        #     )
         for table in table_list:
             response = self.get_all_from_db(
                 table_name=table,
@@ -1312,6 +1349,11 @@ class DataBaseOperations:
                 field='id, vacancy_url'
             )
             if response:
+                if self.report:
+                    if vacancy_url:
+                        self.report.parsing_report(found_id_by_link=response[0][1])
+                    else:
+                        self.report.parsing_report(found_title=title, found_body=body, found_id=response[0][0])
                 return False
         return True
 
@@ -1585,7 +1627,10 @@ class DataBaseOperations:
         values_str = ''
         for key in fields_values_dict:
             keys_str += f"{key}, "
-            values_str += f"{fields_values_dict[key]}, "
+            if type(key) in [str, bool]:
+                values_str += f"'{fields_values_dict[key]}', "
+            else:
+                values_str += f"{fields_values_dict[key]}, "
         keys_str = keys_str[:-2]
         values_str = values_str[:-2]
 
