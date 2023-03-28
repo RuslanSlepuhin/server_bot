@@ -21,7 +21,7 @@ import requests
 from invite_bot_ver2 import InviteBot
 from _apps.endpoints.predictive_method import Predictive
 
-db=DataBaseOperations(None)
+db=DataBaseOperations()
 vacancy_search = VacancyFilter()
 config = configparser.ConfigParser()
 config.read("./settings/config.ini")
@@ -41,7 +41,6 @@ con = psycopg2.connect(
     port=port
 )
 
-db = DataBaseOperations(None)
 admin_table = variable.admin_copy
 
 async def main_endpoints():
