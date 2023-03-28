@@ -30,7 +30,8 @@ tables_for_search_vacancy_existing = [admin_database, 'archive']
 # all_tables_for_vacancy_search = ['designer', 'game', 'product', 'mobile', 'pm', 'sales_manager', 'analyst', 'frontend',
 #                      'marketing', 'devops', 'hr', 'backend', 'qa', 'junior', admin_database, archive_database]
 
-profession_list_for_pushing_by_schedule = ['pm', 'qa', 'devops', 'mobile', 'game', 'frontend', 'backend', 'marketing', 'designer', 'analyst']
+profession_list_for_pushing_by_schedule = ['pm', 'qa', 'devops', 'mobile', 'game', 'frontend', 'backend', 'marketing',
+                                           'designer', 'analyst']
 all_tables_for_vacancy_search = []
 all_tables_for_vacancy_search.extend([admin_database, archive_database])
 all_tables_for_vacancy_search.extend(valid_professions)
@@ -101,6 +102,9 @@ path_to_excel = "./excel/"
 path_push_shorts_report_file = "./excel/report_push_shorts.txt"
 tables_list_for_report = ['junior', '*']
 developer_chat_id = 5884559465
+
+parsing_report_path = './reports/excel/parsing_report.xlsx'
+table_parsing_report = 'report_parsing_temporary'
 
 pictures_separators_path = "./utils/pictures/shorts_separators"
 

@@ -6,7 +6,9 @@ from utils.additional_variables import additional_variables as variables
 
 class VacancyFilter:
 
-    def __init__(self):
+    def __init__(self, **kwargs):
+        self.report = kwargs['report'] if 'report' in kwargs else None
+
         self.capitalize = variables.not_lower_professions
 
         self.result_dict2 = {'vacancy': 0, 'contacts': 0, 'fullstack': 0, 'frontend': 0, 'backend': 0, 'pm': 0,
@@ -56,8 +58,9 @@ class VacancyFilter:
                 self.profession['anti_tag'] += result['anti_tags']
 
                 if not self.result_dict2['vacancy']:
-                    self.profession['profession'] = {'no_sort'}
-                    print(f"line84 {self.profession['profession']}")
+                    self.report.parsing_report(not_vacancy=True)
+                    # self.profession['profession'] = {'no_sort'}
+                    # print(f"line84 {self.profession['profession']}")
                     print("= vacancy not found =")
                     return {'profession': self.profession, 'params': {}}
 
@@ -74,7 +77,8 @@ class VacancyFilter:
 
                 if not self.result_dict2['contacts']:
                     self.profession['profession'] = {'no_sort'}
-                    print(f"not contacts {self.profession['profession']}")
+                    self.report.parsing_report(not_contacts=True)
+                    # print(f"not contacts {self.profession['profession']}")
                     print("= contacts not found =")
                     return {'profession': self.profession, 'params': {}}
 
@@ -374,7 +378,7 @@ class VacancyFilter:
         if vacancy:
             vacancy = self.clean_vacancy_from_get_vacancy_name(vacancy)
 
-            print('++++++++++++++++++++\nvacancy = ', vacancy, '\n++++++++++++++++++++')
+            # print('++++++++++++++++++++\nvacancy = ', vacancy, '\n++++++++++++++++++++')
             # time.sleep(10)
         return vacancy
 
@@ -389,7 +393,7 @@ class VacancyFilter:
         return vacancy.strip()
 
     def compose_junior_sub(self, key_word):
-        print("profession['sub'] ", self.profession['sub'])
+        # print("profession['sub'] ", self.profession['sub'])
         if key_word in self.profession['sub'].keys():
             for key in self.profession['sub'].keys():
                 if key != key_word:
@@ -432,7 +436,7 @@ class VacancyFilter:
             self.profession['profession'].add(prof_list[0])
         if junior:
             self.profession['profession'].add('junior')
-        print('reduce_profession profession: ', self.profession['profession'])
+        # print('reduce_profession profession: ', self.profession['profession'])
         # time.sleep(5)
 
         subs.extend(self.profession['sub'])
@@ -440,5 +444,5 @@ class VacancyFilter:
             if sub in self.profession['profession']:
                 new_sub[sub] = self.profession['sub'][sub][0] if self.profession['sub'][sub] else []
         self.profession['sub'] = new_sub
-        print('reduce_profession sub: ', self.profession['sub'])
+        # print('reduce_profession sub: ', self.profession['sub'])
         # time.sleep(5)

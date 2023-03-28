@@ -23,9 +23,10 @@ logs = Logs()
 config = configparser.ConfigParser()
 config.read("./settings_/config.ini")
 
-class ParseSites:
+class SitesParser:
 
-    def __init__(self, client, bot_dict):
+    def __init__(self, client, bot_dict, **kwargs):
+        self.report = kwargs['report'] if 'report' in kwargs else None
         self.client = client
         self.current_session = ''
         self.bot = bot_dict['bot']
@@ -35,59 +36,20 @@ class ParseSites:
     async def call_sites(self):
 
         bot_dict = {'bot': self.bot, 'chat_id': self.chat_id}
-        await RemotehubGetInformation(bot_dict).get_content()
-        await RemoteJobGetInformation(bot_dict).get_content()
-        await PracaGetInformation(bot_dict).get_content()
-        await DevGetInformation(bot_dict).get_content()
-        await SuperJobGetInformation(bot_dict).get_content()
-        await RabotaGetInformation(bot_dict).get_content()
-        await HabrGetInformation(bot_dict).get_content()
-        await FinderGetInformation(bot_dict).get_content()
-        await GeekGetInformation(bot_dict).get_content()
-        await DesignerGetInformation(bot_dict).get_content()
-        # await SvyaziGetInformation(bot_dict).get_content()
-        await HHGetInformation(bot_dict).get_content()
-        await HHKzGetInformation(bot_dict).get_content()
-        await IngameJobGetInformation(bot_dict).get_content()
-
-        # task1 = asyncio.create_task(HHGetInformation(bot_dict).get_content())
-        # task2 = asyncio.create_task(SuperJobGetInformation(bot_dict).get_content())
-        # task3 = asyncio.create_task(RabotaGetInformation(bot_dict).get_content())
-        # task4 = asyncio.create_task(HabrGetInformation(bot_dict).get_content())
-        # task5 = asyncio.create_task(FinderGetInformation(bot_dict).get_content())
-        # task6 = asyncio.create_task(GeekGetInformation(bot_dict).get_content())
-        # task7 = asyncio.create_task(SvyaziGetInformation(bot_dict).get_content())
-        # task8 = asyncio.create_task(DevGetInformation(bot_dict).get_content())
-        # await asyncio.gather(task1, task2, task3)
-        # await asyncio.gather(task4, task5, task6)
-        # await asyncio.gather(task7, task8)
-
-        # p1 = Process(target=asyncio.run(DevGetInformation(bot_dict).get_content), args=())
-        # p2 = Process(target=SuperJobGetInformation(bot_dict).get_content, args=())
-        # p3 = Process(target=RabotaGetInformation(bot_dict).get_content, args=())
-        # p4 = Process(target=HabrGetInformation(bot_dict).get_content, args=())
-        # p5 = Process(target=FinderGetInformation(bot_dict).get_content, args=())
-        # p6 = Process(target=GeekGetInformation(bot_dict).get_content, args=())
-        # p7 = Process(target=SvyaziGetInformation(bot_dict).get_content, args=())
-        # p8 = Process(target=HHGetInformation(bot_dict).get_content, args=())
-        #
-        # p1.start()
-        # p2.start()
-        # p3.start()
-        # p4.start()
-        # p5.start()
-        # p6.start()
-        # p7.start()
-        # p8.start()
-        #
-        # p1.join()
-        # p2.join()
-        # p3.join()
-        # p4.join()
-        # p5.join()
-        # p6.join()
-        # p7.join()
-        # p8.join()
+        await RemotehubGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await RemoteJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await PracaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await DevGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await SuperJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await RabotaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await HabrGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await FinderGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await GeekGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await DesignerGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await SvyaziGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await HHGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await HHKzGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await IngameJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
 
         print(' -----------------------FINAL -------------------------------')
 
