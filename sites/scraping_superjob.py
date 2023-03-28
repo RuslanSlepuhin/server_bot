@@ -6,12 +6,14 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from db_operations.scraping_db import DataBaseOperations
-from __backup__.pattern_Alex2809 import params
+# from __backup__.pattern_Alex2809 import params
 from sites.write_each_vacancy_to_db import HelperSite_Parser
 from settings.browser_settings import options
 from sites.sites_additional_utils.get_structure import get_structure
 from utils.additional_variables.additional_variables import sites_search_words, parsing_report_path
 from helper_functions.helper_functions import edit_message, send_message, send_file_to_user
+from patterns.data_pattern._data_pattern import cities_pattern, params
+
 
 class SuperJobGetInformation:
 
