@@ -99,7 +99,7 @@ class FinderGetInformation:
 
         list_links = soup.find_all('div', class_='vacancies-page__card')
         if list_links:
-            print(f'\nНайдено {len(list_links)} вакансий\n')
+            # print(f'\nНайдено {len(list_links)} вакансий\n')
             self.current_message = await self.bot.send_message(self.chat_id, f'finder.vc:\nНайдено {len(list_links)} вакансий на странице {self.page_number}', disable_web_page_preview=True)
 
             # -------------------- check what is current session --------------
@@ -200,30 +200,30 @@ class FinderGetInformation:
     async def get_content_from_link(self, i, links):
         vacancy_url = i.find('a').get('href')
         vacancy_url = self.url_main + vacancy_url
-        print('vacancy_url = ', vacancy_url)
+        # print('vacancy_url = ', vacancy_url)
         links.append(vacancy_url)
 
-        print('self.broswer.get(vacancy_url)')
+        # print('self.broswer.get(vacancy_url)')
         # await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
         # self.browser = browser
         self.browser.get(vacancy_url)
         # self.browser.get('https://google.com')
         self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-        print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
         soup = BeautifulSoup(self.browser.page_source, 'lxml')
-        print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
 
         # get vacancy ------------------------
         try:
             vacancy = soup.find('h1', class_='vacancy-info-header__title').get_text()
         except:
             vacancy = ''
-        print('title = ', vacancy)
+        # print('title = ', vacancy)
 
         # get title --------------------------
         title = vacancy
-        print('title = ',title)
+        # print('title = ',title)
 
         # get body --------------------------
         try:
@@ -244,7 +244,7 @@ class FinderGetInformation:
                 for li in temporary_body_list:
                     body += f"- {li.get_text()}\n"
 
-        print('body = ', body)
+        # print('body = ', body)
         #
         # # get tags --------------------------
         # try:
@@ -263,14 +263,14 @@ class FinderGetInformation:
             company = soup.find('a', class_='link').get_text()
         except:
             company = ''
-        print('company = ', company)
+        # print('company = ', company)
 
         try:
             job_type = soup.find('div', class_="employment-label__text").get_text()
             # body = f'\nГрафик работы: {time_job}\n' + body
         except:
             job_type = ''
-        print('job_type = ', job_type)
+        # print('job_type = ', job_type)
 
         try:
             salary = soup.find('div', class_='row-wrapper vacancy-info-header__row').get_text()
@@ -280,13 +280,13 @@ class FinderGetInformation:
         except:
             salary = ''
             experience = ''
-        print('salary = ', salary)
-        print('experience = ', experience)
+        # print('salary = ', salary)
+        # print('experience = ', experience)
 
         time_of_public = soup.find('div', class_='vacancy-info-header__publication-date').get_text()
-        print('time_of_public = ', time_of_public)
+        # print('time_of_public = ', time_of_public)
         time_of_public = self.convert_date(time_of_public)
-        print('time_of_public after = ', time_of_public)
+        # print('time_of_public after = ', time_of_public)
 
         contacts = ''
 

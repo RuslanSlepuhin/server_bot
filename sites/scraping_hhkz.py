@@ -79,7 +79,7 @@ class HHKzGetInformation:
             link = f'https://hh.kz/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text='
             await self.bot.send_message(self.chat_id, link, disable_web_page_preview=True)
 
-            print('page link: ', link)
+            # print('page link: ', link)
             try:
                 self.browser.get(link)
             except Exception as e:
@@ -112,7 +112,7 @@ class HHKzGetInformation:
 
         list_links = soup.find_all('a', class_='serp-item__title')
         if list_links:
-            print(f'\nПо слову {word} найдено {len(list_links)} вакансий\n')
+            # print(f'\nПо слову {word} найдено {len(list_links)} вакансий\n')
             self.current_message = await self.bot.send_message(self.chat_id, f'hh.kz:\nПо слову {word} найдено {len(list_links)} вакансий на странице {self.page_number+1}', disable_web_page_preview=True)
 
             # -------------------- check what is current session --------------
@@ -208,33 +208,33 @@ class HHKzGetInformation:
     async def get_content_from_link(self, i, links, word):
         vacancy_url = i.get('href')
         vacancy_url = re.findall(r'https:\/\/hh.kz\/vacancy\/[0-9]{6,12}', vacancy_url)[0]
-        print('vacancy_url = ', vacancy_url)
+        # print('vacancy_url = ', vacancy_url)
         links.append(vacancy_url)
 
-        print('self.broswer.get(vacancy_url)')
+        # print('self.broswer.get(vacancy_url)')
         # await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
         # self.browser = browser
         self.browser.get(vacancy_url)
         # self.browser.get('https://google.com')
         self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-        print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
         soup = BeautifulSoup(self.browser.page_source, 'lxml')
-        print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
 
         # get vacancy ------------------------
         vacancy = soup.find('div', class_='vacancy-title').find('span').get_text()
-        print('vacancy = ', vacancy)
+        # print('vacancy = ', vacancy)
 
         # get title --------------------------
         title = vacancy
-        print('title = ',title)
+        # print('title = ',title)
 
         # get body --------------------------
         body = soup.find('div', class_='vacancy-section').get_text()
         body = body.replace('\n\n', '\n')
         body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
-        print('body = ',body)
+        # print('body = ',body)
 
         # get tags --------------------------
         tags = ''
@@ -245,7 +245,7 @@ class HHKzGetInformation:
             tags = tags[0:-2]
         except:
             pass
-        print('tags = ',tags)
+        # print('tags = ',tags)
 
         english = ''
         if re.findall(r'[Аа]нглийский', tags) or re.findall(r'[Ee]nglish', tags):
@@ -256,7 +256,7 @@ class HHKzGetInformation:
             city = soup.find('a', class_='bloko-link bloko-link_kind-tertiary bloko-link_disable-visited').get_text()
         except:
             city = ''
-        print('city = ',city)
+        # print('city = ',city)
 
         # get company --------------------------
         try:
@@ -264,21 +264,21 @@ class HHKzGetInformation:
             company = company.replace('\xa0', ' ')
         except:
             company = ''
-        print('company = ',company)
+        # print('company = ',company)
 
         # get salary --------------------------
         try:
             salary = soup.find('span', class_='bloko-header-section-2 bloko-header-section-2_lite').get_text()
         except:
             salary = ''
-        print('salary = ',salary)
+        # print('salary = ',salary)
 
         # get experience --------------------------
         try:
             experience = soup.find('p', class_='vacancy-description-list-item').find('span').get_text()
         except:
             experience = ''
-        print('experience = ',experience)
+        # print('experience = ',experience)
 
         # get job type and remote --------------------------
         raw_content_2 = soup.findAll('p', class_='vacancy-description-list-item')
@@ -290,9 +290,9 @@ class HHKzGetInformation:
                     experience = value.find('span').get_text()
                 case 2:
                     job_type = str(value.get_text())
-                    print(value.get_text())
+                    # print(value.get_text())
                 case 3:
-                    print(value.get_text())
+                    # print(value.get_text())
                     job_type += f'\n{value.get_text}'
             counter += 1
         job_type = re.sub(r'\<[a-zA-Z\s\.\-\'"=!\<_\/]+\>', " ", job_type)
@@ -307,7 +307,7 @@ class HHKzGetInformation:
             date = re.findall(r'[0-9]{1,2}\W[а-я]{3,}\W[0-9]{4}', date)
             date = date[0]
             date = self.normalize_date(date)
-        print('date = ', date)
+        # print('date = ', date)
 
         # ------------------------- search relocation ----------------------------
         relocation = ''

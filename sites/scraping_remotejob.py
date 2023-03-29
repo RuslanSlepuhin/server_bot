@@ -109,7 +109,7 @@ class RemoteJobGetInformation:
 
         list_links = soup.find_all('div', class_='vacancy_item')
         if list_links:
-            print(f'\nНайдено {len(list_links)} вакансий\n')
+            # print(f'\nНайдено {len(list_links)} вакансий\n')
             self.current_message = await self.bot.send_message(self.chat_id,
                                                                f'remote-job.ru:\nНайдено {len(list_links)} вакансий на странице {self.page_number}',
                                                                disable_web_page_preview=True)

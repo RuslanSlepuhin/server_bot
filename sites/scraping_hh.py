@@ -134,7 +134,7 @@ class HHGetInformation:
 
         list_links = soup.find_all('a', class_='serp-item__title')
         if list_links:
-            print(f'\nПо слову {word} найдено {len(list_links)} вакансий\n')
+            # print(f'\nПо слову {word} найдено {len(list_links)} вакансий\n')
             self.current_message = await self.bot.send_message(self.chat_id, f'hh.ru:\nПо слову {word} найдено {len(list_links)} вакансий на странице {self.page_number+1}', disable_web_page_preview=True)
 
             # -------------------- check what is current session --------------
@@ -232,21 +232,21 @@ class HHGetInformation:
         try:
             vacancy_url = vacancy_url.split('?')[0]
         except Exception as e:
-            print('/////////////////// ALARM in hh scraper /////////////////////')
+            # print('/////////////////// ALARM in hh scraper /////////////////////')
             return e
-        print('vacancy_url = ', vacancy_url)
+        # print('vacancy_url = ', vacancy_url)
         links.append(vacancy_url)
 
-        print('self.broswer.get(vacancy_url)')
+        # print('self.broswer.get(vacancy_url)')
         # await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
         # self.browser = browser
         self.browser.get(vacancy_url)
         # self.browser.get('https://google.com')
         self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-        print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
         soup = BeautifulSoup(self.browser.page_source, 'lxml')
-        print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
 
         # get vacancy ------------------------
         vacancy = ''
@@ -254,7 +254,7 @@ class HHGetInformation:
             vacancy = soup.find('div', class_='vacancy-title').find('span').get_text()
         except Exception as e:
             print(f"error vacancy: {e}")
-        print('vacancy = ', vacancy)
+        # print('vacancy = ', vacancy)
 
         # get title --------------------------
         title = ''
@@ -262,7 +262,7 @@ class HHGetInformation:
             title = vacancy
         except Exception as e:
             print(f"error title: {e}")
-        print('title = ',title)
+        # print('title = ',title)
 
         # get body --------------------------
         body = ''
@@ -272,7 +272,7 @@ class HHGetInformation:
             body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
         except Exception as e:
             print(f"error body: {e}")
-        print('body = ',body)
+        # print('body = ',body)
 
         # get tags --------------------------
         tags = ''
@@ -284,7 +284,7 @@ class HHGetInformation:
         except Exception as e:
             print(f"error tags: {e}")
 
-        print('tags = ',tags)
+        # print('tags = ',tags)
 
         english = ''
         if re.findall(r'[Аа]нглийский', tags) or re.findall(r'[Ee]nglish', tags):
@@ -294,9 +294,9 @@ class HHGetInformation:
         try:
             city = soup.find('a', class_='bloko-link bloko-link_kind-tertiary bloko-link_disable-visited').get_text()
         except Exception as e:
-            print(f"error city: {e}")
+            # print(f"error city: {e}")
             city = ''
-        print('city = ',city)
+        # print('city = ',city)
 
         # get company --------------------------
         try:
@@ -305,23 +305,23 @@ class HHGetInformation:
         except Exception as e:
             print(f"error company: {e}")
             company = ''
-        print('company = ',company)
+        # print('company = ',company)
 
         # get salary --------------------------
         try:
             salary = soup.find('span', class_='bloko-header-section-2 bloko-header-section-2_lite').get_text()
         except Exception as e:
-            print(f"error salary: {e}")
+            # print(f"error salary: {e}")
             salary = ''
-        print('salary = ',salary)
+        # print('salary = ',salary)
 
         # get experience --------------------------
         try:
             experience = soup.find('p', class_='vacancy-description-list-item').find('span').get_text()
         except Exception as e:
-            print(f"error experience: {e}")
+            # print(f"error experience: {e}")
             experience = ''
-        print('experience = ',experience)
+        # print('experience = ',experience)
 
         # get job type and remote --------------------------
         raw_content_2 = soup.findAll('p', class_='vacancy-description-list-item')
@@ -333,9 +333,9 @@ class HHGetInformation:
                     experience = value.find('span').get_text()
                 case 2:
                     job_type = str(value.get_text())
-                    print(value.get_text())
+                    # print(value.get_text())
                 case 3:
-                    print(value.get_text())
+                    # print(value.get_text())
                     job_type += f'\n{value.get_text}'
             counter += 1
         job_type = re.sub(r'\<[a-zA-Z\s\.\-\'"=!\<_\/]+\>', " ", job_type)
@@ -351,7 +351,7 @@ class HHGetInformation:
             date = re.findall(r'[0-9]{1,2}\W[а-я]{3,}\W[0-9]{4}', date)
             date = date[0]
             date = self.normalize_date(date)
-        print('date = ', date)
+        # print('date = ', date)
 
         # ------------------------- search relocation ----------------------------
         relocation = ''

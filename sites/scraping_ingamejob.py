@@ -95,8 +95,8 @@ class IngameJobGetInformation:
 
         list_links = soup.find_all('div', class_='col-12 p-0')
         if list_links:
-            print(f'\nНайдено {len(list_links)} вакансий\n')
-            print(list_links)
+            # print(f'\nНайдено {len(list_links)} вакансий\n')
+            # print(list_links)
             self.current_message = await self.bot.send_message(self.chat_id, f'ingamejob.com:\nНайдено {len(list_links)} вакансий на странице {self.page_number}', disable_web_page_preview=True)
 
             # -------------------- check what is current session --------------
@@ -181,26 +181,26 @@ class IngameJobGetInformation:
     async def get_content_from_link(self, i, links):
         job_type = ''
         vacancy_url = i.find('a').get('href')
-        print('vacancy_url = ', vacancy_url)
+        # print('vacancy_url = ', vacancy_url)
         links.append(vacancy_url)
 
-        print('self.browser.get(vacancy_url)')
+        # print('self.browser.get(vacancy_url)')
         # await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
         # self.browser = browser
         self.browser.get(vacancy_url)
         self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-        print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
         soup = BeautifulSoup(self.browser.page_source, 'lxml')
-        print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
 
         # get vacancy ------------------------
         vacancy = soup.find('h1', class_='text-success').text
-        print('vacancy = ', vacancy)
+        # print('vacancy = ', vacancy)
 
         # get title --------------------------
         title = vacancy
-        print('title = ', title)
+        # print('title = ', title)
 
         # get body --------------------------
 
@@ -220,7 +220,7 @@ class IngameJobGetInformation:
                     for li in lis:
                         body+=(f'-{li.get_text().strip()}\n')
 
-        print('body = ', body)
+        # print('body = ', body)
 
         # get date --------------------------
         try:
@@ -229,14 +229,14 @@ class IngameJobGetInformation:
             date = ''
         if date:
             date = self.convert_date(date)
-        print('date = ', date)
+        # print('date = ', date)
 
 
         # get company info --------------------------
         company_info = soup.find('div', class_='job-view-lead-position-box col-sm-8').find('a', class_='job-view-lead-position-box')
         company=company_info.get_text()
         link=company_info.get('href')
-        print('company = ', company, link)
+        # print('company = ', company, link)
 
         #  get job details: type, salary, city, relocation
         details={}
@@ -253,9 +253,9 @@ class IngameJobGetInformation:
                 pass
 
         level=details.get('la-area-chart', '')
-        print('level = ', level)
+        # print('level = ', level)
         salary=details.get('la-money', '')
-        print('salary = ', salary)
+        # print('salary = ', salary)
 
         city=''
         relocation=''
@@ -264,7 +264,7 @@ class IngameJobGetInformation:
 
         try:
             job_details=details.get('la-map-marker', '').split(', ')
-            print('job_details= ', job_details)
+            # print('job_details= ', job_details)
             for i in job_details:
                 if i == 'Удаленная работа':
                     job_types.append(i)
@@ -276,7 +276,7 @@ class IngameJobGetInformation:
 
         except Exception as e:
             pass
-        print ('job_types = ', job_types)
+        # print ('job_types = ', job_types)
         contacts=''
         english=''
 
@@ -302,7 +302,7 @@ class IngameJobGetInformation:
             'level':level,
         }
 
-        print (results_dict)
+        # print (results_dict)
         response = self.helper_parser_site.write_each_vacancy(results_dict)
 
         await self.output_logs(

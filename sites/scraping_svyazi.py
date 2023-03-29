@@ -96,7 +96,7 @@ class SvyaziGetInformation:
 
         list_links = soup.find_all('div', role='listitem')
         if list_links:
-            print(f'\nНайдено {len(list_links)} вакансий\n')
+            # print(f'\nНайдено {len(list_links)} вакансий\n')
             self.current_message = await self.bot.send_message(self.chat_id, f'www.vseti.app:\nНайдено {len(list_links)} вакансий', disable_web_page_preview=True)
 
             # -------------------- check what is current session --------------
@@ -191,33 +191,33 @@ class SvyaziGetInformation:
 
     async def get_content_from_link(self, i, links):
         vacancy_url = i.find('a').get('href')
-        print('vacancy_url = ', vacancy_url)
+        # print('vacancy_url = ', vacancy_url)
         links.append(vacancy_url)
 
-        print('self.broswer.get(vacancy_url)')
+        # print('self.broswer.get(vacancy_url)')
         # await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
         # self.browser = browser
         self.browser.get(vacancy_url)
         # self.browser.get('https://google.com')
         self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-        print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
         soup = BeautifulSoup(self.browser.page_source, 'lxml')
-        print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
 
         # get vacancy ------------------------
         vacancy = soup.find('h', class_='heading-9').get_text()
-        print('vacancy = ', vacancy)
+        # print('vacancy = ', vacancy)
 
         # get title --------------------------
         title = vacancy
-        print('title = ',title)
+        # print('title = ',title)
 
         # get body --------------------------
         body = soup.find('div', class_='jobs_overview').get_text()
         body = body.replace('\n\n', '\n')
         body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
-        print('body = ',body)
+        # print('body = ',body)
 
         # get tags --------------------------
         # level = ''
@@ -232,13 +232,13 @@ class SvyaziGetInformation:
             tags = soup.find('div', class_='levels-div')
         except:
             pass
-        print('tags = ',tags)
+        # print('tags = ',tags)
         tags_list = re.findall(r'>[^\n=">]+<', str(tags))
         tags = ''
         for tag in tags_list:
             tags += f"#{tag[1:-1]}, "
         tags = tags[:-2]
-        print(tags)
+        # print(tags)
 
         body = f'{body}\n{tags}'
 
@@ -248,14 +248,14 @@ class SvyaziGetInformation:
 
         # get city --------------------------
         job_type = soup.find('div', class_='div-block-3')
-        print('city_and_salary = ', job_type)
+        # print('city_and_salary = ', job_type)
         job_type_list = re.findall(r'>[^\n=">]+<', str(job_type))
         job_type = ''
         for tag in job_type_list:
             job_type += f"{tag[1:-1].replace(',', '')}, "
         job_type = job_type[:-2]
 
-        print('city_and_salary = ', job_type)
+        # print('city_and_salary = ', job_type)
 
         # try:
         #     city = soup.find('div', class_='location').get_text()
@@ -268,7 +268,7 @@ class SvyaziGetInformation:
             company = soup.find('h6', class_='heading-6').get_text()
         except:
             company = ''
-        print('company = ',company)
+        # print('company = ',company)
 
         # get salary --------------------------
         salary = ''
@@ -291,7 +291,7 @@ class SvyaziGetInformation:
             date = ''
         if date:
             date = self.normalize_date(date)
-        print('date = ', date)
+        # print('date = ', date)
 
         # ------------------------- search relocation ----------------------------
         relocation = ''

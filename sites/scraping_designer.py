@@ -93,7 +93,7 @@ class DesignerGetInformation:
         closed_links = soup.find_all('div', class_='z_b_1204897897897892734_b_close')
         list_links = list(set(open_links) - set(closed_links))
         if list_links:
-            print(f'\nНайдено {len(list_links)} вакансий\n')
+            # print(f'\nНайдено {len(list_links)} вакансий\n')
             self.current_message = await self.bot.send_message(self.chat_id,
                                                                f'designer.ru:\nНайдено {len(list_links)} вакансий',
                                                                disable_web_page_preview=True)
@@ -229,16 +229,16 @@ class DesignerGetInformation:
         # print('vacancy_url = ', vacancy_url)
         links.append(vacancy_url)
 
-        print('self.broswer.get(vacancy_url)')
+        # print('self.broswer.get(vacancy_url)')
         # await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
         # self.browser = browser
         self.browser.get(vacancy_url)
         # self.browser.get('https://google.com')
         self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-        print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
         soup = BeautifulSoup(self.browser.page_source, 'lxml')
-        print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
 
         # get vacancy ------------------------
         full_vacancy = soup.find('h1').text.split()
@@ -259,17 +259,17 @@ class DesignerGetInformation:
             # except:
             #     index_word = full_vacancy.split().index('поиске')
 
-        print('vacancy = ', vacancy)
+        # print('vacancy = ', vacancy)
 
         # get title --------------------------
         title = vacancy
-        print('title = ', title)
+        # print('title = ', title)
 
         # get body --------------------------
         body = soup.find('div', class_='z_dtl_text_block_v3').text.strip()
         body = body.replace('\n\n', '\n')
         body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
-        print('body = ', body)
+        # print('body = ', body)
 
         # get tags --------------------------
         level = ''
@@ -286,7 +286,7 @@ class DesignerGetInformation:
         #         tags += tag.text
         # except:
         #     pass
-        print('tags = ', tags)
+        # print('tags = ', tags)
 
         english = ''
         if re.findall(r'[Аа]нглийский', tags) or re.findall(r'[Ee]nglish', tags):
@@ -297,7 +297,7 @@ class DesignerGetInformation:
             city = soup.find('div', class_='z_b_72194kjs___head_v2').find('div').find_all('div')[-1].text.strip()
         except:
             city = ''
-        print('city = ', city)
+        # print('city = ', city)
 
         # get company --------------------------
         try:
@@ -309,7 +309,7 @@ class DesignerGetInformation:
 
         except:
             company = ''
-        print('company = ', company)
+        # print('company = ', company)
 
         # get salary --------------------------
         try:
@@ -317,7 +317,7 @@ class DesignerGetInformation:
             salary = ' '.join(salary)
         except:
             salary = ''
-        print('salary = ', salary)
+        # print('salary = ', salary)
 
         # get experience --------------------------
         # raw_job_format = soup.find_all('a', class_="ng-star-inserted")
@@ -332,7 +332,7 @@ class DesignerGetInformation:
         #     experience = ''
         # print('experience = ',experience)
 
-        print('job_format = ', job_format)
+        # print('job_format = ', job_format)
 
         contacts = ''
 
@@ -346,7 +346,7 @@ class DesignerGetInformation:
             date = datetime.today() - timedelta(days=1)
         else:
             date = self.normalize_date(date)
-        print('date = ', date)
+        # print('date = ', date)
 
         # ------------------------- search relocation ----------------------------
         relocation = ''

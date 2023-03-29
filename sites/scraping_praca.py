@@ -103,7 +103,7 @@ class PracaGetInformation:
 
         list_links = soup.find('ul', class_='search-list').find_all('li', class_=['premium vac-small', 'premium vac-small active'])
         if list_links:
-            print(f'\nНайдено {len(list_links)} вакансий\n')
+            # print(f'\nНайдено {len(list_links)} вакансий\n')
             self.current_message = await self.bot.send_message(self.chat_id,
                                                                f'praca.by:\nНайдено {len(list_links)} вакансий на странице {self.page_number}',
                                                                disable_web_page_preview=True)
@@ -176,34 +176,34 @@ class PracaGetInformation:
 
     async def get_content_from_link(self, i, links):
         vacancy_url = i.find('a').get('href')
-        print('vacancy_url = ', vacancy_url)
+        # print('vacancy_url = ', vacancy_url)
         links.append(vacancy_url)
 
-        print('self.broswer.get(vacancy_url)')
+        # print('self.broswer.get(vacancy_url)')
         # await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
         # self.browser = browser
         self.browser.get(vacancy_url)
         # self.browser.get('https://google.com')
         self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-        print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
         soup = BeautifulSoup(self.browser.page_source, 'lxml')
-        print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
 
         # get vacancy ------------------------
         vacancy = soup.find('h1', class_='no-margin-top no-margin-bottom').text
-        print('vacancy = ', vacancy)
+        # print('vacancy = ', vacancy)
 
         # get title --------------------------
         title = vacancy
-        print('title = ', title)
+        # print('title = ', title)
 
         # get body --------------------------
         body = soup.find('div', class_='description wysiwyg-st').text
         body = body.replace('\n\n', '\n')
         body = body.replace('Откликнуться на вакансию', '')
         body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
-        print('body = ', body)
+        # print('body = ', body)
 
         # get tags --------------------------
         # level = ''
@@ -218,7 +218,7 @@ class PracaGetInformation:
         #     tags = f'{level}, {tags}'
         # except:
         #     pass
-        print('tags = ', tags)
+        # print('tags = ', tags)
 
         try:
             languages = soup.find('div', class_='vacancy__languages').text
@@ -231,14 +231,14 @@ class PracaGetInformation:
         else:
             english = ''
             level = ''
-        print('english =', english)
-        print('level =', level)
+        # print('english =', english)
+        # print('level =', level)
         # get city --------------------------
         try:
             city = soup.find('div', class_='vacancy__city').text
         except:
             city = ''
-        print('city = ', city)
+        # print('city = ', city)
 
         # get company --------------------------
         try:
@@ -250,7 +250,7 @@ class PracaGetInformation:
 
         except:
             company = ''
-        print('company = ', company)
+        # print('company = ', company)
 
         # get salary --------------------------
         try:
@@ -258,7 +258,7 @@ class PracaGetInformation:
             salary = ' '.join(salary)
         except:
             salary = ''
-        print('salary = ', salary)
+        # print('salary = ', salary)
 
         # get experience --------------------------
         try:
@@ -270,9 +270,9 @@ class PracaGetInformation:
             experience = soup.find('p', class_='vacancy__experience').text.strip()
         except:
             experience = ''
-        print('experience = ', experience)
+        # print('experience = ', experience)
 
-        print('job_format = ', job_format)
+        # print('job_format = ', job_format)
 
         contacts = ''
 
@@ -282,7 +282,7 @@ class PracaGetInformation:
             date = ''
         # if date:
         #     date = self.normalize_date(date)
-        print('date = ', date)
+        # print('date = ', date)
 
         # ------------------------- search relocation ----------------------------
         relocation = ''
