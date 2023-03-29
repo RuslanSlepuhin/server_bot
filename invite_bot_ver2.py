@@ -4549,7 +4549,7 @@ class InviteBot():
                 await asyncio.sleep(random.randrange(1, 2))
 
             except Exception as e:
-                await self.bot_aiogram.send_message(message.chat.id, str(e))
+                await self.bot_aiogram.send_message(message.chat.id, f"linkedin report: {str(e)}")
 
     async def write_to_logs_error(self, text):
         with open("./logs/logs_errors.txt", "a", encoding='utf-8') as file:
