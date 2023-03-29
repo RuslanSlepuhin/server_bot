@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from db_operations.scraping_db import DataBaseOperations
 # from __backup__.pattern_Alex2809 import cities_pattern, params
 from sites.write_each_vacancy_to_db import HelperSite_Parser
-from settings.browser_settings import options
+from settings.browser_settings import options, chrome_driver_path
 from utils.additional_variables.additional_variables import sites_search_words, how_much_pages, parsing_report_path
 from helper_functions.helper_functions import edit_message, send_message, send_file_to_user
 from sites.send_log_txt import send_log_txt
