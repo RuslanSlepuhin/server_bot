@@ -101,7 +101,7 @@ class SuperJobGetInformation:
 
         list_links = soup.find_all('div', class_='f-test-search-result-item')
         if list_links:
-            print(f'\nПо слову {word} найдено {len(list_links)} вакансий\n')
+            # print(f'\nПо слову {word} найдено {len(list_links)} вакансий\n')
             self.current_message = await self.bot.send_message(self.chat_id, f'superjob.ru:\nПо слову {word} найдено {len(list_links)} вакансий на странице {self.page_number}', disable_web_page_preview=True)
 
             # -------------------- check what is current session --------------
@@ -170,32 +170,32 @@ class SuperJobGetInformation:
     async def get_content_from_link(self, i, links, word):
         vacancy_url = i.find('span', class_='_2s70W _31udi _7mW5l _17ECX _1B2ot _3EXZS _3pAka ofdOE').find('a').get('href')
         vacancy_url = f"{self.main_url}{vacancy_url}"
-        print('vacancy_url = ', vacancy_url)
+        # print('vacancy_url = ', vacancy_url)
         links.append(vacancy_url)
 
-        print('self.broswer.get(vacancy_url)')
+        # print('self.broswer.get(vacancy_url)')
         # await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
         # self.browser = browser
         self.browser.get(vacancy_url)
         # self.browser.get('https://google.com')
         self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-        print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
         soup = BeautifulSoup(self.browser.page_source, 'lxml')
-        print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
 
         # get vacancy ------------------------
         vacancy = soup.find('h1', class_='_2s70W _2sfSN _1qivw _17ECX _1B2ot _3EXZS ofdOE').get_text()
-        print('vacancy = ', vacancy)
+        # print('vacancy = ', vacancy)
 
         # get title --------------------------
         title = vacancy
-        print('title = ',title)
+        # print('title = ',title)
 
         # get body --------------------------
         body = 'Описание вакансии:\n'
         body_content = soup.find('span', class_='_39I1Z _1G5lt _3EXZS _3pAka _3GChV _2GgYH').find('span')
-        print(body_content)
+        # print(body_content)
         structure = await get_structure(body_content)
         body_content_list_p = body_content.find_all('p')
         body_content_list_ul = body_content.find_all('ul')
@@ -220,7 +220,7 @@ class SuperJobGetInformation:
                                 break
                     body_content_list_ul.pop(0)
 
-        print('body = ', body)
+        # print('body = ', body)
 
         # get tags --------------------------
         tags = ''
@@ -233,7 +233,7 @@ class SuperJobGetInformation:
             tags = tags[0:-2]
         except:
             pass
-        print('tags = ',tags)
+        # print('tags = ',tags)
         body = f"{body}\nПрофессиональные навыки:\n{tags}"
 
         content = soup.find('div', class_='_2zPWM _2s70W _2sfSN _1qivw _17ECX _1yHIx _1Qy3a _1GAZu')
@@ -250,14 +250,14 @@ class SuperJobGetInformation:
                 experience += f"{element.text}, "
         if experience:
             job_type = experience[:-2]
-        print('job_type = ', job_type)
+        # print('job_type = ', job_type)
 
         city = ''
         try:
             city = content.find('span', class_='_4maqB _3EXZS _3GChV').get_text()
         except:
             pass
-        print('city = ', city)
+        # print('city = ', city)
 
         english = ''
         if re.findall(r'[Аа]нглийский', tags) or re.findall(r'[Ee]nglish', tags):
@@ -276,7 +276,7 @@ class SuperJobGetInformation:
                 find('span', class_='_1WrFk _3EXZS _3pAka _3GChV').get_text()
         except:
             company = ''
-        print('company = ',company)
+        # print('company = ',company)
 
         contacts = ''
 
@@ -289,7 +289,7 @@ class SuperJobGetInformation:
             date = self.normalize_date(date)
         else:
             date = datetime.now()
-        print('date = ', date)
+        # print('date = ', date)
 
         # ------------------------- search relocation ----------------------------
         relocation = ''

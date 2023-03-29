@@ -94,7 +94,7 @@ class GeekGetInformation:
 
         list_links = soup.find_all('a', class_='title')
         if list_links:
-            print(f'\nНайдено {len(list_links)} вакансий\n')
+            # print(f'\nНайдено {len(list_links)} вакансий\n')
             self.current_message = await self.bot.send_message(self.chat_id, f'geekjob.ru:\nНайдено {len(list_links)} вакансий на странице {self.page_number}', disable_web_page_preview=True)
 
             # -------------------- check what is current session --------------
@@ -190,33 +190,33 @@ class GeekGetInformation:
     async def get_content_from_link(self, i, links):
         vacancy_url = i.get('href')
         vacancy_url = self.main_url + vacancy_url
-        print('vacancy_url = ', vacancy_url)
+        # print('vacancy_url = ', vacancy_url)
         links.append(vacancy_url)
 
-        print('self.broswer.get(vacancy_url)')
+        # print('self.broswer.get(vacancy_url)')
         # await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
         # self.browser = browser
         self.browser.get(vacancy_url)
         # self.browser.get('https://google.com')
         self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-        print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
         soup = BeautifulSoup(self.browser.page_source, 'lxml')
-        print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
 
         # get vacancy ------------------------
         vacancy = soup.find('h1').get_text()
-        print('vacancy = ', vacancy)
+        # print('vacancy = ', vacancy)
 
         # get title --------------------------
         title = vacancy
-        print('title = ',title)
+        # print('title = ',title)
 
         # get body --------------------------
         body = soup.find('div', id='vacancy-description').get_text()
         body = body.replace('\n\n', '\n')
         body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
-        print('body = ',body)
+        # print('body = ',body)
 
         # get tags --------------------------
         level = ''
@@ -231,7 +231,7 @@ class GeekGetInformation:
             tags = f'{level}, {tags}'
         except:
             pass
-        print('tags = ',tags)
+        # print('tags = ',tags)
 
         english = ''
         if re.findall(r'[Аа]нглийский', tags) or re.findall(r'[Ee]nglish', tags):
@@ -242,7 +242,7 @@ class GeekGetInformation:
             city = soup.find('div', class_='location').get_text()
         except:
             city = ''
-        print('city = ',city)
+        # print('city = ',city)
 
         # get company --------------------------
         try:
@@ -254,14 +254,14 @@ class GeekGetInformation:
 
         except:
             company = ''
-        print('company = ',company)
+        # print('company = ',company)
 
         # get salary --------------------------
         try:
             salary = soup.find('div', class_='jobinfo').find('span', class_='salary').get_text()
         except:
             salary = ''
-        print('salary = ',salary)
+        # print('salary = ',salary)
 
         # get experience --------------------------
         job_format = soup.find('div', class_='jobinfo').find('span', class_='jobformat').get_text()
@@ -272,7 +272,7 @@ class GeekGetInformation:
         #     experience = ''
         # print('experience = ',experience)
 
-        print('job_format = ', job_format)
+        # print('job_format = ', job_format)
 
         contacts = ''
 
@@ -282,7 +282,7 @@ class GeekGetInformation:
             date = ''
         if date:
             date = self.normalize_date(date)
-        print('date = ', date)
+        # print('date = ', date)
 
         # ------------------------- search relocation ----------------------------
         relocation = ''

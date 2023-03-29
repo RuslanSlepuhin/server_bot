@@ -109,7 +109,7 @@ class DevGetInformation:
 
             await self.bot.send_message(self.chat_id, link, disable_web_page_preview=True)
 
-            print('page link: ', link)
+            # print('page link: ', link)
             try:
                 self.browser.get(link)
             except Exception as e:
@@ -142,7 +142,7 @@ class DevGetInformation:
 
         list_links = soup.find_all('div', class_='vacancies-list-item__position')
         if list_links:
-            print(f'\nПо слову {word} найдено {len(list_links)} вакансий\n')
+            # print(f'\nПо слову {word} найдено {len(list_links)} вакансий\n')
             self.current_message = await self.bot.send_message(self.chat_id, f'dev.by:\nПо слову {word} найдено {len(list_links)} вакансий на странице {self.page_number}', disable_web_page_preview=True)
 
             # -------------------- check what is current session --------------
@@ -240,27 +240,27 @@ class DevGetInformation:
     async def get_content_from_link(self, i, links, word):
         vacancy_url = i.find('a', class_='vacancies-list-item__link_block').get('href')
         vacancy_url = self.main_url + vacancy_url
-        print('vacancy_url = ', vacancy_url)
+        # print('vacancy_url = ', vacancy_url)
         links.append(vacancy_url)
 
-        print('self.broswer.get(vacancy_url)')
+        # print('self.broswer.get(vacancy_url)')
         # await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
         # self.browser = browser
         self.browser.get(vacancy_url)
         # self.browser.get('https://google.com')
         self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-        print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
         soup = BeautifulSoup(self.browser.page_source, 'lxml')
-        print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+        # print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
 
         # get vacancy ------------------------
         vacancy = soup.find('div', class_='vacancy__header__name').get_text().replace('Вакансия ', '')
-        print('vacancy = ', vacancy)
+        # print('vacancy = ', vacancy)
 
         # get title --------------------------
         title = vacancy
-        print('title = ',title)
+        # print('title = ',title)
 
         # get body --------------------------
         body = ''
@@ -294,7 +294,7 @@ class DevGetInformation:
         # for element in body_content_list_p:
         #     body += f"{element.get_text()}\n"
 
-        print('body = ', body)
+        # print('body = ', body)
 
         # get tags --------------------------
         tags = ''
@@ -305,7 +305,7 @@ class DevGetInformation:
             tags = tags[0:-1]
         except:
             pass
-        print('tags = ',tags)
+        # print('tags = ',tags)
 
         body = f"{body}\n{tags}"
 
@@ -321,14 +321,14 @@ class DevGetInformation:
         else:
             level = ''
         body += f" #{level}"
-        print('level = ', level)
+        # print('level = ', level)
 
         english = re.findall(r'Уровень английского: [a-zA-Zа-яА-Я0-9\s]+', tags)
         if english:
             english = english[0].replace('Уровень английского:', '').strip()
         else:
             english = ''
-        print("english ", english)
+        # print("english ", english)
 
         # get city --------------------------
         city = re.findall(r'Город: [a-zA-Zа-яА-Я]+', tags)
@@ -336,14 +336,14 @@ class DevGetInformation:
             city = city[0].replace('Город:', '').strip()
         else:
             city = ''
-        print('city = ', city)
+        # print('city = ', city)
 
         # get company --------------------------
         try:
             company = soup.find('div', class_='vacancy__footer__company-name').get_text()
         except:
             company = ''
-        print('company = ',company)
+        # print('company = ',company)
 
         # get salary --------------------------
         # try:
@@ -358,21 +358,21 @@ class DevGetInformation:
             experience = experience[0].replace('Опыт:', '').strip()
         else:
             experience = ''
-        print('experience = ',experience)
+        # print('experience = ',experience)
 
         remote = re.findall(r'Возможна удалённая работа: [a-zA-Z\sа-яА-Я0-9]+', tags)
         if remote:
             remote = remote[0].replace('Возможна удалённая работа:', '').strip()
         else:
             remote = ''
-        print('remote = ',remote)
+        # print('remote = ',remote)
 
         full_time = re.findall(r'Режим работы: [a-zA-Zа-яА-Я0-9\s]+', tags)
         if full_time:
             full_time = full_time[0].replace('Режим работы:', '').strip()
         else:
             full_time = ''
-        print('full_time = ', full_time)
+        # print('full_time = ', full_time)
 
         job_type = ''
         if remote:
