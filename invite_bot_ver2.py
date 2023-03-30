@@ -310,6 +310,14 @@ class InviteBot():
                     request=f"""ALTER TABLE {table} ALTER COLUMN body TYPE VARCHAR (10000);"""
                 )
 
+        @self.dp.message_handler(commands=['force_shorts_public'])
+        async def force_shorts_public_func(message: types.Message):
+            await self.push_shorts_attempt_to_make_multi_function(
+                message=message,
+                callback_data='each',
+
+            )
+
         @self.dp.message_handler(commands=['pick_up_forcibly_from_admin'])
         async def pick_up_forcibly_from_admin_command(message: types.Message):
             await Form_pick_up_forcibly_from_admin.profession.set()

@@ -1089,7 +1089,7 @@ class DataBaseOperations:
         it_was_sending_to_agregator = composed_message_dict['it_was_sending_to_agregator']
 
         # -------------- it is for user's check -----------------------
-        db = DataBaseOperations(None)
+        db = DataBaseOperations()
         response = db.get_all_from_db(
             table_name='admin_last_session',
             param=f"WHERE id={id_admin_last_session_table}",
