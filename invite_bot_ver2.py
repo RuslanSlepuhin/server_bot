@@ -5377,6 +5377,7 @@ class InviteBot():
 
                     elif "shorts" in callback_data:
                         # I need to get the newest vacancy
+                        print('vacancy_from_admin_dict', vacancy_from_admin_dict)
                         vacancy_from_admin = self.db.get_all_from_db(
                             table_name=variable.admin_database,
                             # param=f"WHERE id={response_temp_dict['id_admin_last_session_table']}",
