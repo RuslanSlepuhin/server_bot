@@ -3026,13 +3026,13 @@ class InviteBot():
                 # chat_name = one_vacancy[5]
 
                 if 'https://t.me' in one_vacancy_dict['chat_name']:
-                    profession = VacancyFilter().sort_profession(
+                    profession = VacancyFilter(report=self.report).sort_profession(
                         one_vacancy_dict['title'],
                         one_vacancy_dict['body'],
                         get_params=False
                     )
                 else:
-                    profession = VacancyFilter().sort_profession(
+                    profession = VacancyFilter(report=self.report).sort_profession(
                         one_vacancy_dict['title'],
                         one_vacancy_dict['body'],
                         check_contacts=False,
