@@ -19,8 +19,8 @@ class DataBaseOperations:
 
     def __init__(self, **kwargs):
         self.con = kwargs['con'] if 'con' in kwargs else None
-        if not self.con:
-            self.connect_db()
+        # if not self.con:
+        #     self.connect_db()
         self.report = kwargs['report'] if 'report' in kwargs else None
         self.admin_check_file = './logs/check_file.txt'
 
