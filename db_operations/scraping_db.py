@@ -277,29 +277,54 @@ class DataBaseOperations:
 
     async def get_all_from_db_async(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
         response = []
+        cur = None
         if not self.con:
-            self.connect_db()
-        cur = self.con.cursor()
-        if not order:
-            order = "ORDER BY time_of_public"
-        if not without_sort:
-            query = f"""SELECT {field} FROM {table_name} {param} {order}"""
-        else:
-            query = f"""SELECT {field} FROM {table_name} {param} """
-        try:
-            with self.con:
+            config.read("./../settings/config.ini")
+            try:
+                database = config['DB3']['database']
+                user = config['DB3']['user']
+                password = config['DB3']['password']
+                host = config['DB3']['host']
+                port = config['DB3']['port']
+            except:
+                config.read("./settings/config.ini")
+                database = config['DB_local_clone']['database']
+                user = config['DB_local_clone']['user']
+                password = config['DB_local_clone']['password']
+                host = config['DB_local_clone']['host']
+                port = config['DB_local_clone']['port']
+            try:
+                self.con = psycopg2.connect(
+                    database=database,
+                    user=user,
+                    password=password,
+                    host=host,
+                    port=port
+                )
+                cur = self.con.cursor()
+                if not order:
+                    order = "ORDER BY time_of_public"
+                if not without_sort:
+                    query = f"""SELECT {field} FROM {table_name} {param} {order}"""
+                else:
+                    query = f"""SELECT {field} FROM {table_name} {param} """
                 try:
-                    cur.execute(query)
-                    response = cur.fetchall()
+                    with self.con:
+                        try:
+                            cur.execute(query)
+                            response = cur.fetchall()
+                        except Exception as e:
+                            print(e)
+                            return str(e)
                 except Exception as e:
                     print(e)
-                    return str(e)
-        except Exception as e:
-            print(e)
+            except:
+                print('No connect with db')
+            finally:
+                if self.con:
+                    self.con.close()
         if curs:
             return cur
-        if self.con:
-            self.con.close()
         return response
 
     def write_current_session(self, current_session):
