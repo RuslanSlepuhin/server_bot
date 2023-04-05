@@ -455,8 +455,9 @@ class DataBaseOperations:
 
         logs.write_log(f"scraping_db: function: write_to_db_companies")
 
-        con = self.connect_db()
-        cur = con.cursor()
+        if not self.con:
+            self.connect_db()
+        cur = self.con.cursor()
 
         for company in companies:
 
@@ -465,7 +466,7 @@ class DataBaseOperations:
                 if '\'' in company:
                     company = company.replace('\'', '')
                 query = f"""SELECT * FROM companies WHERE company='{company}'"""
-                with con:
+                with self.con:
                     try:
                         cur.execute(query)
                         response = cur.fetchall()
@@ -475,7 +476,7 @@ class DataBaseOperations:
 
                 if not response:
                     query = f"""INSERT INTO companies (company) VALUES ('{company}')"""
-                    with con:
+                    with self.con:
                         try:
                             cur.execute(query)
                             print(f'to put: {company}')
