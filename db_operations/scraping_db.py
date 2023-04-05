@@ -53,7 +53,7 @@ class DataBaseOperations:
             )
         except:
             print('No connect with db')
-        return self.con
+        # return self.con
     #-------------participants-------------------------
     def push_to_bd_participants(self, participant, all_user_dictionary, channel_name, channel_username):
 
@@ -271,6 +271,8 @@ class DataBaseOperations:
                 return str(e)
         if curs:
             return cur
+        if self.con:
+            self.con.close()
         return response
 
     async def get_all_from_db_async(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
@@ -296,6 +298,8 @@ class DataBaseOperations:
             print(e)
         if curs:
             return cur
+        if self.con:
+            self.con.close()
         return response
 
     def write_current_session(self, current_session):
