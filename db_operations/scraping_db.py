@@ -271,8 +271,6 @@ class DataBaseOperations:
                 return str(e)
         if curs:
             return cur
-        if self.con:
-            self.con.close()
         return response
 
     async def get_all_from_db_async(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
