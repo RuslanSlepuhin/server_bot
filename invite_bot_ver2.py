@@ -923,7 +923,9 @@ class InviteBot():
             # remove doubles in admin
             await get_remove_doubles(message)
             # remove completed professions
-            await remove_completed_professions(message)
+            await transpose_no_sort_to_archive(message)
+            # await remove_completed_professions(message)
+
             await self.send_file_to_user(
                 message=message,
                 path=variable.path_filter_error_file,
@@ -2991,6 +2993,8 @@ class InviteBot():
             print(f"{datetime.now().strftime('%H:%M:%S')}:\n{text}")
 
         async def refresh(message, save_changes=False):
+            deleted_vacancy = 0
+            transfer_vacancy = 0
             profession = {}
             title_list = []
             body_list = []
@@ -3001,7 +3005,7 @@ class InviteBot():
             sub = []
 
             await self.bot_aiogram.send_message(message.chat.id, 'It will rewrite the professions in all vacancies through the new filter logic\nPlease wait few seconds for start')
-            fields = 'id, title, body, vacancy, profession, chat_name, sub, level, tags, full_tags, full_anti_tags'
+            fields = variable.admin_table_fields
             response = self.db.get_all_from_db(
                 table_name=variable.admin_database,
                 param="""WHERE profession<>'no_sort'""",
@@ -3012,18 +3016,12 @@ class InviteBot():
             n=0
             length = len(response)
             msg = await self.bot_aiogram.send_message(message.chat.id, 'progress 0%')
-            for one_vacancy in response:
 
+            for one_vacancy in response:
                 one_vacancy_dict = await helper.to_dict_from_admin_response(
                     response=one_vacancy,
                     fields=fields
                 )
-                # id = one_vacancy[0]
-                # title = one_vacancy[1]
-                # body = one_vacancy[2]
-                # vacancy = one_vacancy[3]
-                # old_profession = one_vacancy[4]
-                # chat_name = one_vacancy[5]
 
                 if 'https://t.me' in one_vacancy_dict['chat_name']:
                     profession = VacancyFilter(report=self.report).sort_profession(
@@ -3038,7 +3036,7 @@ class InviteBot():
                         check_contacts=False,
                         check_vacancy=True,
                         check_vacancy_only_mex=True,
-                        get_params=False
+                        # get_params=False
                     )
 
                 print('new2', profession['profession']['profession'])
@@ -3046,51 +3044,86 @@ class InviteBot():
                 print(f"{profession['profession']['anti_tag']}")
                 print('--------------------------')
 
-                profession_str = ''
-                for prof in profession['profession']['profession']:
-                    profession_str += f"{prof}, "
-                profession_str = profession_str[:-2]
-
-
-                print('title = ', one_vacancy_dict['title'])
-                print(f"old prof [{one_vacancy_dict['profession']}]")
-                print(f'new prof [{profession_str}]')
-                print(f"subs {profession['profession']['sub']}")
-
-                # change the old values to news
-                one_vacancy_dict['profession'] = profession_str
-                one_vacancy_dict['sub'] = helper.compose_to_str_from_list(profession['profession']['sub'])
-                one_vacancy_dict['level'] = profession['profession']['level']
-                one_vacancy_dict['tags'] = helper.get_tags(profession['profession'])
-                one_vacancy_dict['anti_tags'] = profession['profession']['anti_tag'].replace("'", "")
-                one_vacancy_dict['full_tags'] = profession['profession']['anti_tag'].replace("'", "")
-
-                title_list.append(one_vacancy_dict['title'])
-                body_list.append(one_vacancy_dict['body'])
-                old_prof_list.append(one_vacancy_dict['profession'])
-                new_prof_list.append(profession_str)
-                sub.append(profession['profession']['sub'])
-                tag_list.append(profession['profession']['tag'])
-                anti_tag.append(profession['profession']['anti_tag'])
-                print('\n________________\n')
-
-                if save_changes:
-                    query = ''
-                    for field in fields.split(', '):
-                        if one_vacancy_dict[field]:
-                            if field not in ['id', 'chat_name']:
-                                query  += f"{field}='{one_vacancy_dict[field]}', "
-                    if query:
-                        query = f"UPDATE {variable.admin_database} SET " + query
-                        query = query[:-2] + f" WHERE id={one_vacancy_dict['id']}"
-                        print(query)
-
-                        self.db.run_free_request(
-                            request=query,
-                            output_text='updated successfully\n___________\n\n'
+                if profession['profession']['profession'] == 'no_sort':
+                    pass
+                    transfer_completes=self.db.transfer_vacancy(
+                        table_from=variable.admin_database,
+                        table_to=variable.archive_database,
+                        response_from_db=one_vacancy
+                    )
+                    if transfer_completes:
+                        self.db.delete_data(
+                            table_name=variable.admin_database,
+                            param=f"Where id={int(one_vacancy_dict['id'])}"
                         )
-                    else:
-                        print('no changes')
+                        transfer_vacancy += 1
+
+                elif not profession['profession']['profession']:
+                    self.db.delete_data(
+                        table_name=variable.admin_database,
+                        param=f"Where id={int(one_vacancy_dict['id'])}"
+                    )
+                    deleted_vacancy += 1
+                else:
+                    # checking in db and compose profession
+                    profession_str = ''
+                    table_list = profession['profession']['profession'].copy()
+                    for table in table_list:
+                        not_exists = self.db.check_exists_message_by_link_or_url(
+                            vacancy_url=one_vacancy_dict['vacancy_url'],
+                            table_list=[table]
+                        )
+
+                        if not_exists:
+                            not_exists = self.db.check_exists_message_by_link_or_url(
+                                title=one_vacancy_dict['title'],
+                                body=one_vacancy_dict['body'],
+                                table_list=table_list
+                            )
+
+                        if not_exists:
+                            profession_str += f"{table}, "
+                    profession_str = profession_str[:-2]
+
+                    print('title = ', one_vacancy_dict['title'])
+                    print(f"old prof [{one_vacancy_dict['profession']}]")
+                    print(f'new prof [{profession_str}]')
+                    print(f"subs {profession['profession']['sub']}")
+
+                    # change the old values to news
+                    one_vacancy_dict['profession'] = profession_str
+                    one_vacancy_dict['sub'] = helper.compose_to_str_from_list(profession['profession']['sub'])
+                    one_vacancy_dict['level'] = profession['profession']['level']
+                    one_vacancy_dict['tags'] = helper.get_tags(profession['profession'])
+                    one_vacancy_dict['anti_tags'] = profession['profession']['anti_tag'].replace("'", "")
+                    one_vacancy_dict['full_tags'] = profession['profession']['anti_tag'].replace("'", "")
+
+                    title_list.append(one_vacancy_dict['title'])
+                    body_list.append(one_vacancy_dict['body'])
+                    old_prof_list.append(one_vacancy_dict['profession'])
+                    new_prof_list.append(profession_str)
+                    sub.append(profession['profession']['sub'])
+                    tag_list.append(profession['profession']['tag'])
+                    anti_tag.append(profession['profession']['anti_tag'])
+                    print('\n________________\n')
+
+                    if save_changes:
+                        query = ''
+                        for field in fields.split(', '):
+                            if one_vacancy_dict[field]:
+                                if field not in ['id', 'chat_name']:
+                                    query  += f"{field}='{one_vacancy_dict[field]}', "
+                        if query:
+                            query = f"UPDATE {variable.admin_database} SET " + query
+                            query = query[:-2] + f" WHERE id={one_vacancy_dict['id']}"
+                            # print(query)
+
+                            self.db.run_free_request(
+                                request=query,
+                                output_text='updated successfully\n___________\n\n'
+                            )
+                        else:
+                            print('no changes')
                 n += 1
                 await show.show_the_progress(msg, n, length)
 
@@ -3115,7 +3148,11 @@ class InviteBot():
                 try:
                     await self.send_file_to_user(message, './other_operations/pr.txt', caption="It did not send excel so take txt logs")
                 except:
-                    await self.bot_aiogram.send_message(message.chat.id, 'Done')
+                    await self.bot_aiogram.send_message(message.chat.id, f'Can\'t send the report file')
+
+            await self.bot_aiogram.send_message(message.chat.id, f'Done\n'
+                                                                 f'transfer vacancies (no_sort): {transfer_vacancy}\n'
+                                                                 f'deleted vacancies (not vacancy): {deleted_vacancy}')
 
         async def search_vacancy_in_db(title, body):
             f = self.valid_profession_list
