@@ -19,8 +19,8 @@ class DataBaseOperations:
 
     def __init__(self, **kwargs):
         self.con = kwargs['con'] if 'con' in kwargs else None
-        # if not self.con:
-        #     self.connect_db()
+        if not self.con:
+            self.connect_db()
         self.report = kwargs['report'] if 'report' in kwargs else None
         self.admin_check_file = './logs/check_file.txt'
 
@@ -286,17 +286,18 @@ class DataBaseOperations:
             query = f"""SELECT {field} FROM {table_name} {param} {order}"""
         else:
             query = f"""SELECT {field} FROM {table_name} {param} """
-        with self.con:
-            try:
-                cur.execute(query)
-                response = cur.fetchall()
-            except Exception as e:
-                print(e)
-                return str(e)
+        try:
+            with self.con:
+                try:
+                    cur.execute(query)
+                    response = cur.fetchall()
+                except Exception as e:
+                    print(e)
+                    return str(e)
+        except Exception as e:
+            print(e)
         if curs:
             return cur
-        if self.con:
-            self.con.close()
         return response
 
     def write_current_session(self, current_session):
