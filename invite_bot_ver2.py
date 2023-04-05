@@ -3183,12 +3183,12 @@ class InviteBot():
 
             # # -----------------------parsing telegram channels -------------------------------------
             bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
-            await main(report=self.report, client=self.client, bot_dict=bot_dict)
-            await self.report.add_to_excel()
-            await self.send_file_to_user(
-                message=message,
-                path="./reports/excel/parsing_report.xlsx"
-            )
+            # await main(report=self.report, client=self.client, bot_dict=bot_dict)
+            # await self.report.add_to_excel()
+            # await self.send_file_to_user(
+            #     message=message,
+            #     path="./reports/excel/parsing_report.xlsx"
+            # )
 
             sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
             await sites_parser.call_sites()
