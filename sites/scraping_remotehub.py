@@ -187,147 +187,151 @@ class RemotehubGetInformation:
         # print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
 
         # get vacancy ------------------------
-        vacancy = soup.find('h1', class_='title mat-headline').text
-        # print('vacancy = ', vacancy)
-
-        # get title --------------------------
-        title = vacancy
-        # print('title = ', title)
-
-        # get body --------------------------
-        body = soup.find('span', class_='mat-subheading-2').text
-        body = body.replace('\n\n', '\n')
-        body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
-        # print('body = ', body)
-
-        # get tags --------------------------
-        level = ''
-
-        tags = ''
+        vacancy = ''
         try:
-            raw_tags = soup.find_all('span', class_="truncate muted-2")
-            tags = ''
-            for tag in raw_tags:
-                tags += tag.text
-        except:
+            vacancy = soup.find('h1', class_='title mat-headline').text
+        except Exception:
             pass
-        # print('tags = ', tags)
+        # print('vacancy = ', vacancy)
+        if vacancy:
+            # get title --------------------------
+            title = vacancy
+            # print('title = ', title)
 
-        english = ''
-        if re.findall(r'[Аа]нглийский', tags) or re.findall(r'[Ee]nglish', tags):
-            english = 'English'
+            # get body --------------------------
+            body = soup.find('span', class_='mat-subheading-2').text
+            body = body.replace('\n\n', '\n')
+            body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
+            # print('body = ', body)
 
-        # get city --------------------------
-        try:
-            city = soup.find('span', class_='mat-body-2 text').text
-        except:
-            city = ''
-        # print('city = ', city)
+            # get tags --------------------------
+            level = ''
 
-        # get company --------------------------
-        try:
-            company = soup.find('div', class_='account-name mat-body-2').text
-            # company = company.replace('\xa0', ' ')
-            # if 'Прямой работодатель ' in company:
-            #     company = company.replace('Прямой работодатель ', '')
-            # company = company.replace('\n', ' ')
+            tags = ''
+            try:
+                raw_tags = soup.find_all('span', class_="truncate muted-2")
+                tags = ''
+                for tag in raw_tags:
+                    tags += tag.text
+            except:
+                pass
+            # print('tags = ', tags)
 
-        except:
-            company = ''
-        # print('company = ', company)
+            english = ''
+            if re.findall(r'[Аа]нглийский', tags) or re.findall(r'[Ee]nglish', tags):
+                english = 'English'
 
-        # get salary --------------------------
-        try:
-            salary = soup.find('div', class_='price ng-star-inserted')
-            if not salary:
-                salary = soup.find('span', class_='label muted ng-star-inserted')
-            salary = salary.text
-        except:
-            salary = ''
-        # print('salary = ', salary)
+            # get city --------------------------
+            try:
+                city = soup.find('span', class_='mat-body-2 text').text
+            except:
+                city = ''
+            # print('city = ', city)
 
-        # get experience --------------------------
-        raw_job_format = soup.find_all('a', class_="ng-star-inserted")
-        job_format = ''
-        for format in raw_job_format:
-            format = format.find('mat-basic-chip')
-            if format:
-                job_format += format.text
+            # get company --------------------------
+            try:
+                company = soup.find('div', class_='account-name mat-body-2').text
+                # company = company.replace('\xa0', ' ')
+                # if 'Прямой работодатель ' in company:
+                #     company = company.replace('Прямой работодатель ', '')
+                # company = company.replace('\n', ' ')
 
-        # print('job_format = ', job_format)
+            except:
+                company = ''
+            # print('company = ', company)
 
-        contacts = ''
+            # get salary --------------------------
+            try:
+                salary = soup.find('div', class_='price ng-star-inserted')
+                if not salary:
+                    salary = soup.find('span', class_='label muted ng-star-inserted')
+                salary = salary.text
+            except:
+                salary = ''
+            # print('salary = ', salary)
 
-        try:
-            date = soup.find('div', class_="mat-body-2 posted-ago muted-2").text.split()[0]
-        except:
-            date = ''
-        if date:
-            date = self.convert_date(date)
-        # print('date = ', date)
+            # get experience --------------------------
+            raw_job_format = soup.find_all('a', class_="ng-star-inserted")
+            job_format = ''
+            for format in raw_job_format:
+                format = format.find('mat-basic-chip')
+                if format:
+                    job_format += format.text
 
-        # ------------------------- search relocation ----------------------------
-        relocation = ''
-        if re.findall(r'[Rr]elocation', body):
-            relocation = 'релокация'
+            # print('job_format = ', job_format)
 
-        # ------------------------- search city ----------------------------
-        # city = ''
-        # for key in cities_pattern:
-        #     for item in cities_pattern[key]:
-        #         match = re.findall(rf"{item}", body)
-        #         if match and key != 'others':
-        #             for i in match:
-        #                 city += f"{i} "
+            contacts = ''
 
-        # ------------------------- search english ----------------------------
-        # english_additional = ''
-        # for item in params['english_level']:
-        #     match1 = re.findall(rf"{item}", body)
-        #     match2 = re.findall(rf"{item}", tags)
-        #     if match1:
-        #         for i in match1:
-        #             english_additional += f"{i} "
-        #     if match2:
-        #         for i in match2:
-        #             english_additional += f"{i} "
-        #
-        # if english and ('upper' in english_additional or 'b1' in english_additional or 'b2' in english_additional \
-        #         or 'internediate' in english_additional or 'pre' in english_additional):
-        #     english = english_additional
-        # elif not english and english_additional:
-        #     english = english_additional
+            try:
+                date = soup.find('div', class_="mat-body-2 posted-ago muted-2").text.split()[0]
+            except:
+                date = ''
+            if date:
+                date = self.convert_date(date)
+            # print('date = ', date)
 
-        self.db.write_to_db_companies([company])
+            # ------------------------- search relocation ----------------------------
+            relocation = ''
+            if re.findall(r'[Rr]elocation', body):
+                relocation = 'релокация'
 
-        # -------------------- compose one writting for ione vacancy ----------------
+            # ------------------------- search city ----------------------------
+            # city = ''
+            # for key in cities_pattern:
+            #     for item in cities_pattern[key]:
+            #         match = re.findall(rf"{item}", body)
+            #         if match and key != 'others':
+            #             for i in match:
+            #                 city += f"{i} "
 
-        results_dict = {
-            'chat_name': 'https://remotehub.com/',
-            'title': title,
-            'body': body,
-            'vacancy': vacancy,
-            'vacancy_url': vacancy_url,
-            'company': company,
-            'company_link': '',
-            'english': english,
-            'relocation': relocation,
-            'job_type': job_format,
-            'city': city,
-            'salary': salary,
-            'experience': '',
-            'time_of_public': date,
-            'contacts': contacts,
-            'session': self.current_session
-        }
+            # ------------------------- search english ----------------------------
+            # english_additional = ''
+            # for item in params['english_level']:
+            #     match1 = re.findall(rf"{item}", body)
+            #     match2 = re.findall(rf"{item}", tags)
+            #     if match1:
+            #         for i in match1:
+            #             english_additional += f"{i} "
+            #     if match2:
+            #         for i in match2:
+            #             english_additional += f"{i} "
+            #
+            # if english and ('upper' in english_additional or 'b1' in english_additional or 'b2' in english_additional \
+            #         or 'internediate' in english_additional or 'pre' in english_additional):
+            #     english = english_additional
+            # elif not english and english_additional:
+            #     english = english_additional
 
-        response = self.helper_parser_site.write_each_vacancy(results_dict)
+            self.db.write_to_db_companies([company])
 
-        await self.output_logs(
-            about_vacancy=response,
-            vacancy=vacancy,
-            vacancy_url=vacancy_url
-        )
+            # -------------------- compose one writting for ione vacancy ----------------
+
+            results_dict = {
+                'chat_name': 'https://remotehub.com/',
+                'title': title,
+                'body': body,
+                'vacancy': vacancy,
+                'vacancy_url': vacancy_url,
+                'company': company,
+                'company_link': '',
+                'english': english,
+                'relocation': relocation,
+                'job_type': job_format,
+                'city': city,
+                'salary': salary,
+                'experience': '',
+                'time_of_public': date,
+                'contacts': contacts,
+                'session': self.current_session
+            }
+
+            response = self.helper_parser_site.write_each_vacancy(results_dict)
+
+            await self.output_logs(
+                about_vacancy=response,
+                vacancy=vacancy,
+                vacancy_url=vacancy_url
+            )
 
     async def output_logs(self, about_vacancy, vacancy, word=None, vacancy_url=None):
         additional_message = ''
