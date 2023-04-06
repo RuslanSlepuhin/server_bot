@@ -54,7 +54,7 @@ async def main_endpoints():
     @app.route("/get-by-id", methods=['POST'])
     async def get_by_id():
         key = 'id'
-        if key in request.json:
+        if key in request.json and type(request.json[key]) is str:
             if request.json[key].isdigit():
                 id = int(request.json[key])
                 response = db.get_all_from_db(
