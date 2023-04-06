@@ -18,17 +18,13 @@ class RemotehubGetInformation:
     def __init__(self, **kwargs):
 
         self.report = kwargs['report'] if 'report' in kwargs else None
-        self.search_word = kwargs['search_word'] if 'search_word' in kwargs else None
+        self.search_words = kwargs['search_word'] if 'search_word' in kwargs else None
         self.bot_dict = kwargs['bot_dict'] if 'bot_dict' in kwargs else None
         self.helper_parser_site = HelperSite_Parser(report=self.report)
         self.db = DataBaseOperations(report=self.report)
         self.db_tables = None
         self.options = None
         self.page = None
-        if not self.search_word:
-            self.search_words = sites_search_words
-        else:
-            self.search_words = [self.search_word]
         self.page_number = 1
         self.current_message = None
         self.msg = None
@@ -45,12 +41,12 @@ class RemotehubGetInformation:
         self.count_message_in_one_channel = 1
         await self.get_info()
         await self.report.add_to_excel()
+        self.browser.quit()
         await send_file_to_user(
             bot=self.bot,
             chat_id=self.chat_id,
             path=variables.parsing_report_path,
         )
-        self.browser.quit()
 
 
     async def get_info(self):

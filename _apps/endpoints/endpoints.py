@@ -51,6 +51,30 @@ async def main_endpoints():
     async def hello_world():
         return "It's the empty page"
 
+    @app.route("/get-by-id", methods=['POST'])
+    async def get_by_id():
+        key = 'id'
+        if key in request.json:
+            if request.json[key].isdigit():
+                id = int(request.json[key])
+                response = db.get_all_from_db(
+                    table_name=variable.admin_database,
+                    param=f"WHERE id={id}",
+                    field=variable.admin_table_fields
+                )
+                if response:
+                    response_dict = helper.to_dict_from_admin_response(response[0], fields=variable.admin_table_fields)
+
+                    if response_dict:
+                        return response_dict
+                else:
+                    return {}
+            else:
+                return {'error': 'value is not integer type'}
+        else:
+            return {'error': 'wrong key. please use key id'}
+
+
     @app.route("/post-everything")
     async def post_everything():
         await InviteBot().push_shorts_attempt_to_make_multi_function(
