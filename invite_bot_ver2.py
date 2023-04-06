@@ -145,7 +145,7 @@ class InviteBot():
         self.db = DataBaseOperations(report=self.report)
         self.tg_parser = WriteToDbMessages(report=self.report)
 
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(level=logging.INFO, filename="py_log.log",filemode="w")
 
         if token_in:
             self.token = token_in
