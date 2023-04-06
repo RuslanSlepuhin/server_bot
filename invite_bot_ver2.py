@@ -27,6 +27,7 @@ from telethon.tl.functions.channels import GetParticipantsRequest
 from telethon.tl.functions.messages import GetHistoryRequest
 from telethon.tl.types import InputUser, InputChannel, ChannelParticipantsSearch, PeerChannel
 from db_operations.scraping_db import DataBaseOperations
+from reports.report_variables import report_file_path
 from sites.scraping_hhkz import HHKzGetInformation
 from sites.scraping_praca import PracaGetInformation
 from telegram_chats.scraping_telegramchats2 import WriteToDbMessages, main
@@ -154,6 +155,7 @@ class InviteBot():
         self.bot_aiogram = Bot(token=self.token)
         storage = MemoryStorage()
         self.dp = Dispatcher(self.bot_aiogram, storage=storage)
+        self.temporary_data = {}
 
     def main_invitebot(self):
 
@@ -1566,6 +1568,7 @@ class InviteBot():
                 await self.bot_aiogram.send_message(callback.message.chat.id, 'choose the channel for vacancy checking', reply_markup=self.markup)
 
             if callback.data[0:5] == 'admin':
+                self.temporary_data = {}
 
                 helper.add_to_report_file(
                     path=variable.path_push_shorts_report_file,
@@ -1609,6 +1612,23 @@ class InviteBot():
                             response = vacancy,
                             fields=variable.admin_table_fields
                         )
+                        #shorts_report
+                        if 'in' not in self.temporary_data:
+                            self.temporary_data['in'] = {}
+                        if 'id_admin_channel' not in self.temporary_data['in']:
+                            self.temporary_data['in']['id_admin_channel'] = []
+                        if 'id_admin' not in self.temporary_data['in']:
+                            self.temporary_data['in']['id_admin'] = []
+                        if 'title' not in self.temporary_data['in']:
+                            self.temporary_data['in']['title'] = []
+                        if 'body' not in self.temporary_data['in']:
+                            self.temporary_data['in']['body'] = []
+                        self.temporary_data['in']['id_admin_channel'].append(str(last_admin_channel_id+1))
+                        self.temporary_data['in']['id_admin'].append(str(vacancy_from_admin_dict['id']))
+                        self.temporary_data['in']['title'].append(vacancy_from_admin_dict['title'])
+                        self.temporary_data['in']['body'].append(vacancy_from_admin_dict['body'])
+                        pass
+
                         composed_message_dict = await self.compose_message(
                             vacancy_from_admin_dict=vacancy_from_admin_dict,
                             one_profession=profession,
@@ -5332,6 +5352,20 @@ class InviteBot():
                 n = 0
                 self.quantity_entered_to_shorts = 0
 
+                #shorts_report
+                if not self.temporary_data:
+                    temporary_response = self.db.get_all_from_db(table_name='admin_temporary', without_sort=True)
+                    for item in temporary_response:
+                        if 'in' not in self.temporary_data:
+                            self.temporary_data['in'] = {}
+                        if 'id_admin_channel' not in self.temporary_data['in']:
+                            self.temporary_data['in']['id_admin_channel'] = []
+                        if 'id_admin' not in self.temporary_data['in']:
+                            self.temporary_data['in']['id_admin'] = []
+                        self.temporary_data['in']['id_admin_channel'].append(str(item[0]))
+                        self.temporary_data['in']['id_admin'].append(str(item[0]))
+                        pass
+
                 for vacancy in history_messages:
                     if hard_pushing:
                         vacancy = await helper.to_dict_from_admin_response(vacancy, variable.admin_table_fields)
@@ -5371,7 +5405,24 @@ class InviteBot():
                             )
                             vacancy_from_admin = vacancy_from_admin[0]
                             vacancy_from_admin_dict = await helper.to_dict_from_admin_response(vacancy_from_admin,
-                                                                                               variable.admin_table_fields)
+                                                                                  variable.admin_table_fields)
+                            #shorts_report
+                            if 'out' not in self.temporary_data:
+                                self.temporary_data['out'] = {}
+                            if 'id_admin_channel' not in self.temporary_data['out']:
+                                self.temporary_data['out']['id_admin_channel'] = []
+                            if 'id_admin' not in self.temporary_data['out']:
+                                self.temporary_data['out']['id_admin'] = []
+                            if 'title' not in self.temporary_data['out']:
+                                self.temporary_data['out']['title'] = []
+                            if 'body' not in self.temporary_data['out']:
+                                self.temporary_data['out']['body'] = []
+                            self.temporary_data['out']['id_admin_channel'].append(str(response_temp_dict['id_admin_channel']))
+                            self.temporary_data['out']['id_admin'].append(str(response_temp_dict['id_admin_last_session_table']))
+                            self.temporary_data['out']['title'].append(vacancy_from_admin_dict['title'])
+                            self.temporary_data['out']['body'].append(vacancy_from_admin_dict['body'])
+                            pass
+
                         else:
                             await self.bot_aiogram.send_message(message.chat.id,
                                                                 'There is not response from admin temporary table')
@@ -5490,6 +5541,47 @@ class InviteBot():
                     self.db.delete_table(
                         table_name='admin_temporary'
                     )
+                #shorts_report
+                try:
+                    for n in range(0, len(self.temporary_data['out']['id_admin_channel'])):
+                        if self.temporary_data['out']['id_admin_channel'][n] in self.temporary_data['in']['id_admin_channel']:
+                            index = self.temporary_data['in']['id_admin_channel'].index(self.temporary_data['out']['id_admin_channel'][n])
+
+                            self.report.parsing_report(in_admin_channel=self.temporary_data['in']['id_admin_channel'][index], report_type='shorts')
+                            self.report.parsing_report(in_id_admin=self.temporary_data['in']['id_admin'][index], report_type='shorts')
+                            self.report.parsing_report(in_title=self.temporary_data['in']['title'][index] if 'title' in self.temporary_data['in'] else '-', report_type='shorts')
+                            self.report.parsing_report(in_body=self.temporary_data['in']['body'][index] if 'body' in self.temporary_data['in'] else '-', report_type='shorts')
+                            self.report.parsing_report(out_admin_channel=self.temporary_data['out']['id_admin_channel'][n], report_type='shorts')
+                            self.report.parsing_report(out_id_admin=self.temporary_data['out']['id_admin'][n], report_type='shorts')
+                            self.report.parsing_report(out_title=self.temporary_data['out']['title'][n], report_type='shorts')
+                            self.report.parsing_report(out_body=self.temporary_data['out']['body'][n], report_type='shorts')
+                            self.report.parsing_switch_next(switch=True, report_type='shorts')
+                            for key in self.temporary_data['in']:
+                                self.temporary_data['in'][key].pop(index)
+                        else:
+                            self.report.parsing_report(out_admin_channel=self.temporary_data['out']['id_admin_channel'][n], report_type='shorts')
+                            self.report.parsing_report(out_id_admin=self.temporary_data['out']['id_admin'][n], report_type='shorts')
+                            self.report.parsing_report(out_title=self.temporary_data['out']['title'][n], report_type='shorts')
+                            self.report.parsing_report(out_body=self.temporary_data['out']['body'][n], report_type='shorts')
+                            self.report.parsing_switch_next(switch=True, report_type='shorts')
+
+                    if self.temporary_data['in']['id_admin_channel']:
+                        for n in range(0, len(self.temporary_data['in']['id_admin_channel'])):
+                            self.report.parsing_report(in_admin_channel=self.temporary_data['in']['id_admin_channel'][n], report_type='shorts')
+                            self.report.parsing_report(in_id_admin=self.temporary_data['in']['id_admin'][n], report_type='shorts')
+                            self.report.parsing_report(in_title=self.temporary_data['in']['title'][n] if 'title' in self.temporary_data['in'] else '-', report_type='shorts')
+                            self.report.parsing_report(in_body=self.temporary_data['in']['body'][n] if 'body' in self.temporary_data['in'] else '-', report_type='shorts')
+                            self.report.parsing_switch_next(switch=True, report_type='shorts')
+
+                    await self.report.add_to_excel(report_type='shorts')
+
+                    await helper.send_file_to_user(
+                        bot=self.bot_aiogram,
+                        chat_id=message.chat.id,
+                        path=report_file_path['shorts']
+                    )
+                except Exception as ex:
+                    await self.bot_aiogram.send_message(message.chat.id, f"error in the shorts report: {ex}")
 
                 await self.bot_aiogram.send_message(
                     message.chat.id,
