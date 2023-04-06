@@ -27,7 +27,7 @@ from telethon.tl.functions.channels import GetParticipantsRequest
 from telethon.tl.functions.messages import GetHistoryRequest
 from telethon.tl.types import InputUser, InputChannel, ChannelParticipantsSearch, PeerChannel
 from db_operations.scraping_db import DataBaseOperations
-from reports.report_variables import report_file_path
+from report.report_variables import report_file_path
 from sites.scraping_hhkz import HHKzGetInformation
 from sites.scraping_praca import PracaGetInformation
 from telegram_chats.scraping_telegramchats2 import WriteToDbMessages, main
@@ -50,7 +50,7 @@ from patterns._export_pattern import export_pattern
 from patterns.data_pattern._data_pattern import pattern as data_pattern
 from multiprocessing import Process
 from sites.send_log_txt import send_log_txt
-from reports.reports import Reports
+from report.reports import Reports
 
 logs = Logs()
 import settings.os_getenv as settings
@@ -3207,7 +3207,7 @@ class InviteBot():
             # await self.report.add_to_excel()
             # await self.send_file_to_user(
             #     message=message,
-            #     path="./reports/excel/parsing_report.xlsx"
+            #     path="./report/excel/parsing_report.xlsx"
             # )
 
             sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
