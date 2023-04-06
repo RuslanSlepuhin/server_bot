@@ -103,7 +103,7 @@ path_push_shorts_report_file = "./excel/report_push_shorts.txt"
 tables_list_for_report = ['junior', '*']
 developer_chat_id = 5884559465
 
-parsing_report_path = './reports/excel/parsing_report.xlsx'
+parsing_report_path = './report/excel/parsing_report.xlsx'
 table_parsing_report = 'report_parsing_temporary'
 
 pictures_separators_path = "./utils/pictures/shorts_separators"
