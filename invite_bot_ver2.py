@@ -975,6 +975,7 @@ class InviteBot():
         async def geek(message: types.Message):
 
             geek = GeekGetInformation(
+                report=self.report,
                 search_word=None,
                 bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
             )
@@ -984,6 +985,7 @@ class InviteBot():
         async def geek(message: types.Message):
 
             svyazi = SvyaziGetInformation(
+                report=self.report,
                 search_word=None,
                 bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
             )
@@ -993,6 +995,7 @@ class InviteBot():
         async def geek(message: types.Message):
 
             rabota = RabotaGetInformation(
+                report=self.report,
                 search_word=None,
                 bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
             )
@@ -1002,6 +1005,7 @@ class InviteBot():
         async def geek(message: types.Message):
 
             superjob = SuperJobGetInformation(
+                report=self.report,
                 search_word=None,
                 bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
             )
@@ -1011,6 +1015,7 @@ class InviteBot():
         async def geek(message: types.Message):
 
             dev = DevGetInformation(
+                report=self.report,
                 search_word=None,
                 bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
             )
@@ -1020,6 +1025,7 @@ class InviteBot():
         async def finder(message: types.Message):
 
             finder = FinderGetInformation(
+                report=self.report,
                 search_word=None,
                 bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
             )
@@ -1028,6 +1034,7 @@ class InviteBot():
         @self.dp.message_handler(commands=['habr'])
         async def finder(message: types.Message):
             habr = HabrGetInformation(
+                report=self.report,
                 search_word=None,
                 bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
             )
@@ -1037,6 +1044,7 @@ class InviteBot():
         async def ingame(message: types.Message):
 
             ingame = IngameJobGetInformation(
+                report=self.report,
                 search_word=None,
                 bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
             )
@@ -1061,6 +1069,7 @@ class InviteBot():
         @self.dp.message_handler(commands=['praca'])
         async def praca_commands(message: types.Message):
             praca = PracaGetInformation(
+                report=self.report,
                 bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
             )
             await praca.get_content()
@@ -1086,6 +1095,7 @@ class InviteBot():
             await state.finish()
             await send_log_txt(text='', write_mode='w')
             hh_kz = HHKzGetInformation(
+                report=self.report,
                 search_word=search_word,
                 bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
             )
@@ -1111,6 +1121,7 @@ class InviteBot():
             await state.finish()
             await send_log_txt(text='', write_mode='w')
             hh = HHGetInformation(
+                report=self.report,
                 search_word=search_word,
                 bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id}
             )
