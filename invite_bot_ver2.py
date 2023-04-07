@@ -294,6 +294,18 @@ class InviteBot():
             for text in text_list:
                 await self.bot_aiogram.send_message(message.chat.id, text)
 
+        @self.dp.message_handler(commands=['get_log_file'])
+        async def get_log_file(message: types.Message):
+            try:
+                await helper.send_file_to_user(
+                    bot=self.bot_aiogram,
+                    chat_id=message.chat.id,
+                    path="./py_log.log",
+                    caption="take the logs"
+                )
+            except Exception as ex:
+                print(f'error for sending logs: {ex}')
+
         @self.dp.message_handler(commands=['hard_push_by_web'])
         async def hard_push_by_web_command(message: types.Message):
             for i in ["http://localhost:5000/hard-push", "http://1118013-cw00061.tw1.ru/hard-push"]:
