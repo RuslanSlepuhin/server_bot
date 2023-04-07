@@ -1,5 +1,4 @@
 import re
-import time
 
 from patterns._export_pattern import export_pattern
 from utils.additional_variables import additional_variables as variables
@@ -25,21 +24,30 @@ class VacancyFilter:
     def sort_profession(
             self,
             title,
-            body,
-            check_contacts=True,
-            check_profession=True,
-            check_vacancy=True,
-            check_vacancy_only_mex=False,
-            get_params=True,
-            check_level=True,
-            only_one_profession_sub=True
+            body=None,
+            # check_contacts=True,
+            # check_profession=True,
+            # check_vacancy=True,
+            # check_vacancy_only_mex=False,
+            # get_params=True,
+            # check_level=True,
+            # only_one_profession_sub=True,
+            **kwargs
     ):
-        # profession = dict()
+        check_contacts = True if 'check_contacts' not in kwargs else kwargs['check_contacts']
+        check_profession = True if 'check_profession' not in kwargs else kwargs['check_profession']
+        check_vacancy = True if 'check_vacancy' not in kwargs else kwargs['check_vacancy']
+        check_vacancy_only_mex = False if 'check_vacancy_only_mex' not in kwargs else kwargs['check_vacancy_only_mex']
+        get_params = True if 'get_params' not in kwargs else kwargs['get_params']
+        check_level = True if 'check_level' not in kwargs else kwargs['check_level']
+        only_one_profession_sub = True if 'only_one_profession_sub' not in kwargs else kwargs['only_one_profession_sub']
+        low = False if 'low' not in kwargs else kwargs['low']
+
         self.profession['tag'] = ''
         self.profession['anti_tag'] = ''
         self.profession['profession'] = []
         self.profession['sub'] = []
-        self.profession['level'] = ""
+        self.profession['level'] = ''
 
         params = {}
         vacancy = f"{title}\n{body}"
@@ -51,14 +59,17 @@ class VacancyFilter:
                     pattern=self.export_pattern['data']['vacancy'],
                     vacancy=vacancy,
                     key='vacancy',
-                    check_only_mex=check_vacancy_only_mex
+                    check_only_mex=check_vacancy_only_mex,
+                    low=low
                 )
+
                 self.result_dict2['vacancy'] = result['result']
                 self.profession['tag'] += result['tags']
                 self.profession['anti_tag'] += result['anti_tags']
 
                 if not self.result_dict2['vacancy']:
-                    self.report.parsing_report(not_vacancy=True)
+                    if self.report:
+                        self.report.parsing_report(not_vacancy=True, report_type='parsing')
                     # self.profession['profession'] = {'no_sort'}
                     # print(f"line84 {self.profession['profession']}")
                     print("= vacancy not found =")
@@ -69,7 +80,8 @@ class VacancyFilter:
                 result = self.check_parameter(
                     pattern=self.export_pattern['data']['contacts'],
                     vacancy=vacancy,
-                    key='contacts'
+                    key='contacts',
+                    low=low
                 )
                 self.result_dict2['contacts'] = result['result']
                 self.profession['tag'] += result['tags']
@@ -77,7 +89,8 @@ class VacancyFilter:
 
                 if not self.result_dict2['contacts']:
                     self.profession['profession'] = {'no_sort'}
-                    self.report.parsing_report(not_contacts=True)
+                    if self.report:
+                        self.report.parsing_report(not_contacts=True, report_type='parsing')
                     # print(f"not contacts {self.profession['profession']}")
                     print("= contacts not found =")
                     return {'profession': self.profession, 'params': {}}
@@ -108,18 +121,15 @@ class VacancyFilter:
                         self.profession['anti_tag'] += result['anti_tags']
 
             if 'fullstack' in self.profession['profession']:
-                # self.profession = self.transform_fullstack_to_back_and_front(text=vacancy, profession=self.profession)
                 self.transform_fullstack_to_back_and_front(text=vacancy)
 
             if not self.profession['profession']:
                 self.profession['profession'] = {'no_sort'}
-                # print(f"line100 {profession['profession']}")
 
             self.profession['profession'] = set(self.profession['profession'])
 
             # -------------- get subprofessions -------------------------
             if 'no_sort' not in self.profession['profession']:
-                print(f"FINALLY: {self.profession['profession']}")
                 self.get_sub_profession(text=vacancy)
             else:
                 self.profession['sub'] = []
@@ -129,8 +139,6 @@ class VacancyFilter:
         # --------------------- end -------------------------
         if get_params:
             params = self.get_params(text=vacancy)
-
-        # print(f"\nFound next professions:\n{self.profession['profession']}\n")
 
         if check_level:
             level_list = []
@@ -177,22 +185,17 @@ class VacancyFilter:
                     if result['result']:
                         self.profession['sub'][prof].append(result['result'])
 
-        for i in self.profession['sub']:
-            print(i, self.profession['sub'][i])
-        pass
-        # return profession
-
-    def check_parameter(self, pattern, vacancy, key, low=True, mex=True, only_one_profession_sub=False, check_only_mex=False):
+    def check_parameter(self, pattern, vacancy, key, low=False, mex=True, only_one_profession_sub=False, check_only_mex=False):
         result = 0
         tags = ''
         anti_tags = ''
 
-        # if low:
-        #     vacancy = vacancy.lower()
+        if low:
+            vacancy = vacancy.lower()
         if not check_only_mex:
             for word in pattern['ma']:
-                # if low:
-                #     word = word.lower()
+                if low:
+                    word = word.lower()
                 match = []
                 try:
                     match = set(re.findall(rf"{word}", vacancy))
@@ -208,8 +211,8 @@ class VacancyFilter:
 
         if result and mex:
             for anti_word in pattern['mex']:
-                # if low:
-                #     anti_word = anti_word.lower()
+                if low:
+                    anti_word = anti_word.lower()
                 match = []
                 try:
                     match = set(re.findall(rf"{anti_word}", vacancy))
@@ -253,28 +256,8 @@ class VacancyFilter:
 
         self.profession['profession'].discard('fullstack')
 
-        # return profession
-
     def get_company_new(self, text):
         pass
-        # companies_from_db = DataBaseOperations(None).get_all_from_db(
-        #     table_name='companies',
-        #     without_sort=True,
-        #     field='company'
-        # )
-        # for company in companies_from_db:
-        #     company = company[0]
-        #     if company and company in text:
-        #         return company
-        #
-        # match = re.findall(rf"{self.export_pattern['others']['company']['ma']}", text)
-        # if match:
-        #     return self.clean_company_new(match[0])
-        #
-        # match = re.findall(rf"{self.export_pattern['others']['company2']['ma']}", text)
-        # if match:
-        #     return match[0]
-        # return ''
 
     def english_requirements_new(self, text):
         english_pattern = "|".join(self.export_pattern['others']['english']['ma'])
@@ -301,7 +284,6 @@ class VacancyFilter:
         match = re.findall(rf"{remote_pattern}", text)
         if match:
             return match[0]
-            # return 'remote'
         else:
             return ''
 
@@ -335,12 +317,8 @@ class VacancyFilter:
                 pattern = self.export_pattern['others']['vacancy']['sub'][f'{pro}_vacancy']
                 if pattern:
                     match = re.findall(rf"{pattern}", text)
-                    # print('pro = ', pro)
-                    # print('match = ', match)
-                    # print("type(match) = ", type(match))
                     try:
                         match_str = ''.join(match)
-                        # print("''.join(match) = ", match_str)
                         if len(''.join(match)) > 0:
                             vacancy = match[0]
                             break
@@ -351,24 +329,12 @@ class VacancyFilter:
             vacancy_pattern = self.export_pattern['others']['vacancy']['sub']['common_vacancy']
             if vacancy_pattern:
                 match = re.findall(rf"{vacancy_pattern}", text)
-                # print('pro = common')
-                # print('match = ', match)
-                # print("type(match) = ", type(match))
                 try:
                     match_str = ''.join(match)
-                    # print("''.join(match) = ", match_str)
                     if len(''.join(match)) > 0:
                         vacancy = match[0]
                 except Exception as e:
                     print('Error: ', e)
-
-            # if not vacancy:
-            #     pattern = self.export_pattern['others']['vacancy']['sub']['backend_vacancy']
-            #     match = re.findall(rf"{pattern}", text)
-            #     print('match = ', match)
-            #     print("''.join(match) = ", ''.join(match))
-            #     if len(''.join(match))>0:
-            #         vacancy = match[0]
 
         if sub and not vacancy:
             for key in sub:
@@ -377,23 +343,14 @@ class VacancyFilter:
                     break
         if vacancy:
             vacancy = self.clean_vacancy_from_get_vacancy_name(vacancy)
-
-            # print('++++++++++++++++++++\nvacancy = ', vacancy, '\n++++++++++++++++++++')
-            # time.sleep(10)
         return vacancy
 
     def clean_vacancy_from_get_vacancy_name(self, vacancy):
         vacancy = re.findall(r"[a-zA-Zа-яА-Я0-9:;-_\\/\s]+", vacancy)[0]
-        # trash_list = ["[Ии]щем в команду[:]?", "[Тт]ребуется[:]?", "[Ии]щем[:]?", "[Вв]акансия[:]?", "[Пп]озиция[:]?",
-        #               "[Дд]олжность[:]?", "в поиске[:]?", "[Нн]азвание вакансии[:]?", "[VACANCYvacancy]{7}[:]?"]
-        # for i in trash_list:
-        #     if i in vacancy:
         vacancy = re.sub(rf"{variables.clear_vacancy_trash_pattern}", "", vacancy)
-        # print("vacancy_final = ", vacancy.strip())
         return vacancy.strip()
 
     def compose_junior_sub(self, key_word):
-        # print("profession['sub'] ", self.profession['sub'])
         if key_word in self.profession['sub'].keys():
             for key in self.profession['sub'].keys():
                 if key != key_word:
@@ -417,7 +374,7 @@ class VacancyFilter:
                 vacancy=vacancy,
                 low=low,
                 key=item,
-                mex=mex
+                mex=mex,
             )
             return result
 
@@ -436,13 +393,9 @@ class VacancyFilter:
             self.profession['profession'].add(prof_list[0])
         if junior:
             self.profession['profession'].add('junior')
-        # print('reduce_profession profession: ', self.profession['profession'])
-        # time.sleep(5)
 
         subs.extend(self.profession['sub'])
         for sub in subs:
             if sub in self.profession['profession']:
                 new_sub[sub] = self.profession['sub'][sub][0] if self.profession['sub'][sub] else []
         self.profession['sub'] = new_sub
-        # print('reduce_profession sub: ', self.profession['sub'])
-        # time.sleep(5)
