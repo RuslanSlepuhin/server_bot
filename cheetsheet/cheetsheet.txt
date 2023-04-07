@@ -17,4 +17,4 @@ setupcon
 
 git stash
 
-chmod 777
+chmod 777 chromedriver

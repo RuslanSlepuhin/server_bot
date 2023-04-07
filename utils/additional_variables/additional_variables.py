@@ -59,6 +59,7 @@ pattern_path = "./excel/pattern.txt"
 admin_check_file_path = './logs/check_file.txt'
 path_log_check_profession = "./excel/send_log_txt.txt"
 report_file_not_actual_vacancy = "./excel/not_actual_vacancies.txt"
+shorts_copy_path = "./excel/copy_shorts.txt"
 
 sites_search_words = ['designer', 'ui', 'junior', 'стажер', 'стажировка', 'product manager', 'project manager', 'python', 'php']
 
@@ -108,6 +109,22 @@ table_parsing_report = 'report_parsing_temporary'
 
 pictures_separators_path = "./utils/pictures/shorts_separators"
 
+dict_from_front = {
+    "direction": "",
+    "specialization": ["Front-end", "Back-end", "Mobile", "Fullstack", "Системный администратор", "Администратор БД", "Администратор приложений", "2D/3D design", "Gamedev design", "Marketing design", "Mobile design", "Motion", "Product design", "UX/UI design", "Web design", "Анимация", "Арт директор", "Бренд дизайн", "Видео", "Графический дизайн", "Дизайн интерьеров", "Иллюстрация", "Инфографика", "Полиграфия","Спецэффекты", "Технический дизайн"],
+    "level": ["", "trainee", "entry level", "junior", "middle", "senior", "director", "lead"],
+    "country": [],
+    "city": [],
+    "salary": ["", ""],
+            "currency": "",
+    "salaryOption": ["Почасовая", "За месяц", "За год", "До вычета налогов", "На руки"],
+    "companyScope": [],
+    "typeOfEmployment": ["", "fulltime", "parttime", "contract", "freelance", "internship", "volunteering"],
+    "companyType": ["", "product", "outsourcing", "outstaff", "consulting", "notTechnical", "startup"],
+    "companySize": ["1-200", "201-500", "501-1000", "1000"],
+    "job_type": ["remote", "fulltime", "flexible", "office", "office/remote" ]
+ }
+
 post_request_for_example = {
     'profession': '',
     'specialization':
@@ -128,7 +145,6 @@ post_request_for_example = {
 }
 
 # help_text = '/log or /logs - get custom logs (useful for developer\n' \
-#             '/get_log_file - get file with logs\n' \
 #             '/get_participants - ❗️get the channel follower numbers\n' \
 #             '/delete_till - ❗️delete old vacancy from admin DB till date\n\n' \
 #             '------------ FOR DEVELOPER: ------------\n' \
@@ -215,8 +231,7 @@ post_request_for_example = {
 #             '/hard_pushing_by_schedule - run pushing by schedule\n' \
 #             '/hard_push_by_web - run pushing by schedule through web point\n' \
 #             '/pick_up_forcibly_from_admin - if vacancies has been sent to the admin channel already and code has stopped\n' \
-#             '/force_shorts_public - public shorts without the button' \
-#             '---------------------------------------------------\n\n' \
+#           '---------------------------------------------------\n\n' \
 #             '❗️- it is admin options'
 
 help_text = '/get_log_file - get file with logs\n' \
@@ -241,9 +256,6 @@ help_text = '/get_log_file - get file with logs\n' \
             '/schedule - non-stop parsing\n' \
             '/get_news - start to invite followers\n' \
             '🖐️/stop - stop process\n' \
-            '✅/refresh - to get the professions in excel format in all vacancies throgh the new filters logic (without rewriting)\n' \
-            '✅/check_doubles - remove the vacancy"s doubles\n' \
-            '✅/remove_completed_professions - remove complete professions\n' \
             '---------------------------------------------------\n\n' \
             '---------------- STATISTICS: ----------------\n' \
             '/how_many_vacancies_published - get the statistic file (created by Anna)\n' \
