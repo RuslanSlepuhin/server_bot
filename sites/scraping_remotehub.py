@@ -115,11 +115,11 @@ class RemotehubGetInformation:
 
     async def get_content_from_link(self):
         links = []
-        counter = 1
+        # counter = 1
         for link in self.list_links:
-            counter += 1
-            if counter>10:
-                break
+            # counter += 1
+            # if counter>10:
+            #     break
             vacancy_url = link.find('a', class_='entity-detailed-link').get('href')
             vacancy_url = self.main_url + vacancy_url
             # print('vacancy_url = ', vacancy_url)
