@@ -1,5 +1,6 @@
 from db_operations.scraping_db import DataBaseOperations
 from filters.filter_jan_2023.filter_jan_2023 import VacancyFilter
+from helper_functions.parser_find_add_parameters.parser_find_add_parameters import FinderAddParameters
 from utils.additional_variables.additional_variables import table_list_for_checking_message_in_db as tables
 
 class HelperSite_Parser:
@@ -7,6 +8,7 @@ class HelperSite_Parser:
         self.report = kwargs['report'] if 'report' in kwargs else None
         self.db = DataBaseOperations(report=self.report)
         self.filter = VacancyFilter(report=self.report)
+        self.find_parameters = FinderAddParameters()
 
     def write_each_vacancy(self, results_dict):
         response = {}
@@ -43,6 +45,9 @@ class HelperSite_Parser:
             self.report.parsing_report(ma=profession['tag'], mex=profession['anti_tag'])
 
             if profession['profession']:
+                salary = self.find_parameters.salary_to_set_form(text=results_dict['salary'])
+                results_dict['salary'] = ", ".join(salary)
+
                 response_from_db = self.db.push_to_admin_table(
                     results_dict=results_dict,
                     profession=profession,
@@ -53,13 +58,8 @@ class HelperSite_Parser:
                 response['vacancy'] = 'no vacancy by anti-tags'
         else:
             response['vacancy'] = 'found in db by link'
-
         self.report.parsing_switch_next(switch=True)
         return {'response': response, "profession": profession}
-
-        # self.report.parsing_switch_next(switch=True)
-        # # return {'response_from_db': exist_or_not, "profession": None}
-        # return {'response_from_db': not check_vacancy_exists, "profession": None}
 
     async def get_name_session(self):
         current_session = self.db.get_all_from_db(

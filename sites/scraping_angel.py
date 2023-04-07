@@ -1,9 +1,7 @@
-import asyncio
 import re
 import time
 from datetime import datetime
 import pandas as pd
-import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
@@ -12,7 +10,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 # from _apps.scraping_push_to_channels import PushChannels
 from db_operations.scraping_db import DataBaseOperations
-from patterns.pattern_Alex2809 import cities_pattern, params
+from __backup__.pattern_Alex2809 import cities_pattern, params
 
 
 class AngelGetInformation:
@@ -76,10 +74,7 @@ class AngelGetInformation:
 
     async def get_info(self, link):
 
-        self.browser = webdriver.Chrome(
-            executable_path=chrome_driver_path,
-            options=options
-        )
+        self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
 
 
 
