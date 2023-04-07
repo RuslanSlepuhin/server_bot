@@ -569,4 +569,6 @@ async def send_file_to_user(
                     except Exception as e:
                         print(e)
             except:
-                await client.send_file(int(developer_chat_id), file, caption=caption)
+                if client:
+                    await client.send_file(int(developer_chat_id), file, caption=caption)
+                pass
