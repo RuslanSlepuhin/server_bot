@@ -7,10 +7,12 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from db_operations.scraping_db import DataBaseOperations
+from helper_functions.parser_find_add_parameters.parser_find_add_parameters import FinderAddParameters
 from sites.write_each_vacancy_to_db import HelperSite_Parser
 from settings.browser_settings import options, chrome_driver_path
 from utils.additional_variables.additional_variables import sites_search_words, parsing_report_path
 from helper_functions.helper_functions import edit_message, send_message, send_file_to_user
+from report.report_variables import report_file_path
 
 
 class DesignerGetInformation:
@@ -18,36 +20,15 @@ class DesignerGetInformation:
     def __init__(self, **kwargs):
 
         self.report = kwargs['report'] if 'report' in kwargs else None
-        self.search_word = kwargs['search_word'] if 'search_word' in kwargs else None
+        self.search_words = kwargs['search_word'] if 'search_word' in kwargs else None
         self.bot_dict = kwargs['bot_dict'] if 'bot_dict' in kwargs else None
+        self.find_parameters = FinderAddParameters()
         self.helper_parser_site = HelperSite_Parser(report=self.report)
         self.db = DataBaseOperations(report=self.report)
         self.db_tables = None
         self.options = None
         self.page = None
-        self.to_write_excel_dict = {
-            'chat_name': [],
-            'title': [],
-            'body': [],
-            'vacancy': [],
-            'vacancy_url': [],
-            'company': [],
-            'company_link': [],
-            'english': [],
-            'relocation': [],
-            'job_type': [],
-            'city': [],
-            'salary': [],
-            'experience': [],
-            'time_of_public': [],
-            'contacts': []
-        }
-        if not self.search_word:
-            self.search_words = sites_search_words
-        else:
-            self.search_words = [self.search_word]
         self.page_number = 1
-
         self.current_message = None
         self.msg = None
         self.written_vacancies = 0
@@ -62,16 +43,18 @@ class DesignerGetInformation:
         self.db_tables = db_tables
         self.count_message_in_one_channel = 1
         await self.report.add_to_excel()
+        await self.get_info()
+        self.browser.quit()
         await send_file_to_user(
             bot=self.bot,
             chat_id=self.chat_id,
-            path=parsing_report_path,
+            path=report_file_path['parsing'],
         )
-        await self.get_info()
-        self.browser.quit()
 
     async def get_info(self):
         # self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        # -------------------- check what is current session --------------
+        self.current_session = await self.helper_parser_site.get_name_session()
         self.browser = webdriver.Chrome(
             executable_path=chrome_driver_path,
             options=options
@@ -79,7 +62,6 @@ class DesignerGetInformation:
         # try:
         await self.bot.send_message(self.chat_id, 'https://designer.ru/t/', disable_web_page_preview=True)
         self.browser.get('https://designer.ru/t/')
-        # self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
         await self.bot.send_message(self.chat_id, 'designer.ru parsing: Done!', disable_web_page_preview=True)
@@ -91,39 +73,204 @@ class DesignerGetInformation:
 
         open_links = soup.find_all('div', class_='z_bx00kk__i')
         closed_links = soup.find_all('div', class_='z_b_1204897897897892734_b_close')
-        list_links = list(set(open_links) - set(closed_links))
-        if list_links:
-            # print(f'\nНайдено {len(list_links)} вакансий\n')
+        self.list_links = list(set(open_links) - set(closed_links))
+        if self.list_links:
             self.current_message = await self.bot.send_message(self.chat_id,
-                                                               f'designer.ru:\nНайдено {len(list_links)} вакансий',
+                                                               f'designer.ru:\nНайдено {len(self.list_links)} вакансий',
                                                                disable_web_page_preview=True)
-
-            # -------------------- check what is current session --------------
-
-            current_session = self.db.get_all_from_db(
-                table_name='current_session',
-                param='ORDER BY id DESC LIMIT 1',
-                without_sort=True,
-                order=None,
-                field='session',
-                curs=None
-            )
-            for value in current_session:
-                self.current_session = value[0]
 
             # --------------------- LOOP -------------------------
             self.written_vacancies = 0
             self.rejected_vacancies = 0
-
-            for i in list_links:
-                await self.get_content_from_link(i, links)
-
+            await self.get_content_from_link()
             # ----------------------- the statistics output ---------------------------
             self.written_vacancies = 0
             self.rejected_vacancies = 0
             return True
         else:
             return False
+
+    async def get_content_from_link(self):
+        links = []
+        for link in self.list_links:
+            vacancy_url = link.find('a').get('href')
+            vacancy_url = self.main_url + vacancy_url
+            links.append(vacancy_url)
+            self.browser.get(vacancy_url)
+            # self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            soup = BeautifulSoup(self.browser.page_source, 'lxml')
+
+            # get vacancy ------------------------
+            full_vacancy = soup.find('h1').text.split()
+            words_list = ['ищет', 'ищем', 'ищут', 'поиске', 'поисках']
+            vacancy = ''
+            for word in words_list:
+                if word in full_vacancy:
+                    index_word = full_vacancy.index(word)
+                    vacancy = full_vacancy[index_word + 1:]
+                    raw_vacancy = ' '.join(vacancy)
+                    vacancy = self.normalize_vacancy(raw_vacancy)
+                    break
+            if not vacancy:
+                vacancy = 'дизайнер'
+
+                # try:
+                #     index_word = full_vacancy.split().index('ищут')
+                # except:
+                #     index_word = full_vacancy.split().index('поиске')
+
+            # print('vacancy = ', vacancy)
+
+            # get title --------------------------
+            title = vacancy
+            # print('title = ', title)
+
+            # get body --------------------------
+            body = soup.find('div', class_='z_dtl_text_block_v3').text.strip()
+            body = body.replace('\n\n', '\n')
+            body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
+
+            # get tags --------------------------
+            level = ''
+            # try:
+            #     level = soup.find('div', class_='category').get_text()
+            # except:
+            #     pass
+
+            tags = ''
+            # try:
+            #     raw_tags = soup.find_all('span', class_="truncate muted-2")
+            #     tags = ''
+            #     for tag in raw_tags:
+            #         tags += tag.text
+            # except:
+            #     pass
+            # print('tags = ', tags)
+
+            english = ''
+            if re.findall(r'[Аа]нглийский', tags) or re.findall(r'[Ee]nglish', tags):
+                english = 'English'
+
+            # get city --------------------------
+            try:
+                city = soup.find('div', class_='z_b_72194kjs___head_v2').find('div').find_all('div')[-1].text.strip()
+            except:
+                city = ''
+            # print('city = ', city)
+
+            # get company --------------------------
+            try:
+                company = soup.find('div', class_='z_b_72194kjs___intro_v2__www').text.strip()
+                # company = company.replace('\xa0', ' ')
+                # if 'Прямой работодатель ' in company:
+                #     company = company.replace('Прямой работодатель ', '')
+                # company = company.replace('\n', ' ')
+
+            except:
+                company = ''
+            # print('company = ', company)
+
+            # get salary --------------------------
+            try:
+                salary = soup.find('div', class_='z_b_72194kjs___intro_v2__salary').text.split()[1:]
+                salary = ' '.join(salary)
+            except:
+                salary = ''
+            salary = self.find_parameters.salary_to_set_form(text=salary)
+            salary = ", ".join(salary)
+
+            # get experience --------------------------
+            # raw_job_format = soup.find_all('a', class_="ng-star-inserted")
+            job_format = ''
+            # for format in raw_job_format:
+            #     format = format.find('mat-basic-chip')
+            #     if format:
+            #         job_format += format.text
+            # try:
+            #     experience = soup.find('p', class_='vacancy-description-list-item').find('span').get_text()
+            # except:
+            #     experience = ''
+            # print('experience = ',experience)
+
+            # print('job_format = ', job_format)
+
+            contacts = ''
+
+            try:
+                date = soup.find('div', class_='z_b_72194kjs___head_v2').find('div').find('div').text.strip()
+            except:
+                date = ''
+            if date == 'сегодня':
+                date = datetime.today()
+            elif date == 'вчера':
+                date = datetime.today() - timedelta(days=1)
+            else:
+                date = self.normalize_date(date)
+            # print('date = ', date)
+
+            # ------------------------- search relocation ----------------------------
+            relocation = ''
+            if re.findall(r'[Rr]elocation', body):
+                relocation = 'релокация'
+
+            # ------------------------- search city ----------------------------
+            # city = ''
+            # for key in cities_pattern:
+            #     for item in cities_pattern[key]:
+            #         match = re.findall(rf"{item}", body)
+            #         if match and key != 'others':
+            #             for i in match:
+            #                 city += f"{i} "
+
+            # ------------------------- search english ----------------------------
+            # english_additional = ''
+            # for item in params['english_level']:
+            #     match1 = re.findall(rf"{item}", body)
+            #     match2 = re.findall(rf"{item}", tags)
+            #     if match1:
+            #         for i in match1:
+            #             english_additional += f"{i} "
+            #     if match2:
+            #         for i in match2:
+            #             english_additional += f"{i} "
+            #
+            # if english and ('upper' in english_additional or 'b1' in english_additional or 'b2' in english_additional \
+            #         or 'internediate' in english_additional or 'pre' in english_additional):
+            #     english = english_additional
+            # elif not english and english_additional:
+            #     english = english_additional
+
+            self.db.write_to_db_companies([company])
+
+            # -------------------- compose one writting for ione vacancy ----------------
+
+            results_dict = {
+                'chat_name': 'https://designer.ru/',
+                'title': title,
+                'body': body,
+                'vacancy': vacancy,
+                'vacancy_url': vacancy_url,
+                'company': company,
+                'company_link': '',
+                'english': english,
+                'relocation': relocation,
+                'job_type': job_format,
+                'city': city,
+                'salary': salary,
+                'experience': '',
+                'time_of_public': date,
+                'contacts': contacts,
+                'session': self.current_session
+            }
+
+            response = self.helper_parser_site.write_each_vacancy(results_dict)
+
+            await self.output_logs(
+                about_vacancy=response,
+                vacancy=vacancy,
+                vacancy_url=vacancy_url
+            )
+
 
     def normalize_date(self, date):
         convert = {
@@ -222,194 +369,6 @@ class DesignerGetInformation:
         companies = set(companies)
 
         self.db.write_to_db_companies(companies)
-
-    async def get_content_from_link(self, i, links):
-        vacancy_url = i.find('a').get('href')
-        vacancy_url = self.main_url + vacancy_url
-        # print('vacancy_url = ', vacancy_url)
-        links.append(vacancy_url)
-
-        # print('self.broswer.get(vacancy_url)')
-        # await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
-        # self.browser = browser
-        self.browser.get(vacancy_url)
-        # self.browser.get('https://google.com')
-        self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-
-        # print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
-        soup = BeautifulSoup(self.browser.page_source, 'lxml')
-        # print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
-
-        # get vacancy ------------------------
-        full_vacancy = soup.find('h1').text.split()
-        words_list = ['ищет', 'ищем', 'ищут', 'поиске', 'поисках']
-        vacancy = ''
-        for word in words_list:
-            if word in full_vacancy:
-                index_word = full_vacancy.index(word)
-                vacancy = full_vacancy[index_word + 1:]
-                raw_vacancy = ' '.join(vacancy)
-                vacancy = self.normalize_vacancy(raw_vacancy)
-                break
-        if not vacancy:
-            vacancy = 'дизайнер'
-
-            # try:
-            #     index_word = full_vacancy.split().index('ищут')
-            # except:
-            #     index_word = full_vacancy.split().index('поиске')
-
-        # print('vacancy = ', vacancy)
-
-        # get title --------------------------
-        title = vacancy
-        # print('title = ', title)
-
-        # get body --------------------------
-        body = soup.find('div', class_='z_dtl_text_block_v3').text.strip()
-        body = body.replace('\n\n', '\n')
-        body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
-        # print('body = ', body)
-
-        # get tags --------------------------
-        level = ''
-        # try:
-        #     level = soup.find('div', class_='category').get_text()
-        # except:
-        #     pass
-
-        tags = ''
-        # try:
-        #     raw_tags = soup.find_all('span', class_="truncate muted-2")
-        #     tags = ''
-        #     for tag in raw_tags:
-        #         tags += tag.text
-        # except:
-        #     pass
-        # print('tags = ', tags)
-
-        english = ''
-        if re.findall(r'[Аа]нглийский', tags) or re.findall(r'[Ee]nglish', tags):
-            english = 'English'
-
-        # get city --------------------------
-        try:
-            city = soup.find('div', class_='z_b_72194kjs___head_v2').find('div').find_all('div')[-1].text.strip()
-        except:
-            city = ''
-        # print('city = ', city)
-
-        # get company --------------------------
-        try:
-            company = soup.find('div', class_='z_b_72194kjs___intro_v2__www').text.strip()
-            # company = company.replace('\xa0', ' ')
-            # if 'Прямой работодатель ' in company:
-            #     company = company.replace('Прямой работодатель ', '')
-            # company = company.replace('\n', ' ')
-
-        except:
-            company = ''
-        # print('company = ', company)
-
-        # get salary --------------------------
-        try:
-            salary = soup.find('div', class_='z_b_72194kjs___intro_v2__salary').text.split()[1:]
-            salary = ' '.join(salary)
-        except:
-            salary = ''
-        # print('salary = ', salary)
-
-        # get experience --------------------------
-        # raw_job_format = soup.find_all('a', class_="ng-star-inserted")
-        job_format = ''
-        # for format in raw_job_format:
-        #     format = format.find('mat-basic-chip')
-        #     if format:
-        #         job_format += format.text
-        # try:
-        #     experience = soup.find('p', class_='vacancy-description-list-item').find('span').get_text()
-        # except:
-        #     experience = ''
-        # print('experience = ',experience)
-
-        # print('job_format = ', job_format)
-
-        contacts = ''
-
-        try:
-            date = soup.find('div', class_='z_b_72194kjs___head_v2').find('div').find('div').text.strip()
-        except:
-            date = ''
-        if date == 'сегодня':
-            date = datetime.today()
-        elif date == 'вчера':
-            date = datetime.today() - timedelta(days=1)
-        else:
-            date = self.normalize_date(date)
-        # print('date = ', date)
-
-        # ------------------------- search relocation ----------------------------
-        relocation = ''
-        if re.findall(r'[Rr]elocation', body):
-            relocation = 'релокация'
-
-        # ------------------------- search city ----------------------------
-        # city = ''
-        # for key in cities_pattern:
-        #     for item in cities_pattern[key]:
-        #         match = re.findall(rf"{item}", body)
-        #         if match and key != 'others':
-        #             for i in match:
-        #                 city += f"{i} "
-
-        # ------------------------- search english ----------------------------
-        # english_additional = ''
-        # for item in params['english_level']:
-        #     match1 = re.findall(rf"{item}", body)
-        #     match2 = re.findall(rf"{item}", tags)
-        #     if match1:
-        #         for i in match1:
-        #             english_additional += f"{i} "
-        #     if match2:
-        #         for i in match2:
-        #             english_additional += f"{i} "
-        #
-        # if english and ('upper' in english_additional or 'b1' in english_additional or 'b2' in english_additional \
-        #         or 'internediate' in english_additional or 'pre' in english_additional):
-        #     english = english_additional
-        # elif not english and english_additional:
-        #     english = english_additional
-
-        self.db.write_to_db_companies([company])
-
-        # -------------------- compose one writting for ione vacancy ----------------
-
-        results_dict = {
-            'chat_name': 'https://designer.ru/',
-            'title': title,
-            'body': body,
-            'vacancy': vacancy,
-            'vacancy_url': vacancy_url,
-            'company': company,
-            'company_link': '',
-            'english': english,
-            'relocation': relocation,
-            'job_type': job_format,
-            'city': city,
-            'salary': salary,
-            'experience': '',
-            'time_of_public': date,
-            'contacts': contacts,
-            'session': self.current_session
-        }
-
-        response = self.helper_parser_site.write_each_vacancy(results_dict)
-
-        await self.output_logs(
-            about_vacancy=response,
-            vacancy=vacancy,
-            vacancy_url=vacancy_url
-        )
 
     async def output_logs(self, about_vacancy, vacancy, word=None, vacancy_url=None):
         additional_message = ''

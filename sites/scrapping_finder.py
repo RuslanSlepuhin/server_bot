@@ -6,12 +6,13 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from db_operations.scraping_db import DataBaseOperations
-# from __backup__.pattern_Alex2809 import cities_pattern, params
+from helper_functions.parser_find_add_parameters.parser_find_add_parameters import FinderAddParameters
 from sites.write_each_vacancy_to_db import HelperSite_Parser
 from settings.browser_settings import options, chrome_driver_path
 from utils.additional_variables.additional_variables import sites_search_words, parsing_report_path
 from helper_functions.helper_functions import edit_message, send_message, send_file_to_user
 from patterns.data_pattern._data_pattern import cities_pattern, params
+from report.report_variables import report_file_path
 
 
 class FinderGetInformation:
@@ -19,36 +20,15 @@ class FinderGetInformation:
     def __init__(self, **kwargs):
 
         self.report = kwargs['report'] if 'report' in kwargs else None
-        self.search_word = kwargs['search_word'] if 'search_word' in kwargs else None
+        self.search_words = kwargs['search_word'] if 'search_word' in kwargs else None
         self.bot_dict = kwargs['bot_dict'] if 'bot_dict' in kwargs else None
+        self.find_parameters = FinderAddParameters()
         self.helper_parser_site = HelperSite_Parser(report=self.report)
         self.db = DataBaseOperations(report=self.report)
         self.db_tables = None
         self.options = None
         self.page = None
-        self.to_write_excel_dict = {
-            'chat_name': [],
-            'title': [],
-            'body': [],
-            'vacancy': [],
-            'vacancy_url': [],
-            'company': [],
-            'company_link': [],
-            'english': [],
-            'relocation': [],
-            'job_type': [],
-            'city': [],
-            'salary': [],
-            'experience': [],
-            'time_of_public': [],
-            'contacts': []
-        }
-        if not self.search_word:
-            self.search_words = sites_search_words
-        else:
-            self.search_words=[self.search_word]
         self.page_number = 1
-
         self.current_message = None
         self.msg = None
         self.written_vacancies = 0
@@ -68,11 +48,12 @@ class FinderGetInformation:
         await send_file_to_user(
             bot=self.bot,
             chat_id=self.chat_id,
-            path=parsing_report_path,
+            path=report_file_path['parsing'],
         )
         self.browser.quit()
 
     async def get_info(self):
+        # self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         self.browser = webdriver.Chrome(
             executable_path=chrome_driver_path,
             options=options
@@ -93,35 +74,19 @@ class FinderGetInformation:
         await self.bot.send_message(self.chat_id, 'finder.vc parsing: Done!', disable_web_page_preview=True)
 
     async def get_link_message(self, raw_content):
-
-        links = []
         soup = BeautifulSoup(raw_content, 'lxml')
-
-        list_links = soup.find_all('div', class_='vacancies-page__card')
-        if list_links:
-            # print(f'\nНайдено {len(list_links)} вакансий\n')
-            self.current_message = await self.bot.send_message(self.chat_id, f'finder.vc:\nНайдено {len(list_links)} вакансий на странице {self.page_number}', disable_web_page_preview=True)
-
+        self.list_links = soup.find_all('div', class_='vacancies-page__card')
+        if self.list_links:
+            self.current_message = await self.bot.send_message(self.chat_id, f'finder.vc:\nНайдено {len(self.list_links)} вакансий на странице {self.page_number}', disable_web_page_preview=True)
             # -------------------- check what is current session --------------
-
-            current_session = self.bot.get_all_from_db(
-                table_name='current_session',
-                param='ORDER BY id DESC LIMIT 1',
-                without_sort=True,
-                order=None,
-                field='session',
-                curs=None
-            )
-            for value in current_session:
-                self.current_session = value[0]
-
+            self.current_session = await self.helper_parser_site.get_name_session()
             # --------------------- LOOP -------------------------
             self.written_vacancies = 0
             self.rejected_vacancies = 0
 
-            for i in list_links:
-                await self.get_content_from_link(i, links)
-
+            # for i in list_links:
+            #     await self.get_content_from_link(i, links)
+            await self.get_content_from_link()
             #----------------------- the statistics output ---------------------------
             self.written_vacancies = 0
             self.rejected_vacancies = 0
@@ -157,7 +122,6 @@ class FinderGetInformation:
         elif re.findall(r'месяц[ева]{0,2}', date[2]):
             date = datetime.now() - timedelta(days=int(date[1]*30))
         return date
-
 
     def clean_company_name(self, text):
         text = re.sub('Прямой работодатель', '', text)
@@ -197,181 +161,169 @@ class FinderGetInformation:
 
         self.bot.write_to_db_companies(companies)
 
-    async def get_content_from_link(self, i, links):
-        vacancy_url = i.find('a').get('href')
-        vacancy_url = self.url_main + vacancy_url
-        # print('vacancy_url = ', vacancy_url)
-        links.append(vacancy_url)
+    async def get_content_from_link(self):
+        links = []
+        for link in self.list_links:
+            vacancy_url = link.find('a').get('href')
+            vacancy_url = self.url_main + vacancy_url
+            links.append(vacancy_url)
+            self.browser.get(vacancy_url)
+            # self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            soup = BeautifulSoup(self.browser.page_source, 'lxml')
+            # get vacancy ------------------------
+            try:
+                vacancy = soup.find('h1', class_='vacancy-info-header__title').get_text()
+            except:
+                vacancy = ''
 
-        # print('self.broswer.get(vacancy_url)')
-        # await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
-        # self.browser = browser
-        self.browser.get(vacancy_url)
-        # self.browser.get('https://google.com')
-        self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            # get title --------------------------
+            title = vacancy
 
-        # print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
-        soup = BeautifulSoup(self.browser.page_source, 'lxml')
-        # print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
+            # get body --------------------------
+            try:
+                body = soup.find('div', class_='vacancy-info-body__description').get_text()
+            except:
+                body = ''
 
-        # get vacancy ------------------------
-        try:
-            vacancy = soup.find('h1', class_='vacancy-info-header__title').get_text()
-        except:
-            vacancy = ''
-        # print('title = ', vacancy)
+            try:
+                body_list = soup.find_all('div', class_="vacancy-info-body__info")
+            except:
+                body_list = []
 
-        # get title --------------------------
-        title = vacancy
-        # print('title = ',title)
+            if body_list:
+                body += '\n'
+                text = ''
+                for content in body_list:
+                    # print(content)
+                    try:
+                        text = f"{content.find('h3', class_='vacancy-info-body__title').get_text()}\n"
+                        # print(text)
+                    except Exception as e:
+                        print(e)
+                    if text:
+                        body += text
+                    try:
+                        temporary_body_list = content.find_all('li', class_='vacancy-info-body__item')
+                        for li in temporary_body_list:
+                            body += f"- {li.get_text()}\n"
+                    except Exception as e:
+                        print(e)
+                        pass
 
-        # get body --------------------------
-        try:
-            body = soup.find('div', class_='vacancy-info-body__description').get_text()
-        except:
-            body = ''
+            # print('body = ', body)
+            #
+            # # get tags --------------------------
+            # try:
+            #     description = soup.find('div', class_='vacancy-info-body__lists').get_text()
+            # except:
+            #     description = ''
+            # print('requirements = ', description)
 
-        try:
-            body_list = soup.find_all('div', class_="vacancy-info-body__info")
-        except:
-            body_list = []
+            # try:
+            #     terms = soup.find('ul', class_="vacancy-info-body__list").get_text()
+            # except:
+            #     terms = ''
+            # print('terms = ', terms)
 
-        if body_list:
-            body += '\n'
-            for content in body_list:
-                body += f"{content.find('div', class_='vacancy-info-body__title').get_text()}\n"
-                temporary_body_list = content.find_all('li', class_='vacancy-info-body__item')
-                for li in temporary_body_list:
-                    body += f"- {li.get_text()}\n"
+            try:
+                company = soup.find('a', class_='link').get_text()
+            except:
+                company = ''
+            # print('company = ', company)
 
-        # print('body = ', body)
-        #
-        # # get tags --------------------------
-        # try:
-        #     description = soup.find('div', class_='vacancy-info-body__lists').get_text()
-        # except:
-        #     description = ''
-        # print('requirements = ', description)
+            try:
+                job_type = soup.find('div', class_="employment-label__text").get_text()
+                # body = f'\nГрафик работы: {time_job}\n' + body
+            except:
+                job_type = ''
+            # print('job_type = ', job_type)
 
-        # try:
-        #     terms = soup.find('ul', class_="vacancy-info-body__list").get_text()
-        # except:
-        #     terms = ''
-        # print('terms = ', terms)
+            try:
+                salary = soup.find('div', class_='row-wrapper vacancy-info-header__row').get_text()
+                # experience = soup.find('div', class_='vacancy-info-header__row')
+                experience = ''
+            except:
+                salary = ''
+                experience = ''
+            salary = self.find_parameters.salary_to_set_form(text=salary)
+            salary = ", ".join(salary)
 
-        try:
-            company = soup.find('a', class_='link').get_text()
-        except:
-            company = ''
-        # print('company = ', company)
+            time_of_public = soup.find('div', class_='vacancy-info-header__publication-date').get_text()
+            time_of_public = self.convert_date(time_of_public)
 
-        try:
-            job_type = soup.find('div', class_="employment-label__text").get_text()
-            # body = f'\nГрафик работы: {time_job}\n' + body
-        except:
-            job_type = ''
-        # print('job_type = ', job_type)
+            contacts = ''
 
-        try:
-            salary = soup.find('div', class_='row-wrapper vacancy-info-header__row').get_text()
-            # experience = soup.find('div', class_='vacancy-info-header__row')
-            experience = ''
+            # ------------------------- search relocation ----------------------------
+            relocation = ''
+            if re.findall(r'[Рр]елокация', body):
+                relocation = 'релокация'
 
-        except:
-            salary = ''
-            experience = ''
-        # print('salary = ', salary)
-        # print('experience = ', experience)
+            # ------------------------- search city ----------------------------
+            city = ''
+            for key in cities_pattern:
+                for item in cities_pattern[key]:
+                    match = re.findall(rf"{item}", body)
+                    if match and key != 'others':
+                        for i in match:
+                            city += f"{i} "
 
-        time_of_public = soup.find('div', class_='vacancy-info-header__publication-date').get_text()
-        # print('time_of_public = ', time_of_public)
-        time_of_public = self.convert_date(time_of_public)
-        # print('time_of_public after = ', time_of_public)
-
-        contacts = ''
-
-        # try:
-        #     date = soup.find('p', class_="vacancy-creation-time-redesigned").get_text()
-        # except:
-        #     date = ''
-        # if date:
-        #     date = re.findall(r'[0-9]{1,2}\W[а-я]{3,}\W[0-9]{4}', date)
-        #     date = date[0]
-        #     date = self.normalize_date(date)
-        # print('date = ', date)
-
-        # body = f""
-        # ------------------------- search relocation ----------------------------
-        relocation = ''
-        if re.findall(r'[Рр]елокация', body):
-            relocation = 'релокация'
-
-        # ------------------------- search city ----------------------------
-        city = ''
-        for key in cities_pattern:
-            for item in cities_pattern[key]:
+            # ------------------------- search english ----------------------------
+            english = ''
+            for item in params['english_level']:
                 match = re.findall(rf"{item}", body)
-                if match and key != 'others':
+                if match:
                     for i in match:
-                        city += f"{i} "
+                        english += f"{i} "
 
-        # ------------------------- search english ----------------------------
-        english = ''
-        for item in params['english_level']:
-            match = re.findall(rf"{item}", body)
-            if match:
-                for i in match:
-                    english += f"{i} "
+            english_additional = ''
+            for item in params['english_level']:
+                match1 = re.findall(rf"{item}", body)
+                match2 = re.findall(rf"{item}", title)
+                if match1:
+                    for i in match1:
+                        english_additional += f"{i} "
+                if match2:
+                    for i in match2:
+                        english_additional += f"{i} "
 
-        english_additional = ''
-        for item in params['english_level']:
-            match1 = re.findall(rf"{item}", body)
-            match2 = re.findall(rf"{item}", title)
-            if match1:
-                for i in match1:
-                    english_additional += f"{i} "
-            if match2:
-                for i in match2:
-                    english_additional += f"{i} "
+            if english and ('upper' in english_additional or 'b1' in english_additional or 'b2' in english_additional \
+                    or 'internediate' in english_additional or 'pre' in english_additional):
+                english = english_additional
+            elif not english and english_additional:
+                english = english_additional
 
-        if english and ('upper' in english_additional or 'b1' in english_additional or 'b2' in english_additional \
-                or 'internediate' in english_additional or 'pre' in english_additional):
-            english = english_additional
-        elif not english and english_additional:
-            english = english_additional
+            self.db.write_to_db_companies([company])
 
-        self.bot.write_to_db_companies([company])
+            #-------------------- compose one writting for ione vacancy ----------------
 
-        #-------------------- compose one writting for ione vacancy ----------------
+            results_dict = {
+                'chat_name': 'https://finder.vc/',
+                'title': title,
+                'body': body,
+                'vacancy': vacancy,
+                'vacancy_url': vacancy_url,
+                'company': company,
+                'company_link': '',
+                'english': english,
+                'relocation': relocation,
+                'job_type': job_type,
+                'city': city,
+                'salary': salary,
+                'experience': experience,
+                'time_of_public': time_of_public,
+                'contacts': contacts,
+                'session': self.current_session
+            }
 
-        results_dict = {
-            'chat_name': 'https://finder.vc/',
-            'title': title,
-            'body': body,
-            'vacancy': vacancy,
-            'vacancy_url': vacancy_url,
-            'company': company,
-            'company_link': '',
-            'english': english,
-            'relocation': relocation,
-            'job_type': job_type,
-            'city': city,
-            'salary': salary,
-            'experience': experience,
-            'time_of_public': time_of_public,
-            'contacts': contacts,
-            'session': self.current_session
-        }
+            response = self.helper_parser_site.write_each_vacancy(results_dict)
 
-        response = self.helper_parser_site.write_each_vacancy(results_dict)
+            await self.output_logs(
+                about_vacancy=response,
+                vacancy=vacancy,
+                vacancy_url=vacancy_url
+            )
 
-        await self.output_logs(
-            about_vacancy=response,
-            vacancy=vacancy,
-            vacancy_url=vacancy_url
-        )
-
-    async def output_logs(self, about_vacancy, vacancy, word=None, vacancy_url=None):
+    async def output_logs(self, about_vacancy, vacancy, vacancy_url=None):
         additional_message = ''
 
         if about_vacancy['response']['vacancy'] in ['found in db by link', 'found in db by title-body']:

@@ -6,46 +6,28 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from db_operations.scraping_db import DataBaseOperations
+from helper_functions.parser_find_add_parameters.parser_find_add_parameters import FinderAddParameters
 from sites.write_each_vacancy_to_db import HelperSite_Parser
 from settings.browser_settings import options, chrome_driver_path
 from utils.additional_variables.additional_variables import sites_search_words, parsing_report_path
 from helper_functions.helper_functions import edit_message, send_message, send_file_to_user
+from report.report_variables import report_file_path
+
 
 class IngameJobGetInformation:
 
     def __init__(self, **kwargs):
 
         self.report = kwargs['report'] if 'report' in kwargs else None
-        self.search_word = kwargs['search_word'] if 'search_word' in kwargs else None
+        self.search_words = kwargs['search_word'] if 'search_word' in kwargs else None
         self.bot_dict = kwargs['bot_dict'] if 'bot_dict' in kwargs else None
         self.helper_parser_site = HelperSite_Parser(report=self.report)
+        self.find_parameters = FinderAddParameters()
         self.db = DataBaseOperations(report=self.report)
         self.db_tables = None
         self.options = None
         self.page = None
-        self.to_write_excel_dict = {
-            'chat_name': [],
-            'title': [],
-            'body': [],
-            'vacancy': [],
-            'vacancy_url': [],
-            'company': [],
-            'company_link': [],
-            'english': [],
-            'relocation': [],
-            'job_type': [],
-            'city': [],
-            'salary': [],
-            'experience': [],
-            'time_of_public': [],
-            'contacts': []
-        }
-        if not self.search_word:
-            self.search_words = sites_search_words
-        else:
-            self.search_words=[self.search_word]
         self.page_number = 1
-
         self.current_message = None
         self.msg = None
         self.written_vacancies = 0
@@ -61,19 +43,24 @@ class IngameJobGetInformation:
         self.db_tables = db_tables
         self.count_message_in_one_channel = 1
         await self.get_info()
-        await self.report.add_to_excel()
-        await send_file_to_user(
-            bot=self.bot,
-            chat_id=self.chat_id,
-            path=parsing_report_path,
-        )
+        if self.report:
+            await self.report.add_to_excel()
+            await send_file_to_user(
+                bot=self.bot,
+                chat_id=self.chat_id,
+                path=report_file_path['parsing'],
+            )
         self.browser.quit()
 
     async def get_info(self):
+        # self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         self.browser = webdriver.Chrome(
             executable_path=chrome_driver_path,
             options=options
         )
+
+        # -------------------- check what is current session --------------
+        self.current_session = await self.helper_parser_site.get_name_session()
         till=5
         for self.page_number in range(1, till):
             try:
@@ -93,31 +80,15 @@ class IngameJobGetInformation:
         links = []
         soup = BeautifulSoup(raw_content, 'lxml')
 
-        list_links = soup.find_all('div', class_='col-12 p-0')
-        if list_links:
-            # print(f'\nНайдено {len(list_links)} вакансий\n')
-            # print(list_links)
-            self.current_message = await self.bot.send_message(self.chat_id, f'ingamejob.com:\nНайдено {len(list_links)} вакансий на странице {self.page_number}', disable_web_page_preview=True)
-
-            # -------------------- check what is current session --------------
-
-            current_session = self.bot.get_all_from_db(
-                table_name='current_session',
-                param='ORDER BY id DESC LIMIT 1',
-                without_sort=True,
-                order=None,
-                field='session',
-                curs=None
-            )
-            for value in current_session:
-                self.current_session = value[0]
+        self.list_links = soup.find_all('div', class_='col-12 p-0')
+        if self.list_links:
+            self.current_message = await self.bot.send_message(self.chat_id, f'ingamejob.com:\nНайдено {len(self.list_links)} вакансий на странице {self.page_number}', disable_web_page_preview=True)
 
             # --------------------- LOOP -------------------------
             self.written_vacancies = 0
             self.rejected_vacancies = 0
 
-            for i in list_links:
-                await self.get_content_from_link(i, links)
+            await self.get_content_from_link()
 
             #----------------------- the statistics output ---------------------------
             self.written_vacancies = 0
@@ -126,6 +97,119 @@ class IngameJobGetInformation:
         else:
             return False
 
+    async def get_content_from_link(self):
+        job_type = ''
+        links = []
+        for link in self.list_links:
+            vacancy_url = link.find('a').get('href')
+            links.append(vacancy_url)
+            self.browser.get(vacancy_url)
+            self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            soup = BeautifulSoup(self.browser.page_source, 'lxml')
+            # get vacancy ------------------------
+            vacancy = soup.find('h1', class_='text-success').text
+
+            # get title --------------------------
+            title = vacancy
+
+            # get body --------------------------
+            body_content = soup.find_all('div', class_="job-view-single-section mb-3")
+            body = ''
+            for block in body_content:
+                for child in block.children:
+                    if child.name == 'p':
+                        brs = child.find_all('br')
+                        for br in brs:
+                            br.replace_with('\n')
+                        body += (f'{child.get_text().strip()}\n')
+                    elif child.name == 'h5':
+                        body += (f'\n{child.get_text().strip()}\n')
+                    elif child.name == 'ul':
+                        lis = child.find_all('li')
+                        for li in lis:
+                            body += (f'-{li.get_text().strip()}\n')
+            # get date --------------------------
+            try:
+                date = soup.find(string=re.compile('Опубликовано')).text
+            except:
+                date = ''
+            if date:
+                date = self.convert_date(date)
+            # get company info --------------------------
+            company_info = soup.find('div', class_='job-view-lead-position-box col-sm-8').find('a',
+                                                                                               class_='job-view-lead-position-box')
+            company = company_info.get_text()
+            link = company_info.get('href')
+
+            #  get job details: type, salary, city, relocation
+            details = {}
+            all = soup.find('div', class_='col-sm-4').find_all('p', class_='m-0')
+
+            for i in all:
+                try:
+                    tag = i.find('i', {'class': re.compile("text-muted la la")})
+                    tag_name = tag['class'][2]
+                    equals = i.text
+                    equals = re.sub("^\s+|\n|\r|\s+$", '', equals)
+                    details[tag_name] = equals
+                except Exception as e:
+                    pass
+
+            level = details.get('la-area-chart', '')
+            salary = details.get('la-money', '')
+            salary = self.find_parameters.salary_to_set_form(text=salary)
+            salary = ", ".join(salary)
+
+            city = ''
+            relocation = ''
+            job_types = []
+            job_types.append(details.get('la-briefcase', ''))
+
+            try:
+                job_details = details.get('la-map-marker', '').split(', ')
+                # print('job_details= ', job_details)
+                for i in job_details:
+                    if i == 'Удаленная работа':
+                        job_types.append(i)
+                    elif i == 'Relocate':
+                        relocation = i
+                    else:
+                        city += f'{i}'
+                job_type = ', '.join(job_types)
+
+            except Exception as e:
+                pass
+            contacts = ''
+            english = ''
+
+            # -------------------- compose one writting for one vacancy ----------------
+            results_dict = {
+                'chat_name': self.url_main,
+                'title': title,
+                'body': body,
+                'vacancy': vacancy,
+                'vacancy_url': vacancy_url,
+                'company': company,
+                'company_link': link,
+                'english': english,
+                'relocation': relocation,
+                'job_type': job_type,
+                'city': city,
+                'salary': salary,
+                'experience': '',
+                'time_of_public': date,
+                'contacts': contacts,
+                'session': self.current_session,
+                'level': level,
+            }
+
+            response = self.helper_parser_site.write_each_vacancy(results_dict)
+
+            await self.output_logs(
+                about_vacancy=response,
+                vacancy=vacancy,
+                vacancy_url=vacancy_url
+            )
 
     async def compose_in_one_file(self):
         hiring = []
@@ -178,138 +262,6 @@ class IngameJobGetInformation:
         return date
 
 
-    async def get_content_from_link(self, i, links):
-        job_type = ''
-        vacancy_url = i.find('a').get('href')
-        # print('vacancy_url = ', vacancy_url)
-        links.append(vacancy_url)
-
-        # print('self.browser.get(vacancy_url)')
-        # await self.bot.send_message(self.chat_id, vacancy_url, disable_web_page_preview=True)
-        # self.browser = browser
-        self.browser.get(vacancy_url)
-        self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-
-        # print('soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
-        soup = BeautifulSoup(self.browser.page_source, 'lxml')
-        # print('passed soup = BeautifulSoup(self.browser.page_source, \'lxml\')')
-
-        # get vacancy ------------------------
-        vacancy = soup.find('h1', class_='text-success').text
-        # print('vacancy = ', vacancy)
-
-        # get title --------------------------
-        title = vacancy
-        # print('title = ', title)
-
-        # get body --------------------------
-
-        body_content= soup.find_all('div', class_="job-view-single-section mb-3")
-        body=''
-        for block in body_content:
-            for child in block.children:
-                if child.name=='p':
-                    brs=child.find_all('br')
-                    for br in brs:
-                        br.replace_with('\n')
-                    body+=(f'{child.get_text().strip()}\n')
-                elif child.name=='h5':
-                    body+=(f'\n{child.get_text().strip()}\n')
-                elif child.name=='ul':
-                    lis=child.find_all('li')
-                    for li in lis:
-                        body+=(f'-{li.get_text().strip()}\n')
-
-        # print('body = ', body)
-
-        # get date --------------------------
-        try:
-            date = soup.find(string=re.compile('Опубликовано')).text
-        except:
-            date = ''
-        if date:
-            date = self.convert_date(date)
-        # print('date = ', date)
-
-
-        # get company info --------------------------
-        company_info = soup.find('div', class_='job-view-lead-position-box col-sm-8').find('a', class_='job-view-lead-position-box')
-        company=company_info.get_text()
-        link=company_info.get('href')
-        # print('company = ', company, link)
-
-        #  get job details: type, salary, city, relocation
-        details={}
-        all = soup.find('div', class_='col-sm-4').find_all('p', class_='m-0')
-
-        for i in all:
-            try:
-                tag=i.find('i', {'class': re.compile("text-muted la la")})
-                tag_name=tag['class'][2]
-                equals=i.text
-                equals=re.sub("^\s+|\n|\r|\s+$", '', equals)
-                details[tag_name]=equals
-            except Exception as e:
-                pass
-
-        level=details.get('la-area-chart', '')
-        # print('level = ', level)
-        salary=details.get('la-money', '')
-        # print('salary = ', salary)
-
-        city=''
-        relocation=''
-        job_types=[]
-        job_types.append(details.get('la-briefcase',''))
-
-        try:
-            job_details=details.get('la-map-marker', '').split(', ')
-            # print('job_details= ', job_details)
-            for i in job_details:
-                if i == 'Удаленная работа':
-                    job_types.append(i)
-                elif i == 'Relocate':
-                    relocation = i
-                else:
-                    city+=f'{i}'
-            job_type=', '.join(job_types)
-
-        except Exception as e:
-            pass
-        # print ('job_types = ', job_types)
-        contacts=''
-        english=''
-
- #-------------------- compose one writting for one vacancy ----------------
-
-        results_dict = {
-            'chat_name': 'https://ru.ingamejob.com/ru',
-            'title': title,
-            'body': body,
-            'vacancy': vacancy,
-            'vacancy_url': vacancy_url,
-            'company': company,
-            'company_link': link,
-            'english': english,
-            'relocation': relocation,
-            'job_type': job_type,
-            'city':city,
-            'salary':salary,
-            'experience': '',
-            'time_of_public':date,
-            'contacts':contacts,
-            'session': self.current_session,
-            'level':level,
-        }
-
-        # print (results_dict)
-        response = self.helper_parser_site.write_each_vacancy(results_dict)
-
-        await self.output_logs(
-            about_vacancy=response,
-            vacancy=vacancy,
-            vacancy_url=vacancy_url
-        )
 
     async def output_logs(self, about_vacancy, vacancy, word=None, vacancy_url=None):
         additional_message = ''
