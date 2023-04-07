@@ -130,6 +130,7 @@ async def transformTitleBodyBeforeDb(text=None, title=None, body=None):
 
 def get_additional_values_fields(dict_in):
 
+
     results_dict = {}
     hybrid_shorts = {}
     for key in dict_in:
@@ -441,7 +442,9 @@ def get_city_vacancy_for_shorts_sync(presearch_results: list, pattern: str, retu
 
     return {'return_value': '', 'element_is_not_empty': element_is_not_empty, 'match': ''}
 
-async def send_message(bot, chat_id, text, parse_mode='html', disable_web_page_preview=True):
+async def send_message(bot, chat_id, text, **kwargs):
+    parse_mode = 'html' if 'parse_mode' not in kwargs else kwargs['parse_mode']
+    disable_web_page_preview = True if 'disable_web_page_preview' not in kwargs else kwargs['disable_web_page_preview']
     msg = None
     ex = "Flood control"
     while ex.lower() == 'flood control':
@@ -462,7 +465,9 @@ async def send_message(bot, chat_id, text, parse_mode='html', disable_web_page_p
                     time.sleep(int(seconds) + 5)
     return msg
 
-async def edit_message(bot, text, msg, parse_mode='html', disable_web_page_preview=True):
+async def edit_message(bot, text, msg, **kwargs):
+    parse_mode = 'html' if 'parse_mode' not in kwargs else kwargs['parse_mode']
+    disable_web_page_preview = True if 'disable_web_page_preview' not in kwargs else kwargs['disable_web_page_preview']
     ex = "Flood control"
     while ex.lower() == 'flood control':
         try:
@@ -560,15 +565,19 @@ async def send_file_to_user(
         bot, chat_id, path, caption='Please take it',
         client=None, send_to_developer=False, developer_chat_id=None
 ):
-        with open(path, 'rb') as file:
-            try:
-                await bot.send_document(chat_id, file, caption=caption)
-                if send_to_developer and chat_id != developer_chat_id:
-                    try:
-                        await bot.send_document(int(developer_chat_id), file, caption=caption)
-                    except Exception as e:
-                        print(e)
-            except:
-                if client:
-                    await client.send_file(int(developer_chat_id), file, caption=caption)
-                pass
+        try:
+            with open(path, 'rb') as file:
+                try:
+                    await bot.send_document(chat_id, file, caption=caption)
+                    if send_to_developer and chat_id != developer_chat_id:
+                        try:
+                            await bot.send_document(int(developer_chat_id), file, caption=caption)
+                        except Exception as e:
+                            print(e)
+                except Exception as ex:
+                    if client:
+                        await client.send_file(chat_id, file, caption=caption)
+                    print(ex)
+        except Exception as exc:
+            print(f"can't to send file: {exc}")
+

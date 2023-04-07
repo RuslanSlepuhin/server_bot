@@ -4638,12 +4638,15 @@ class InviteBot():
             except Exception as e:
                 await self.bot_aiogram.send_message(message.chat.id, f"linkedin report: {str(e)}")
 
-        await helper.send_file_to_user(
-            bot=self.bot_aiogram,
-            chat_id=message.chat.id,
-            path=variable.shorts_copy_path,
-            caption='Take the shorts has not been added to shorts by sending error '
-        )
+        try:
+            await helper.send_file_to_user(
+                bot=self.bot_aiogram,
+                chat_id=message.chat.id,
+                path=variable.shorts_copy_path,
+                caption='Take the shorts has not been added to shorts by sending error '
+            )
+        except Exception as ex:
+            print(ex)
 
     async def write_to_logs_error(self, text):
         with open("./logs/logs_errors.txt", "a", encoding='utf-8') as file:
