@@ -4543,9 +4543,13 @@ class InviteBot():
 
     async def shorts_public(self, message, profession, channel_for_pushing=False, profession_channel=None):
 
+        with open(variable.shorts_copy_path, mode='w', encoding='utf-8') as shorts_file:
+            shorts_file.write('')
+
         chat_id = config['My_channels'][f'{profession_channel}_channel'] if profession_channel else None
         pre_message = variable.pre_message_for_shorts
         add_pre_message = True
+        count = 1
         for key in self.message_for_send_dict:
             message_for_send = self.message_for_send_dict[key]
             if add_pre_message:
@@ -4559,35 +4563,50 @@ class InviteBot():
                 chat_id = config['My_channels'][f'{profession_channel}_channel']
                 try:
                     with open(photo_path, 'rb') as file:
-                        await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file)
+                        try:
+                            await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file)
+                        except Exception as ex:
+                            print(f'Key {count}: picture error: {ex}. Chat_id: profession channel')
+                            profession_channel = False
                 except Exception as e:
-                    print(e)
-                    profession_channel = False
+                    print(f"Key {count}: Can not open the pictures: {e}. Path: {photo_path}")
 
             if not profession_channel:
                 chat_id = variable.channel_id_for_shorts
                 try:
                     with open(photo_path, 'rb') as file:
-                        await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file)
+                        try:
+                            await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file)
+                        except Exception as ex:
+                            print(f'Key {count}: picture error: {ex}. Chat_id: channel for shorts')
+                            chat_id = message.chat.id
                 except Exception as e:
-                    print(e)
-                    chat_id = message.chat.id
+                    print(f"Key {count}: Can not open the pictures: {e}. Path: {photo_path}")
                     try:
                         with open(photo_path, 'rb') as file:
-                            await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file)
+                            try:
+                                await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file)
+                            except Exception as ex:
+                                print(f'Key {count}: picture error: {ex}. Chat_id: message chat id')
+                                print('Key {count}: ONE SHORTS HAS BEEN LOOSED')
                     except Exception as e:
                         print(e)
-                        await self.bot_aiogram.send_message(message.chat.id, str(e))
-
+                        await self.bot_aiogram.send_message(message.chat.id, f"ONE SHORTS HAS BEEN LOOSED{str(e)}")
+            count += 1
 
             for short in vacancies_list:
-                await self.bot_aiogram.send_message(
-                    chat_id,
-                    short,
-                    parse_mode='html',
-                    disable_web_page_preview=True
-                )
-                await asyncio.sleep(1)
+                try:
+                    await helper.send_message(
+                        bot=self.bot_aiogram,
+                        chat_id=chat_id,
+                        text=short,
+                        parse_mode='html',
+                        disable_web_page_preview=True
+                    )
+                    await asyncio.sleep(1)
+                except:
+                    with open(variable.shorts_copy_path, mode='a', encoding='utf-8') as shorts_file:
+                        shorts_file.write(f"{short}\n\n")
 
             try:
                 shorts_id=None
@@ -4615,6 +4634,13 @@ class InviteBot():
 
             except Exception as e:
                 await self.bot_aiogram.send_message(message.chat.id, f"linkedin report: {str(e)}")
+
+        await helper.send_file_to_user(
+            bot=self.bot_aiogram,
+            chat_id=message.chat.id,
+            path=variable.shorts_copy_path,
+            caption='Take the shorts has not been added to shorts by sending error '
+        )
 
     async def write_to_logs_error(self, text):
         with open("./logs/logs_errors.txt", "a", encoding='utf-8') as file:
