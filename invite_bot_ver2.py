@@ -268,7 +268,7 @@ class InviteBot():
             global phone_number, password, con
 
             self.chat_id = message.chat.id
-            print(message)
+            print('id = ', message.from_user.id)
 
             logs.write_log(f'\n------------------ start --------------------')
             # -------- make a parse keyboard for admin ---------------
