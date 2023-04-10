@@ -1587,7 +1587,8 @@ class InviteBot():
 
             if callback.data == 'go_by_admin': # next step if callback.data[2:] in self.valid_profession_list:
                 # make the keyboard with all professions
-                if callback.message.from_user.id in variable.white_admin_list:
+                # if callback.message.from_user.id in self.white_admin_list:
+                if 1 == 1:
                     self.markup = await compose_inline_keyboard(prefix='admin')
                     await self.bot_aiogram.send_message(callback.message.chat.id, 'choose the channel for vacancy checking', reply_markup=self.markup)
                 else:
