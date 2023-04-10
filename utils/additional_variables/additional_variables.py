@@ -38,7 +38,7 @@ all_tables_for_vacancy_search.extend(valid_professions)
 
 not_lower_professions = ['pm', 'game', 'designer', 'hr', 'analyst', 'qa', 'ba' 'devops', 'product']
 
-white_admin_list = [1763672666, 556128576, 758905227, 945718420, 5755261667, 5884559465, 5730794427]
+white_admin_list = [1763672666, 556128576, 758905227, 945718420, 5755261667, 5884559465, 5730794427, 758905227]
 
 id_owner = 1763672666
 id_developer = 5884559465
