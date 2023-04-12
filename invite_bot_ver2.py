@@ -1831,86 +1831,11 @@ class InviteBot():
                 """
                 Show the parsing statistics
                 """
-                msg = await self.bot_aiogram.send_message(callback.message.chat.id, 'Please wait a few seconds ...')
+                await self.bot_aiogram.send_message(callback.message.chat.id, 'Please wait a few seconds ...')
+                message_for_send = await self.show_statistics()
+                await self.bot_aiogram.send_message(callback.message.chat.id, message_for_send, parse_mode='html',
+                                                    reply_markup=self.markup)
 
-                result_dict = {}
-
-                # --------- compose data from last session --------------
-                result_dict['last_session'] = {}
-                result_dict['all'] = {}
-                if not self.current_session:
-                    self.current_session = await get_last_session()
-#------------------------------ new ------------------------------------
-                message_for_send = 'Statistics results:\n\n'
-                for one_prof in variable.valid_professions:
-                    response_all = self.db.get_all_from_db(
-                        table_name=variable.admin_database,
-                        param=f"WHERE profession LIKE '%{one_prof}, %' OR profession LIKE '%, {one_prof}%' OR profession='{one_prof}'",
-                        field='id'
-                    )
-                    result_dict['all'][one_prof] = len(response_all)
-
-                    response_last_session = self.db.get_all_from_db(
-                        table_name=variable.admin_database,
-                        param=f"WHERE (profession LIKE '%{one_prof}, %' OR profession LIKE '%, {one_prof}%' OR profession='{one_prof}') AND session='{self.current_session}'",
-                        field='id'
-                    )
-                    result_dict['last_session'][one_prof] = len(response_last_session)
-                    prof_dict = helper.string_to_list(
-                        text=variable.admin_table_fields,
-                        separator=', '
-                    )
-                responses = self.db.get_all_from_db(
-                    table_name=variable.admin_database,
-                    param="WHERE profession <> 'no_sort'",
-                    field='id'
-                )
-                for item in variable.valid_professions:
-                    message_for_send += f"{item}: {result_dict['last_session'][item]}/{result_dict['all'][item]}\n"
-                message_for_send += f"-----------------\nSumm: {sum(result_dict['last_session'].values())}/{sum(result_dict['all'].values())}\n" \
-                                    f"vacancies number: {len(responses)}"
-                await self.bot_aiogram.send_message(callback.message.chat.id, message_for_send, parse_mode='html', reply_markup=self.markup)
-
-# -----------------------------------------------------------------------
-
-            if callback.data == 'download_excel':
-                "function doesn't work"
-                logs.write_log(f"invite_bot_2: Callback: download_excel")
-                pass
-
-            # if callback.data == 'send_digest_full_all':
-            #     logs.write_log(f"invite_bot_2: Callback: send_digest_full_aalll")
-            #     if not self.current_session:
-            #         self.current_session = await get_last_session()
-            #     await WriteToDbMessages(
-            #         client=self.client,
-            #         bot_dict={'bot': self.bot_aiogram,
-            #                   'chat_id': callback.message.chat.id}).get_last_and_tgpublic_shorts(
-            #         current_session=self.current_session,
-            #         shorts=False, fulls_all=True)  # get from profession's tables and put to tg channels
-
-            # if callback.data == 'send_digest_full':
-            #
-            #     logs.write_log(f"invite_bot_2: Callback: send_digest_full")
-            #
-            #     # ----------------------- send the messages to tg channels as digest or full --------------------------
-            #     if not self.current_session:
-            #         self.current_session = await get_last_session()
-            #
-            #     await WriteToDbMessages(
-            #         client=self.client,
-            #         bot_dict={'bot': self.bot_aiogram, 'chat_id': callback.message.chat.id}).get_last_and_tgpublic_shorts(current_session=self.current_session, shorts=False)  # get from profession's tables and put to tg channels
-
-            # if callback.data == 'send_digest_shorts':
-            #
-            #     logs.write_log(f"invite_bot_2: Callback: send_digest_shorts")
-            #
-            #     # ----------------------- send the messages to tg channels as digest or full --------------------------
-            #
-            #     time_start = await get_time_start()
-            #     await WriteToDbMessages(
-            #         client=self.client,
-            #         bot_dict={'bot': self.bot_aiogram, 'chat_id': callback.message.chat.id}).get_last_and_tgpublic_shorts(time_start, current_session=self.current_session, shorts=True)
 
         @self.dp.message_handler(content_types=['text'])
         async def messages(message):
@@ -2851,20 +2776,6 @@ class InviteBot():
             print(f'\nExcel was writting')
 
             await self.send_file_to_user(message, path='excel/excel/excel/followers_statistics.xlsx')
-
-        async def get_last_session():
-            last_session = ''
-            current_session = self.db.get_all_from_db(
-                table_name='current_session',
-                param='ORDER BY id DESC LIMIT 1',
-                without_sort=True,
-                order=None,
-                field='session',
-                curs=None
-            )
-            for value in current_session:
-                last_session = value[0]
-            return last_session
 
         async def refresh_pattern(path):
             pattern = "pattern = " + "{\n"
@@ -5811,6 +5722,64 @@ class InviteBot():
                 await asyncio.sleep(1 * 60 * 10)
 
         return print('Schedule pushing has been stopped')
+
+    async def show_statistics(self):
+        result_dict = {}
+        # --------- compose data from last session --------------
+        result_dict['last_session'] = {}
+        result_dict['all'] = {}
+        if not self.current_session:
+            self.current_session = await self.get_last_session()
+        # ------------------------------ new ------------------------------------
+        message_for_send = 'Statistics results:\n\n'
+        for one_prof in variable.valid_professions:
+            param = f"WHERE profession LIKE '%{one_prof}, %' OR profession LIKE '%, {one_prof}%' " \
+                    f"OR profession='{one_prof}'" if one_prof == 'ba' else f"WHERE profession LIKE '%{one_prof}%'"
+            response_all = self.db.get_all_from_db(
+                table_name=variable.admin_database,
+                param=param,
+                field='id'
+            )
+            result_dict['all'][one_prof] = len(response_all)
+
+            param += " AND session='{self.current_session}'"
+
+            response_last_session = self.db.get_all_from_db(
+                table_name=variable.admin_database,
+                param=param,
+                field='id'
+            )
+            result_dict['last_session'][one_prof] = len(response_last_session)
+            # prof_dict = helper.string_to_list(
+            #     text=variable.admin_table_fields,
+            #     separator=', '
+            # )
+        responses = self.db.get_all_from_db(
+            table_name=variable.admin_database,
+            param="WHERE profession <> 'no_sort'",
+            field='id'
+        )
+        for item in variable.valid_professions:
+            message_for_send += f"{item}: {result_dict['last_session'][item]}/{result_dict['all'][item]}\n"
+        message_for_send += f"-----------------\nSumm: {sum(result_dict['last_session'].values())}/{sum(result_dict['all'].values())}\n" \
+                            f"vacancies number: {len(responses)}"
+        return message_for_send
+        # -----------------------------------------------------------------------
+
+
+    async def get_last_session(self):
+        last_session = ''
+        current_session = self.db.get_all_from_db(
+            table_name='current_session',
+            param='ORDER BY id DESC LIMIT 1',
+            without_sort=True,
+            order=None,
+            field='session',
+            curs=None
+        )
+        for value in current_session:
+            last_session = value[0]
+        return last_session
 
 def run(double=False, token_in=None):
     InviteBot(
