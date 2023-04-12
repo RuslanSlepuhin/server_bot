@@ -294,6 +294,29 @@ class InviteBot():
             for text in text_list:
                 await self.bot_aiogram.send_message(message.chat.id, text)
 
+        @self.dp.message_handler(commands=['get_admin_vacancies_table'])
+        async def get_admin_vacancies_table(message: types.Message):
+            result_dict = {}
+            responses = self.db.get_all_from_db(
+                table_name=variable.admin_database,
+                field=variable.admin_table_fields
+            )
+            for response in responses:
+                response_dict = await helper.to_dict_from_admin_response(response, variable.admin_table_fields)
+                for key in response_dict:
+                    if key not in result_dict:
+                        result_dict[key] = []
+                    result_dict[key].append(response_dict[key])
+            try:
+                df = pd.DataFrame(result_dict)
+                path = f'./excel/excel/admin_vacancies.xlsx'
+                df.to_excel(path, sheet_name='Sheet1')
+                print('got it')
+                await self.send_file_to_user(message, path)
+
+            except Exception as e:
+                print(e)
+
         @self.dp.message_handler(commands=['get_log_file'])
         async def get_log_file(message: types.Message):
             try:

@@ -187,6 +187,7 @@ post_request_for_example = {
 #             '----------------------------------------------------\n\n' \
 #             '---------------- FILES: ----------------\n' \
 #             '/report_push_shorts - shorts report \n' \
+#             '/get_admin_vacancies_table - get all full vacancies from admin\n' \
 #             '----------------------------------------------------\n\n' \
 #             '---------------- PARSING: ----------------\n' \
 #             '🔆/magic_word - input word and get results from hh.ru\n' \
@@ -237,6 +238,7 @@ post_request_for_example = {
 help_text = '/get_log_file - get file with logs\n' \
             '---------------- FILES: ----------------\n' \
             '/report_push_shorts - shorts report \n' \
+            '/get_admin_vacancies_table - get all full vacancies from admin\n' \
             '----------------------------------------------------\n\n' \
             '---------------- PARSING: ----------------\n' \
             '🔆/magic_word - input word and get results from hh.ru\n' \
