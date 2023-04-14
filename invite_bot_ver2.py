@@ -1647,7 +1647,10 @@ class InviteBot():
                 last_admin_channel_id = await self.get_last_admin_channel_id(callback.message)
 
                 profession = callback.data.split('/')[1]
-                param = f"WHERE profession LIKE '%{profession}' OR profession LIKE '%{profession},%'"
+                if profession == 'ba':
+                    param = f"WHERE profession LIKE '%{profession}' OR profession LIKE '%{profession},%'"
+                else:
+                    param = f"WHERE profession LIKE '%{profession}%'"
                 response = self.db.get_all_from_db(
                     table_name='admin_last_session',
                     param=param,
