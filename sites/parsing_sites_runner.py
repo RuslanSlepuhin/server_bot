@@ -36,9 +36,9 @@ class SitesParser:
     async def call_sites(self):
 
         bot_dict = {'bot': self.bot, 'chat_id': self.chat_id}
-        await RemotehubGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        await RemoteJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        await HHGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await RemotehubGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await RemoteJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await HHGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await HHKzGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await RabotaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await PracaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
