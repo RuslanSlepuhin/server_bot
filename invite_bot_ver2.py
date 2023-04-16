@@ -284,7 +284,9 @@ class InviteBot():
 
             await self.bot_aiogram.send_message(message.chat.id, f'Привет, {message.from_user.first_name}!', reply_markup=parsing_kb)
             await self.bot_aiogram.send_message(variable.id_owner, f'User {message.from_user.id} has started')
-            if self.token == config['Token']['token_red']:
+            config2 = configparser.ConfigParser()
+            config2.read("./settings/config.keys.ini")
+            if self.token == config2['Token']['token_red']:
                 await get_news(message=message)
                 pass
 
