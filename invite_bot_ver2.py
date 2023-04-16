@@ -121,6 +121,7 @@ class InviteBot():
         self.admin_check_file = variable.admin_check_file_path
         self.message_for_send_dict = {}
         self.schedule_pushing_shorts = True
+        self.task = None
         self.show_vacancies = {
             'table': '',
             'offset': 0,
@@ -283,6 +284,9 @@ class InviteBot():
 
             await self.bot_aiogram.send_message(message.chat.id, f'Привет, {message.from_user.first_name}!', reply_markup=parsing_kb)
             await self.bot_aiogram.send_message(variable.id_owner, f'User {message.from_user.id} has started')
+            if self.token == config['Token']['token_red']:
+                await get_news(message=message)
+                pass
 
         @self.dp.message_handler(commands=['help'])
         async def get_logs(message: types.Message):
@@ -814,10 +818,15 @@ class InviteBot():
 
         @self.dp.message_handler(commands=['stop'])
         async def stop_commands(message: types.Message):
-            print("Process has been stopped")
-            await self.bot_aiogram.send_message(message.chat.id, "Process has been stopped")
-            loop = asyncio.get_running_loop()
-            loop.stop()
+            self.msg = await self.bot_aiogram.send_message(message.chat.id, 'Please wait...')
+            if self.task:
+                was_cancelled = self.task.cancel()
+                await self.msg.edit_text(f"{self.msg.text}\nProcess was stopped. Status: {was_cancelled}")
+                print(f"Process was stopped. Status: {was_cancelled}")
+                self.task = None
+            else:
+                await self.msg.edit_text(f"{self.msg.text}\nSorry, no one parser works")
+
 
         @self.dp.message_handler(commands=['db_check_url_vacancy'])
         async def db_check_url_vacancy_commands(message: types.Message):
@@ -3174,20 +3183,17 @@ class InviteBot():
 
             # # -----------------------parsing telegram channels -------------------------------------
             bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
-            # await main(report=self.report, client=self.client, bot_dict=bot_dict)
-            # await self.report.add_to_excel()
-            # await self.send_file_to_user(
-            #     message=message,
-            #     path=report_file_path['parsing']
-            # )
+            self.task = asyncio.create_task(main(report=self.report, client=self.client, bot_dict=bot_dict))
+            await self.report.add_to_excel(report_type='parsing')
 
             sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
-            await sites_parser.call_sites()
-            # await self.send_file_to_user(
-            #     message=message,
-            #     path=variable.flood_control_logs_path,
-            #     caption="take the exception logs"
-            # )
+            self.task = asyncio.create_task(sites_parser.call_sites())
+
+            await self.send_file_to_user(
+                message=message,
+                path=variable.flood_control_logs_path,
+                caption="take the exception logs"
+            )
             await self.send_file_to_user(
                 message=message,
                 path=variable.path_log_check_profession,
@@ -5275,11 +5281,7 @@ class InviteBot():
         """
         # chat_id = variable.id_owner if not message else message.chat.id
         composed_message_dict = {}
-        # if not self.client.is_connected():
-        #     await self.client.connect()
-
         if not message:
-            # object_1 = {"message_id": 7563, "from": {"id": 5884559465, "is_bot": False, "first_name": "Ruslan", "last_name": "Slepuhin", "username": "ruslanslp", "language_code": "ru"}, "chat": {"id": 5884559465, "first_name": "Ruslan", "last_name": "Slepuhin", "username": "ruslanslp", "type": "private"}, "date": 1678360839, "text": "/start", "entities": [{"type": "bot_command", "offset": 0, "length": 6}]}
             message = Message()
             message.chat = Chat()
             message.chat.id = variable.id_developer
@@ -5292,7 +5294,6 @@ class InviteBot():
         profession_list = {}
         prof_list = []
         self.percent = 0
-        vacancy_from_admin = []
         vacancy_from_admin_dict = {}
 
         if callback_data.split('/')[0] in ['all', 'each']:
@@ -5311,7 +5312,7 @@ class InviteBot():
             prof_list = [callback_data.split(' ')[-1],]
 
         for profession in prof_list:
-
+            self.temporary_data = {}
             self.message_for_send_dict = {}
 
             await sp.reset_percent()
@@ -5354,17 +5355,22 @@ class InviteBot():
 
                 #shorts_report
                 if not self.temporary_data:
-                    temporary_response = self.db.get_all_from_db(table_name='admin_temporary', without_sort=True)
-                    for item in temporary_response:
-                        if 'in' not in self.temporary_data:
-                            self.temporary_data['in'] = {}
-                        if 'id_admin_channel' not in self.temporary_data['in']:
-                            self.temporary_data['in']['id_admin_channel'] = []
-                        if 'id_admin' not in self.temporary_data['in']:
-                            self.temporary_data['in']['id_admin'] = []
-                        self.temporary_data['in']['id_admin_channel'].append(str(item[0]))
-                        self.temporary_data['in']['id_admin'].append(str(item[0]))
-                        pass
+                    temporary_response = []
+                    try:
+                        temporary_response = self.db.get_all_from_db(table_name='admin_temporary', without_sort=True)
+                    except Exception as ex:
+                        print("Not amin_temporary: ", ex)
+                    if temporary_response and type(temporary_response) is not str:
+                        for item in temporary_response:
+                            if 'in' not in self.temporary_data:
+                                self.temporary_data['in'] = {}
+                            if 'id_admin_channel' not in self.temporary_data['in']:
+                                self.temporary_data['in']['id_admin_channel'] = []
+                            if 'id_admin' not in self.temporary_data['in']:
+                                self.temporary_data['in']['id_admin'] = []
+                            self.temporary_data['in']['id_admin_channel'].append(str(item[0]))
+                            self.temporary_data['in']['id_admin'].append(str(item[0]))
+                            pass
 
                 for vacancy in history_messages:
                     if hard_pushing:
@@ -5375,9 +5381,11 @@ class InviteBot():
                         text=f"Message_ID: {vacancy['id']}\n"
                     )
 
-                    print('\npush vacancy\n')
-
                     if not hard_pushing:
+                        response = self.db.get_all_from_db(table_name='admin_temporary', without_sort=True)
+                        # for i in response:
+                        #     print(i)
+
                         response = self.db.get_all_from_db(
                             table_name='admin_temporary',
                             param=f"WHERE id_admin_channel='{vacancy['id']}'",
@@ -5395,8 +5403,6 @@ class InviteBot():
                             )
 
                         if response:
-                            # id_admin_last_session_table = int(response[0][2])
-
                             vacancy_from_admin = self.db.get_all_from_db(
                                 table_name=variable.admin_database,
                                 param=f"WHERE id={response_temp_dict['id_admin_last_session_table']}",
@@ -5405,27 +5411,12 @@ class InviteBot():
                             )
                             vacancy_from_admin = vacancy_from_admin[0]
                             vacancy_from_admin_dict = await helper.to_dict_from_admin_response(vacancy_from_admin,
-                                                                                  variable.admin_table_fields)
-                            #shorts_report
-                            if 'out' not in self.temporary_data:
-                                self.temporary_data['out'] = {}
-                            if 'id_admin_channel' not in self.temporary_data['out']:
-                                self.temporary_data['out']['id_admin_channel'] = []
-                            if 'id_admin' not in self.temporary_data['out']:
-                                self.temporary_data['out']['id_admin'] = []
-                            if 'title' not in self.temporary_data['out']:
-                                self.temporary_data['out']['title'] = []
-                            if 'body' not in self.temporary_data['out']:
-                                self.temporary_data['out']['body'] = []
-                            self.temporary_data['out']['id_admin_channel'].append(str(response_temp_dict['id_admin_channel']))
-                            self.temporary_data['out']['id_admin'].append(str(response_temp_dict['id_admin_last_session_table']))
-                            self.temporary_data['out']['title'].append(vacancy_from_admin_dict['title'])
-                            self.temporary_data['out']['body'].append(vacancy_from_admin_dict['body'])
-                            pass
+                                                                                               variable.admin_table_fields)
 
                         else:
                             await self.bot_aiogram.send_message(message.chat.id,
                                                                 'There is not response from admin temporary table')
+
                     else:
                         composed_message_dict = await self.compose_message(
                             vacancy_from_admin_dict=vacancy,
@@ -5434,6 +5425,34 @@ class InviteBot():
                             message=vacancy,
                         )
                         vacancy_from_admin_dict = vacancy
+                    # shorts_report
+                    if 'out' not in self.temporary_data:
+                        self.temporary_data['out'] = {}
+                    if 'id_admin_channel' not in self.temporary_data['out']:
+                        self.temporary_data['out']['id_admin_channel'] = []
+                    if 'id_admin' not in self.temporary_data['out']:
+                        self.temporary_data['out']['id_admin'] = []
+                    if 'title' not in self.temporary_data['out']:
+                        self.temporary_data['out']['title'] = []
+                    if 'body' not in self.temporary_data['out']:
+                        self.temporary_data['out']['body'] = []
+
+                    self.temporary_data['out']['id_admin_channel'].append(str(response_temp_dict['id_admin_channel'])) \
+                        if not hard_pushing \
+                        else self.temporary_data['out']['id_admin_channel'].append('-')
+
+                    self.temporary_data['out']['id_admin'].append(
+                        str(response_temp_dict['id_admin_last_session_table'])) \
+                        if not hard_pushing \
+                        else self.temporary_data['out']['id_admin'].append(str(vacancy['id']))
+
+                    self.temporary_data['out']['title'].append(vacancy_from_admin_dict['title']) \
+                        if not hard_pushing \
+                        else self.temporary_data['out']['title'].append(str(vacancy['title']))
+
+                    self.temporary_data['out']['body'].append(vacancy_from_admin_dict['body']) \
+                        if not hard_pushing \
+                        else self.temporary_data['out']['body'].append(str(vacancy['body']))
 
                     try:
                         helper.add_to_report_file(
@@ -5473,7 +5492,6 @@ class InviteBot():
 
                     elif "shorts" in callback_data:
                         # I need to get the newest vacancy
-                        print('vacancy_from_admin_dict', vacancy_from_admin_dict)
                         vacancy_from_admin = self.db.get_all_from_db(
                             table_name=variable.admin_database,
                             # param=f"WHERE id={response_temp_dict['id_admin_last_session_table']}",
@@ -5541,10 +5559,11 @@ class InviteBot():
                     self.db.delete_table(
                         table_name='admin_temporary'
                     )
+
                 #shorts_report
                 try:
                     for n in range(0, len(self.temporary_data['out']['id_admin_channel'])):
-                        if self.temporary_data['out']['id_admin_channel'][n] in self.temporary_data['in']['id_admin_channel']:
+                        if 'in' in self.temporary_data and self.temporary_data['out']['id_admin_channel'][n] in self.temporary_data['in']['id_admin_channel']:
                             index = self.temporary_data['in']['id_admin_channel'].index(self.temporary_data['out']['id_admin_channel'][n])
 
                             self.report.parsing_report(in_admin_channel=self.temporary_data['in']['id_admin_channel'][index], report_type='shorts')
@@ -5565,7 +5584,7 @@ class InviteBot():
                             self.report.parsing_report(out_body=self.temporary_data['out']['body'][n], report_type='shorts')
                             self.report.parsing_switch_next(switch=True, report_type='shorts')
 
-                    if self.temporary_data['in']['id_admin_channel']:
+                    if 'in' in self.temporary_data and self.temporary_data['in']['id_admin_channel']:
                         for n in range(0, len(self.temporary_data['in']['id_admin_channel'])):
                             self.report.parsing_report(in_admin_channel=self.temporary_data['in']['id_admin_channel'][n], report_type='shorts')
                             self.report.parsing_report(in_id_admin=self.temporary_data['in']['id_admin'][n], report_type='shorts')
@@ -5573,15 +5592,23 @@ class InviteBot():
                             self.report.parsing_report(in_body=self.temporary_data['in']['body'][n] if 'body' in self.temporary_data['in'] else '-', report_type='shorts')
                             self.report.parsing_switch_next(switch=True, report_type='shorts')
 
-                    await self.report.add_to_excel(report_type='shorts')
-
-                    await helper.send_file_to_user(
-                        bot=self.bot_aiogram,
-                        chat_id=message.chat.id,
-                        path=report_file_path['shorts']
-                    )
+                    # await self.report.add_to_excel(report_type='shorts')
+                    #
+                    # await helper.send_file_to_user(
+                    #     bot=self.bot_aiogram,
+                    #     chat_id=message.chat.id,
+                    #     path=report_file_path['shorts']
+                    # )
                 except Exception as ex:
                     await self.bot_aiogram.send_message(message.chat.id, f"error in the shorts report: {ex}")
+
+                await self.report.add_to_excel(report_type='shorts')
+
+                await helper.send_file_to_user(
+                    bot=self.bot_aiogram,
+                    chat_id=message.chat.id,
+                    path=report_file_path['shorts']
+                )
 
                 await self.bot_aiogram.send_message(
                     message.chat.id,
@@ -5609,8 +5636,8 @@ class InviteBot():
                 )
 
             else:
-                print('no vacancies')
-                await self.bot_aiogram.send_message(message.chat.id, 'No vacancies')
+                print(f'{profession}: no vacancies')
+                await self.bot_aiogram.send_message(message.chat.id, f'{profession}: No vacancies')
 
     async def hard_pushing_by_schedule(self, message, profession_list):
         table_set = set()
