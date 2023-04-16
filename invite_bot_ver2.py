@@ -3185,8 +3185,9 @@ class InviteBot():
 
             # # -----------------------parsing telegram channels -------------------------------------
             bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
-            self.task = asyncio.create_task(main(report=self.report, client=self.client, bot_dict=bot_dict))
-            await self.report.add_to_excel(report_type='parsing')
+            # self.task = asyncio.create_task(main(report=self.report, client=self.client, bot_dict=bot_dict))
+            # await self.report.add_to_excel(report_type='parsing')
+            await main(report=self.report, client=self.client, bot_dict=bot_dict)
 
             sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
             self.task = asyncio.create_task(sites_parser.call_sites())
