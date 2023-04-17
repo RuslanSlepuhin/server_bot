@@ -286,9 +286,9 @@ class InviteBot():
             await self.bot_aiogram.send_message(variable.id_owner, f'User {message.from_user.id} has started')
             config2 = configparser.ConfigParser()
             config2.read("./settings/config_keys.ini")
-            if self.token == config2['Token']['token_red']:
-                await get_news(message=message)
-                pass
+            # if self.token == config2['Token']['token_red']:
+            #     await get_news(message=message)
+            #     pass
 
         @self.dp.message_handler(commands=['help'])
         async def get_logs(message: types.Message):
