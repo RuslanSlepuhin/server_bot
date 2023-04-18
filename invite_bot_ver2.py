@@ -282,7 +282,7 @@ class InviteBot():
 
             parsing_kb.row(parsing_button3, parsing_button2)
 
-            await self.bot_aiogram.send_message(message.chat.id, f'Привет, {message.from_user.first_name}!', reply_markup=parsing_kb)
+            await self.bot_aiogram.send_message(message.chat.id, f'Hey, {message.from_user.first_name}!', reply_markup=parsing_kb)
             await self.bot_aiogram.send_message(variable.id_owner, f'User {message.from_user.id} has started')
             config2 = configparser.ConfigParser()
             config2.read("./settings/config_keys.ini")
@@ -3190,7 +3190,8 @@ class InviteBot():
             # await main(report=self.report, client=self.client, bot_dict=bot_dict)
 
             sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
-            self.task = asyncio.create_task(sites_parser.call_sites())
+            await sites_parser.call_sites()
+            # self.task = asyncio.create_task(sites_parser.call_sites())
 
             await self.send_file_to_user(
                 message=message,
