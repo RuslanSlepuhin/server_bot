@@ -820,14 +820,16 @@ class InviteBot():
 
         @self.dp.message_handler(commands=['stop'])
         async def stop_commands(message: types.Message):
-            self.msg = await self.bot_aiogram.send_message(message.chat.id, 'Please wait...')
-            if self.task:
-                was_cancelled = self.task.cancel()
-                await self.msg.edit_text(f"{self.msg.text}\nProcess was stopped. Status: {was_cancelled}")
-                print(f"Process was stopped. Status: {was_cancelled}")
-                self.task = None
-            else:
-                await self.msg.edit_text(f"{self.msg.text}\nSorry, no one parser works")
+            loop = asyncio.get_event_loop()
+            loop.stop()
+            # self.msg = await self.bot_aiogram.send_message(message.chat.id, 'Please wait...')
+            # if self.task:
+            #     was_cancelled = self.task.cancel()
+            #     await self.msg.edit_text(f"{self.msg.text}\nProcess was stopped. Status: {was_cancelled}")
+            #     print(f"Process was stopped. Status: {was_cancelled}")
+            #     self.task = None
+            # else:
+            #     await self.msg.edit_text(f"{self.msg.text}\nSorry, no one parser works")
 
 
         @self.dp.message_handler(commands=['db_check_url_vacancy'])
