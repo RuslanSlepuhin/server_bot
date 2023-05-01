@@ -160,80 +160,80 @@ def get_additional_values_fields(dict_in):
     else:
         results_dict['english'] = ''
 
-    #job_type
-    job_type_shorts = ''
-    remote_shorts = get_field_for_shorts_sync(
-        presearch_results=[
-            results_dict['job_type'],
-            results_dict['title'] + results_dict['body'],
-        ],
-        pattern=export_pattern['others']['remote']['ma'],
-        return_value='remote',
-    )
-    remote_shorts = remote_shorts['return_value']
-    if remote_shorts:
-        job_type_shorts += remote_shorts
-
-    full_time_shorts = get_field_for_shorts_sync(
-        presearch_results=[
-            results_dict['job_type'],
-            results_dict['title'] + results_dict['body'],
-        ],
-        pattern=export_pattern['others']['full_time']['ma'],
-        return_value='fulltime',
-    )
-    full_time_shorts = full_time_shorts['return_value']
-    if full_time_shorts:
-        if len(job_type_shorts) > 0:
-            job_type_shorts += ", "
-        job_type_shorts += full_time_shorts
-
-    office_shorts = get_field_for_shorts_sync(
-        presearch_results=[
-            results_dict['job_type'], results_dict['body'],
-        ],
-        pattern=export_pattern['others']['office']['ma'],
-        return_value='office',
-    )
-    office_shorts = office_shorts['return_value']
-
-    if office_shorts:
-        if len(job_type_shorts) > 0:
-            job_type_shorts += ", "
-        job_type_shorts += office_shorts
-
-    flexible_shorts = get_field_for_shorts_sync(
-        presearch_results=[
-            results_dict['job_type'], results_dict['body'],
-        ],
-        pattern=export_pattern['others']['flexible']['ma'],
-        return_value='flexible',
-    )
-    flexible_shorts = flexible_shorts['return_value']
-
-    if flexible_shorts:
-        if len(job_type_shorts) > 0:
-            job_type_shorts += ", "
-        job_type_shorts += flexible_shorts
-
-    # hybrid_shorts = get_field_for_shorts_sync(
+    # #job_type
+    # job_type_shorts = ''
+    # remote_shorts = get_field_for_shorts_sync(
+    #     presearch_results=[
+    #         results_dict['job_type'],
+    #         results_dict['title'] + results_dict['body'],
+    #     ],
+    #     pattern=export_pattern['others']['remote']['ma'],
+    #     return_value='remote',
+    # )
+    # remote_shorts = remote_shorts['return_value']
+    # if remote_shorts:
+    #     job_type_shorts += remote_shorts
+    #
+    # full_time_shorts = get_field_for_shorts_sync(
+    #     presearch_results=[
+    #         results_dict['job_type'],
+    #         results_dict['title'] + results_dict['body'],
+    #     ],
+    #     pattern=export_pattern['others']['full_time']['ma'],
+    #     return_value='fulltime',
+    # )
+    # full_time_shorts = full_time_shorts['return_value']
+    # if full_time_shorts:
+    #     if len(job_type_shorts) > 0:
+    #         job_type_shorts += ", "
+    #     job_type_shorts += full_time_shorts
+    #
+    # office_shorts = get_field_for_shorts_sync(
     #     presearch_results=[
     #         results_dict['job_type'], results_dict['body'],
     #     ],
-    #     pattern=export_pattern['others']['hybrid']['ma'],
-    #     return_value='office/remote',
+    #     pattern=export_pattern['others']['office']['ma'],
+    #     return_value='office',
     # )
-    if hybrid_shorts:
-        hybrid_shorts = hybrid_shorts['return_value']
+    # office_shorts = office_shorts['return_value']
+    #
+    # if office_shorts:
+    #     if len(job_type_shorts) > 0:
+    #         job_type_shorts += ", "
+    #     job_type_shorts += office_shorts
+    #
+    # flexible_shorts = get_field_for_shorts_sync(
+    #     presearch_results=[
+    #         results_dict['job_type'], results_dict['body'],
+    #     ],
+    #     pattern=export_pattern['others']['flexible']['ma'],
+    #     return_value='flexible',
+    # )
+    # flexible_shorts = flexible_shorts['return_value']
+    #
+    # if flexible_shorts:
+    #     if len(job_type_shorts) > 0:
+    #         job_type_shorts += ", "
+    #     job_type_shorts += flexible_shorts
+    #
+    # # hybrid_shorts = get_field_for_shorts_sync(
+    # #     presearch_results=[
+    # #         results_dict['job_type'], results_dict['body'],
+    # #     ],
+    # #     pattern=export_pattern['others']['hybrid']['ma'],
+    # #     return_value='office/remote',
+    # # )
+    # if hybrid_shorts:
+    #     hybrid_shorts = hybrid_shorts['return_value']
+    #
+    #
+    # if hybrid_shorts:
+    #     if len(job_type_shorts) > 0:
+    #         job_type_shorts += ", "
+    #     job_type_shorts += hybrid_shorts
 
-
-    if hybrid_shorts:
-        if len(job_type_shorts) > 0:
-            job_type_shorts += ", "
-        job_type_shorts += hybrid_shorts
-
-    if job_type_shorts:
-        results_dict['job_type'] = job_type_shorts
+    # if job_type_shorts:
+    #     results_dict['job_type'] = job_type_shorts
 
     #relocation
     relocate_shorts = get_field_for_shorts_sync(
@@ -268,19 +268,19 @@ def get_additional_values_fields(dict_in):
     if experience_shorts:
         results_dict['experience'] = experience_shorts
 
-    salary_shorts = get_field_for_shorts_sync(
-        presearch_results=[
-            results_dict['salary'],
-            results_dict['title'] + results_dict['body']
-        ],
-        pattern=export_pattern['others']['salary_for_shorts']['ma'],
-        return_value='salary'
-    )
-    salary_shorts = salary_shorts['match']
-    salary_shorts = salary_shorts.replace('до', '-').replace('  ', ' ')
-    if salary_shorts:
-        results_dict['salary'] = salary_shorts
-    # print('salary = ', salary_shorts)
+    # salary_shorts = get_field_for_shorts_sync(
+    #     presearch_results=[
+    #         results_dict['salary'],
+    #         results_dict['title'] + results_dict['body']
+    #     ],
+    #     pattern=export_pattern['others']['salary_for_shorts']['ma'],
+    #     return_value='salary'
+    # )
+    # salary_shorts = salary_shorts['match']
+    # salary_shorts = salary_shorts.replace('до', '-').replace('  ', ' ')
+    # if salary_shorts:
+    #     results_dict['salary'] = salary_shorts
+    # # print('salary = ', salary_shorts)
 
     city_shorts = get_city_vacancy_for_shorts_sync(
         presearch_results=[
