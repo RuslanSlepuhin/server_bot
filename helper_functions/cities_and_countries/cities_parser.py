@@ -13,6 +13,13 @@ class CitiesAndCountries:
 
 
     async def get_all_countries_and_cities(self):
+        try:
+            self.db.delete_table(
+                table_name=countries_cities_table
+            )
+        except Exception as ex:
+            print(ex)
+
         self.db.create_table_common(
             field_list=["country VARCHAR(60)", "city VARCHAR (150)"],
             table_name=countries_cities_table
@@ -42,7 +49,8 @@ class CitiesAndCountries:
                     fields_values_dict={
                         'country': country['name'],
                         'city': city['name']
-                    }
+                    },
+                    notification=True
                 )
 
     async def translate_to_english(self, word):
