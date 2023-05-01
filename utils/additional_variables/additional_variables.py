@@ -5,6 +5,7 @@ admin_database = 'admin_last_session'
 archive_database = 'archive'
 shorts_session_database = 'short_session_numbers'
 admin_copy = 'admin_copy'
+countries_cities_table = 'countries_cities'
 last_autopushing_time_database = 'last_autopushing_time'
 short_session_database = 'shorts_session_name'
 admin_table_fields = "id, chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, " \
@@ -35,13 +36,13 @@ profession_list_for_pushing_by_schedule = ['pm', 'qa', 'devops', 'mobile', 'game
 all_tables_for_vacancy_search = []
 all_tables_for_vacancy_search.extend([admin_database, archive_database])
 all_tables_for_vacancy_search.extend(valid_professions)
-
+valid_job_types = ['remote', 'office', 'office/remote', 'fulltime', 'flexible']
 not_lower_professions = ['pm', 'game', 'designer', 'hr', 'analyst', 'qa', 'ba' 'devops', 'product']
 
 white_admin_list = [1763672666, 556128576, 758905227, 945718420, 5755261667, 5884559465, 5730794427, 758905227]
 
 id_owner = 1763672666
-id_developer = 5884559465
+id_developer = 758905227
 
 #admin database name
 channel_id_for_shorts = -1001671844820
@@ -144,6 +145,39 @@ post_request_for_example = {
     'job_type': ['remote']
 }
 
+vacancy_table = "id SERIAL PRIMARY KEY," \
+                         "chat_name VARCHAR(150)," \
+                         "title VARCHAR(1000)," \
+                         "body VARCHAR (6000)," \
+                         "profession VARCHAR (30)," \
+                         "vacancy VARCHAR (700)," \
+                         "vacancy_url VARCHAR (150)," \
+                         "company VARCHAR (200)," \
+                         "english VARCHAR (100)," \
+                         "relocation VARCHAR (100)," \
+                         "job_type VARCHAR (700)," \
+                         "city VARCHAR (150)," \
+                         "salary VARCHAR (300)," \
+                         "salary_from INT," \
+                         "salary_to INT," \
+                         "salary_currency VARCHAR(20)," \
+                         "salary_period VARCHAR(50)," \
+                         "experience VARCHAR (700)," \
+                         "contacts VARCHAR (500)," \
+                         "time_of_public TIMESTAMP," \
+                         "created_at TIMESTAMP," \
+                         "agregator_link VARCHAR(200)," \
+                         "session VARCHAR(15)," \
+                         "sended_to_agregator VARCHAR(30)," \
+                         "sub VARCHAR (250)," \
+                         "tags VARCHAR (700)," \
+                         "full_tags VARCHAR (700)," \
+                         "full_anti_tags VARCHAR (700)," \
+                         "short_session_numbers VARCHAR (300)," \
+                         "level VARCHAR (70)," \
+                         "approved VARCHAR (100)," \
+                         "FOREIGN KEY (session) REFERENCES current_session(session)"
+
 help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '/get_participants - ❗️get the channel follower numbers\n' \
             '/delete_till - ❗️delete old vacancy from admin DB till date\n\n' \
@@ -210,6 +244,7 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '---------------- TOOLS: ----------------\n' \
             '🛠/edit_pattern - stop proccess\n' \
             '/db_check_url_vacancy - does vacancy exist by link\n' \
+            '/db_check_add_single_vacancy - check and add vacancy by link\n' \
             '/schedule - non-stop parsing\n' \
             '/restore_from_admin - restory the lost vacancies\n' \
             '/invite_people - start to invite followers\n' \
@@ -232,6 +267,10 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '/hard_pushing_by_schedule - run pushing by schedule\n' \
             '/hard_push_by_web - run pushing by schedule through web point\n' \
             '/pick_up_forcibly_from_admin - if vacancies has been sent to the admin channel already and code has stopped\n' \
+          '---------------------------------------------------\n\n' \
+            '---------------- UPDATERS: ----------------\n' \
+            '/update_city_field - update city field by new logic\n' \
+            '/update_salary_field - update salary field by new logic\n' \
           '---------------------------------------------------\n\n' \
             '❗️- it is admin options'
 

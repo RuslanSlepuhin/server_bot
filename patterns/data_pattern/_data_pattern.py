@@ -1273,7 +1273,7 @@ pattern = {
         'mincl': ()
     },
 
-    'full_time': {
+    'fulltime': {
         'ma': {"[Пп]олная занятость", "[Пп]олный \w* день", "[Ff]ull[-\s]?[Tt]ime", "[Пп]олн\w\w занятость"},
         'ma2': (),
         'mdef': (),
@@ -1292,7 +1292,7 @@ pattern = {
     },
 
     'flexible': {
-        'ma': ("[Ff]lexible\sschedule", "[Ff]lexible\stime", "part[-\/\s]time", "[Гг]ибк\w+ график", "[Пп]роектн\w\w работ", "[Чч]астичн\w\w занятость]"),
+        'ma': ("[Ff]lexible\sschedule", "[Ff]lexible\stime", "part[-\/\s]time", "[Гг]ибк\w+ график", "[Пп]роектн\w\w работ", "[Чч]астичн\w\w занятость", "[Ff]lexible working hours",),
         'ma2': (),
         'mdef': (),
         'mex': (),

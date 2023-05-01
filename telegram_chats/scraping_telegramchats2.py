@@ -147,12 +147,12 @@ class WriteToDbMessages():
         history = None
 
         new_text = f"<em>channel {channel}</em>"
-
-        self.msg = await helper.send_message(
-            bot=self.bot_dict['bot'],
-            chat_id=self.bot_dict['chat_id'],
-            text=new_text
-        )
+        if self.bot_dict:
+            self.msg = await helper.send_message(
+                bot=self.bot_dict['bot'],
+                chat_id=self.bot_dict['chat_id'],
+                text=new_text
+            )
 
         while True:
             try:
@@ -163,17 +163,19 @@ class WriteToDbMessages():
                     limit=limit_msg, max_id=0, min_id=0,
                     hash=0))
             except Exception as e:
-                await self.bot_dict['bot'].send_message(
-                                        self.bot_dict['chat_id'],
-                                        f"Getting history:\n{str(e)}: {channel}\npause 25-30 seconds...",
-                                        parse_mode="HTML",
-                                        disable_web_page_preview = True)
+                if self.bot_dict:
+                    await self.bot_dict['bot'].send_message(
+                                            self.bot_dict['chat_id'],
+                                            f"Getting history:\n{str(e)}: {channel}\npause 25-30 seconds...",
+                                            parse_mode="HTML",
+                                            disable_web_page_preview = True)
                 time.sleep(2)
 
             # if not history.messages:
             if not history:
                 print(f'Not history for channel {channel}')
-                await self.bot_dict['bot'].send_message(self.bot_dict['chat_id'], f'Not history for channel {channel}', disable_web_page_preview = True)
+                if self.bot_dict:
+                    await self.bot_dict['bot'].send_message(self.bot_dict['chat_id'], f'Not history for channel {channel}', disable_web_page_preview = True)
                 break
             messages = history.messages
             for message in messages:
@@ -228,8 +230,8 @@ class WriteToDbMessages():
 
         # add to excel report
         if self.report:
-            self.report.parsing_report(link_current_vacancy=vacancy_url)
-            self.report.parsing_report(title=title, body=body)
+            self.report.parsing_report(link_current_vacancy=vacancy_url, report_type='parsing')
+            self.report.parsing_report(title=title, body=body, report_type='parsing')
 
         response_exists = self.db.check_exists_message_by_link_or_url(
             vacancy_url=vacancy_url
@@ -237,7 +239,7 @@ class WriteToDbMessages():
         print('vacancy_url: ', response_exists)
 
         if not response_exists and self.report:
-            self.report.parsing_report(has_been_added_to_db=False)
+            self.report.parsing_report(has_been_added_to_db=False, report_type='parsing')
             # self.report.parsing_switch_next(switch=True)
 
         if response_exists:
@@ -279,7 +281,7 @@ class WriteToDbMessages():
             # STEP NEXT/ Get the profession/ previous it needs to get companies list from table companies
             #           I have got the companies previous. Look at up
 
-            response = VacancyFilter(report=self.report).sort_profession(title, body)
+            response = VacancyFilter(report=self.report if self.report else None).sort_profession(title, body)
             profession = response['profession']
             params = response['params']
 
@@ -299,17 +301,18 @@ class WriteToDbMessages():
                     check_or_exists=True,
                     params=params
                 )
-                if db_response:
+                if db_response['has_been_found']:
                     self.exist_dict['existed'] += 1
                 else:
                     self.exist_dict['written'] += 1
             else:
-                self.report.parsing_report(has_been_added_to_db=False)
+                if self.report:
+                    self.report.parsing_report(has_been_added_to_db=False, report_type='parsing')
         else:
             print(f'{title[:40]}:\nthis vacancy has existed already\n---------\n')
             self.exist_dict['existed'] += 1
 
-        return self.report.parsing_switch_next(switch=True)
+        return self.report.parsing_switch_next(switch=True, report_type='parsing') if self.report else None
 
     async def delete_messages(self):
 

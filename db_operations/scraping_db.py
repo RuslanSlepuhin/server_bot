@@ -2,7 +2,7 @@ import configparser
 import json
 import re
 from utils.additional_variables.additional_variables import admin_database, archive_database, admin_table_fields
-from utils.additional_variables.additional_variables import table_list_for_checking_message_in_db, short_session_database
+from utils.additional_variables.additional_variables import table_list_for_checking_message_in_db, short_session_database, vacancy_table
 import psycopg2
 from datetime import datetime
 from logs.logs import Logs
@@ -26,34 +26,38 @@ class DataBaseOperations:
 
     def connect_db(self):
 
-        logs.write_log(f"scraping_db: function: connect_db")
+        if not self.con:
+            self.con = None
+            config.read("./../settings/config.ini")
+            try:
+                database = config['DB3']['database']
+                user = config['DB3']['user']
+                password = config['DB3']['password']
+                host = config['DB3']['host']
+                port = config['DB3']['port']
+            except:
+                config.read("./settings/config.ini")
+                database = config['DB_local_clone']['database']
+                user = config['DB_local_clone']['user']
+                password = config['DB_local_clone']['password']
+                host = config['DB_local_clone']['host']
+                port = config['DB_local_clone']['port']
 
-        self.con = None
-        config.read("./../settings/config.ini")
-        try:
-            database = config['DB3']['database']
-            user = config['DB3']['user']
-            password = config['DB3']['password']
-            host = config['DB3']['host']
-            port = config['DB3']['port']
-        except:
-            config.read("./settings/config.ini")
-            database = config['DB_local_clone']['database']
-            user = config['DB_local_clone']['user']
-            password = config['DB_local_clone']['password']
-            host = config['DB_local_clone']['host']
-            port = config['DB_local_clone']['port']
-        try:
-            self.con = psycopg2.connect(
-                database=database,
-                user=user,
-                password=password,
-                host=host,
-                port=port
-            )
-        except:
-            print('No connect with db')
-        # return self.con
+            try:
+                self.con = psycopg2.connect(
+                    database=database,
+                    user=user,
+                    password=password,
+                    host=host,
+                    port=port
+                )
+            except:
+                print('No connect with db')
+        else:
+            pass
+            # print('You are in connections with database')
+
+        return self.con
     #-------------participants-------------------------
     def push_to_bd_participants(self, participant, all_user_dictionary, channel_name, channel_username):
 
@@ -118,34 +122,7 @@ class DataBaseOperations:
         cur = self.con.cursor()
 
         with self.con:
-            cur.execute(f"""CREATE TABLE IF NOT EXISTS {table_name} (
-                            id SERIAL PRIMARY KEY,
-                            chat_name VARCHAR(150),
-                            title VARCHAR(1000),
-                            body VARCHAR (6000),
-                            profession VARCHAR (30),
-                            vacancy VARCHAR (700),
-                            vacancy_url VARCHAR (150),
-                            company VARCHAR (200),
-                            english VARCHAR (100),
-                            relocation VARCHAR (100),
-                            job_type VARCHAR (700),
-                            city VARCHAR (150),
-                            salary VARCHAR (300),
-                            experience VARCHAR (700),
-                            contacts VARCHAR (500),
-                            time_of_public TIMESTAMP,
-                            created_at TIMESTAMP,
-                            agregator_link VARCHAR(200),
-                            sub VARCHAR (250),
-                            tags VARCHAR (700),
-                            full_tags VARCHAR (700),
-                            full_anti_tags VARCHAR (700),
-                            short_session_numbers VARCHAR (300),
-                            session VARCHAR(15),
-                            FOREIGN KEY (session) REFERENCES current_session(session)
-                            );"""
-                        )
+            cur.execute(f"""CREATE TABLE IF NOT EXISTS {table_name} ({vacancy_table});""")
             print(f'table {table_name} has been crated or exists')
 
     def push_to_bd(self, results_dict, profession_list=None, agregator_id=None, shorts_session_name=None):
@@ -253,30 +230,8 @@ class DataBaseOperations:
         return text
 
     def get_all_from_db(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
-        if not self.con:
-            self.connect_db()
-        cur = self.con.cursor()
-        if not order:
-            order = "ORDER BY time_of_public"
-        if not without_sort:
-            query = f"""SELECT {field} FROM {table_name} {param} {order}"""
-        else:
-            query = f"""SELECT {field} FROM {table_name} {param} """
-        with self.con:
-            try:
-                cur.execute(query)
-                response = cur.fetchall()
-            except Exception as e:
-                print(e)
-                return str(e)
-        if curs:
-            return cur
-        return response
 
-    async def get_all_from_db_async(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
-        response = []
-        if not self.con:
-            self.connect_db()
+        self.connect_db()
         cur = self.con.cursor()
         if not order:
             order = "ORDER BY time_of_public"
@@ -284,6 +239,7 @@ class DataBaseOperations:
             query = f"""SELECT {field} FROM {table_name} {param} {order}"""
         else:
             query = f"""SELECT {field} FROM {table_name} {param} """
+
         try:
             with self.con:
                 try:
@@ -292,8 +248,63 @@ class DataBaseOperations:
                 except Exception as e:
                     print(e)
                     return str(e)
-        except Exception as e:
-            print(e)
+            if curs:
+                return cur
+            return response
+        except Exception as ex:
+            print(f"\nerror in get_all_from_db: {ex}\n")
+            return False
+
+    async def get_all_from_db_async(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
+        response = []
+        cur = None
+        if self.con:
+            self.con.close()
+        if not self.con:
+            config.read("./../settings/config.ini")
+            try:
+                database = config['DB3']['database']
+                user = config['DB3']['user']
+                password = config['DB3']['password']
+                host = config['DB3']['host']
+                port = config['DB3']['port']
+            except:
+                config.read("./settings/config.ini")
+                database = config['DB_local_clone']['database']
+                user = config['DB_local_clone']['user']
+                password = config['DB_local_clone']['password']
+                host = config['DB_local_clone']['host']
+                port = config['DB_local_clone']['port']
+            try:
+                self.con = psycopg2.connect(
+                    database=database,
+                    user=user,
+                    password=password,
+                    host=host,
+                    port=port
+                )
+                cur = self.con.cursor()
+                if not order:
+                    order = "ORDER BY time_of_public"
+                if not without_sort:
+                    query = f"""SELECT {field} FROM {table_name} {param} {order}"""
+                else:
+                    query = f"""SELECT {field} FROM {table_name} {param} """
+                try:
+                    with self.con:
+                        try:
+                            cur.execute(query)
+                            response = cur.fetchall()
+                        except Exception as e:
+                            print(e)
+                            return str(e)
+                except Exception as e:
+                    print(e)
+            except:
+                print('No connect with db')
+            finally:
+                if self.con:
+                    self.con.close()
         if curs:
             return cur
         return response
@@ -455,9 +466,8 @@ class DataBaseOperations:
 
         logs.write_log(f"scraping_db: function: write_to_db_companies")
 
-        if not self.con:
-            self.connect_db()
-        cur = self.con.cursor()
+        con = self.connect_db()
+        cur = con.cursor()
 
         for company in companies:
 
@@ -466,7 +476,7 @@ class DataBaseOperations:
                 if '\'' in company:
                     company = company.replace('\'', '')
                 query = f"""SELECT * FROM companies WHERE company='{company}'"""
-                with self.con:
+                with con:
                     try:
                         cur.execute(query)
                         response = cur.fetchall()
@@ -476,7 +486,7 @@ class DataBaseOperations:
 
                 if not response:
                     query = f"""INSERT INTO companies (company) VALUES ('{company}')"""
-                    with self.con:
+                    with con:
                         try:
                             cur.execute(query)
                             print(f'to put: {company}')
@@ -508,7 +518,7 @@ class DataBaseOperations:
                         print('error: ', e)
 
     def add_columns_to_tables(self, table_list=None, column_name_type=None):
-
+        fields_types = ''
         if not table_list:
             table_list = [admin_database, ]
 
@@ -521,13 +531,17 @@ class DataBaseOperations:
 
         for table_name in table_list:
 
-            query = f"""ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS {column_name_type}"""
-            with self.con:
-                try:
-                    cur.execute(query)
-                    print(f'Added {column_name_type} to {table_name}')
-                except Exception as e:
-                    print(e)
+            if type(column_name_type) not in (set, list, tuple):
+                column_name_type = [column_name_type]
+
+            for field in column_name_type:
+                query = f"""ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS {field}"""
+                with self.con:
+                    try:
+                        cur.execute(query)
+                        print(f'Added {field} to {table_name}')
+                    except Exception as e:
+                        print(e)
 
     def add_columns_to_stat(self, cur, table_name, column_name_type=None):
 
@@ -731,6 +745,10 @@ class DataBaseOperations:
                                 job_type VARCHAR (700),
                                 city VARCHAR (150),
                                 salary VARCHAR (300),
+                                salary_from INT,
+                                salary_to INT,
+                                salary_currency VARCHAR(20),
+                                salary_period VARCHAR(50),
                                 experience VARCHAR (700),
                                 contacts VARCHAR (500),
                                 time_of_public TIMESTAMP,
@@ -748,18 +766,13 @@ class DataBaseOperations:
                                 FOREIGN KEY (session) REFERENCES current_session(session)
                                 );"""
                             )
-                print(f'table {table_name} has created or exists')
+                # print(f'table {table_name} has created or exists')
             except Exception as e:
                 print(e)
 
     def push_to_admin_table(self, results_dict, profession, check_or_exists=True, table_name=admin_database, params=None):
         results_dict['title'] = self.clear_title_or_body(results_dict['title'])
         results_dict['body'] = self.clear_title_or_body(results_dict['body'])
-        results_dict['company'] = self.clear_title_or_body(results_dict['company'])
-        results_dict['profession'] = helper.compose_simple_list_to_str(
-            data_list=profession['profession'],
-            separator=', '
-        )
 
         if check_or_exists:
             tables_list_for_vacancy_searching = profession['profession'] \
@@ -767,57 +780,52 @@ class DataBaseOperations:
                 else set(profession['profession'])
             from utils.additional_variables.additional_variables import additional_elements
             tables_list_for_vacancy_searching = tables_list_for_vacancy_searching.union(additional_elements)
-            print('tables_list_for_vacancy_searching: ', tables_list_for_vacancy_searching)
-
-            if self.check_vacancy_exists_in_db(
+            has_been_found = self.check_vacancy_exists_in_db(
                     tables_list=tables_list_for_vacancy_searching,
                     title=results_dict['title'],
-                    body=results_dict['body']):
-                return True
+                    body=results_dict['body'])
+            if has_been_found['has_been_found']:
+                return {"has_been_found": True, "response_dict": has_been_found['response_dict']}
 
         results_dict['company'] = self.clear_title_or_body(results_dict['company'])
-        results_dict['profession'] = helper.compose_simple_list_to_str(
-            data_list=profession['profession'],
-            separator=', '
-        )
+        results_dict['profession'] = helper.compose_simple_list_to_str(data_list=profession['profession'], separator=', ')
+        results_dict['company'] = self.clear_title_or_body(results_dict['company'])
+        results_dict['profession'] = helper.compose_simple_list_to_str(data_list=profession['profession'], separator=', ')
         results_dict['sub'] = helper.compose_to_str_from_list(data_list=profession['sub'])
-
-        print('unexpected compose to str = ', results_dict['sub'])
         if not results_dict['time_of_public']:
             results_dict['time_of_public'] = datetime.now()
+        results_dict['tags'] = helper.get_tags(profession)
+        results_dict['full_tags'] = profession['tag'].replace("'", "")
+        results_dict['full_anti_tags'] = profession['anti_tag'].replace("'", "")
+        results_dict['level'] = profession['level']
+        results_dict['created_at'] = datetime.now()
+        results_dict = helper.get_additional_values_fields(
+            dict_in=results_dict
+        )
+        if results_dict['profession'] == 'no_sort':
+            table_name = archive_database
+
+        print('+++city: ', results_dict['city']) if 'city' in results_dict else None
+        print('+++salary from: ', results_dict['salary_from']) if 'salary_from' in results_dict else None
+        print('+++salary to: ', results_dict['salary_to']) if 'salary_to' in results_dict else None
+        print('+++salary currency: ', results_dict['salary_currency']) if 'salary_currency' in results_dict else None
+        print('+++salary period: ', results_dict['salary_period']) if 'salary_period' in results_dict else None
+
+        fields_list = []
+        values_str = ''
+        for key in results_dict:
+            if results_dict[key]:
+                fields_list.append(key)
+                if type(results_dict[key]) is int:
+                    values_str += f"{results_dict[key]}, "
+                else:
+                    values_str += f"'{results_dict[key]}', "
+        new_post = f"""INSERT INTO {table_name} ({', '.join(fields_list)}) VALUES ({values_str[:-2]})"""
 
         if not self.con:
             self.connect_db()
         cur = self.con.cursor()
         self.check_or_create_table_admin(cur)
-
-        tags = helper.get_tags(profession)
-        full_tags = profession['tag'].replace("'", "")
-        full_anti_tags = profession['anti_tag'].replace("'", "")
-        level = profession['level']
-
-        # -------------------------------------------------------------------------------------------------------------
-        results_dict = helper.get_additional_values_fields(
-            dict_in=results_dict
-        )
-        # -------------------------------------------------------------------------------------------------------------
-
-        # if profession is no_sort than to write it to archive without admin_last_session
-        if results_dict['profession'] == 'no_sort':
-            table_name = archive_database
-
-        new_post = f"""INSERT INTO {table_name} (
-                            chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, job_type,
-                            city, salary, experience, contacts, time_of_public, created_at, session, sub,
-                            tags, full_tags, full_anti_tags, level)
-                                        VALUES ('{results_dict['chat_name']}', '{results_dict['title']}', '{results_dict['body']}',
-                                        '{results_dict['profession']}', '{results_dict['vacancy']}', '{results_dict['vacancy_url']}', '{results_dict['company']}',
-                                        '{results_dict['english']}', '{results_dict['relocation']}', '{results_dict['job_type']}',
-                                        '{results_dict['city']}', '{results_dict['salary']}', '{results_dict['experience']}',
-                                        '{results_dict['contacts']}', '{results_dict['time_of_public']}', '{datetime.now()}',
-                                        '{results_dict['session']}', '{results_dict['sub']}',
-                                        '{tags}', '{full_tags}', '{full_anti_tags}', '{level}');"""
-
         with self.con:
             try:
                 cur.execute(new_post)
@@ -832,10 +840,9 @@ class DataBaseOperations:
                     self.report.parsing_report(error=str(e))
 
                 print(f'-------------- Didn\'t push in ADMIN LAST SESSION {e}\n')
-                print('time_of_public ', results_dict['time_of_public'])
                 pass
 
-        return False
+        return {"has_been_found": False, "response_dict": {}}
 
     def check_vacancy_exists_in_db(self, tables_list, title, body):
         title = self.clear_title_or_body(title)
@@ -860,7 +867,8 @@ class DataBaseOperations:
                 print(f"response_like True") if response_like else print(f"response_like False")
 
 
-            if response:
+            if response or response_like:
+                response = response_like if not response else response
                 response_dict = helper.to_dict_from_admin_response_sync(
                     response=response[0],
                     fields=tables_fields
@@ -875,27 +883,27 @@ class DataBaseOperations:
                     self.report.parsing_report(has_been_added_to_db=False)
 
                 print(f'!!!!!!!!!!! Vacancy exists in {one_element} table\n')
-                return True
+                return {"has_been_found": True, "response_dict": response_dict}
 
-            if not response and response_like:
-                response_dict = helper.to_dict_from_admin_response_sync(
-                    response=response_like[0],
-                    fields=tables_fields
-                )
-                if self.report:
-                    self.report.parsing_report(
-                        found_title=response_dict['title'],
-                        found_body=response_dict['body'],
-                        found_id=response_dict['id'],
-                        found_vacancy_link=response_dict['vacancy_url']
-                    )
-                    self.report.parsing_report(has_been_added_to_db=False)
-                    # self.report.parsing_switch_next(switch=True)
+            # if not response and response_like:
+            #     response_dict = helper.to_dict_from_admin_response_sync(
+            #         response=response_like[0],
+            #         fields=tables_fields
+            #     )
+            #     if self.report:
+            #         self.report.parsing_report(
+            #             found_title=response_dict['title'],
+            #             found_body=response_dict['body'],
+            #             found_id=response_dict['id'],
+            #             found_vacancy_link=response_dict['vacancy_url']
+            #         )
+            #         self.report.parsing_report(has_been_added_to_db=False)
+            #         # self.report.parsing_switch_next(switch=True)
+            #
+            #     print(f'!!!!!!!!!!! Vacancy exists in {one_element} table\n')
+            #     return True
 
-                print(f'!!!!!!!!!!! Vacancy exists in {one_element} table\n')
-                return True
-
-        return False
+        return {"has_been_found": False, "response_dict": {}}
 
     def push_followers_statistics(self, channel_statistic_dict:dict):
 
@@ -1315,16 +1323,23 @@ class DataBaseOperations:
         query = f"""UPDATE {table_name} SET"""
         for key in values_dict:
             if key != 'id':
-                query += f" {key}='{values_dict[key]}',"
-        query = f"{query[:-1]} {param}"
-        try:
-            self.run_free_request(request=query, output_text=output_text)
-            return True
-        except Exception as e:
-            print(e)
-            return False
+                query += f" {key}='{values_dict[key]}', " if values_dict[key] else ''
+
+        if query.split(' ')[-1] != "SET":
+            query = f"{query[:-2]} {param}"
+            try:
+                self.run_free_request(request=query, output_text=output_text)
+                return True
+            except Exception as e:
+                print(e)
+                return False
+        else:
+            print('Nothing to write to db')
 
     def check_exists_message_by_link_or_url(self, title=None, body=None, vacancy_url=None, table_list=None):
+
+        # print("??????????start_check_exists_message_by_link_or_url")
+
         param = "WHERE "
         length = len(param)
 
@@ -1346,7 +1361,8 @@ class DataBaseOperations:
             response = self.get_all_from_db(
                 table_name=table,
                 param=param,
-                field='id, vacancy_url'
+                field='id, vacancy_url',
+                without_sort=True
             )
             if response:
                 if self.report:
@@ -1354,7 +1370,9 @@ class DataBaseOperations:
                         self.report.parsing_report(found_id_by_link=response[0][1])
                     else:
                         self.report.parsing_report(found_title=title, found_body=body, found_id=response[0][0])
+                # print("??????????finish_check_exists_message_by_link_or_url")
                 return False
+        # print("??????????finish_check_exists_message_by_link_or_url")
         return True
 
     def write_short_session(self, short_session_name):
@@ -1379,14 +1397,23 @@ class DataBaseOperations:
 
             print('short_session_name table has created')
 
-    def get_information_about_tables_and_fields(self):
+    def get_information_about_tables_and_fields(self, only_tables=False):
+        tables_list = []
         if not self.con:
             self.con = self.connect_db()
         cur = self.con.cursor()
         query = "select table_name, column_name from information_schema.columns where table_schema='public'"
         with self.con:
             cur.execute(query)
-        return cur.fetchall()
+        if not only_tables:
+            return cur.fetchall()
+        else:
+            for table in cur.fetchall():
+                if table[0] not in tables_list:
+                    tables_list.append(table[0])
+            return tables_list
+
+
 
     def transfer_vacancy(self, table_from, table_to, id=None, response_from_db=None):
         keys_str = ''
@@ -1404,7 +1431,12 @@ class DataBaseOperations:
             response = response_from_db
 
         if response:
-            response_dict = helper.to_dict_from_admin_response_sync(response, admin_table_fields)
+            if type(response) is dict:
+                response_dict = response
+            elif type(response) is list:
+                response_dict = helper.to_dict_from_admin_response_sync(response, admin_table_fields)
+            else:
+                return TypeError
 
             for keys in response_dict:
                 if keys != 'id':
@@ -1555,60 +1587,67 @@ class DataBaseOperations:
     def statistics_total(self, date_in, date_out):
         table_name = 'admin_last_session'
         period = f"'{date_in}' AND '{date_out}'"
-        field1 = 'DATE (time_of_public) AS group_date, COUNT(*)'
+        field1 = 'DATE (created_at) AS group_date, COUNT(*)'
 
-        param_no_sort = f"WHERE DATE (time_of_public) BETWEEN {period} AND profession LIKE 'no_sort' GROUP BY group_date"
+        param_to_sort = f"WHERE DATE (created_at) BETWEEN {period} GROUP BY group_date"
         order1 = 'ORDER BY group_date'
-        data_no_sort = self.get_all_from_db(table_name=table_name, field=field1, order=order1, param=param_no_sort)
-        df_no_sort=pd.DataFrame(data_no_sort, columns=['date', 'no_sort'])
-        df_no_sort['no_sort'].fillna(0, inplace=True)
-
-        param_to_sort = f"WHERE DATE (time_of_public) BETWEEN {period} AND profession NOT LIKE 'no_sort' GROUP BY group_date"
         data_to_sort = self.get_all_from_db(table_name=table_name, field=field1, order=order1, param=param_to_sort)
-        df_to_sort=pd.DataFrame(data_to_sort, columns=['date', 'to_sort'])
+        df_to_sort = pd.DataFrame(data_to_sort, columns=['date', 'to_sort'])
         df_to_sort['to_sort'].fillna(0, inplace=True)
 
-        table_name2='archive'
-        param_archive=f"WHERE DATE (time_of_public) BETWEEN {period} GROUP BY group_date"
-        data_archive=self.get_all_from_db(table_name=table_name2, field=field1, order=order1, param=param_archive)
-        df_archive=pd.DataFrame(data_archive, columns=['date', 'archive'])
+        table_name2 = 'archive'
+        param_archive = f"WHERE DATE (created_at) BETWEEN {period} AND profession NOT LIKE 'no_sort' GROUP BY group_date"
+        data_archive = self.get_all_from_db(table_name=table_name2, field=field1, order=order1, param=param_archive)
+        df_archive = pd.DataFrame(data_archive, columns=['date', 'archive'])
         df_archive['archive'].fillna(0, inplace=True)
 
-        df_total_admin=df_no_sort.merge(df_to_sort, how='outer', on='date').sort_values('date')
-        df_total_admin.fillna(0, inplace=True)
-        df_total=df_total_admin.merge(df_archive, how='outer', on='date').sort_values('date')
+        param_no_sort = f"WHERE DATE (created_at) BETWEEN {period} AND profession LIKE 'no_sort' GROUP BY group_date"
+        data_no_sort = self.get_all_from_db(table_name=table_name2, field=field1, order=order1, param=param_no_sort)
+        df_no_sort = pd.DataFrame(data_no_sort, columns=['date', 'no_sort'])
+        df_no_sort['no_sort'].fillna(0, inplace=True)
+
+        df_total_archive = df_no_sort.merge(df_archive, how='outer', on='date').sort_values('date')
+        df_total_archive.fillna(0, inplace=True)
+        df_total = df_to_sort.merge(df_total_archive, how='outer', on='date').sort_values('date')
         df_total.fillna(0, inplace=True)
-        df_total.insert(loc=1, column = 'Total', value=df_total.no_sort + df_total.to_sort+df_total.archive)
-        df_total.loc[f'Total for period']=df_total.sum(axis=0, numeric_only=True)
+        df_total.insert(loc=1, column='Total', value=df_total.no_sort + df_total.to_sort + df_total.archive)
+        df_total.loc[f'Total for period'] = df_total.sum(axis=0, numeric_only=True)
 
-        field2 = 'DATE (time_of_public) AS group_date, chat_name, COUNT(*)'
-        param_no_sort_channels = f"WHERE DATE (time_of_public) BETWEEN {period} AND profession LIKE 'no_sort' GROUP BY group_date, chat_name"
+        field2 = 'DATE (created_at) AS group_date, chat_name, COUNT(*)'
         order2 = 'ORDER BY group_date, chat_name'
-        data_no_sort_channels = self.get_all_from_db(table_name=table_name, field=field2, order=order2, param=param_no_sort_channels)
-        df_no_sort_channels=pd.DataFrame(data_no_sort_channels, columns=['date', 'channel', 'no_sort'])
-        df_no_sort_channels['no_sort'].fillna(0, inplace=True)
 
-        param_to_sort_channels = f"WHERE DATE (time_of_public) BETWEEN {period} AND profession NOT LIKE 'no_sort' GROUP BY group_date, chat_name"
-        data_to_sort_channels = self.get_all_from_db(table_name=table_name, field=field2, order=order2, param=param_to_sort_channels)
-        df_to_sort_channels=pd.DataFrame(data_to_sort_channels, columns=['date', 'channel', 'to_sort'])
+        param_to_sort_channels = f"WHERE DATE (created_at) BETWEEN {period} GROUP BY group_date, chat_name"
+        data_to_sort_channels = self.get_all_from_db(table_name=table_name, field=field2, order=order2,
+                                                     param=param_to_sort_channels)
+        df_to_sort_channels = pd.DataFrame(data_to_sort_channels, columns=['date', 'channel', 'to_sort'])
         df_to_sort_channels['to_sort'].fillna(0, inplace=True)
 
-        param_archive_channels = f"WHERE DATE (time_of_public) BETWEEN {period} AND profession NOT LIKE 'no_sort' GROUP BY group_date, chat_name"
-        data_archive_channels = self.get_all_from_db(table_name=table_name2, field=field2, order=order2, param=param_archive_channels)
-        df_archive_channels=pd.DataFrame(data_archive_channels, columns=['date', 'channel', 'archive'])
+        param_no_sort_channels = f"WHERE DATE (created_at) BETWEEN {period} AND profession LIKE 'no_sort' GROUP BY group_date, chat_name"
+        data_no_sort_channels = self.get_all_from_db(table_name=table_name2, field=field2, order=order2,
+                                                     param=param_no_sort_channels)
+        df_no_sort_channels = pd.DataFrame(data_no_sort_channels, columns=['date', 'channel', 'no_sort'])
+        df_no_sort_channels['no_sort'].fillna(0, inplace=True)
+
+        param_archive_channels = f"WHERE DATE (created_at) BETWEEN {period} AND profession NOT LIKE 'no_sort' GROUP BY group_date, chat_name"
+        data_archive_channels = self.get_all_from_db(table_name=table_name2, field=field2, order=order2,
+                                                     param=param_archive_channels)
+        df_archive_channels = pd.DataFrame(data_archive_channels, columns=['date', 'channel', 'archive'])
         df_archive_channels['archive'].fillna(0, inplace=True)
 
-        df_total_admin_channels=df_no_sort_channels.merge(df_to_sort_channels, how='outer', on=['date', 'channel']).sort_values('date')
-        df_total_admin_channels.fillna(0, inplace=True)
+        df_total_archive_channels = df_no_sort_channels.merge(df_archive_channels, how='outer',
+                                                              on=['date', 'channel']).sort_values('date')
+        df_total_archive_channels.fillna(0, inplace=True)
 
-        df_total_channels=df_total_admin_channels.merge(df_archive_channels, how='outer', on=['date', 'channel']).sort_values('date')
+        df_total_channels = df_to_sort_channels.merge(df_total_archive_channels, how='outer',
+                                                      on=['date', 'channel']).sort_values('date')
         df_total_channels.fillna(0, inplace=True)
-        df_total_channels.insert(loc=2, column = 'Total', value=df_total_channels.no_sort + df_total_channels.to_sort+df_total_channels.archive)
-        df_total_channels.loc[f'Total for period']=df_total_channels.sum(axis=0, numeric_only=True)
+        df_total_channels.insert(loc=2, column='Total',
+                                 value=df_total_channels.no_sort + df_total_channels.to_sort + df_total_channels.archive)
+        df_total_channels.loc[f'Total for period'] = df_total_channels.sum(axis=0, numeric_only=True)
 
         with pd.ExcelWriter(f'./excel/report_total_{date_in}_{date_out}.xlsx') as writer:
-            df_total.to_excel(writer, sheet_name="Total", index= False)
-            df_total_channels.to_excel(writer, sheet_name="Channels", index= False)
+            df_total.to_excel(writer, sheet_name="Total", index=False)
+            df_total_channels.to_excel(writer, sheet_name="Channels", index=False)
             print('Report is done, saved')
 
     def create_table_common(self, field_list, table_name):
@@ -1622,24 +1661,42 @@ class DataBaseOperations:
             cur.execute(query)
             print(f'table {table_name} has been crated or exists')
 
-    def push_to_db_common(self, table_name, fields_values_dict):
-        keys_str = ''
-        values_str = ''
-        for key in fields_values_dict:
-            keys_str += f"{key}, "
-            if type(key) in [str, bool]:
-                values_str += f"'{fields_values_dict[key]}', "
-            else:
-                values_str += f"{fields_values_dict[key]}, "
-        keys_str = keys_str[:-2]
-        values_str = values_str[:-2]
+    def push_to_db_common(self, table_name, fields_values_dict, params=None, notification=False):
+        if params:
+            set_fields = ''
+            for key in fields_values_dict:
+                if type(fields_values_dict[key]) in [str, bool]:
+                    if type(fields_values_dict[key]) is str and "'" in fields_values_dict[key]:
+                        set_fields += f"{key}=$${fields_values_dict[key]}$$, "
+                    else:
+                        set_fields += f"{key}='{fields_values_dict[key]}', "
+                else:
+                    set_fields += f"{key}={fields_values_dict[key]}, "
+            set_fields = set_fields[:-2]
+            query = f"UPDATE {table_name} SET {set_fields} {params}"
 
-        query = f"INSERT INTO {table_name} ({keys_str}) VALUES ({values_str})"
-        print(query)
+        else:
+            keys_str = ''
+            values_str = ''
+            for key in fields_values_dict:
+                keys_str += f"{key}, "
+                if type(fields_values_dict[key]) in [str, bool]:
+                    if type(fields_values_dict[key]) is str and "'" in fields_values_dict[key]:
+                        values_str += f"$${fields_values_dict[key]}$$, "
+                    else:
+                        values_str += f"'{fields_values_dict[key]}', "
+                else:
+                    values_str += f"{fields_values_dict[key]}, "
+            keys_str = keys_str[:-2]
+            values_str = values_str[:-2]
+            query = f"INSERT INTO {table_name} ({keys_str}) VALUES ({values_str})"
+        if notification:
+            print(query)
         cur = self.con.cursor()
         with self.con:
             cur.execute(query)
-            print('Done')
+            if notification:
+                print('Done')
 
     def update_job_types(self, table_list):
         for table in table_list:
