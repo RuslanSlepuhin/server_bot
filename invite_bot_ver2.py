@@ -4276,7 +4276,7 @@ class InviteBot():
             # code for transpose in shorts like reference
 
             remote_pattern = export_pattern['others']['remote']['ma']
-            full_time_pattern = export_pattern['others']['full_time']['ma']
+            full_time_pattern = export_pattern['others']['fulltime']['ma']
             relocate_pattern = export_pattern['others']['relocate']['ma']
             experience_pattern = export_pattern['others']['experience']['ma']
             english_pattern = export_pattern['others']['english_for_shorts']['ma']
