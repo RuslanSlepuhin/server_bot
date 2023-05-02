@@ -4020,20 +4020,25 @@ class InviteBot():
                 param=f"WHERE id='{id_admin_last_session_table}'",
                 without_sort=True
             )
-            prof_list = response_admin_last_session[0][4].split(', ')
-            try:
-                await self.update_vacancy_admin_last_session(
-                    results_dict=None,
-                    profession=profession,
-                    prof_list=prof_list,
-                    id_admin_last_session_table=id_admin_last_session_table,
-                    update_profession=True,
-                    update_id_agregator=False
-                )
-            except Exception as e:
-                print('error with deleting from admin temporary ', e)
-            n = + 1
-            await self.show_progress(message, n, length)
+            if response_admin_last_session:
+                prof_list = response_admin_last_session[0][4].split(', ')
+                try:
+                    await self.update_vacancy_admin_last_session(
+                        results_dict=None,
+                        profession=profession,
+                        prof_list=prof_list,
+                        id_admin_last_session_table=id_admin_last_session_table,
+                        update_profession=True,
+                        update_id_agregator=False
+                    )
+                except Exception as e:
+                    print('error with deleting from admin temporary ', e)
+                n = + 1
+                await self.show_progress(message, n, length)
+            else:
+                print('something was wrong in delete_and_change_waste_vacancy function')
+                await self.bot_aiogram.send_message(message.chat.id, "something was wrong in delete_and_change_waste_vacancy function")
+
             # -------------------end ----------------------------
 
     async def compose_message_for_linkedin(self, key, message_for_send, profession, shorts_id=None):
