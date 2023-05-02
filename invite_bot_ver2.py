@@ -961,17 +961,18 @@ class InviteBot():
         @self.dp.message_handler(commands=['get_backup_db'])
         async def get_backup_db_func(message: types.Message):
             try:
-                await self.get_backup_db(
+                # await self.get_backup_db(
+                #     message=message,
+                #     path='./db_backup/backup_from_server.backup',
+                #     caption='Take the backup from server'
+                #     )
+                await self.send_file_to_user(
+                    message=message,
                     path='./db_backup/backup_from_server.backup',
                     caption='Take the backup from server'
                 )
-            #     await self.send_file_to_user(
-            #     message=message,
-            #     path='./db_backup/backup_from_server.backup',
-            #     caption='Take the backup from server'
-            # )
-            except Exception as ex:
-                print(f'backup_error: {ex}')
+            except Exception as e:
+                print(e)
 
         @self.dp.message_handler(commands=['check_doubles'])
         async def get_doubles(message: types.Message):
