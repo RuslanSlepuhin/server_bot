@@ -90,7 +90,7 @@ class RemoteJobGetInformation:
         print('control: 4')
 
         soup = BeautifulSoup(raw_content, 'lxml')
-
+        print(soup)
         self.list_links = soup.find_all('div', class_='vacancy_item')
         print('self.list_links: ', self.list_links)
 
