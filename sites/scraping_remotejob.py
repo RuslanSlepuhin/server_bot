@@ -42,6 +42,7 @@ class RemoteJobGetInformation:
         self.response = None
 
     async def get_content(self, db_tables=None):
+        print('control: 1')
         self.db_tables = db_tables
         await self.get_info()
         if self.report:
@@ -54,6 +55,8 @@ class RemoteJobGetInformation:
         self.browser.quit()
 
     async def get_info(self):
+        print('control: 2')
+
         try:
             self.browser = webdriver.Chrome(
                 executable_path=chrome_driver_path,
@@ -61,6 +64,8 @@ class RemoteJobGetInformation:
             )
         except:
             self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        print('control: 3')
+
         # -------------------- check what is current session --------------
         self.current_session = await self.helper_parser_site.get_name_session()
         while True:
@@ -82,6 +87,8 @@ class RemoteJobGetInformation:
             await self.bot.send_message(self.chat_id, 'remote-job.ru parsing: Done!', disable_web_page_preview=True)
 
     async def get_link_message(self, raw_content):
+        print('control: 4')
+
         soup = BeautifulSoup(raw_content, 'lxml')
 
         self.list_links = soup.find_all('div', class_='vacancy_item')
@@ -103,6 +110,8 @@ class RemoteJobGetInformation:
             return False
 
     async def get_content_from_link(self):
+        print('control: 5')
+
         links = []
         soup = None
         self.found_by_link = 0
@@ -115,12 +124,14 @@ class RemoteJobGetInformation:
                 vacancy_url = link
 
             print(f"\n{vacancy_url}")
+            print('control: 6')
 
             # pre-checking by link
             check_vacancy_not_exists = self.db.check_exists_message_by_link_or_url(
                 vacancy_url=vacancy_url,
                 table_list=[admin_database, archive_database]
             )
+            print('control: 7')
 
             if check_vacancy_not_exists:
                 links.append(vacancy_url)
