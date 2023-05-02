@@ -3983,8 +3983,9 @@ class InviteBot():
     async def send_file_to_user(self, message, path, caption='Please take it', send_to_developer=False):
         logs.write_log(f"invite_bot_2: function: send_file_to_user")
         with open(path, 'rb') as file:
+            backup = file.read()
             try:
-                await self.bot_aiogram.send_document(message.chat.id, file, caption=caption)
+                await self.bot_aiogram.send_document(message.chat.id, backup, caption=caption)
                 # if send_to_developer and message.chat.id != variable.developer_chat_id:
                 #     try:
                 #         await self.bot_aiogram.send_document(int(variable.developer_chat_id), file, caption=caption)
