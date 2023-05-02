@@ -278,6 +278,7 @@ class InviteBot():
 
             self.chat_id = message.chat.id
             print("user_id: ", message.from_user.id)
+            print('chat_id: ', self.chat_id)
             self.user_id = message.from_user.id
 
             logs.write_log(f'\n------------------ start --------------------')
