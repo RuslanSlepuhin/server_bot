@@ -92,6 +92,8 @@ class RemoteJobGetInformation:
         soup = BeautifulSoup(raw_content, 'lxml')
 
         self.list_links = soup.find_all('div', class_='vacancy_item')
+        print('control: 5')
+
         if self.list_links:
             if self.bot_dict:
                 self.current_message = await self.bot.send_message(self.chat_id,
@@ -110,7 +112,7 @@ class RemoteJobGetInformation:
             return False
 
     async def get_content_from_link(self):
-        print('control: 5')
+        print('control: 6')
 
         links = []
         soup = None
