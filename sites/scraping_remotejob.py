@@ -77,6 +77,7 @@ class RemoteJobGetInformation:
                 self.browser.get(
                     f'https://remote-job.ru/search?search%5Bquery%5D=&search%5BsearchType%5D=vacancy&period=1&page={self.page_number}')
                 self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                print(self.browser.page_source)
                 vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
                 self.page_number += 1
                 if not vacancy_exists_on_page:
@@ -90,7 +91,7 @@ class RemoteJobGetInformation:
         print('control: 4')
 
         soup = BeautifulSoup(raw_content, 'lxml')
-        print(soup)
+        # print(soup)
         self.list_links = soup.find_all('div', class_='vacancy_item')
         print('self.list_links: ', self.list_links)
 
