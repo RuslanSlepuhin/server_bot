@@ -958,13 +958,17 @@ class InviteBot():
                 print('--------\n')
 
         @self.dp.message_handler(commands=['get_backup_db'])
-        async def get_logs(message: types.Message):
+        async def get_backup_db_func(message: types.Message):
             try:
-                await self.send_file_to_user(
-                message=message,
-                path='./db_backup/backup_from_server.backup',
-                caption='Take the backup from server'
-            )
+                await self.get_backup_db(
+                    path='./db_backup/backup_from_server.backup',
+                    caption='Take the backup from server'
+                )
+            #     await self.send_file_to_user(
+            #     message=message,
+            #     path='./db_backup/backup_from_server.backup',
+            #     caption='Take the backup from server'
+            # )
             except Exception as e:
                 print(e)
 
@@ -3986,6 +3990,13 @@ class InviteBot():
                         print(e)
             except:
                 await self.client.send_file(int(variable.developer_chat_id), file, caption=caption)
+
+    async def get_backup_db(self, path, caption):
+        with open(path, 'rb') as file:
+            try:
+                await self.client.send_file(int(variable.developer_chat_id), file, caption=caption)
+            except Exception as ex:
+                print(ex)
 
     async def show_progress(self, message, n, len):
         check = n * 100 // len
