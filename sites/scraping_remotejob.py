@@ -96,12 +96,15 @@ class RemoteJobGetInformation:
 
         if self.list_links:
             if self.bot_dict:
+                print('control: 5.5')
+
                 self.current_message = await self.bot.send_message(self.chat_id,
                                                                    f'remote-job.ru:\nНайдено {len(self.list_links)} вакансий на странице {self.page_number}',
                                                                    disable_web_page_preview=True)
             # --------------------- LOOP -------------------------
             self.written_vacancies = 0
             self.rejected_vacancies = 0
+            print('control: 5.7')
 
             await self.get_content_from_link()
             # ----------------------- the statistics output ---------------------------
