@@ -92,6 +92,8 @@ class RemoteJobGetInformation:
         soup = BeautifulSoup(raw_content, 'lxml')
 
         self.list_links = soup.find_all('div', class_='vacancy_item')
+        print('self.list_links: ', self.list_links)
+
         print('control: 5')
 
         if self.list_links:
