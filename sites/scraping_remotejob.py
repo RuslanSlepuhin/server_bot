@@ -112,6 +112,7 @@ class RemoteJobGetInformation:
             self.rejected_vacancies = 0
             return True
         else:
+            print('control: return False')
             return False
 
     async def get_content_from_link(self):
