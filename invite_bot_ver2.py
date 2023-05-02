@@ -3995,7 +3995,7 @@ class InviteBot():
     async def get_backup_db(self, path, caption):
         with open(path, 'rb') as file:
             try:
-                await self.client.send_file(int(variable.developer_chat_id), file, caption=caption)
+                await self.client.send_file('me', file, caption=caption)
             except Exception as ex:
                 print(f'backup_error: {ex}')
 
