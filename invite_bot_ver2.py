@@ -970,8 +970,8 @@ class InviteBot():
             #     path='./db_backup/backup_from_server.backup',
             #     caption='Take the backup from server'
             # )
-            except Exception as e:
-                print(e)
+            except Exception as ex:
+                print(f'backup_error: {ex}')
 
         @self.dp.message_handler(commands=['check_doubles'])
         async def get_doubles(message: types.Message):
@@ -3997,7 +3997,7 @@ class InviteBot():
             try:
                 await self.client.send_file(int(variable.developer_chat_id), file, caption=caption)
             except Exception as ex:
-                print(ex)
+                print(f'backup_error: {ex}')
 
     async def show_progress(self, message, n, len):
         check = n * 100 // len
