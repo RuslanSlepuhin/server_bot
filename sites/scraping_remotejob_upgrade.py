@@ -71,7 +71,7 @@ class RemoteJobGetInformation:
         # -------------------- clicks on the main page --------------------
         self.current_session = await self.helper_parser_site.get_name_session()
 
-        self.browser.get(self.main_url)
+        self.browser.get('https://remote-job.ru/')
         time.sleep(10)
         print(self.browser.page_source)
         time.sleep(10)
