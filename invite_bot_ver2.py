@@ -310,6 +310,10 @@ class InviteBot():
             for text in text_list:
                 await self.bot_aiogram.send_message(message.chat.id, text)
 
+        @self.dp.message_handler(commands=['silent_get_news'])
+        async def silent_get_news(message: types.Message):
+            await get_news(silent=True)
+
         @self.dp.message_handler(commands=['update_city_field'])
         async def update_city_field(message: types.Message):
             updater = DatabaseUpdateData()
@@ -961,16 +965,17 @@ class InviteBot():
         @self.dp.message_handler(commands=['get_backup_db'])
         async def get_backup_db_func(message: types.Message):
             try:
-                # await self.get_backup_db(
+                await self.get_backup_db(
                 #     message=message,
-                #     path='./db_backup/backup_from_server.backup',
-                #     caption='Take the backup from server'
-                #     )
-                await self.send_file_to_user(
-                    message=message,
                     path='./db_backup/backup_from_server.backup',
-                    caption='Take the backup from server'
-                )
+                #     caption='Take the backup from server'
+                    )
+                # await self.send_file_to_user(
+                # message=message,
+                # path='./db_backup/backup_from_server.backup',
+                # caption='Take the backup from server'
+            # )
+                print('Done!')
             except Exception as e:
                 print(e)
 
@@ -1664,11 +1669,11 @@ class InviteBot():
 
             if callback.data == 'go_by_admin': # next step if callback.data[2:] in self.valid_profession_list:
                 # make the keyboard with all professions
-                # if int(callback.message.from_user.id) in variable.white_admin_list:
-                self.markup = await compose_inline_keyboard(prefix='admin')
-                await self.bot_aiogram.send_message(callback.message.chat.id, 'choose the channel for vacancy checking', reply_markup=self.markup)
-                # else:
-                #     await self.bot_aiogram.send_message(callback.message.chat.id, "Sorry, You have not the permissions")
+                if int(callback.message.from_user.id) in variable.white_admin_list:
+                    self.markup = await compose_inline_keyboard(prefix='admin')
+                    await self.bot_aiogram.send_message(callback.message.chat.id, 'choose the channel for vacancy checking', reply_markup=self.markup)
+                else:
+                    await self.bot_aiogram.send_message(callback.message.chat.id, "Sorry, You have not the permissions")
 
             if callback.data[0:5] == 'admin':
                 tables = self.db.get_information_about_tables_and_fields(only_tables=True)
@@ -2797,7 +2802,7 @@ class InviteBot():
                     matches_list[i] = len(response)
             return matches_list
 
-        async def get_news(message):
+        async def get_news(message, silent=False):
             tables = self.db.get_information_about_tables_and_fields(only_tables=True)
             if "parser_at_work" not in tables:
                 self.db.create_table_common(
@@ -2835,9 +2840,11 @@ class InviteBot():
                 # self.task = asyncio.create_task(main(report=self.report, client=self.client, bot_dict=bot_dict))
                 # await main(report=self.report, client=self.client, bot_dict=bot_dict)
                 # await self.report.add_to_excel(report_type='parsing')
+                if silent:
+                    sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
+                else:
+                    sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
 
-                sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
-                # self.task = asyncio.create_task(sites_parser.call_sites())
                 await sites_parser.call_sites()
                 self.db.push_to_db_common(
                     table_name='parser_at_work',
@@ -3207,12 +3214,20 @@ class InviteBot():
                 for pro in table_list:
                     response = self.db.get_all_from_db(
                         table_name=pro,
-                        field='title, body',
+                        field=variable.admin_table_fields,
                         param=f"WHERE vacancy_url='{url}'"
                     )
                     if response:
-                        await self.bot_aiogram.send_message(message.chat.id,
-                                                            f"😎 (+)Vacancy FOUND in {pro} table\n{response[0][0][0:40]}")
+                        response_dict = await helper.to_dict_from_admin_response(
+                            response[0],
+                            variable.admin_table_fields
+                        )
+                        text = f"😎 (+)Vacancy FOUND in {pro} table\n{response_dict['title'][:40]}\n\n" \
+                               f"profession: {response_dict['profession']}\n" \
+                               f"tags: {response_dict['full_tags'] if response_dict['full_tags'] else '-'}\n" \
+                               f"anti_tags: {response_dict['full_anti_tags'] if response_dict['full_anti_tags'] else '-'}"
+                        await self.bot_aiogram.send_message(message.chat.id, text)
+
                         text = f"{response[0][0]}\n{response[0][1]}"
                         return text
 
@@ -3220,19 +3235,31 @@ class InviteBot():
             try:
                 parser = parser_sites.get(domain)
                 if parser:
-                    parser_response = await parser(report=self.report, bot_dict={'bot': self.bot_aiogram,
-                                                                      'chat_id': message.chat.id}).get_content_from_one_link(
-                        url)
-                    if not parser_response:
-                        text = 'Vacancy found in db by title-body with another url'
+                    parser = parser(bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})
+                    parser_response = await parser.get_content_from_one_link(url)
+
+                    if parser_response['response_dict']:
+                        text = f"Vacancy found in db by title-body with another url\n" \
+                               f"url: {parser_response['response_dict']['vacancy_url']}\n" \
+                               f"title: {parser_response['response_dict']['title'][:40]}\n" \
+                               f"profession: {parser_response['response_dict']['profession']}\n" \
+                               f"tags: {parser_response['response_dict']['full_tags'] if parser_response['response_dict']['full_tags'] else '-'}\n" \
+                               f"anti_tags: {parser_response['response_dict']['full_anti_tags'] if parser_response['response_dict']['full_anti_tags'] else '-'}\n"
                     else:
-                        text = parser_response['response']['vacancy']
+                        text = f"{parser_response['response']['vacancy']}\n" \
+                               f"profession: {parser_response['profession']['profession'] if parser_response['profession']['profession'] else '-'}\n" \
+                               f"tags: {parser_response['profession']['tag'] if parser_response['profession']['tag'] else '-'}\n" \
+                               f"anti_tags: {parser_response['profession']['anti_tag'] if parser_response['profession']['anti_tag'] else '-'}"
+                    # if not parser_response:
+                    #     text = 'Vacancy found in db by title-body with another url'
+                    # else:
+                    #     text = parser_response['response']['vacancy']
                     await self.bot_aiogram.send_message(message.chat.id, text)
                 else:
                     await self.bot_aiogram.send_message(message.chat.id, f"NO PARSER for {domain}")
-
             except Exception as e:
-                return e
+                await self.bot_aiogram.send_message(message.chat.id, str(e))
+
 
         async def add_subs():
             self.db.append_columns(
@@ -3981,25 +4008,41 @@ class InviteBot():
         self.quantity_entered_to_shorts += 1
 
     async def send_file_to_user(self, message, path, caption='Please take it', send_to_developer=False):
-        logs.write_log(f"invite_bot_2: function: send_file_to_user")
         with open(path, 'rb') as file:
-            backup = file.read()
             try:
-                await self.bot_aiogram.send_document(message.chat.id, backup, caption=caption)
-                # if send_to_developer and message.chat.id != variable.developer_chat_id:
-                #     try:
-                #         await self.bot_aiogram.send_document(int(variable.developer_chat_id), file, caption=caption)
-                #     except Exception as e:
-                #         print(e)
+                await self.bot_aiogram.send_document(message.chat.id, file, caption=caption)
+                if send_to_developer and message.chat.id != variable.developer_chat_id:
+                    try:
+                        await self.bot_aiogram.send_document(int(variable.developer_chat_id), file, caption=caption)
+                    except Exception as e:
+                        print(e)
             except:
                 await self.client.send_file(int(variable.developer_chat_id), file, caption=caption)
 
-    async def get_backup_db(self, path, caption):
-        with open(path, 'rb') as file:
-            try:
-                await self.client.send_file('me', file, caption=caption)
-            except Exception as ex:
-                print(f'backup_error: {ex}')
+    async def get_backup_db(self, path):
+        import zipfile
+        zip_file_name = 'backup_from_server_backup.zip'
+        jungle_zip = zipfile.ZipFile(f'./db_backup/{zip_file_name}', 'w')
+        jungle_zip.write(path, compress_type=zipfile.ZIP_DEFLATED)
+        jungle_zip.close()
+        with open(f'./db_backup/{zip_file_name}', 'rb') as file:
+            await self.bot_aiogram.send_document(variable.developer_chat_id, file)
+        print('done')
+
+        # await self.client.send_file(5884559465, path)
+        #
+        # file_path = path
+        # file_name = 'backup_from_server.backup'
+        # chat_id = 5884559465
+        # bot_name = 'demo_inviter_bot'
+        # msg = await self.client.send_file(
+        #     chat_id,
+        #     bot=str(bot_name),
+        #     file=file_path,
+        #     file_name=str(file_name),
+        #     use_cache=False,
+        #     part_size_kb=512,
+        # )
 
     async def show_progress(self, message, n, len):
         check = n * 100 // len

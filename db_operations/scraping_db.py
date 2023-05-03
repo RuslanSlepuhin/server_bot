@@ -848,7 +848,7 @@ class DataBaseOperations:
         title = self.clear_title_or_body(title)
         body = self.clear_title_or_body(body)
 
-        tables_fields = 'id, title, body, vacancy_url'
+        tables_fields = admin_table_fields
 
         for one_element in tables_list:
             response = self.get_all_from_db(

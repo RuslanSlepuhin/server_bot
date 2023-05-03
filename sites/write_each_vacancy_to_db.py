@@ -14,7 +14,7 @@ class HelperSite_Parser:
     async def write_each_vacancy(self, results_dict):
         response = {}
         profession = []
-
+        response_from_db = {}
         # print('??????????? start_write_each_vacancy')
 
         if self.report:
@@ -84,7 +84,7 @@ class HelperSite_Parser:
 
         # print('??????????? finish_write_each_vacancy')
 
-        return {'response': response, "profession": profession}
+        return {'response': response, "profession": profession, 'response_dict': response_from_db}
 
     async def get_name_session(self):
         current_session = self.db.get_all_from_db(

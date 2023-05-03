@@ -3,6 +3,7 @@ from datetime import datetime
 import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from db_operations.scraping_db import DataBaseOperations
@@ -94,20 +95,15 @@ class RemoteJobGetInformation:
         # print(soup)
         self.list_links = soup.find_all('div', class_='vacancy_item')
         print('self.list_links: ', self.list_links)
-
-        print('control: 5')
-
+        # self.list_links = self.browser.find_elements(By.XPATH, "//*[@class='vacancy_item']")
         if self.list_links:
             if self.bot_dict:
-                print('control: 5.5')
-
                 self.current_message = await self.bot.send_message(self.chat_id,
                                                                    f'remote-job.ru:\nНайдено {len(self.list_links)} вакансий на странице {self.page_number}',
                                                                    disable_web_page_preview=True)
             # --------------------- LOOP -------------------------
             self.written_vacancies = 0
             self.rejected_vacancies = 0
-            print('control: 5.7')
 
             await self.get_content_from_link()
             # ----------------------- the statistics output ---------------------------
@@ -115,11 +111,10 @@ class RemoteJobGetInformation:
             self.rejected_vacancies = 0
             return True
         else:
-            print('control: return False')
             return False
 
     async def get_content_from_link(self):
-        print('control: 6')
+        print('control: 5')
 
         links = []
         soup = None
@@ -270,6 +265,7 @@ class RemoteJobGetInformation:
         self.current_session = await self.helper_parser_site.get_name_session()
         self.list_links= [vacancy_url]
         await self.get_content_from_link()
+        self.browser.quit()
         return self.response
 
     def clean_company_name(self, text):
