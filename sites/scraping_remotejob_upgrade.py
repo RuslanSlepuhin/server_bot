@@ -72,7 +72,7 @@ class RemoteJobGetInformation:
         self.current_session = await self.helper_parser_site.get_name_session()
 
         self.browser.get(self.main_url)
-        search_button = self.browser.find_element(By.XPATH, "//*[@class='btn btn-success btn-toggle']")
+        search_button = self.browser.find_element(By.XPATH, "//button[@type='submit']")
         search_button.click()
         time.sleep(5)
         Last_day_button = self.browser.find_element(By.XPATH,
