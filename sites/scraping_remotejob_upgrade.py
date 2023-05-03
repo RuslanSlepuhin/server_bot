@@ -71,11 +71,10 @@ class RemoteJobGetInformation:
         # -------------------- clicks on the main page --------------------
         self.current_session = await self.helper_parser_site.get_name_session()
 
-        self.browser.get('https://hh.ru')
-        time.sleep(10)
+        self.browser.get(self.main_url)
         print(self.browser.page_source)
-        time.sleep(10)
-        search_button = self.browser.find_element(By.XPATH, "//button[@type='submit']")
+        time.sleep(5)
+        search_button = self.browser.find_element(By.XPATH, "//*[@class='btn btn-success btn-toggle']")
         search_button.click()
         time.sleep(5)
         Last_day_button = self.browser.find_element(By.XPATH,
@@ -283,6 +282,7 @@ class RemoteJobGetInformation:
         self.current_session = await self.helper_parser_site.get_name_session()
         self.list_links= [vacancy_url]
         await self.get_content_from_link()
+        self.browser.quit()
         return self.response
 
     def clean_company_name(self, text):
