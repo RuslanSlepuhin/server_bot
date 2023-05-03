@@ -74,6 +74,7 @@ class RemoteJobGetInformation:
         self.browser.get(self.main_url)
         time.sleep(10)
         print(self.browser.page_source)
+        time.sleep(10)
         search_button = self.browser.find_element(By.XPATH, "//button[@type='submit']")
         search_button.click()
         time.sleep(5)
