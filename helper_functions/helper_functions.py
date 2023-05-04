@@ -62,7 +62,11 @@ def to_dict_from_admin_response_sync(response, fields):
     response_dict = {}
     fields = fields.split(', ')
     for i in range(0, len(fields)):
-        response_dict[fields[i]] = response[i]
+        try:
+            response_dict[fields[i]] = response[i]
+        except Exception as e:
+            print(e)
+            return False
     return response_dict
 
 async def to_dict_from_temporary_response(response, fields):
