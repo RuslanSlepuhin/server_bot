@@ -2,12 +2,12 @@ import configparser
 import json
 import re
 from utils.additional_variables.additional_variables import admin_database, archive_database, admin_table_fields
-from utils.additional_variables.additional_variables import table_list_for_checking_message_in_db, short_session_database, vacancy_table
+from utils.additional_variables.additional_variables import table_list_for_checking_message_in_db, \
+    short_session_database, vacancy_table, additional_elements
 import psycopg2
 from datetime import datetime
 from logs.logs import Logs
 from helper_functions import helper_functions as helper
-from patterns._export_pattern import export_pattern
 import pandas as pd
 logs = Logs()
 
@@ -775,11 +775,12 @@ class DataBaseOperations:
         results_dict['body'] = self.clear_title_or_body(results_dict['body'])
 
         if check_or_exists:
-            tables_list_for_vacancy_searching = profession['profession'] \
-                if type(profession['profession']) is set \
-                else set(profession['profession'])
-            from utils.additional_variables.additional_variables import additional_elements
+
+            tables_list_for_vacancy_searching = set()
+            tables_list_for_vacancy_searching.union(profession['profession'] if type(profession['profession']) is set else set(profession['profession']))
+            tables_list_for_vacancy_searching.discard('no_sort')
             tables_list_for_vacancy_searching = tables_list_for_vacancy_searching.union(additional_elements)
+
             has_been_found = self.check_vacancy_exists_in_db(
                     tables_list=tables_list_for_vacancy_searching,
                     title=results_dict['title'],
