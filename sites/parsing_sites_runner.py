@@ -10,12 +10,12 @@ from sites.scraping_hhkz import HHKzGetInformation
 from sites.scraping_praca import PracaGetInformation
 from sites.scraping_rabota import RabotaGetInformation
 from sites.scraping_remotehub import RemotehubGetInformation
-# from sites.scraping_remotejob import RemoteJobGetInformation
+from sites.scraping_remotejob import RemoteJobGetInformation
 from sites.scraping_superjob import SuperJobGetInformation
 from sites.scraping_svyazi import SvyaziGetInformation
 from sites.scrapping_finder import FinderGetInformation
 from sites.scraping_ingamejob import IngameJobGetInformation
-from sites.scraping_remotejob_upgrade import RemoteJobGetInformation
+# from sites.scraping_remotejob_upgrade import RemoteJobGetInformation
 from multiprocessing import Process, Lock
 import asyncio
 
@@ -50,8 +50,8 @@ class SitesParser:
         # loop.create_task(RemoteJobGetInformation(bot_dict=bot_dict, report=self.report).get_content(), name='remotejob')
         # loop.create_task(HHGetInformation(bot_dict=bot_dict, report=self.report).get_content(), name='hh')
 
-        # await RemotehubGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        # await RemoteJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await RemotehubGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await RemoteJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await HHGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await HHKzGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await RabotaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
