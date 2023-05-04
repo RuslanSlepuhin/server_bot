@@ -51,9 +51,9 @@ class SitesParser:
         # loop.create_task(HHGetInformation(bot_dict=bot_dict, report=self.report).get_content(), name='hh')
 
         await RemotehubGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        await RemoteJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        await HHGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        await HHKzGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await RemoteJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await HHGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await HHKzGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await RabotaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await PracaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await DevGetInformation(bot_dict=bot_dict, report=self.report).get_content()
