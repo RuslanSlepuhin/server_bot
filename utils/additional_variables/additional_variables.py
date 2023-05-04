@@ -11,7 +11,7 @@ short_session_database = 'shorts_session_name'
 admin_table_fields = "id, chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, " \
                      "job_type, city, salary, experience, contacts, time_of_public, created_at, agregator_link, " \
                      "session, sended_to_agregator, sub, tags, full_tags, full_anti_tags, short_session_numbers, " \
-                     "level, approved, closed"
+                     "level, approved, closed, salary_from, salary_to, salary_currency, salary_period"
 
 profession_table_fields = "id, chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, " \
                              "job_type, city, salary, experience, contacts, time_of_public, created_at, agregator_link, " \
