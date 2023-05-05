@@ -1669,11 +1669,11 @@ class InviteBot():
 
             if callback.data == 'go_by_admin': # next step if callback.data[2:] in self.valid_profession_list:
                 # make the keyboard with all professions
-                if int(callback.message.from_user.id) in variable.white_admin_list:
-                    self.markup = await compose_inline_keyboard(prefix='admin')
-                    await self.bot_aiogram.send_message(callback.message.chat.id, 'choose the channel for vacancy checking', reply_markup=self.markup)
-                else:
-                    await self.bot_aiogram.send_message(callback.message.chat.id, "Sorry, You have not the permissions")
+                # if int(callback.message.from_user.id) in variable.white_admin_list:
+                self.markup = await compose_inline_keyboard(prefix='admin')
+                await self.bot_aiogram.send_message(callback.message.chat.id, 'choose the channel for vacancy checking', reply_markup=self.markup)
+                # else:
+                #     await self.bot_aiogram.send_message(callback.message.chat.id, "Sorry, You have not the permissions")
 
             if callback.data[0:5] == 'admin':
                 tables = self.db.get_information_about_tables_and_fields(only_tables=True)
@@ -1756,18 +1756,6 @@ class InviteBot():
                 self.markup = await compose_inline_keyboard(prefix='//')
                 await self.bot_aiogram.send_message(callback.message.chat.id, 'Choose the channel', reply_markup=self.markup)
                 pass
-
-            # if callback.data[2:] in self.valid_profession_list:
-            #     logs.write_log(f"invite_bot_2: Callback: one_of_profession {callback.data}")
-            #     if not self.current_session:
-            #         self.current_session = await get_last_session()
-            #     await WriteToDbMessages(
-            #         client=self.client,
-            #         bot_dict={'bot': self.bot_aiogram,
-            #                   'chat_id': callback.message.chat.id}).get_last_and_tgpublic_shorts(
-            #         current_session=self.current_session,
-            #         shorts=False, fulls_all=True, one_profession=callback.data)  # get from profession's tables and put to tg channels
-            #     pass
 
             if callback.data == 'show_info_last_records':
                 """
