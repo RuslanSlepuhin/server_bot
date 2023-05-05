@@ -68,10 +68,10 @@ class CitiesAndCountries:
             'translate.google.com',
             'translate.google.co.kr',
         ])
-        translation = translator.translate(text=word, dest='en')
-        print(f"Translator: {word}={translation.text}")
-        return translation.text if translation else ''
-
-
-# cities_parser = CitiesAndCountries()
-# asyncio.run(cities_parser.get_all_countries_and_cities())
+        try:
+            translation = translator.translate(text=word, dest='en')
+            print(f"Translator: {word}={translation.text}")
+            return translation.text if translation else ''
+        except Exception as e:
+            print(f'error in google_translate_to_english in cities_parser.py: {e}')
+            return ''
