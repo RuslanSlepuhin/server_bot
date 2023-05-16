@@ -115,8 +115,10 @@ class InviteBot():
         self.message_for_send_dict = {}
         self.schedule_pushing_shorts = True
         self.task = None
+        self.parser_task = None
         self.parser_at_work = False
         self.shorts_at_work = False
+        self.unlock_message = None
         self.show_vacancies = {
             'table': '',
             'offset': 0,
@@ -314,6 +316,15 @@ class InviteBot():
         async def silent_get_news(message: types.Message):
             await get_news(silent=True)
 
+        @self.dp.message_handler(commands=['update_salary_field_usd'])
+        async def update_salary_field_usd(message: types.Message):
+            # self.db.db_drop_columns(columns=['salary_currency_usd', 'salary_period_usd_month', 'salary_from_usd', 'salary_to_usd'], tables=[])
+            # updater = DatabaseUpdateData()
+            # await updater.create_salary_fields_usd()
+
+            await helper.refill_salary_usd(self.db)
+
+
         @self.dp.message_handler(commands=['update_city_field'])
         async def update_city_field(message: types.Message):
             updater = DatabaseUpdateData()
@@ -459,14 +470,17 @@ class InviteBot():
                 profession_list = variable.profession_list_for_pushing_by_schedule
                 await self.bot_aiogram.send_message(message.chat.id, f"professions in the list: {profession_list}")
 
-                # my_thread = threading.Thread(
-                #     target=await hard_pushing_by_schedule, args=(message, profession_list))
-                # my_thread.start()
-                #
-                await self.hard_pushing_by_schedule(
-                    message=message,
-                    profession_list=profession_list
+                self.task = asyncio.create_task(
+                    self.hard_pushing_by_schedule(
+                        message=message,
+                        profession_list=profession_list
+                    )
                 )
+
+                # await self.hard_pushing_by_schedule(
+                #     message=message,
+                #     profession_list=profession_list
+                # )
 
         @self.dp.message_handler(commands=['stop_hard_pushing_by_schedule'])
         async def hard_pushing_by_schedule_commands(message: types.Message):
@@ -805,7 +819,9 @@ class InviteBot():
 
         @self.dp.message_handler(commands=['get_news'])
         async def get_news_command(message: types.Message):
-            await get_news(message)
+            self.parser_task = asyncio.create_task(get_news(message))
+
+            # await get_news(message)
 
         @self.dp.message_handler(commands=['schedule'])
         async def schedule_command(message: types.Message):
@@ -1669,11 +1685,11 @@ class InviteBot():
 
             if callback.data == 'go_by_admin': # next step if callback.data[2:] in self.valid_profession_list:
                 # make the keyboard with all professions
-                # if int(callback.message.from_user.id) in variable.white_admin_list:
-                self.markup = await compose_inline_keyboard(prefix='admin')
-                await self.bot_aiogram.send_message(callback.message.chat.id, 'choose the channel for vacancy checking', reply_markup=self.markup)
-                # else:
-                #     await self.bot_aiogram.send_message(callback.message.chat.id, "Sorry, You have not the permissions")
+                if int(callback.message.from_user.id) in variable.white_admin_list:
+                    self.markup = await compose_inline_keyboard(prefix='admin')
+                    await self.bot_aiogram.send_message(callback.message.chat.id, 'choose the channel for vacancy checking', reply_markup=self.markup)
+                else:
+                    await self.bot_aiogram.send_message(callback.message.chat.id, "Sorry, You have not the permissions")
 
             if callback.data[0:5] == 'admin':
                 tables = self.db.get_information_about_tables_and_fields(only_tables=True)
@@ -1698,6 +1714,16 @@ class InviteBot():
                         fields_values_dict={"shorts_at_work": True},
                         params="WHERE id=1"
                     )
+                    # add the button
+                    unlock_kb = ReplyKeyboardMarkup(resize_keyboard=True)
+                    button_unlock = KeyboardButton('Unlock admin')
+                    unlock_kb.add(button_unlock)
+                    self.unlock_message = await self.bot_aiogram.send_message(callback.message.chat.id,
+                        'the admin panel will be locked until the end of the operation. '
+                        'Or press the unlock button (only available to you)',
+                                                        reply_markup=unlock_kb)
+                    pass
+
                     await self.send_vacancy_to_admin_channel(callback.message, callback.data)
                 else:
                     await self.bot_aiogram.send_message(callback.message.chat.id, "Sorry shorts at work now. Please wait some time")
@@ -1756,6 +1782,18 @@ class InviteBot():
                 self.markup = await compose_inline_keyboard(prefix='//')
                 await self.bot_aiogram.send_message(callback.message.chat.id, 'Choose the channel', reply_markup=self.markup)
                 pass
+
+            # if callback.data[2:] in self.valid_profession_list:
+            #     logs.write_log(f"invite_bot_2: Callback: one_of_profession {callback.data}")
+            #     if not self.current_session:
+            #         self.current_session = await get_last_session()
+            #     await WriteToDbMessages(
+            #         client=self.client,
+            #         bot_dict={'bot': self.bot_aiogram,
+            #                   'chat_id': callback.message.chat.id}).get_last_and_tgpublic_shorts(
+            #         current_session=self.current_session,
+            #         shorts=False, fulls_all=True, one_profession=callback.data)  # get from profession's tables and put to tg channels
+            #     pass
 
             if callback.data == 'show_info_last_records':
                 """
@@ -1819,6 +1857,30 @@ class InviteBot():
                 self.marker = False
 
             else:
+
+                if message.text in ['Unlock admin', 'Unlock admin and stop autopushing']:
+                    self.db.push_to_db_common(
+                        table_name="shorts_at_work",
+                        fields_values_dict={"shorts_at_work": False},
+                        params="WHERE id=1"
+                    )
+                    if self.unlock_message:
+                        await self.unlock_message.delete()
+                        self.unlock_message = None
+                    if self.task:
+                        self.task.cancel()
+                        self.task = None
+                        await self.bot_aiogram.send_message(message.chat.id, "Autopushing has been stopped")
+
+                if message.text == 'Stop parsers':
+                    if self.unlock_message:
+                        await self.unlock_message.delete()
+                        self.unlock_message = None
+                    if self.parser_task:
+                        self.parser_task.cancel()
+                        self.parser_task = None
+                        await self.bot_aiogram.send_message(message.chat.id, "Parser has been stopped")
+
                 if message.text == 'Get participants':
 
                     if message.text == 'Get participants':
@@ -2791,6 +2853,14 @@ class InviteBot():
             return matches_list
 
         async def get_news(message, silent=False):
+            unlock_kb = ReplyKeyboardMarkup(resize_keyboard=True)
+            button_unlock = KeyboardButton('Stop parsers')
+            unlock_kb.add(button_unlock)
+            self.unlock_message = await self.bot_aiogram.send_message(message.chat.id,
+                                                                      'the admin panel will be locked until the end of the operation. '
+                                                                      'Or press the unlock button (only available to you)',
+                                                                      reply_markup=unlock_kb)
+
             tables = self.db.get_information_about_tables_and_fields(only_tables=True)
             if "parser_at_work" not in tables:
                 self.db.create_table_common(
@@ -4274,6 +4344,10 @@ class InviteBot():
         except Exception as ex:
             print(ex)
 
+        if self.unlock_message:
+            await self.unlock_message.delete()
+            self.unlock_message = None
+
     async def write_to_logs_error(self, text):
         with open("./logs/logs_errors.txt", "a", encoding='utf-8') as file:
             file.write(text)
@@ -5298,6 +5372,13 @@ class InviteBot():
         )
 
     async def hard_pushing_by_schedule(self, message, profession_list):
+        unlock_kb = ReplyKeyboardMarkup(resize_keyboard=True)
+        button_unlock = KeyboardButton('Unlock admin and stop autopushing')
+        unlock_kb.add(button_unlock)
+        self.unlock_message = await self.bot_aiogram.send_message(message.chat.id,
+                                                                  'the admin panel will be locked until the end of the operation. '
+                                                                  'Or press the unlock button (only available to you)',
+                                                                  reply_markup=unlock_kb)
         table_set = set()
         time_marker = ''
 
@@ -5323,20 +5404,6 @@ class InviteBot():
                 table_name=variable.last_autopushing_time_database,
                 fields_values_dict={'time': '0'}
             )
-
-
-
-        # self.db.delete_table(table_name=variable.last_autopushing_time_database)
-        # self.db.create_table_common(
-        #     field_list=["time VARCHAR (10)", ],
-        #     table_name=variable.last_autopushing_time_database
-        # )
-        # self.db.push_to_db_common(
-        #     table_name=variable.last_autopushing_time_database,
-        #     fields_values_dict={'time': '0'}
-        # )
-
-
 
         last_autopushing_time = self.db.get_all_from_db(
             table_name=variable.last_autopushing_time_database,
@@ -5377,7 +5444,7 @@ class InviteBot():
                 time_dict['12'] = False
                 time_marker = '9'
 
-            elif current_time >= 12 and current_time < 17 and not time_dict['12']:
+            elif current_time >= 12 and current_time < 20 and not time_dict['12']:
                 print('hard pushing 12 is starting')
                 await self.push_shorts_attempt_to_make_multi_function(
                     message=message,
@@ -5415,13 +5482,13 @@ class InviteBot():
                 )
             time_marker = ''
 
-            if (current_time >= 0 and current_time < 7) or (current_time >= 19 and current_time < 24):
+            if (current_time >= 0 and current_time < 7) or (current_time >= 20 and current_time < 24):
                 print('the long pause')
-                await self.bot_aiogram.send_message(message.chat.id, 'the long pause')
+                await self.bot_aiogram.send_message(message.chat.id, 'the long pause 30 minutes')
                 await asyncio.sleep(1 * 60 * 30)
             else:
                 print('the short pause')
-                await self.bot_aiogram.send_message(message.chat.id, 'the short pause')
+                await self.bot_aiogram.send_message(message.chat.id, 'the short pause 10 minutes')
                 await asyncio.sleep(1 * 60 * 10)
 
         return print('Schedule pushing has been stopped')
