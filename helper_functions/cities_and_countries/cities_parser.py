@@ -64,9 +64,11 @@ class CitiesAndCountries:
         return translation if translation != '.' else word
 
     async def google_translate_to_english(self, word: str):
+        if word.lower() == 'москва':
+            return 'Moscow'
         translator = google_translator(service_urls=[
             'translate.google.com',
-            'translate.google.co.kr',
+            # 'translate.google.co.kr',
         ])
         try:
             translation = translator.translate(text=word, dest='en')

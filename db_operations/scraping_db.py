@@ -1,13 +1,15 @@
 import configparser
 import json
 import re
-from utils.additional_variables.additional_variables import admin_database, archive_database, admin_table_fields
+from utils.additional_variables.additional_variables import admin_database, archive_database, admin_table_fields, \
+    valid_professions
 from utils.additional_variables.additional_variables import table_list_for_checking_message_in_db, \
     short_session_database, vacancy_table, additional_elements
 import psycopg2
 from datetime import datetime
 from logs.logs import Logs
 from helper_functions import helper_functions as helper
+from patterns._export_pattern import export_pattern
 import pandas as pd
 logs = Logs()
 
@@ -542,6 +544,19 @@ class DataBaseOperations:
                         print(f'Added {field} to {table_name}')
                     except Exception as e:
                         print(e)
+
+    def db_drop_columns(self, columns: list, tables: list):
+        if not tables:
+            tables = valid_professions.copy()
+            tables.extend([admin_database, archive_database])
+
+        for table in tables:
+            for column in columns:
+                query = f"ALTER TABLE {table} DROP COLUMN {column}"
+                try:
+                    self.run_free_request(request=query)
+                except Exception as ex:
+                    print(ex)
 
     def add_columns_to_stat(self, cur, table_name, column_name_type=None):
 
@@ -1703,4 +1718,17 @@ class DataBaseOperations:
         for table in table_list:
             response = self.get_all_from_db(table)
             print(response)
+
+    def rewrite_database_cities(self):
+        all_vacancies = self.get_all_from_db(
+            table_name=admin_database,
+            field=admin_table_fields,
+        )
+        for vacancy in all_vacancies:
+            vacancy_dict = helper.to_dict_from_admin_response(
+                response=vacancy,
+                fields=admin_table_fields
+            )
+            url = vacancy_dict['vacancy_url']
+
 

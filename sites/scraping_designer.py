@@ -51,7 +51,7 @@ class DesignerGetInformation:
             await send_file_to_user(
                 bot=self.bot,
                 chat_id=self.chat_id,
-                path=report_file_path['parsing'],
+                path=self.report.report_file_path['parsing'],
             )
         self.browser.quit()
 

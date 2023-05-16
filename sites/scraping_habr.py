@@ -208,8 +208,12 @@ class HabrGetInformation:
                     try:
                         city_list = link.find_all('span', class_='inline-list')
                         for i in city_list:
+                            f_href = ''
                             f = i.find('a')
-                            f_href = f.get('href')
+                            try:
+                                f_href = f.get('href')
+                            except:
+                                pass
                             if 'city' in f_href:
                                 city = f.text
                                 break
