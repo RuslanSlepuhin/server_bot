@@ -60,7 +60,7 @@ class SitesParser:
         await HabrGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await FinderGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await GeekGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        await DesignerGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await DesignerGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await SvyaziGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await IngameJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
 
