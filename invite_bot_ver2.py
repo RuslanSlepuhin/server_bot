@@ -5697,7 +5697,7 @@ class InviteBot():
                                                 f'Please choose others', reply_markup=self.markup)
             await asyncio.sleep(random.randrange(2, 3))
 
-def run(double=True, token_in=None):
+def run(double=False, token_in=None):
     InviteBot(
         token_in=token_in,
         double=double
