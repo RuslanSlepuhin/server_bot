@@ -1,127 +1,103 @@
-"""{
- "direction": "",
- "specialization": [],
- "programmingLanguage": [], - это на данном этапе в верстке не реализовано, будет приходить пустой массив
- "technologies": [], - это на данном этапе в верстке не реализовано, будет приходить пустой массив
- "level": ["", "trainee", "entry level", "junior", "middle", "senior", "director", "lead"],
- "country": [],
- "city": [],
- "state": [], - это на данном этапе в верстке не реализовано, будет приходить пустой массив
- "salary": ["", ""],
-        "currency": "",
- "salaryOption": ["Почасовая", "За месяц", "За год", "До вычета налогов", "На руки"],
- "companyScope": [],
- "typeOfEmployment": ["", "fulltime", "parttime", "contract", "freelance", "internship", "volunteering"],
- "companyType": ["", "product", "outsourcing", "outstaff", "consulting", "notTechnical", "startup"],
- "companySize": ["1-200", "201-500", "501-1000", "1000"],
- "job_type": ["remote", "fulltime", "flexible", "office", "office/remote" ]
- }"""
-
-"""
-The JSON above means how many fields you will receive, them types and values. It's will be static values from check boxes 
-exception direction.
-The direction field will contain free text.
-
-How I'm doing it:
-1. The direction field I can search:
-  - through a pattern. I can find all keys words and choose vacancies by this professions. But it will take a more time 
-    for pattern loop and get by request from database next step
- - in fields: title, body, profession
- 
- I like the second method
- 
-2. Specialization - there are too many different values to search them in the profession, vacancy, body, title by "OR"
-
-3. Level - the search in level fields. It's more easy than other tasks
-
-4. Country - search in country field in backend. No that field now. I will create it and do the function for searching 
-    country.
-
-5. City - the same
-
-6. Salary has two values from and till summ, Currency contain Eur, USD, BYR, RuR for example. I need to get from back 
-    vacancies between this values 
- 
-7. salaryOption - I need to make the method for find this values from text. Add to database the same field with the same 
-    values
-
-8. typeOfEmployment - to create the same field in tables and to fill the same values. To find it in the body, the title    
-
-9. companyType - static values. I need to create the same fields in tables on backend and fill them. 
-
-10. companySize - the same
-
-11. job_type - this field exists, but contains only one value - remote. Need to create method for search and fill 
-    others static values.  
-"""
+from db_operations.scraping_db import DataBaseOperations
+from utils.additional_variables import additional_variables as variables
 
 class Predictive():
-    def __init__(self):
-        pass
+    def __init__(self, request_from_frontend):
+        self.query = ''
+        self.db = DataBaseOperations()
+        self.tables = variables.valid_professions
+        self.search_tables = []
+        self.request_from_frontend = request_from_frontend
 
-    def direction_method(self, text, fields_list):
-        part_of_request = '('
-        if not text:
-            return ''
-        for field in fields_list:
-            part_of_request += f"LOWER({field}) LIKE '%{text.lower()}%' OR "
-        return part_of_request[:-4] + ')'
+    def get_search_tables(self):
+        if 'direction' in self.request_from_frontend:
+            profession = self.request_from_frontend['direction']
+            if profession == 'development':
+                self.search_tables.extend(['backend', 'frontend', 'mobile'])
+            elif profession in self.tables:
+                self.search_tables.append(profession)
+            else:
+                self.search_tables = self.tables
+        else:
+            self.search_tables = self.tables
 
-    def get_part_of_query(self, request_list, fields_list, dict_name):
-        words_list = []
-        part_of_request = '('
-        if not request_list:
-            return ''
-        if type(request_list) is str:
-            request_list = [request_list,]
+        return self.search_tables
 
-        # compose the list from helper dict values by each key
-        for key_word in request_list:
-            if key_word:
-                if key_word in dict_name:
-                    words_list.extend(dict_name[key_word.lower()])
-                else:
-                    words_list.append(key_word.lower())
+    def get_full_query(self):
 
-        for word in words_list:
-            part_of_request += f"{self.direction_method(word, fields_list)} OR "
+        query = ''
+        for key in self.request_from_frontend:
+            part_of_query = ''
+            if key in ['job_type', 'level', 'city']:
+                request = self.request_from_frontend[key]
+                if request:
+                    part_of_query = self.get_part_of_query(field=key, request=request)
+            elif key == 'country':
+                request = self.request_from_frontend[key]
+                if request:
+                    part_of_query = self.get_part_of_query(field='city', request=request)
+            elif key == 'specialization':
+                subs_list = [x for y in variables.valid_subs.values() for x in y]
+                request = self.request_from_frontend[key]
+                if request:
+                    for sub in request:
+                        if sub not in subs_list:
+                            part_of_query = ''
+                        else:
+                            if sub == 'unity':
+                                self.search_tables.append('backend')
+                            part_of_query = self.get_part_of_query(field='sub', request=request)
 
-        part_of_request = part_of_request[:-4]
-        if part_of_request:
-            return part_of_request + ")"
+            elif key == 'salary':
+                part_of_query = self.get_query_salary()
+
+            if part_of_query:
+                query += f"{part_of_query} AND "
+
+        if query:
+            full_query = f"WHERE {query[:-5]}"
+            return full_query
+
+    def get_part_of_query (self, field, request):
+        if type(request) is str:
+            request = [request, ]
+        query_part = "("
+        for word in request:
+            query_part += f"{field} LIKE '%{word}%' OR "
+        return query_part[:-4] + ')'
+
+    def get_query_salary(self):
+        salary = self.request_from_frontend["salary"]
+        salary_period = self.request_from_frontend["salaryOption"][0]
+        if salary[0] == '':
+            salary_from_query = ''
+        else:
+            salary_from = int(salary[0])
+            if salary_period == "За месяц":
+                salary_per_month_from = salary_from
+            elif salary_period == "За год":
+                salary_per_month_from = salary_from/12
+            else:
+                salary_per_month_from = salary_from * 160
+            salary_from_query = f"salary_from_usd_month >= {salary_per_month_from}"
+
+        if salary[1] == '':
+            salary_to_query = ''
+        else:
+            salary_to = int(salary[1])
+            if salary_period == "За месяц":
+                salary_per_month_to = salary_to
+            elif salary_period == "За год":
+                salary_per_month_to = salary_to/12
+            else:
+                salary_per_month_to = salary_to * 160
+            salary_to_query = f"salary_from_usd_month <= {salary_per_month_to}"
+
+        if salary_from_query and salary_to_query:
+            return f"{salary_from_query} AND {salary_to_query}"
+        elif salary_from_query and not salary_to_query:
+            return salary_from_query
+        elif not salary_from_query and salary_to_query:
+            return salary_to_query
         else:
             return ''
-
-    def get_query_salary(self, request_from_frontend, fields_list):
-        return ""
-
-    def get_full_query(self, request_from_frontend):
-        query = ''
-        part_of_query = ''
-        for key in request_from_frontend:
-
-            if key == 'level':
-                fields_list = ['level']
-            elif key == 'job_type':
-                fields_list = ['job_type']
-            elif key == 'salary':
-                fields_list = ['salary']
-                part_of_query = self.get_query_salary(request_from_frontend[key], fields_list)
-            else:
-                fields_list = ['body', 'title', 'vacancy', 'profession']
-
-            if key not in ['salary',]:
-                part_of_query = Predictive().get_part_of_query(
-                    request_list=request_from_frontend[key],
-                    fields_list=fields_list,
-                    dict_name=key
-                )
-            if part_of_query:
-                query += f"({part_of_query}) AND "
-        if query:
-            # query = f"SELECT * FROM admin_last_session WHERE {query[:-5]}"
-            query = f"WHERE {query[:-5]}"
-        return query
-
-# result = Predictive().get_full_query(request_from_frontend=request_from_frontend)
-# print(result)
