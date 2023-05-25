@@ -3,11 +3,14 @@ import configparser
 import datetime
 import json
 import os
+from multiprocessing import Process
+
 import psycopg2
+from aiogram.types import Message, Chat
 from flask import Flask
 import random
 from db_operations.scraping_db import DataBaseOperations
-from utils.additional_variables.additional_variables import admin_database, admin_table_fields
+from utils.additional_variables.additional_variables import admin_database, admin_table_fields, search_table_fields
 from helper_functions.helper_functions import to_dict_from_admin_response
 from flask_cors import CORS
 from flask import request
@@ -18,7 +21,7 @@ from filters.filter_jan_2023.filter_jan_2023 import VacancyFilter
 from helper_functions import helper_functions as helper
 from utils.additional_variables import additional_variables as variable
 import requests
-from invite_bot_ver2 import InviteBot
+from invite_bot_ver2 import InviteBot, start_hardpushing
 from _apps.endpoints.predictive_method import Predictive
 
 db=DataBaseOperations()
@@ -47,10 +50,6 @@ async def main_endpoints():
     app = Flask(__name__)
     CORS(app)
 
-    @app.route("/")
-    async def hello_world():
-        return "It's the empty page"
-
     @app.route("/get-by-id", methods=['POST'])
     async def get_by_id():
         key = 'id'
@@ -74,6 +73,29 @@ async def main_endpoints():
         else:
             return {'error': 'wrong key. please use key id'}
 
+
+    @app.route("/")
+    async def hello_world():
+        return "It's the empty page"
+
+    @app.route("/hard-push")
+    async def hard_push():
+        message = None
+        bot = InviteBot(telethon_username='second_username')
+
+        if not message:
+            message = Message()
+            message.chat = Chat()
+            message.chat.id = variable.id_developer
+
+        await bot.hard_pushing_by_schedule(
+            message=message,
+            profession_list=variable.profession_list_for_pushing_by_schedule
+        )
+
+        # p1 = Process(target=start_hardpushing, args=())
+        # p1.start()
+        # p1.join()
 
     @app.route("/post-everything")
     async def post_everything():
@@ -160,16 +182,18 @@ async def main_endpoints():
 
     @app.route("/search-by-text", methods = ['POST'])
     async def search_by_text():
-        # responses_dict = await search_by_text_func(
-        #     request=request
-        # )
-        # query = Predictive().get_full_query(request_from_frontend=request.json)
-        query = ''
-        responses_from_db = db.get_all_from_db(
-            table_name=admin_database,
-            param=query,
-            field=admin_table_fields
-        )
+        query_search = Predictive(request_from_frontend=request.json)
+        query = query_search.get_full_query()
+        search_tables = query_search.get_search_tables()
+        responses_from_db = []
+        for table in search_tables:
+            response = db.get_all_from_db(
+                table_name=table,
+                param=query,
+                field=admin_table_fields
+            )
+            if response:
+                responses_from_db.extend(response)
         responses_dict = await package_list_to_dict(responses_from_db)
         responses_dict = {'numbers': len(responses_dict), 'vacancies': responses_dict}
         return responses_dict
@@ -198,11 +222,6 @@ async def main_endpoints():
     @app.route("/delete_vacancy_trainee/<int:id>", methods=['DELETE'])
     async def delete_vacancy(id):
         temporary_variable = True
-        # if db.transfer_vacancy(
-        #     table_from=admin_table,
-        #     table_to=variable.archive_database,
-        #     id=id
-        # ):
         if temporary_variable:
             if db.delete_data(
                 table_name=admin_table,
@@ -377,81 +396,6 @@ async def main_endpoints():
                 else:
                     param += ") "
         return param
-
-    # async def search_by_text_func(request):
-    #     # req_dict = {
-    #     #     "direction": "",
-    #     #     "specialization": [],
-    #     #     "programmingLanguage": [],
-    #     #     "technologies": [],
-    #     #     "level": ["all", "trainee", "entry level", "junior", "middle", "senior", "director", "lead"],
-    #     #     "country": "",
-    #     #     "city": "",
-    #     #     "state": "",
-    #     #     "salary": ["", ""],
-    #     #     "salaryOption": ["hourly", "perMonth", "perYear", "beforeTaxes", "inHand"],
-    #     #     "companyScope": "",
-    #     #     "typeOfEmployment": ["all", "fulltime", "parttime", "tempJob", "contract", "freelance", "internship",
-    #     #                          "volunteering"],
-    #     #     "companyType": ["all", "product", "outsourcing", "outstaff", "consulting", "notTechnical", "startup"],
-    #     #     "companySize": ["1-200", "201-500", "501-1000", "1000+"],
-    #     #     "job_type": ["remote", "fulltime", "flexible", "office", "office/remote"]
-    #     # }
-    #     param = ""
-    #     request_data = request.json
-    #     print(f"{request_data}")
-    #     start_word = "WHERE ("
-    #     param += start_word
-    #     search_title_body_fields = ['direction', 'specialization', 'programmingLanguage', 'technologies',
-    #                                 'country', 'city', 'state', 'salaryOption', 'companyScope', 'typeOfEmployment',
-    #                                 'companyType']
-    #     for key in request_data:
-    #         if request_data[key]:
-    #             if key in search_title_body_fields:
-    #                 if len(param) > len(start_word):
-    #                     param += "AND ("
-    #                 param += await compose_query_loop(
-    #                     request_data_key=request_data[key],
-    #                     search_fields=['body', 'title', 'vacancy']
-    #                 )
-    #     if request_data['level']:
-    #         if len(param) > len(start_word):
-    #             param += "AND ("
-    #         param += await compose_query_loop(
-    #             request_data_key=request_data['level'],
-    #             search_fields=['level', 'body', 'title']
-    #         )
-    #     if request_data['job_type']:
-    #         if len(param) > len(start_word):
-    #             param += "AND ("
-    #         param += await compose_query_loop(
-    #             request_data_key=request_data['job_type'],
-    #             search_fields=['job_type', 'body', 'title']
-    #         )
-    #     if request_data['salary']:
-    #         if len(param) > len(start_word):
-    #             pass
-    #
-    #     today = datetime.datetime.now()
-    #     date_from = today - datetime.timedelta(days=variable.vacancy_fresh_time_days)
-    #     date_from = date_from.strftime('%Y-%m-%d')
-    #     param += f"AND (DATE(time_of_public)>'{date_from}')"
-    #     responses_list = []
-    #
-    #     for table_name in variable.valid_professions:
-    #         responses = await db.get_all_from_db_async(
-    #             table_name=table_name,
-    #             param=param,
-    #             field=variable.admin_table_fields
-    #         )
-    #         responses_list.extend(responses)
-    #     if responses_list:
-    #         return await get_http_response(
-    #             responses=responses_list,
-    #             common_key='vacancies',
-    #             param=param
-    #         )
-    #     return {'vacancies': {}}
 
     async def get_http_response(responses, common_key=None, param=None):
         """
