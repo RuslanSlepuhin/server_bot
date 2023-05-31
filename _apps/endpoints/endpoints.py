@@ -182,6 +182,7 @@ async def main_endpoints():
 
     @app.route("/search-by-text", methods = ['POST'])
     async def search_by_text():
+        print(request.json)
         query_search = Predictive(request_from_frontend=request.json)
         query = query_search.get_full_query()
         search_tables = query_search.get_search_tables()
