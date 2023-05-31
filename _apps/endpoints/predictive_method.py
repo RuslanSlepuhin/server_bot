@@ -52,9 +52,11 @@ class Predictive():
                 part_of_query = self.get_query_salary()
 
             if part_of_query:
+                print('if part of query')
                 query += f"{part_of_query} AND "
 
         if query:
+
             full_query = f"WHERE {query[:-5]} LIMIT 50"
             print(f'full_query: {len(full_query)}')
             return full_query
