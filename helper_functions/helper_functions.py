@@ -68,6 +68,9 @@ def to_dict_from_admin_response_sync(response, fields):
         for i in range(0, len(fields)):
             response_dict[fields[i]] = response[i]
     except Exception as ex:
+        print('response: ', response)
+        print('fields: ', fields)
+        time.sleep(9)
         print(f"error in to_dict_from_admin_response_sync: {ex}")
         return False
     return response_dict
