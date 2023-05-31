@@ -24,7 +24,7 @@ class Predictive():
         return self.search_tables
 
     def get_full_query(self):
-
+        print('get_full_query function is starting')
         query = ''
         for key in self.request_from_frontend:
             part_of_query = ''
