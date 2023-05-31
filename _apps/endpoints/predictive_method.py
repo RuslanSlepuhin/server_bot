@@ -55,7 +55,7 @@ class Predictive():
                 query += f"{part_of_query} AND "
 
         if query:
-            full_query = f"WHERE {query[:-5]}"
+            full_query = f"WHERE {query[:-5]} LIMIT 50"
             return full_query
 
     def get_part_of_query (self, field, request):
