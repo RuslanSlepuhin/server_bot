@@ -57,7 +57,7 @@ class Predictive():
 
         if query:
             print('3')
-            full_query = f"WHERE {query[:-5]} LIMIT 50"
+            full_query = query[:-5]
             print(f'full_query: {len(full_query)}')
             return full_query
 
