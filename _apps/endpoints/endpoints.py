@@ -190,8 +190,9 @@ async def main_endpoints():
         for table in search_tables:
             response = db.get_all_from_db(
                 table_name=table,
-                param=query,
-                field=admin_table_fields
+                param=f"{query} LIMIT 10",
+                field=admin_table_fields,
+                without_sort=True
             )
             if response:
                 responses_from_db.extend(response)
