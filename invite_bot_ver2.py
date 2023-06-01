@@ -4079,14 +4079,17 @@ class InviteBot():
                 await self.client.send_file(int(variable.developer_chat_id), file, caption=caption)
 
     async def get_backup_db(self, path):
-        import zipfile
-        zip_file_name = 'backup_from_server_backup.zip'
-        jungle_zip = zipfile.ZipFile(f'./db_backup/{zip_file_name}', 'w')
-        jungle_zip.write(path, compress_type=zipfile.ZIP_DEFLATED)
-        jungle_zip.close()
-        with open(f'./db_backup/{zip_file_name}', 'rb') as file:
-            await self.bot_aiogram.send_document(variable.developer_chat_id, file)
-        print('done')
+        # import zipfile
+        # zip_file_name = 'backup_from_server_backup.zip'
+        # jungle_zip = zipfile.ZipFile(f'./db_backup/{zip_file_name}', 'w')
+        # jungle_zip.write(path, compress_type=zipfile.ZIP_DEFLATED)
+        # jungle_zip.close()
+        # with open(f'./db_backup/{zip_file_name}', 'rb') as file:
+        #     await self.bot_aiogram.send_document(variable.developer_chat_id, file)
+        # print('done')
+
+        await self.client.send_file(5884559465, path)
+
 
         # await self.client.send_file(5884559465, path)
         #
