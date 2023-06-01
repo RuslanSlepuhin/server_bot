@@ -194,8 +194,7 @@ async def main_endpoints():
                 table_name=table,
                 param=query,
                 order = "ORDER BY time_of_public DESC LIMIT 20",
-                field=admin_table_fields,
-                without_sort=True
+                field=admin_table_fields
             )
             if response:
                 if type(response) is not str:
