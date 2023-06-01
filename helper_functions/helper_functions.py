@@ -68,15 +68,15 @@ async def to_dict_from_admin_response(response, fields):
 def to_dict_from_admin_response_sync(response, fields):
     response_dict = {}
     fields = fields.split(', ')
+    if type(response) is str:
+        print("Bad response in to_dict_from_admin_response_sync function: ", response)
+        return False
     try:
         for i in range(0, len(fields)):
             response_dict[fields[i]] = response[i]
     except Exception as ex:
         print('response: ', response)
-        print('fields: ', fields)
-        time.sleep(9)
         print(f"error in to_dict_from_admin_response_sync: {ex}")
-        time.sleep(9)
         return False
     return response_dict
 
