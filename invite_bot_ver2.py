@@ -985,6 +985,7 @@ class InviteBot():
                 await self.get_backup_db(
                 #     message=message,
                     path='./db_backup/backup_from_server.backup',
+                    message=message
                 #     caption='Take the backup from server'
                     )
                 # await self.send_file_to_user(
@@ -4078,7 +4079,7 @@ class InviteBot():
             except:
                 await self.client.send_file(int(variable.developer_chat_id), file, caption=caption)
 
-    async def get_backup_db(self, path):
+    async def get_backup_db(self, path, message):
         # import zipfile
         # zip_file_name = 'backup_from_server_backup.zip'
         # jungle_zip = zipfile.ZipFile(f'./db_backup/{zip_file_name}', 'w')
@@ -4088,8 +4089,10 @@ class InviteBot():
         #     await self.bot_aiogram.send_document(variable.developer_chat_id, file)
         # print('done')
 
-        await self.client.send_file(5884559465, path)
-        print("Done")
+        await self.bot_aiogram.send_message(message.chat.id, 'Please wait few minutes...')
+        # await self.client.send_file(5884559465, path)
+        await self.client.send_file(message.from_user.id, path)
+        await self.bot_aiogram.send_message(message.chat.id, 'Done! You can see this file in messages in private chats')
 
 
         # await self.client.send_file(5884559465, path)
