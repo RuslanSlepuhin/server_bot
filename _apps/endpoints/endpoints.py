@@ -197,7 +197,10 @@ async def main_endpoints():
                 without_sort=True
             )
             if response:
-                responses_from_db.extend(response)
+                if type(response) is not str:
+                    responses_from_db.extend(response)
+                else:
+                    print('BAD response: ', response)
         responses_dict = await package_list_to_dict(responses_from_db)
         responses_dict = {'numbers': len(responses_dict), 'vacancies': responses_dict}
         return responses_dict
@@ -446,7 +449,7 @@ async def main_endpoints():
 
     async def package_list_to_dict(responses_list):
         result_dict = {}
-        if responses_list:
+        if responses_list and type(responses_list) is not str:
             count = 0
             for response in responses_list:
                 result_dict[str(count)] = helper.to_dict_from_admin_response_sync(response,
