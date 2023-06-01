@@ -189,10 +189,11 @@ async def main_endpoints():
         query = query_search.get_full_query()
         search_tables = query_search.get_search_tables()
         responses_from_db = []
+        query = query + "LIMIT 10"
         for table in search_tables:
             response = db.get_all_from_db(
                 table_name=table,
-                param=f"{query} LIMIT 10",
+                param=query,
                 field=admin_table_fields,
                 without_sort=True
             )
@@ -201,6 +202,7 @@ async def main_endpoints():
                     responses_from_db.extend(response)
                 else:
                     print('BAD response: ', response)
+                    print(f'QUERY is:\n{query}')
         responses_dict = await package_list_to_dict(responses_from_db)
         responses_dict = {'numbers': len(responses_dict), 'vacancies': responses_dict}
         return responses_dict
