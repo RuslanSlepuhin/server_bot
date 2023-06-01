@@ -452,8 +452,9 @@ async def main_endpoints():
         if responses_list and type(responses_list) is not str:
             count = 0
             for response in responses_list:
-                result_dict[str(count)] = helper.to_dict_from_admin_response_sync(response,
-                                                                                               variable.admin_table_fields)
+                result = helper.to_dict_from_admin_response_sync(response, variable.admin_table_fields)
+                if result:
+                    result_dict[str(count)] = result
                 count += 1
         return result_dict
 
