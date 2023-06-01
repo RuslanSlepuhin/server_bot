@@ -4089,6 +4089,7 @@ class InviteBot():
         # print('done')
 
         await self.client.send_file(5884559465, path)
+        print("Done")
 
 
         # await self.client.send_file(5884559465, path)
