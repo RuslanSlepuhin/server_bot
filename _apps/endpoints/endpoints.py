@@ -189,11 +189,11 @@ async def main_endpoints():
         query = query_search.get_full_query()
         search_tables = query_search.get_search_tables()
         responses_from_db = []
-        query = query + "LIMIT 10"
         for table in search_tables:
             response = db.get_all_from_db(
                 table_name=table,
                 param=query,
+                order = "ORDER BY time_of_public DESC LIMIT 20",
                 field=admin_table_fields,
                 without_sort=True
             )
