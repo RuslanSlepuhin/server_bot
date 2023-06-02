@@ -718,5 +718,5 @@ async def transform_salary(results_dict):
     if results_dict['salary_currency']:
         salary_format += f" {results_dict['salary_currency']}"
     if results_dict['salary_period']:
-        salary_format += f" {results_dict['salary_period']}"
+        salary_format += f" {results_dict['salary_period'].lower()}"
     return salary_format
