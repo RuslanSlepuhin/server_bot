@@ -708,3 +708,16 @@ async def get_salary_usd_month(vacancy_dict, **kwargs):
         print('*' * 6)
         # if not update_data:
         return vacancy_dict
+
+async def transform_salary(salary):
+    salary_format = ''
+    salary_list = salary.split(', ')
+    if salary_list[0]:
+        salary_format += f"от {salary_list[0]}"
+    if salary_list[1]:
+        salary_format += f" до {salary_list[1]}"
+    if salary_list[2]:
+        salary_format += f" {salary_list[2]}"
+    if salary_list[3]:
+        salary_format += f" в {salary_list[3]}"
+    return salary_format

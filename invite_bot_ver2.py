@@ -4638,6 +4638,7 @@ class InviteBot():
                     message_for_send += f"Релокация: {relocation}\n"
 
                 if vacancy_from_admin_dict['salary']:
+                    vacancy_from_admin_dict['salary'] = await helper.transform_salary(vacancy_from_admin_dict['salary'])
                     message_for_send += f"Зарплата: {vacancy_from_admin_dict['salary']}\n"
 
                 if vacancy_from_admin_dict['experience']:
@@ -4653,7 +4654,7 @@ class InviteBot():
                         vacancy_from_admin_dict['vacancy'] and vacancy_from_admin_dict['title']):
                     message_for_send += f"\n<b>{vacancy_from_admin_dict['title']}</b>\n"
 
-                if type(message_for_send) is not str or vacancy_from_admin_dict['body'] is not str:
+                if type(message_for_send) is not str or type(vacancy_from_admin_dict['body']) is not str:
                     print(f"MESSAGE_FOR_SEND TYPE IS: {type(message_for_send)}")
                     print(f"BODY IS: {type(vacancy_from_admin_dict['body'])}")
                     time.sleep(15)
