@@ -4703,6 +4703,8 @@ class InviteBot():
             print('message_for_send ', message_for_send[:100])
             print('-------------------------------------')
 
+            message_for_send = message_for_send.replace("\n\n", "\n")
+
             return {'composed_message': message_for_send, 'sub_list': sub_list, 'db_id': vacancy_from_admin_dict['id'],
                     'all_subs': sub}
 
