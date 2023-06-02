@@ -4593,7 +4593,7 @@ class InviteBot():
 
             else:
 
-                message_for_send = 'Вакансия '
+                message_for_send = 'Vacancy: '
                 if vacancy_from_admin_dict['vacancy']:
                     vacancy = vacancy_from_admin_dict['vacancy']
                 elif params['vacancy']:
@@ -4608,10 +4608,10 @@ class InviteBot():
                 elif params['company']:
                     company = params['company']
                 if company:
-                    message_for_send += f"Компания: {company.strip()}\n"
+                    message_for_send += f"Company: {company.strip()}\n"
 
                 if vacancy_from_admin_dict['city']:
-                    message_for_send += f"Город/страна: {vacancy_from_admin_dict['city']}\n"
+                    message_for_send += f"Country/city: {vacancy_from_admin_dict['city']}\n"
 
                 english = ''
                 if vacancy_from_admin_dict['english']:
@@ -4627,7 +4627,7 @@ class InviteBot():
                 elif params['job_type']:
                     job_type = params['job_type']
                 if job_type:
-                    message_for_send += f"Формат работы: {params['job_type']}\n"
+                    message_for_send += f"Job type: {params['job_type']}\n"
 
                 relocation = ''
                 if vacancy_from_admin_dict['relocation']:
@@ -4635,20 +4635,20 @@ class InviteBot():
                 elif params['relocation']:
                     relocation = params['relocation']
                 if relocation:
-                    message_for_send += f"Релокация: {relocation}\n"
+                    message_for_send += f"Relocation: {relocation}\n"
 
                 if vacancy_from_admin_dict['salary_from']:
                     salary = await helper.transform_salary(vacancy_from_admin_dict)
-                    message_for_send += f"Зарплата: {salary}\n"
+                    message_for_send += f"Salary: {salary}\n"
 
                 if vacancy_from_admin_dict['experience']:
-                    message_for_send += f"Опыт работы: {vacancy_from_admin_dict['experience']}\n"
+                    message_for_send += f"Experience: {vacancy_from_admin_dict['experience']}\n"
 
                 if vacancy_from_admin_dict['contacts']:
-                    message_for_send += f"Контакты: {vacancy_from_admin_dict['contacts']}\n"
+                    message_for_send += f"Contacts: {vacancy_from_admin_dict['contacts']}\n"
 
                 elif vacancy_from_admin_dict['vacancy_url'] and 't.me' not in vacancy_from_admin_dict['vacancy_url']:
-                    message_for_send += f"Ссылка на вакансию: {vacancy_from_admin_dict['vacancy_url']}\n"
+                    message_for_send += f"Vacancy url: {vacancy_from_admin_dict['vacancy_url']}\n"
 
                 if vacancy_from_admin_dict['vacancy'].strip() != vacancy_from_admin_dict['title'].strip() or (
                         vacancy_from_admin_dict['vacancy'] and vacancy_from_admin_dict['title']):
