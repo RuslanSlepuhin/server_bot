@@ -5223,6 +5223,7 @@ class InviteBot():
                     )
 
                     if "full" in callback_data:
+                        print(1)
                         # ---------- the unique operation block for fulls = pushing to prof channel full message ----------
                         print('push vacancy in channel\n')
                         print(f"\n{vacancy['message'][0:40]}")
@@ -5232,6 +5233,7 @@ class InviteBot():
                     # ------------------- end of  pushing to prof channel full message -----------------
 
                     elif "shorts" in callback_data:
+                        print(2)
                         # I need to get the newest vacancy
                         vacancy_from_admin = self.db.get_all_from_db(
                             table_name=variable.admin_database,
@@ -5241,29 +5243,35 @@ class InviteBot():
                             field=variable.admin_table_fields
                         )
                         # transfer response to dict
+                        print(3)
                         vacancy_from_admin_dict = await helper.to_dict_from_admin_response(
                             response=vacancy_from_admin[0],
                             fields=variable.admin_table_fields
                         )
                         # collect to self.message_for_send_dict by subs
+                        print(4)
                         composed_message_dict = await self.compose_message(
                             one_profession=profession,
                             vacancy_from_admin_dict=vacancy_from_admin_dict
                         )
+                        print(5)
                         await self.compose_message_for_send_dict(
                             composed_message_dict,
                             profession
                         )
                         # push to profession tables
+                        print(6)
                         await self.compose_data_and_push_to_db(
                             vacancy_from_admin_dict=vacancy_from_admin_dict,
                             profession=profession,
                             shorts_session_name=short_session_name
                         )
+                        print(7)
                         prof_list = vacancy_from_admin_dict['profession'].split(', ')
                         profession_list['profession'] = [profession, ]
 
                         # update vacancy by profession field
+                        print(8)
                         await self.update_vacancy_admin_last_session(
                             results_dict=None,
                             profession=profession,
@@ -5275,9 +5283,11 @@ class InviteBot():
                             shorts_session_name=short_session_name,
                         )
                     if not hard_pushing:
+                        print(9)
                         await self.delete_used_vacancy_from_admin_temporary(vacancy,
                                                                     vacancy_from_admin_dict['id'])
                     n += 1
+                    print(10)
                     await sp.show_the_progress(
                         message=self.message,
                         current_number=n,
@@ -5285,6 +5295,7 @@ class InviteBot():
                     )
                     # await show_progress(message, n, length)
 
+                print(11)
                 if "shorts" in callback_data:
                     if channel_for_pushing:
                         await self.shorts_public(message, profession=profession, profession_channel=profession)
