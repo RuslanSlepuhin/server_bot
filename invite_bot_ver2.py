@@ -4657,7 +4657,6 @@ class InviteBot():
                 if type(message_for_send) is not str or type(vacancy_from_admin_dict['body']) is not str:
                     print(f"MESSAGE_FOR_SEND TYPE IS: {type(message_for_send)}")
                     print(f"BODY IS: {type(vacancy_from_admin_dict['body'])}")
-                    time.sleep(15)
                 else:
                     message_for_send += vacancy_from_admin_dict['body'] if type(vacancy_from_admin_dict['body']) is str else ''
             if len(message_for_send) > 4096:
