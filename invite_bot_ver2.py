@@ -4637,9 +4637,9 @@ class InviteBot():
                 if relocation:
                     message_for_send += f"Релокация: {relocation}\n"
 
-                if vacancy_from_admin_dict['salary']:
-                    vacancy_from_admin_dict['salary'] = await helper.transform_salary(vacancy_from_admin_dict['salary'])
-                    message_for_send += f"Зарплата: {vacancy_from_admin_dict['salary']}\n"
+                if vacancy_from_admin_dict['salary_from']:
+                    salary = await helper.transform_salary(vacancy_from_admin_dict)
+                    message_for_send += f"Зарплата: {salary}\n"
 
                 if vacancy_from_admin_dict['experience']:
                     message_for_send += f"Опыт работы: {vacancy_from_admin_dict['experience']}\n"
