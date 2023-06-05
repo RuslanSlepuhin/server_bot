@@ -5626,6 +5626,16 @@ class InviteBot():
         )
         self.quantity_in_statistics = len(response)
 
+        # # delete !!!!!!!!!!!!!!!!
+        # response = self.db.get_all_from_db(
+        #     table_name='admin_last_session',
+        #     param="Where vacancy = 'Junior Service Desk Technician (Contact Center)'",
+        #     without_sort=True,
+        #     field=variable.admin_table_fields
+        # )
+        # self.quantity_in_statistics = len(response)
+        # # end delete !!!!!!!!!!!!!!!!
+
         if response:
             self.percent = 0
             length = len(response)
