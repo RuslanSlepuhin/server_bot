@@ -4475,7 +4475,7 @@ class InviteBot():
                     message_for_send += f"Job type: {job_type}\n"
 
                 relocation = ''
-                print("vacancy_from_admin_dict['relocation']:", vacancy_from_admin_dict['relocation'])
+                print("vacancy_from_admin_dict['relocation']:", vacancy_from_admin_dict['relocation'], type(vacancy_from_admin_dict['relocation']))
                 if vacancy_from_admin_dict['relocation']:
                     relocation = vacancy_from_admin_dict['relocation']
                 elif params['relocation']:
@@ -4493,7 +4493,7 @@ class InviteBot():
                     message_for_send += f"Experience: {vacancy_from_admin_dict['experience']}\n"
 
                 if vacancy_from_admin_dict['contacts']:
-                    print("vacancy_from_admin_dict['contacts']:", vacancy_from_admin_dict['contacts'])
+                    print("vacancy_from_admin_dict['contacts']:", vacancy_from_admin_dict['contacts'], type(vacancy_from_admin_dict['contacts']))
                     message_for_send += f"Contacts: {vacancy_from_admin_dict['contacts']}\n"
 
                 if vacancy_from_admin_dict['vacancy_url'] and 'https://t.me' not in vacancy_from_admin_dict['vacancy_url']:
