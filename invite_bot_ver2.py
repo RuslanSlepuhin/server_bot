@@ -4604,7 +4604,7 @@ class InviteBot():
 
             else:
 
-                message_for_send = 'Vacancy: '
+                message_for_send = 'Vacancy '
                 if vacancy_from_admin_dict['vacancy']:
                     vacancy = vacancy_from_admin_dict['vacancy']
                 elif params['vacancy']:
@@ -4630,7 +4630,7 @@ class InviteBot():
                 elif params['english']:
                     english = params['english']
                 if english:
-                    message_for_send += f"English: {params['english']}\n"
+                    message_for_send += f"English: {english}\n"
 
                 job_type = ''
                 if vacancy_from_admin_dict['job_type']:
@@ -4638,7 +4638,7 @@ class InviteBot():
                 elif params['job_type']:
                     job_type = params['job_type']
                 if job_type:
-                    message_for_send += f"Job type: {params['job_type']}\n"
+                    message_for_send += f"Job type: {job_type}\n"
 
                 relocation = ''
                 if vacancy_from_admin_dict['relocation']:
@@ -4658,7 +4658,7 @@ class InviteBot():
                 if vacancy_from_admin_dict['contacts']:
                     message_for_send += f"Contacts: {vacancy_from_admin_dict['contacts']}\n"
 
-                elif vacancy_from_admin_dict['vacancy_url'] and 't.me' not in vacancy_from_admin_dict['vacancy_url']:
+                elif vacancy_from_admin_dict['vacancy_url'] and 'https://t.me' not in vacancy_from_admin_dict['vacancy_url']:
                     message_for_send += f"Vacancy url: {vacancy_from_admin_dict['vacancy_url']}\n"
 
                 if vacancy_from_admin_dict['vacancy'].strip() != vacancy_from_admin_dict['title'].strip() or (
