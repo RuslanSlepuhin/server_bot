@@ -4445,6 +4445,7 @@ class InviteBot():
                 message_for_send += f"<b>{vacancy.replace('.', '').strip()}</b>\n"
 
                 company = ''
+                print("vacancy_from_admin_dict['company']:", vacancy_from_admin_dict['company'])
                 if vacancy_from_admin_dict['company']:
                     company = vacancy_from_admin_dict['company']
                 elif params['company']:
@@ -4456,6 +4457,7 @@ class InviteBot():
                     message_for_send += f"Country/city: {vacancy_from_admin_dict['city']}\n"
 
                 english = ''
+                print("vacancy_from_admin_dict['english']:", vacancy_from_admin_dict['english'])
                 if vacancy_from_admin_dict['english']:
                     english = vacancy_from_admin_dict['english']
                 elif params['english']:
@@ -4464,6 +4466,7 @@ class InviteBot():
                     message_for_send += f"English: {english}\n"
 
                 job_type = ''
+                print("vacancy_from_admin_dict['job_type']:", vacancy_from_admin_dict['job_type'])
                 if vacancy_from_admin_dict['job_type']:
                     job_type = vacancy_from_admin_dict['job_type']
                 elif params['job_type']:
@@ -4472,6 +4475,7 @@ class InviteBot():
                     message_for_send += f"Job type: {job_type}\n"
 
                 relocation = ''
+                print("vacancy_from_admin_dict['relocation']:", vacancy_from_admin_dict['relocation'])
                 if vacancy_from_admin_dict['relocation']:
                     relocation = vacancy_from_admin_dict['relocation']
                 elif params['relocation']:
@@ -4480,17 +4484,20 @@ class InviteBot():
                     message_for_send += f"Relocation: {relocation}\n"
 
                 if vacancy_from_admin_dict['salary_from']:
+                    print("vacancy_from_admin_dict['salary_from']:", vacancy_from_admin_dict['salary_from'])
                     salary = await helper.transform_salary(vacancy_from_admin_dict)
                     message_for_send += f"Salary: {salary}\n"
 
                 if vacancy_from_admin_dict['experience']:
+                    print("vacancy_from_admin_dict['experience']:", vacancy_from_admin_dict['experience'])
                     message_for_send += f"Experience: {vacancy_from_admin_dict['experience']}\n"
 
                 if vacancy_from_admin_dict['contacts']:
+                    print("vacancy_from_admin_dict['contacts']:", vacancy_from_admin_dict['contacts'])
                     message_for_send += f"Contacts: {vacancy_from_admin_dict['contacts']}\n"
 
-                elif vacancy_from_admin_dict['vacancy_url'] and 'https://t.me' not in vacancy_from_admin_dict[
-                    'vacancy_url']:
+                if vacancy_from_admin_dict['vacancy_url'] and 'https://t.me' not in vacancy_from_admin_dict['vacancy_url']:
+                    print("vacancy_from_admin_dict['vacancy_url']:", vacancy_from_admin_dict['vacancy_url'])
                     message_for_send += f"Vacancy url: {vacancy_from_admin_dict['vacancy_url']}\n"
 
                 if vacancy_from_admin_dict['vacancy'].strip() != vacancy_from_admin_dict['title'].strip() or (
@@ -5740,6 +5747,8 @@ class InviteBot():
                 self.temporary_data['in']['body'].append(vacancy_from_admin_dict['body'])
                 pass
 
+                if not vacancy_from_admin_dict['vacancy_url']:
+                    print('777777788888888899999999994444444445555555555666666666611111111111')
                 composed_message_dict = await self.compose_message(
                     vacancy_from_admin_dict=vacancy_from_admin_dict,
                     one_profession=profession,
