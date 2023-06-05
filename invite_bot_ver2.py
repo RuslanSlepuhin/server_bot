@@ -4432,8 +4432,77 @@ class InviteBot():
             english_shorts = ''
             salary_shorts = ''
             city_shorts = ''
+            if full:
+                message_for_send = 'Vacancy: '
+                if vacancy_from_admin_dict['vacancy']:
+                    vacancy = vacancy_from_admin_dict['vacancy']
+                elif params['vacancy']:
+                    vacancy = params['vacancy']
+                else:
+                    vacancy = f"#{random.randrange(100, 5000)}"
+                message_for_send += f"<b>{vacancy.replace('.', '').strip()}</b>\n"
 
-            if not full:
+                company = ''
+                if vacancy_from_admin_dict['company']:
+                    company = vacancy_from_admin_dict['company']
+                elif params['company']:
+                    company = params['company']
+                if company:
+                    message_for_send += f"Company: {company.strip()}\n"
+
+                if vacancy_from_admin_dict['city']:
+                    message_for_send += f"Country/city: {vacancy_from_admin_dict['city']}\n"
+
+                english = ''
+                if vacancy_from_admin_dict['english']:
+                    english = vacancy_from_admin_dict['english']
+                elif params['english']:
+                    english = params['english']
+                if english:
+                    message_for_send += f"English: {english}\n"
+
+                job_type = ''
+                if vacancy_from_admin_dict['job_type']:
+                    job_type = vacancy_from_admin_dict['job_type']
+                elif params['job_type']:
+                    job_type = params['job_type']
+                if job_type:
+                    message_for_send += f"Job type: {job_type}\n"
+
+                relocation = ''
+                if vacancy_from_admin_dict['relocation']:
+                    relocation = vacancy_from_admin_dict['relocation']
+                elif params['relocation']:
+                    relocation = params['relocation']
+                if relocation:
+                    message_for_send += f"Relocation: {relocation}\n"
+
+                if vacancy_from_admin_dict['salary_from']:
+                    salary = await helper.transform_salary(vacancy_from_admin_dict)
+                    message_for_send += f"Salary: {salary}\n"
+
+                if vacancy_from_admin_dict['experience']:
+                    message_for_send += f"Experience: {vacancy_from_admin_dict['experience']}\n"
+
+                if vacancy_from_admin_dict['contacts']:
+                    message_for_send += f"Contacts: {vacancy_from_admin_dict['contacts']}\n"
+
+                elif vacancy_from_admin_dict['vacancy_url'] and 'https://t.me' not in vacancy_from_admin_dict[
+                    'vacancy_url']:
+                    message_for_send += f"Vacancy url: {vacancy_from_admin_dict['vacancy_url']}\n"
+
+                if vacancy_from_admin_dict['vacancy'].strip() != vacancy_from_admin_dict['title'].strip() or (
+                        vacancy_from_admin_dict['vacancy'] and vacancy_from_admin_dict['title']):
+                    message_for_send += f"\n<b>{vacancy_from_admin_dict['title']}</b>\n"
+
+                if type(message_for_send) is not str or type(vacancy_from_admin_dict['body']) is not str:
+                    print(f"MESSAGE_FOR_SEND TYPE IS: {type(message_for_send)}")
+                    print(f"BODY IS: {type(vacancy_from_admin_dict['body'])}")
+                else:
+                    message_for_send += vacancy_from_admin_dict['body'] if type(
+                        vacancy_from_admin_dict['body']) is str else ''
+
+            else:
                 job_type_shorts = ''
                 if not vacancy_from_admin_dict['body']:
                     vacancy_from_admin_dict['body'] = ''
@@ -4602,74 +4671,74 @@ class InviteBot():
                     message_for_send += f"{salary_shorts[:40]}, "
             # end of code
 
-            else:
-
-                message_for_send = 'Vacancy '
-                if vacancy_from_admin_dict['vacancy']:
-                    vacancy = vacancy_from_admin_dict['vacancy']
-                elif params['vacancy']:
-                    vacancy = params['vacancy']
-                else:
-                    vacancy = f"#{random.randrange(100, 5000)}"
-                message_for_send += f"<b>: {vacancy.replace('.', '').strip()}</b>\n"
-
-                company = ''
-                if vacancy_from_admin_dict['company']:
-                    company = vacancy_from_admin_dict['company']
-                elif params['company']:
-                    company = params['company']
-                if company:
-                    message_for_send += f"Company: {company.strip()}\n"
-
-                if vacancy_from_admin_dict['city']:
-                    message_for_send += f"Country/city: {vacancy_from_admin_dict['city']}\n"
-
-                english = ''
-                if vacancy_from_admin_dict['english']:
-                    english = vacancy_from_admin_dict['english']
-                elif params['english']:
-                    english = params['english']
-                if english:
-                    message_for_send += f"English: {english}\n"
-
-                job_type = ''
-                if vacancy_from_admin_dict['job_type']:
-                    job_type = vacancy_from_admin_dict['job_type']
-                elif params['job_type']:
-                    job_type = params['job_type']
-                if job_type:
-                    message_for_send += f"Job type: {job_type}\n"
-
-                relocation = ''
-                if vacancy_from_admin_dict['relocation']:
-                    relocation = vacancy_from_admin_dict['relocation']
-                elif params['relocation']:
-                    relocation = params['relocation']
-                if relocation:
-                    message_for_send += f"Relocation: {relocation}\n"
-
-                if vacancy_from_admin_dict['salary_from']:
-                    salary = await helper.transform_salary(vacancy_from_admin_dict)
-                    message_for_send += f"Salary: {salary}\n"
-
-                if vacancy_from_admin_dict['experience']:
-                    message_for_send += f"Experience: {vacancy_from_admin_dict['experience']}\n"
-
-                if vacancy_from_admin_dict['contacts']:
-                    message_for_send += f"Contacts: {vacancy_from_admin_dict['contacts']}\n"
-
-                elif vacancy_from_admin_dict['vacancy_url'] and 'https://t.me' not in vacancy_from_admin_dict['vacancy_url']:
-                    message_for_send += f"Vacancy url: {vacancy_from_admin_dict['vacancy_url']}\n"
-
-                if vacancy_from_admin_dict['vacancy'].strip() != vacancy_from_admin_dict['title'].strip() or (
-                        vacancy_from_admin_dict['vacancy'] and vacancy_from_admin_dict['title']):
-                    message_for_send += f"\n<b>{vacancy_from_admin_dict['title']}</b>\n"
-
-                if type(message_for_send) is not str or type(vacancy_from_admin_dict['body']) is not str:
-                    print(f"MESSAGE_FOR_SEND TYPE IS: {type(message_for_send)}")
-                    print(f"BODY IS: {type(vacancy_from_admin_dict['body'])}")
-                else:
-                    message_for_send += vacancy_from_admin_dict['body'] if type(vacancy_from_admin_dict['body']) is str else ''
+            # else:
+            #
+                # message_for_send = 'Vacancy '
+                # if vacancy_from_admin_dict['vacancy']:
+                #     vacancy = vacancy_from_admin_dict['vacancy']
+                # elif params['vacancy']:
+                #     vacancy = params['vacancy']
+                # else:
+                #     vacancy = f"#{random.randrange(100, 5000)}"
+                # message_for_send += f"<b>: {vacancy.replace('.', '').strip()}</b>\n"
+                #
+                # company = ''
+                # if vacancy_from_admin_dict['company']:
+                #     company = vacancy_from_admin_dict['company']
+                # elif params['company']:
+                #     company = params['company']
+                # if company:
+                #     message_for_send += f"Company: {company.strip()}\n"
+                #
+                # if vacancy_from_admin_dict['city']:
+                #     message_for_send += f"Country/city: {vacancy_from_admin_dict['city']}\n"
+                #
+                # english = ''
+                # if vacancy_from_admin_dict['english']:
+                #     english = vacancy_from_admin_dict['english']
+                # elif params['english']:
+                #     english = params['english']
+                # if english:
+                #     message_for_send += f"English: {english}\n"
+                #
+                # job_type = ''
+                # if vacancy_from_admin_dict['job_type']:
+                #     job_type = vacancy_from_admin_dict['job_type']
+                # elif params['job_type']:
+                #     job_type = params['job_type']
+                # if job_type:
+                #     message_for_send += f"Job type: {job_type}\n"
+                #
+                # relocation = ''
+                # if vacancy_from_admin_dict['relocation']:
+                #     relocation = vacancy_from_admin_dict['relocation']
+                # elif params['relocation']:
+                #     relocation = params['relocation']
+                # if relocation:
+                #     message_for_send += f"Relocation: {relocation}\n"
+                #
+                # if vacancy_from_admin_dict['salary_from']:
+                #     salary = await helper.transform_salary(vacancy_from_admin_dict)
+                #     message_for_send += f"Salary: {salary}\n"
+                #
+                # if vacancy_from_admin_dict['experience']:
+                #     message_for_send += f"Experience: {vacancy_from_admin_dict['experience']}\n"
+                #
+                # if vacancy_from_admin_dict['contacts']:
+                #     message_for_send += f"Contacts: {vacancy_from_admin_dict['contacts']}\n"
+                #
+                # elif vacancy_from_admin_dict['vacancy_url'] and 'https://t.me' not in vacancy_from_admin_dict['vacancy_url']:
+                #     message_for_send += f"Vacancy url: {vacancy_from_admin_dict['vacancy_url']}\n"
+                #
+                # if vacancy_from_admin_dict['vacancy'].strip() != vacancy_from_admin_dict['title'].strip() or (
+                #         vacancy_from_admin_dict['vacancy'] and vacancy_from_admin_dict['title']):
+                #     message_for_send += f"\n<b>{vacancy_from_admin_dict['title']}</b>\n"
+                #
+                # if type(message_for_send) is not str or type(vacancy_from_admin_dict['body']) is not str:
+                #     print(f"MESSAGE_FOR_SEND TYPE IS: {type(message_for_send)}")
+                #     print(f"BODY IS: {type(vacancy_from_admin_dict['body'])}")
+                # else:
+                #     message_for_send += vacancy_from_admin_dict['body'] if type(vacancy_from_admin_dict['body']) is str else ''
 
             if len(message_for_send) > 4096:
                 message_for_send = message_for_send[0:4092] + '...'
