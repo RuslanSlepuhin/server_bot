@@ -4433,6 +4433,10 @@ class InviteBot():
             salary_shorts = ''
             city_shorts = ''
 
+            for key in vacancy_from_admin_dict:
+                if vacancy_from_admin_dict[key] == 'None':
+                    vacancy_from_admin_dict[key] = None
+
             if full:
                 print('FULL IS TRUE')
                 message_for_send = 'Vacancy: '
@@ -4458,7 +4462,7 @@ class InviteBot():
 
                 english = ''
                 print("vacancy_from_admin_dict['english']:", vacancy_from_admin_dict['english'])
-                if vacancy_from_admin_dict['english'] and vacancy_from_admin_dict['english'] != 'None':
+                if vacancy_from_admin_dict['english']:
                     english = vacancy_from_admin_dict['english']
                 elif params['english']:
                     english = params['english']
@@ -4476,7 +4480,7 @@ class InviteBot():
 
                 relocation = ''
                 print("vacancy_from_admin_dict['relocation']:", vacancy_from_admin_dict['relocation'], type(vacancy_from_admin_dict['relocation']))
-                if vacancy_from_admin_dict['relocation'] and vacancy_from_admin_dict['relocation'] != 'None':
+                if vacancy_from_admin_dict['relocation']:
                     relocation = vacancy_from_admin_dict['relocation']
                 elif params['relocation']:
                     relocation = params['relocation']
@@ -4488,11 +4492,11 @@ class InviteBot():
                     salary = await helper.transform_salary(vacancy_from_admin_dict)
                     message_for_send += f"Salary: {salary}\n"
 
-                if vacancy_from_admin_dict['experience'] and vacancy_from_admin_dict['experience'] != 'None':
+                if vacancy_from_admin_dict['experience']:
                     print("vacancy_from_admin_dict['experience']:", vacancy_from_admin_dict['experience'])
                     message_for_send += f"Experience: {vacancy_from_admin_dict['experience']}\n"
 
-                if vacancy_from_admin_dict['contacts'] and vacancy_from_admin_dict['contacts'] != 'None':
+                if vacancy_from_admin_dict['contacts']:
                     print("vacancy_from_admin_dict['contacts']:", vacancy_from_admin_dict['contacts'], type(vacancy_from_admin_dict['contacts']))
                     message_for_send += f"Contacts: {vacancy_from_admin_dict['contacts']}\n"
 
