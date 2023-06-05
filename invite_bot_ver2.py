@@ -4370,7 +4370,7 @@ class InviteBot():
         with open("./logs/logs_errors.txt", "a", encoding='utf-8') as file:
             file.write(text)
 
-    async def compose_message(self, one_profession, vacancy_from_admin_dict, full=False, write_changes_to_db=True,
+    async def compose_message(self, one_profession, vacancy_from_admin_dict, full, write_changes_to_db=True,
                               message=None):
         profession_list = {}
 
@@ -4432,7 +4432,9 @@ class InviteBot():
             english_shorts = ''
             salary_shorts = ''
             city_shorts = ''
+
             if full:
+                print('FULL IS TRUE')
                 message_for_send = 'Vacancy: '
                 if vacancy_from_admin_dict['vacancy']:
                     vacancy = vacancy_from_admin_dict['vacancy']
@@ -4503,6 +4505,7 @@ class InviteBot():
                         vacancy_from_admin_dict['body']) is str else ''
 
             else:
+                print('FULL IS FALSE')
                 job_type_shorts = ''
                 if not vacancy_from_admin_dict['body']:
                     vacancy_from_admin_dict['body'] = ''
@@ -4773,15 +4776,15 @@ class InviteBot():
             except:
                 sub_list = []
 
-            print('-------------------------------------')
-            print('db_remote = ', vacancy_from_admin_dict['job_type'])
-            print('db_relocation = ', vacancy_from_admin_dict['relocation'])
-            print('params_relocation = ', params['relocation'])
-            print('db_salary = ', vacancy_from_admin_dict['salary'])
-            print('db_english = ', vacancy_from_admin_dict['english'])
-            print('params_english = ', params['english'])
-            print('message_for_send ', message_for_send[:100])
-            print('-------------------------------------')
+            # print('-------------------------------------')
+            # print('db_remote = ', vacancy_from_admin_dict['job_type'])
+            # print('db_relocation = ', vacancy_from_admin_dict['relocation'])
+            # print('params_relocation = ', params['relocation'])
+            # print('db_salary = ', vacancy_from_admin_dict['salary'])
+            # print('db_english = ', vacancy_from_admin_dict['english'])
+            # print('params_english = ', params['english'])
+            # print('message_for_send ', message_for_send[:100])
+            # print('-------------------------------------')
 
             message_for_send = message_for_send.replace("\n\n", "\n")
 
@@ -5342,7 +5345,8 @@ class InviteBot():
                         # collect to self.message_for_send_dict by subs
                         composed_message_dict = await self.compose_message(
                             one_profession=profession,
-                            vacancy_from_admin_dict=vacancy_from_admin_dict
+                            vacancy_from_admin_dict=vacancy_from_admin_dict,
+                            full=False
                         )
                         await self.compose_message_for_send_dict(
                             composed_message_dict,
