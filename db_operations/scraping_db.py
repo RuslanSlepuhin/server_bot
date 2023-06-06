@@ -166,6 +166,7 @@ class DataBaseOperations:
                         body LIKE '%{results_dict['body'].strip()}%'"""
         with self.con:
             try:
+                print('34 db')
                 cur.execute(query)
                 r = cur.fetchall()
             except Exception as e:
@@ -173,6 +174,7 @@ class DataBaseOperations:
 
         with self.con:
             try:
+                print('35 db')
                 cur.execute(query_double)
                 r2 = cur.fetchall()
             except Exception as e:
@@ -181,6 +183,7 @@ class DataBaseOperations:
         if not r and r2:
             pass
 
+        print('36 db')
         if not r and not r2:
 
             # to get the one sub only
@@ -206,6 +209,7 @@ class DataBaseOperations:
                         values_str += f"'{results_dict[key]}', "
             new_post = f"""INSERT INTO {pro} ({', '.join(fields_list)}) VALUES ({values_str[:-2]})"""
 
+            print('37 db')
             values_str += f"{results_dict['id']}, "
             fields_list.append("id")
             new_post_to_vacancies_table = f"""INSERT INTO {vacancies_database} ({', '.join(fields_list)}) VALUES ({values_str[:-2]})"""
