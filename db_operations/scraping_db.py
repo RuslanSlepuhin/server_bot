@@ -150,6 +150,7 @@ class DataBaseOperations:
 
     def push_to_db_write_message(self, cur, pro, results_dict, response_dict, agregator_id, shorts_session_name=None):
 
+        print(32)
         logs.write_log(f"scraping_db: function: push_to_db_write_message")
 
         results_dict['title'] = self.clear_title_or_body(results_dict['title'])

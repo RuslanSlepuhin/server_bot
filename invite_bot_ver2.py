@@ -4739,6 +4739,7 @@ class InviteBot():
         profession_list['profession'] = []
         profession_list['profession'] = [profession, ]
 
+        print(31)
         response_from_db = self.db.push_to_bd(
             results_dict=vacancy_from_admin_dict,
             profession_list=profession_list,
