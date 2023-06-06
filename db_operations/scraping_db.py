@@ -131,6 +131,7 @@ class DataBaseOperations:
 
     def push_to_bd(self, results_dict, profession_list=None, agregator_id=None, shorts_session_name=None):
 
+        print('32 db')
         response_dict = {}
         if not self.con:
             self.connect_db()
@@ -152,6 +153,7 @@ class DataBaseOperations:
 
     def push_to_db_write_message(self, cur, pro, results_dict, response_dict, agregator_id, shorts_session_name=None):
 
+        print('33 db')
         logs.write_log(f"scraping_db: function: push_to_db_write_message")
 
         results_dict['title'] = self.clear_title_or_body(results_dict['title'])
