@@ -167,6 +167,8 @@ class DataBaseOperations:
         with self.con:
             try:
                 print('34 db')
+                print('query: ', query)
+                print('query_double: ', query_double)
                 cur.execute(query)
                 r = cur.fetchall()
             except Exception as e:
