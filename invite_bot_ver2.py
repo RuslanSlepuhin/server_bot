@@ -3293,6 +3293,7 @@ class InviteBot():
                             variable.admin_table_fields
                         )
                         text = f"😎 (+)Vacancy FOUND in {pro} table\n{response_dict['title'][:40]}\n\n" \
+                               f"id: {response_dict['id']}\n" \
                                f"profession: {response_dict['profession']}\n" \
                                f"tags: {response_dict['full_tags'] if response_dict['full_tags'] else '-'}\n" \
                                f"anti_tags: {response_dict['full_anti_tags'] if response_dict['full_anti_tags'] else '-'}"
@@ -3310,7 +3311,7 @@ class InviteBot():
 
                     if parser_response['response_dict']:
                         text = f"Vacancy found in db by title-body with another url\n" \
-                               f"url: {parser_response['response_dict']['vacancy_url']}\n" \
+                               f"url: {parser_response['response_dict']['vacancy_url'] if ' vacancy_url' in parser_response['response_dict'] else '-'}\n" \
                                f"title: {parser_response['response_dict']['title'][:40]}\n" \
                                f"profession: {parser_response['response_dict']['profession']}\n" \
                                f"tags: {parser_response['response_dict']['full_tags'] if parser_response['response_dict']['full_tags'] else '-'}\n" \
@@ -4684,7 +4685,8 @@ class InviteBot():
                 if salary_shorts:
                     message_for_send += f"{salary_shorts[:40]}, "
             # end of code
-
+                print(24)
+                pass
             if len(message_for_send) > 4096:
                 message_for_send = message_for_send[0:4092] + '...'
 
@@ -4730,7 +4732,6 @@ class InviteBot():
 
             message_for_send = re.sub(r'\n{2,}', '\n\n', message_for_send)
 
-            print(25)
             return {'composed_message': message_for_send, 'sub_list': sub_list, 'db_id': vacancy_from_admin_dict['id'],
                     'all_subs': sub}
 
@@ -4739,7 +4740,6 @@ class InviteBot():
         profession_list['profession'] = []
         profession_list['profession'] = [profession, ]
 
-        print(31)
         response_from_db = self.db.push_to_bd(
             results_dict=vacancy_from_admin_dict,
             profession_list=profession_list,
@@ -4769,21 +4769,22 @@ class InviteBot():
                 fields=variable.admin_table_fields
             )
 
-            # response = response[0]
-            query = f"""INSERT INTO {table_to} (
-                    chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation,
-                    job_type, city, salary, experience, contacts, time_of_public, created_at, agregator_link,
-                    session, sended_to_agregator, sub, tags, full_tags, full_anti_tags, short_session_numbers)
-                            VALUES (
-                            '{response_dict['chat_name']}', '{response_dict['title']}', '{response_dict['body']}',
-                            '{response_dict['profession']}', '{response_dict['vacancy']}', '{response_dict['vacancy_url']}',
-                            '{response_dict['company']}',
-                            '{response_dict['english']}', '{response_dict['relocation']}', '{response_dict['job_type']}',
-                            '{response_dict['city']}', '{response_dict['salary']}', '{response_dict['experience']}',
-                            '{response_dict['contacts']}', '{response_dict['time_of_public']}', '{response_dict['created_at']}',
-                            '{response_dict['agregator_link']}', '{response_dict['session']}', '{response_dict['sended_to_agregator']}',
-                            '{response_dict['sub']}', '{response_dict['tags']}', '{response_dict['full_tags']}',
-                            '{response_dict['full_anti_tags']}', '{response_dict['short_session_numbers']}');"""
+            response_dict = await helper.replace_NoneType(response_dict)
+            query = self.db.compose_query(vacancy_dict=response_dict, table_name=table_to, define_id=False)
+            # query = f"""INSERT INTO {table_to} (
+            #         chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation,
+            #         job_type, city, salary, experience, contacts, time_of_public, created_at, agregator_link,
+            #         session, sended_to_agregator, sub, tags, full_tags, full_anti_tags, short_session_numbers)
+            #                 VALUES (
+            #                 '{response_dict['chat_name']}', '{response_dict['title']}', '{response_dict['body']}',
+            #                 '{response_dict['profession']}', '{response_dict['vacancy']}', '{response_dict['vacancy_url']}',
+            #                 '{response_dict['company']}',
+            #                 '{response_dict['english']}', '{response_dict['relocation']}', '{response_dict['job_type']}',
+            #                 '{response_dict['city']}', '{response_dict['salary']}', '{response_dict['experience']}',
+            #                 '{response_dict['contacts']}', '{response_dict['time_of_public']}', '{response_dict['created_at']}',
+            #                 '{response_dict['agregator_link']}', '{response_dict['session']}', '{response_dict['sended_to_agregator']}',
+            #                 '{response_dict['sub']}', '{response_dict['tags']}', '{response_dict['full_tags']}',
+            #                 '{response_dict['full_anti_tags']}', '{response_dict['short_session_numbers']}');"""
             self.db.run_free_request(
                 request=query,
                 output_text="\nThe vacancy has removed from admin to archive\n"
@@ -5292,23 +5293,22 @@ class InviteBot():
                             vacancy_from_admin_dict=vacancy_from_admin_dict,
                             full=False
                         )
-                        print(26)
+                        print(25)
                         await self.compose_message_for_send_dict(
                             composed_message_dict,
                             profession
                         )
-                        print(27)
+                        print(26)
                         # push to profession tables
                         await self.compose_data_and_push_to_db(
                             vacancy_from_admin_dict=vacancy_from_admin_dict,
                             profession=profession,
                             shorts_session_name=short_session_name
                         )
-                        print(28)
                         prof_list = vacancy_from_admin_dict['profession'].split(', ')
                         profession_list['profession'] = [profession, ]
 
-                        print(29)
+                        print(27)
                         # update vacancy by profession field
                         await self.update_vacancy_admin_last_session(
                             results_dict=None,
@@ -5332,7 +5332,6 @@ class InviteBot():
                     # await show_progress(message, n, length)
 
                 if "shorts" in callback_data:
-                    print(40)
                     if channel_for_pushing:
                         await self.shorts_public(message, profession=profession, profession_channel=profession)
                     else:
@@ -5340,19 +5339,16 @@ class InviteBot():
 
 
                 if not hard_pushing:
-                    print(41)
                     await self.delete_and_change_waste_vacancy(message=message,
                                                           last_id_message_agregator=self.last_id_message_agregator,
                                                           profession=profession)
 
-                    print(42)
                     self.db.delete_table(
                         table_name='admin_temporary'
                     )
 
                 #shorts_report
                 try:
-                    print(43)
                     for n in range(0, len(self.temporary_data['out']['id_admin_channel'])):
                         if 'in' in self.temporary_data and self.temporary_data['out']['id_admin_channel'][n] in self.temporary_data['in']['id_admin_channel']:
                             index = self.temporary_data['in']['id_admin_channel'].index(self.temporary_data['out']['id_admin_channel'][n])
@@ -5393,7 +5389,6 @@ class InviteBot():
                 except Exception as ex:
                     await self.bot_aiogram.send_message(message.chat.id, f"error in the shorts report: {ex}")
 
-                print(44)
                 await self.report.add_to_excel(report_type='shorts')
 
                 await helper.send_file_to_user(
