@@ -180,6 +180,7 @@ class DataBaseOperations:
             except Exception as e:
                 print(f'\nError in request or exists in DB {e}\n')
 
+        print('35.5 db')
         if not r and r2:
             pass
 
