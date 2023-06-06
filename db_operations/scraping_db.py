@@ -156,12 +156,8 @@ class DataBaseOperations:
         print('33 db')
         logs.write_log(f"scraping_db: function: push_to_db_write_message")
 
-        print("results_dict['title'] ", results_dict['title'])
-        print("results_dict['body'] ", results_dict['body'])
-        print("results_dict['company'] ", results_dict['company'])
-        print('35.1 db')
-
-        results_dict['title'] = self.clear_title_or_body(results_dict['title'])
+        if results_dict['title']:
+            results_dict['title'] = self.clear_title_or_body(results_dict['title'])
         if results_dict['body']:
             results_dict['body'] = self.clear_title_or_body(results_dict['body'])
         if results_dict['company']:
@@ -210,33 +206,11 @@ class DataBaseOperations:
 
             response_dict[pro] = False
 
-            fields_list = []
-            values_str = ''
-            for key in results_dict:
-                if results_dict[key] and key != 'id':
-                    fields_list.append(key)
-                    if type(results_dict[key]) is int:
-                        values_str += f"{results_dict[key]}, "
-                    else:
-                        values_str += f"'{results_dict[key]}', "
-            new_post = f"""INSERT INTO {pro} ({', '.join(fields_list)}) VALUES ({values_str[:-2]})"""
 
+            new_post = self.compose_query(vacancy_dict = results_dict, table_name=pro, define_id=False)
+            new_post_to_vacancies_table = self.compose_query(vacancy_dict=results_dict, table_name=vacancies_database, define_id=True)
             print('37 db')
-            values_str += f"{results_dict['id']}, "
-            fields_list.append("id")
-            new_post_to_vacancies_table = f"""INSERT INTO {vacancies_database} ({', '.join(fields_list)}) VALUES ({values_str[:-2]})"""
 
-            # new_post = f"""INSERT INTO {pro} (
-            # chat_name, title, body, profession, vacancy, vacancy_url, company, english, relocation, job_type,
-            # city, salary, experience, contacts, time_of_public, created_at, agregator_link, session, sub, tags,
-            # full_tags, full_anti_tags, short_session_numbers, level)
-            #             VALUES ('{results_dict['chat_name']}', '{results_dict['title']}', '{results_dict['body']}',
-            #             '{pro}', '{results_dict['vacancy']}', '{results_dict['vacancy_url']}', '{results_dict['company']}',
-            #             '{results_dict['english']}', '{results_dict['relocation']}', '{results_dict['job_type']}',
-            #             '{results_dict['city']}', '{results_dict['salary']}', '{results_dict['experience']}',
-            #             '{results_dict['contacts']}', '{results_dict['time_of_public']}', '{datetime.now()}', '{agregator_id}',
-            #             '{results_dict['session']}', '{results_dict['sub']}', '{results_dict['tags']}', '{results_dict['full_tags']}',
-            #             '{results_dict['full_anti_tags']}', '{shorts_session_name}', '{results_dict['level']}');"""
             with self.con:
                 try:
                     print(400)
@@ -1768,4 +1742,18 @@ class DataBaseOperations:
             )
             url = vacancy_dict['vacancy_url']
 
+    def compose_query(self, vacancy_dict, table_name, define_id:bool):
+        fields_list = []
+        values_str = ''
+        for key in vacancy_dict:
+            if vacancy_dict[key] and key != 'id':
+                fields_list.append(key)
+                if type(vacancy_dict[key]) is int:
+                    values_str += f"{vacancy_dict[key]}, "
+                else:
+                    values_str += f"'{vacancy_dict[key]}', "
+            elif define_id:
+                fields_list.append(key)
+                values_str += f"{vacancy_dict[key]}, "
+        return f"""INSERT INTO {table_name} ({', '.join(fields_list)}) VALUES ({values_str[:-2]})"""
 
