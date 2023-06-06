@@ -178,6 +178,7 @@ class DataBaseOperations:
                 cur.execute(query_double)
                 r2 = cur.fetchall()
             except Exception as e:
+                print('35.4 db')
                 print(f'\nError in request or exists in DB {e}\n')
 
         print('35.5 db')
