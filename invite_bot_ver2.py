@@ -5332,6 +5332,7 @@ class InviteBot():
                     # await show_progress(message, n, length)
 
                 if "shorts" in callback_data:
+                    print(40)
                     if channel_for_pushing:
                         await self.shorts_public(message, profession=profession, profession_channel=profession)
                     else:
@@ -5339,16 +5340,19 @@ class InviteBot():
 
 
                 if not hard_pushing:
+                    print(41)
                     await self.delete_and_change_waste_vacancy(message=message,
                                                           last_id_message_agregator=self.last_id_message_agregator,
                                                           profession=profession)
 
+                    print(42)
                     self.db.delete_table(
                         table_name='admin_temporary'
                     )
 
                 #shorts_report
                 try:
+                    print(43)
                     for n in range(0, len(self.temporary_data['out']['id_admin_channel'])):
                         if 'in' in self.temporary_data and self.temporary_data['out']['id_admin_channel'][n] in self.temporary_data['in']['id_admin_channel']:
                             index = self.temporary_data['in']['id_admin_channel'].index(self.temporary_data['out']['id_admin_channel'][n])
@@ -5389,6 +5393,7 @@ class InviteBot():
                 except Exception as ex:
                     await self.bot_aiogram.send_message(message.chat.id, f"error in the shorts report: {ex}")
 
+                print(44)
                 await self.report.add_to_excel(report_type='shorts')
 
                 await helper.send_file_to_user(
