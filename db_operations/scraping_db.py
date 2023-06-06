@@ -230,7 +230,7 @@ class DataBaseOperations:
                     print(400)
                     cur.execute(new_post)
                     print(self.quant, f'+++++++++++++ The vacancy has been added to DB {pro}\n')
-                    cur.execute(new_post_to_vacancies_table)
+                    # cur.execute(new_post_to_vacancies_table)
                     # print(self.quant, f'+++++++++++++ The vacancy has been added to DB {vacancies_database}\n')
                     # self.quant += 1
                     try:
