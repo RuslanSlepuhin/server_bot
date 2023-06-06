@@ -164,8 +164,10 @@ class DataBaseOperations:
         results_dict['title'] = self.clear_title_or_body(results_dict['title'])
         if results_dict['body']:
             results_dict['body'] = self.clear_title_or_body(results_dict['body'])
-        results_dict['company'] = self.clear_title_or_body(results_dict['company'])
+        if results_dict['company']:
+            results_dict['company'] = self.clear_title_or_body(results_dict['company'])
 
+        print('35.2 db')
         query = f"""SELECT * FROM {pro} WHERE title='{results_dict['title']}' AND body='{results_dict['body']}'"""
         query_double = f"""SELECT * FROM {pro}
                         WHERE title LIKE '%{results_dict['title'].strip()}%' AND
