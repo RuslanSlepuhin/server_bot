@@ -4730,6 +4730,7 @@ class InviteBot():
 
             message_for_send = re.sub(r'\n{2,}', '\n\n', message_for_send)
 
+            print(25)
             return {'composed_message': message_for_send, 'sub_list': sub_list, 'db_id': vacancy_from_admin_dict['id'],
                     'all_subs': sub}
 
@@ -5290,19 +5291,23 @@ class InviteBot():
                             vacancy_from_admin_dict=vacancy_from_admin_dict,
                             full=False
                         )
+                        print(26)
                         await self.compose_message_for_send_dict(
                             composed_message_dict,
                             profession
                         )
+                        print(27)
                         # push to profession tables
                         await self.compose_data_and_push_to_db(
                             vacancy_from_admin_dict=vacancy_from_admin_dict,
                             profession=profession,
                             shorts_session_name=short_session_name
                         )
+                        print(28)
                         prof_list = vacancy_from_admin_dict['profession'].split(', ')
                         profession_list['profession'] = [profession, ]
 
+                        print(29)
                         # update vacancy by profession field
                         await self.update_vacancy_admin_last_session(
                             results_dict=None,
