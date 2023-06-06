@@ -156,8 +156,14 @@ class DataBaseOperations:
         print('33 db')
         logs.write_log(f"scraping_db: function: push_to_db_write_message")
 
+        print("results_dict['title'] ", results_dict['title'])
+        print("results_dict['body'] ", results_dict['body'])
+        print("results_dict['company'] ", results_dict['company'])
+        print('35.1 db')
+
         results_dict['title'] = self.clear_title_or_body(results_dict['title'])
-        results_dict['body'] = self.clear_title_or_body(results_dict['body'])
+        if results_dict['body']:
+            results_dict['body'] = self.clear_title_or_body(results_dict['body'])
         results_dict['company'] = self.clear_title_or_body(results_dict['company'])
 
         query = f"""SELECT * FROM {pro} WHERE title='{results_dict['title']}' AND body='{results_dict['body']}'"""
