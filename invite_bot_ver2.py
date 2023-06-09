@@ -1796,6 +1796,9 @@ class InviteBot():
                     await self.unlock_message.delete()
                 self.manual_admin_shorts = None
 
+            if callback.data == 'get_news':
+                self.parser_task = asyncio.create_task(get_news(callback.message))
+
             if callback.data == 'all':
                 profession_list = variable.profession_list_for_pushing_by_schedule
                 await self.bot_aiogram.send_message(callback.message.chat.id, f"professions in the list: {profession_list}")
@@ -2015,18 +2018,19 @@ class InviteBot():
                     #                                             callback_data='choose_one_channel')
                     but_do_by_admin = InlineKeyboardButton('ADMIN AREA👀✈️',
                                                                 callback_data='go_by_admin')
-                    but_stat_today = InlineKeyboardButton('One day statistics', callback_data='one_day_statistics')
+                    # but_stat_today = InlineKeyboardButton('One day statistics', callback_data='one_day_statistics')
                     but_excel_all_statistics = InlineKeyboardButton('Whole posted vacancies (EXCEL)', callback_data='consolidated_table')
                     but_excel_one_day_vacancies = InlineKeyboardButton('🦤 ONE DAY (EXCEL)', callback_data='one_day')
+                    but_get_news = InlineKeyboardButton('🔋 GET NEWS', callback_data='get_news')
                     but_hard_push = InlineKeyboardButton('HARD PUSHING 🧨🧨🧨', callback_data='hard_push')
 
                     # self.markup.row(but_show, but_send_digest_full)
                     # self.markup.row(but_send_digest_full_all, but_separate_channel)
                     self.markup.add(but_show)
-                    self.markup.add(but_stat_today)
+                    # self.markup.add(but_stat_today)
                     self.markup.add(but_excel_all_statistics)
                     self.markup.add(but_excel_one_day_vacancies)
-                    self.markup.add(but_hard_push)
+                    self.markup.add(but_hard_push, but_get_news)
                     self.markup.add(but_do_by_admin)
 
                     time_start = await get_time_start()
@@ -2735,7 +2739,6 @@ class InviteBot():
             excel_dict = {}
             for vacancy in responses:
                 vacancy_dict = await helper.to_dict_from_admin_response(vacancy, variable.admin_table_fields)
-                print(vacancy_dict)
                 for key in vacancy_dict:
                     if key not in excel_dict:
                         excel_dict[key] = []
