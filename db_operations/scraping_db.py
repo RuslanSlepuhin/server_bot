@@ -159,17 +159,17 @@ class DataBaseOperations:
                     results_dict['sub'] = f"{pro}: "
             response_dict[pro] = False
 
-            new_post = self.compose_query(vacancy_dict = results_dict, table_name=pro, define_id=False)
             new_post_to_vacancies_table = self.compose_query(vacancy_dict=results_dict, table_name=vacancies_database, define_id=True)
+            new_post = self.compose_query(vacancy_dict=results_dict, table_name=pro, define_id=False)
 
             cur = self.con.cursor()
             with self.con:
                 try:
                     cur.execute(new_post)
                     print(self.quant, f'+++++++++++++ The vacancy has been added to DB {pro}\n')
-                    # cur.execute(new_post_to_vacancies_table)
-                    # print(self.quant, f'+++++++++++++ The vacancy has been added to DB {vacancies_database}\n')
-                    # self.quant += 1
+                    cur.execute(new_post_to_vacancies_table)
+                    print(self.quant, f'+++++++++++++ The vacancy has been added to DB {vacancies_database}\n')
+                    self.quant += 1
                     try:
                         self.push_vacancy_to_main_stats(profession=pro, dict=results_dict)
                         print(f'+++++++++++++ Added to statistics\n')
@@ -1683,7 +1683,7 @@ class DataBaseOperations:
             )
             url = vacancy_dict['vacancy_url']
 
-    def compose_query(self, vacancy_dict, table_name, define_id=None):
+    def compose_query(self, vacancy_dict, table_name, define_id=False):
         # fields_list = []
         # values_str = ''
         # for key in vacancy_dict:
@@ -1699,6 +1699,8 @@ class DataBaseOperations:
         # return f"""INSERT INTO {table_name} ({', '.join(fields_list)}) VALUES ({values_str[:-2]})"""
         keys_str = ''
         values_str = ''
+        if not define_id and 'id' in vacancy_dict:
+            vacancy_dict.pop('id')
         for key in vacancy_dict:
             if vacancy_dict[key]:
                 keys_str += f"{key}, "
