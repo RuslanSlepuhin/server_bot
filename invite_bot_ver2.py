@@ -2008,7 +2008,7 @@ class InviteBot():
                     logs.write_log(f"invite_bot_2: content_types: Digest")
 
                     self.markup = InlineKeyboardMarkup(row_width=1)
-                    but_show = InlineKeyboardButton('Unsorted vacancies (new vacancies)',
+                    but_show = InlineKeyboardButton('UNSORTED VACANCIES (new vacancies)',
                                                     callback_data='show_info_last_records')
                     # but_send_digest_full = InlineKeyboardButton('Разлить fulls посл сессию',
                     #                                             callback_data='send_digest_full')
@@ -2016,22 +2016,19 @@ class InviteBot():
                     #                                                 callback_data='send_digest_full_all')
                     # but_separate_channel = InlineKeyboardButton('Залить в 1 канал',
                     #                                             callback_data='choose_one_channel')
-                    but_do_by_admin = InlineKeyboardButton('ADMIN AREA👀✈️',
+                    but_do_by_admin = InlineKeyboardButton('👀 ADMIN AREA',
                                                                 callback_data='go_by_admin')
                     # but_stat_today = InlineKeyboardButton('One day statistics', callback_data='one_day_statistics')
-                    but_excel_all_statistics = InlineKeyboardButton('Whole posted vacancies (EXCEL)', callback_data='consolidated_table')
-                    but_excel_one_day_vacancies = InlineKeyboardButton('🦤 ONE DAY (EXCEL)', callback_data='one_day')
-                    but_get_news = InlineKeyboardButton('🔋 GET NEWS', callback_data='get_news')
-                    but_hard_push = InlineKeyboardButton('HARD PUSHING 🧨🧨🧨', callback_data='hard_push')
+                    but_excel_all_statistics = InlineKeyboardButton('POSTED VACANCIES (EXCEL)', callback_data='consolidated_table')
+                    but_excel_one_day_vacancies = InlineKeyboardButton('🦤 REPORT: ONE DAY (EXCEL)', callback_data='one_day')
+                    but_get_news = InlineKeyboardButton('🔋 PARSER: GET NEWS', callback_data='get_news')
+                    but_hard_push = InlineKeyboardButton('🧨 HARD PUSHING', callback_data='hard_push')
 
                     # self.markup.row(but_show, but_send_digest_full)
                     # self.markup.row(but_send_digest_full_all, but_separate_channel)
-                    self.markup.add(but_show)
+                    self.markup.add(but_show, but_excel_all_statistics)
                     # self.markup.add(but_stat_today)
-                    self.markup.add(but_excel_all_statistics)
-                    self.markup.add(but_excel_one_day_vacancies)
-                    self.markup.add(but_hard_push, but_get_news)
-                    self.markup.add(but_do_by_admin)
+                    self.markup.add(but_get_news, but_excel_one_day_vacancies, but_hard_push, but_do_by_admin)
 
                     time_start = await get_time_start()
                     await self.bot_aiogram.send_message(
