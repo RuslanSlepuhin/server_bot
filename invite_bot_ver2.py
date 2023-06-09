@@ -929,6 +929,12 @@ class InviteBot():
             # if vacancy_text:
             #     await self.bot_aiogram.send_message(message.chat.id, vacancy_text)
 
+        @self.dp.message_handler(commands=['create_table_all_vacancies'])
+        async def create_all_vacancies(message: types.Message):
+            updater = DatabaseUpdateData()
+            await updater.create_table('vacancies')
+            await updater.update_id('vacancies')
+
         @self.dp.message_handler(commands=['emergency_push'])
         async def emergency_push(message: types.Message):
             await Form_emergency_push.profession.set()
@@ -4154,6 +4160,8 @@ class InviteBot():
         async def copy_prof_tables_to_archive_prof_tables():
             pass
 
+
+
         # start_polling(self.dp)
         executor.start_polling(self.dp, skip_updates=True)
 
@@ -4498,9 +4506,13 @@ class InviteBot():
                 # delete all spaces
                 for i in pro:
                     profession_list['profession'].append(i.strip())
+            try:
+                if vacancy_from_admin_dict['job_type']:
+                    vacancy_from_admin_dict['job_type'] = re.sub(r'\<[a-zA-Z\s\.\-\'"=!\<_\/]+\>', " ",
+                                                             vacancy_from_admin_dict['job_type'])
+            except Exception:
+                pass
 
-            vacancy_from_admin_dict['job_type'] = re.sub(r'\<[a-zA-Z\s\.\-\'"=!\<_\/]+\>', " ",
-                                                         vacancy_from_admin_dict['job_type'])
             params = VacancyFilter().sort_profession(
                 title=vacancy_from_admin_dict['title'],
                 body=vacancy_from_admin_dict['body'],
