@@ -2735,6 +2735,7 @@ class InviteBot():
             excel_dict = {}
             for vacancy in responses:
                 vacancy_dict = await helper.to_dict_from_admin_response(vacancy, variable.admin_table_fields)
+                print(vacancy_dict)
                 for key in vacancy_dict:
                     if key not in excel_dict:
                         excel_dict[key] = []
