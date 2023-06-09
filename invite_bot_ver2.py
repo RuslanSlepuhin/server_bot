@@ -2017,7 +2017,7 @@ class InviteBot():
                                                                 callback_data='go_by_admin')
                     but_stat_today = InlineKeyboardButton('One day statistics', callback_data='one_day_statistics')
                     but_excel_all_statistics = InlineKeyboardButton('Whole posted vacancies (EXCEL)', callback_data='consolidated_table')
-                    but_excel_one_day_vacancies = InlineKeyboardButton('ONE DAY (EXCEL)', callback_data='one_day')
+                    but_excel_one_day_vacancies = InlineKeyboardButton('🦤 ONE DAY (EXCEL)', callback_data='one_day')
                     but_hard_push = InlineKeyboardButton('HARD PUSHING 🧨🧨🧨', callback_data='hard_push')
 
                     # self.markup.row(but_show, but_send_digest_full)
@@ -2966,6 +2966,10 @@ class InviteBot():
             return matches_list
 
         async def get_news(message, silent=False):
+            self.db.check_or_create_table(
+                table_name=variable.reject_table,
+                fields=variable.vacancy_table
+            )
             unlock_kb = ReplyKeyboardMarkup(resize_keyboard=True)
             button_unlock = KeyboardButton('Stop parsers')
             unlock_kb.add(button_unlock)
