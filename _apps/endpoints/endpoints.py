@@ -549,6 +549,10 @@ async def main_endpoints():
 
     app.run(host=localhost, port=int(os.environ.get('PORT', 5000)))
 
+    @app.route("/vacancy", methods=['GET'])
+    async def get_single_vacancy_for_web():
+        vacancy_id = request.args.get('id')
+        return await get_single_vacancies_for_web(vacancy_id)
 
 def run_endpoints():
     asyncio.run(main_endpoints())
