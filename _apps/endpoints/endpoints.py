@@ -52,6 +52,11 @@ async def main_endpoints():
     app = Flask(__name__)
     CORS(app)
 
+    @app.route("/vacancy", methods=['GET'])
+    async def get_single_vacancy_for_web():
+        vacancy_id = request.args.get('id')
+        return await get_single_vacancies_for_web(vacancy_id)
+
     @app.route("/get-by-id", methods=['POST'])
     async def get_by_id():
         key = 'id'
@@ -546,11 +551,6 @@ async def main_endpoints():
                 result_dict[str(count)] = helper.to_dict_from_admin_response_sync(response, fields_list)
                 count += 1
         return result_dict
-
-    @app.route("/vacancy", methods=['GET'])
-    async def get_single_vacancy_for_web():
-        vacancy_id = request.args.get('id')
-        return await get_single_vacancies_for_web(vacancy_id)
 
     app.run(host=localhost, port=int(os.environ.get('PORT', 5000)))
 
