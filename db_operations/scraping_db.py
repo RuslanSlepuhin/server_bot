@@ -126,8 +126,11 @@ class DataBaseOperations:
         cur = self.con.cursor()
 
         with self.con:
-            cur.execute(f"""CREATE TABLE IF NOT EXISTS {table_name} ({fields});""")
-            print(f'table {table_name} has been crated or exists')
+            try:
+                cur.execute(f"""CREATE TABLE IF NOT EXISTS {table_name} ({fields});""")
+                print(f'table {table_name} has been crated or exists')
+            except Exception as ex:
+                print(f"error in check_or_create_table: {ex}")
 
     def push_to_bd(self, results_dict, profession_list=None, agregator_id=None, shorts_session_name=None):
 
@@ -159,8 +162,10 @@ class DataBaseOperations:
                     results_dict['sub'] = f"{pro}: "
             response_dict[pro] = False
 
-            new_post_to_vacancies_table = self.compose_query(vacancy_dict=results_dict, table_name=vacancies_database, define_id=True)
-            new_post = self.compose_query(vacancy_dict=results_dict, table_name=pro, define_id=False)
+            results_dict_for_post = results_dict.copy()
+
+            new_post_to_vacancies_table = self.compose_query(vacancy_dict=results_dict_for_post, table_name=vacancies_database, define_id=True)
+            new_post = self.compose_query(vacancy_dict=results_dict_for_post, table_name=pro, define_id=False)
 
             cur = self.con.cursor()
             with self.con:
