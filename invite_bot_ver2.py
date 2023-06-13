@@ -171,7 +171,6 @@ class InviteBot():
         except Exception as e:
             print(e)
 
-
     def main_invitebot(self):
 
         async def connect_with_client(message, id_user):
@@ -4164,7 +4163,6 @@ class InviteBot():
 
         # start_polling(self.dp)
         executor.start_polling(self.dp, skip_updates=True)
-
 
     async def delete_used_vacancy_from_admin_temporary(self, vacancy, id_admin_last_session_table):
         # ------------------- cleaning the areas for the used vacancy  -------------------
