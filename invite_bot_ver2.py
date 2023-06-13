@@ -1930,7 +1930,7 @@ class InviteBot():
                 self.marker = False
 
             else:
-                if message.text == 'Search by link':
+                if message.text == '🦖 Search by link' or 'Search by link' in message.text:
                     await Form_check_url_to_add.url.set()
                     await self.bot_aiogram.send_message(message.chat.id, 'Type the vacancy_url to check in db and add')
 
