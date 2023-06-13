@@ -52,11 +52,6 @@ async def main_endpoints():
     app = Flask(__name__)
     CORS(app)
 
-    @app.route("/vacancy", methods=['GET'])
-    async def get_single_vacancy_for_web():
-        vacancy_id = request.args.get('id')
-        return await get_single_vacancies_for_web(vacancy_id)
-
     @app.route("/get-by-id", methods=['POST'])
     async def get_by_id():
         key = 'id'
@@ -99,10 +94,6 @@ async def main_endpoints():
             message=message,
             profession_list=variable.profession_list_for_pushing_by_schedule
         )
-
-        # p1 = Process(target=start_hardpushing, args=())
-        # p1.start()
-        # p1.join()
 
     @app.route("/post-everything")
     async def post_everything():
@@ -159,6 +150,11 @@ async def main_endpoints():
     async def get_all_vacancies():
         return await get_all_vacancies_from_db()
 
+    @app.route("/vacancy", methods = ['GET'])
+    async def get_single_vacancy_for_web():
+        vacancy_id = request.args.get('id')
+        return await get_single_vacancies_for_web(vacancy_id)
+
     @app.route("/vacancies", methods = ['GET'])
     async def get_all_vacancies_for_web():
         limit = request.args.get('limit')
@@ -168,12 +164,11 @@ async def main_endpoints():
     @app.route("/vacancies", methods=['POST'])
     async def vacancies_with_filters():
         data = request.json
-        print(data)
-        if data['limit']:
+        if 'limit' in data and data['limit']:
             limit = data['limit']
         else:
             limit = 100
-        if data['id']:
+        if 'id' in data and data['id']:
             id_query = f" AND id < {data['id']}"
         else:
             id_query = ''
@@ -198,6 +193,7 @@ async def main_endpoints():
             if vacancies_response:
                 responses_dict['vacancies'] = await package_list_to_dict(vacancies_response, preview_fields_for_web)
         return responses_dict
+
 
     @app.route("/get-all-vacancies-admin")
     async def get_all_vacancies_admin():
@@ -554,6 +550,10 @@ async def main_endpoints():
 
     app.run(host=localhost, port=int(os.environ.get('PORT', 5000)))
 
+    @app.route("/vacancy", methods=['GET'])
+    async def get_single_vacancy_for_web():
+        vacancy_id = request.args.get('id')
+        return await get_single_vacancies_for_web(vacancy_id)
 
 def run_endpoints():
     asyncio.run(main_endpoints())
