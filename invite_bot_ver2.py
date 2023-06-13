@@ -2727,7 +2727,7 @@ class InviteBot():
 
         async def output_one_day(message):
             responses = []
-            date_now = datetime.now() - timedelta(hours=21)
+            date_now = datetime.now() - timedelta(hours=24*7)
             date_now = date_now.strftime('%Y-%m-%d')
             for table in [variable.admin_database, variable.archive_database, variable.reject_table]:
                 response = self.db.get_all_from_db(
