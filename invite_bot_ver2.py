@@ -6234,6 +6234,14 @@ class InviteBot():
                         )
                         self.db.run_free_request(query, output_text=f"Id Vacancy: {vacancy_dict_for_update['id']} has been updated")
                         print(f"---------\nREPLACING: {vacancy_dict['salary']} --> {vacancy_dict_for_update['salary']}\n---------")
+                        control_response = self.db.get_all_from_db(
+                            table_name=table,
+                            param=f"WHERE id={vacancy_dict_for_update['id']}",
+                            field=variable.admin_table_fields
+                        )
+                        control_response_dict = await helper.to_dict_from_admin_response(control_response[0], variable.admin_table_fields)
+                        print(f"control salary: {control_response_dict['salary']}")
+                        print(f"control closed: {control_response_dict['closed']}")
                     else:
                         print(f"NEXT\nsalary = {vacancy_dict['salary']}\n")
             else:
