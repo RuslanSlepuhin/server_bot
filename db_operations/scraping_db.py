@@ -1688,7 +1688,7 @@ class DataBaseOperations:
             )
             url = vacancy_dict['vacancy_url']
 
-    def compose_query(self, vacancy_dict, table_name, define_id=False):
+    def compose_query(self, vacancy_dict, table_name, update=False, define_id=False):
         # fields_list = []
         # values_str = ''
         # for key in vacancy_dict:
@@ -1710,7 +1710,9 @@ class DataBaseOperations:
             if vacancy_dict[key]:
                 keys_str += f"{key}, "
                 if type(vacancy_dict[key]) in [str, bool, datetime]:
-                    if type(vacancy_dict[key]) is str and "'" in vacancy_dict[key]:
+                    if vacancy_dict[key] == "Null":
+                        values_str += f"{vacancy_dict[key]}, "
+                    elif type(vacancy_dict[key]) is str and "'" in vacancy_dict[key]:
                         values_str += f"$${vacancy_dict[key]}$$, "
                     else:
                         values_str += f"'{vacancy_dict[key]}', "
@@ -1718,4 +1720,6 @@ class DataBaseOperations:
                     values_str += f"{vacancy_dict[key]}, "
         keys_str = keys_str[:-2]
         values_str = values_str[:-2]
+        if update:
+            return f"UPDATE {table_name} SET ({keys_str}) = ({values_str}) WHERE id={vacancy_dict['id']}"
         return f"INSERT INTO {table_name} ({keys_str}) VALUES ({values_str})"

@@ -241,6 +241,7 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '⛔️/transpose_no_sort_to_archive - all no_sort to archive\n' \
             '/update_salary_field_usd - add usd fields' \
             '/add_vacancies_table' \
+            '/refactoring_vacancy_salary - it has been made for replace not valid values in salary fields' \
             '----------------------------------------------------\n\n' \
             '---------------- FILES: ----------------\n' \
             '/report_push_shorts - shorts report \n' \
