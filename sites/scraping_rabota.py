@@ -125,7 +125,7 @@ class RabotaGetInformation:
         else:
             return False
 
-    async def get_content_from_link(self):
+    async def get_content_from_link(self, return_raw_dictionary=False):
         links = []
         soup = None
         self.found_by_link = 0
@@ -145,7 +145,7 @@ class RabotaGetInformation:
                 table_list=[admin_database, archive_database]
             )
 
-            if check_vacancy_not_exists:
+            if check_vacancy_not_exists or not check_vacancy_not_exists and return_raw_dictionary:
                 if 'rabota.by' in vacancy_url:
                     links.append(vacancy_url)
                     try:
@@ -299,14 +299,17 @@ class RabotaGetInformation:
                             'session': self.current_session
                         }
 
-                        response = await self.helper_parser_site.write_each_vacancy(results_dict)
+                        if not return_raw_dictionary:
+                            response = await self.helper_parser_site.write_each_vacancy(results_dict)
 
-                        await self.output_logs(
-                            about_vacancy=response,
-                            vacancy=vacancy,
-                            vacancy_url=vacancy_url
-                        )
-                        self.response = response
+                            await self.output_logs(
+                                about_vacancy=response,
+                                vacancy=vacancy,
+                                vacancy_url=vacancy_url
+                            )
+                            self.response = response
+                        else:
+                            self.response = results_dict
                 else:
                     print('not rabota.by')
             else:
@@ -322,7 +325,7 @@ class RabotaGetInformation:
                     msg=self.current_message
                 )
 
-    async def get_content_from_one_link(self, vacancy_url):
+    async def get_content_from_one_link(self, vacancy_url, return_raw_dictionary=False):
         try:
             self.browser = webdriver.Chrome(
                 executable_path=chrome_driver_path,
@@ -333,7 +336,7 @@ class RabotaGetInformation:
         # -------------------- check what is current session --------------
         self.current_session = await self.helper_parser_site.get_name_session()
         self.list_links= [vacancy_url]
-        response = await self.get_content_from_link()
+        response = await self.get_content_from_link(return_raw_dictionary)
         self.browser.quit()
         return response
 

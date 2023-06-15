@@ -117,7 +117,7 @@ class HHKzGetInformation:
         else:
             return False
 
-    async def get_content_from_link(self):
+    async def get_content_from_link(self, return_raw_dictionary=False):
         links = []
         soup = None
         self.found_by_link = 0
@@ -136,7 +136,7 @@ class HHKzGetInformation:
                 table_list=[admin_database, archive_database]
             )
 
-            if check_vacancy_not_exists:
+            if check_vacancy_not_exists or not check_vacancy_not_exists and return_raw_dictionary:
                 links.append(vacancy_url)
                 try:
                     self.browser.get(vacancy_url)
@@ -272,14 +272,17 @@ class HHKzGetInformation:
                         'session': self.current_session
                     }
 
-                    response = await self.helper_parser_site.write_each_vacancy(results_dict)
+                    if not return_raw_dictionary:
+                        response = await self.helper_parser_site.write_each_vacancy(results_dict)
 
-                    await self.output_logs(
-                        about_vacancy=response,
-                        vacancy=vacancy,
-                        vacancy_url=vacancy_url
-                    )
-                    self.response = response
+                        await self.output_logs(
+                            about_vacancy=response,
+                            vacancy=vacancy,
+                            vacancy_url=vacancy_url
+                        )
+                        self.response = response
+                    else:
+                        self.response = results_dict
             else:
                 self.found_by_link += 1
                 print("vacancy link exists")
@@ -293,7 +296,7 @@ class HHKzGetInformation:
                         msg=self.current_message
                     )
 
-    async def get_content_from_one_link(self, vacancy_url):
+    async def get_content_from_one_link(self, vacancy_url, return_raw_dictionary=False):
         try:
             self.browser = webdriver.Chrome(
                 executable_path=chrome_driver_path,
@@ -304,7 +307,7 @@ class HHKzGetInformation:
         # -------------------- check what is current session --------------
         self.current_session = await self.helper_parser_site.get_name_session()
         self.list_links= [vacancy_url]
-        await self.get_content_from_link()
+        await self.get_content_from_link(return_raw_dictionary)
         self.browser.quit()
         return self.response
 
