@@ -157,7 +157,12 @@ class HHKzGetInformation:
                             print(f"???????????????? HH>KZ NOT VACANCY IN {vacancy_url}: {ex2}")
                     title = vacancy
 
-                    body = soup.find('div', class_='vacancy-section').get_text()
+                    body = ''
+                    try:
+                        body = soup.find('div', class_='vacancy-section').get_text()
+                    except Exception as ex:
+                        print(f"???????????????? HH>KZ NOT BODY IN {vacancy_url}: {ex}")
+
                     body = body.replace('\n\n', '\n')
                     body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
                     # print('body = ',body)
