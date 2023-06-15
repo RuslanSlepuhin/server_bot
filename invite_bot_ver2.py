@@ -6245,8 +6245,8 @@ class InviteBot():
                             field=variable.admin_table_fields
                         )
                         control_response_dict = await helper.to_dict_from_admin_response(control_response[0], variable.admin_table_fields)
-                        print(f"control salary: {control_response_dict['salary']}")
-                        print(f"control closed: {control_response_dict['closed']}")
+                        print(f">>>>>>>>>> control salary: {control_response_dict['salary']}")
+                        print(f">>>>>>>>>> control closed: {control_response_dict['closed']}")
                     else:
                         print(f"NEXT\nsalary = {vacancy_dict['salary']}\n")
             else:
