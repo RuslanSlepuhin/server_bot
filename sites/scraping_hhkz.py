@@ -146,7 +146,15 @@ class HHKzGetInformation:
                     print(f"error in browser.get {ex}")
 
                 if found_vacancy:
-                    vacancy = soup.find('div', class_='vacancy-title').find('span').get_text()
+                    vacancy = ''
+                    try:
+                        vacancy = soup.find('div', class_='vacancy-title').find('span').get_text()
+                    except Exception as ex:
+                        print(f"???????????????? HH>KZ NOT VACANCY IN {vacancy_url}: {ex}")
+                        try:
+                            vacancy = soup.find('div', class_='vacancy-title').find('h1').find('span').get_text()
+                        except Exception as ex2:
+                            print(f"???????????????? HH>KZ NOT VACANCY IN {vacancy_url}: {ex2}")
                     title = vacancy
 
                     body = soup.find('div', class_='vacancy-section').get_text()
