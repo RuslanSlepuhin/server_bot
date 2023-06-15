@@ -38,7 +38,7 @@ class HHGetInformation:
         self.find_parameters = FinderAddParameters()
         self.count_message_in_one_channel = 1
         self.found_by_link = 0
-        self.response = None
+        self.response = {}
 
     async def get_content(self, db_tables=None):
         self.db_tables = db_tables
@@ -302,6 +302,8 @@ class HHGetInformation:
                             self.response = response
                         else:
                             self.response = results_dict
+                    else:
+                        self.response = {}
             else:
                 self.found_by_link += 1
                 print("vacancy link exists")

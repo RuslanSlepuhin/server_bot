@@ -40,7 +40,7 @@ class HHKzGetInformation:
         self.find_parameters = FinderAddParameters()
         self.count_message_in_one_channel = 1
         self.found_by_link = 0
-        self.response = None
+        self.response = {}
 
     async def get_content(self, db_tables=None):
         self.db_tables = db_tables
@@ -146,23 +146,10 @@ class HHKzGetInformation:
                     print(f"error in browser.get {ex}")
 
                 if found_vacancy:
-                    vacancy = ''
-                    try:
-                        vacancy = soup.find('div', class_='vacancy-title').find('span').get_text()
-                    except Exception as ex:
-                        print(f"???????????????? HH>KZ NOT VACANCY IN {vacancy_url}: {ex}")
-                        try:
-                            vacancy = soup.find('div', class_='vacancy-title').find('h1').find('span').get_text()
-                        except Exception as ex2:
-                            print(f"???????????????? HH>KZ NOT VACANCY IN {vacancy_url}: {ex2}")
+                    vacancy = soup.find('div', class_='vacancy-title').find('span').get_text()
                     title = vacancy
 
-                    body = ''
-                    try:
-                        body = soup.find('div', class_='vacancy-section').get_text()
-                    except Exception as ex:
-                        print(f"???????????????? HH>KZ NOT BODY IN {vacancy_url}: {ex}")
-
+                    body = soup.find('div', class_='vacancy-section').get_text()
                     body = body.replace('\n\n', '\n')
                     body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
                     # print('body = ',body)
@@ -296,6 +283,8 @@ class HHKzGetInformation:
                         self.response = response
                     else:
                         self.response = results_dict
+                else:
+                    self.response = {}
             else:
                 self.found_by_link += 1
                 print("vacancy link exists")

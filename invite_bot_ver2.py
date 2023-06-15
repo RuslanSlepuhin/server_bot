@@ -6208,7 +6208,9 @@ class InviteBot():
                             print(f'parser: {parser}')
                             print('*'*10, 'PARSER HAS BEEN STARTED', '*'*10)
                             parser = parser(bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})
-                            parser_response.update(await parser.get_content_from_one_link(vacancy_dict['vacancy_url'], return_raw_dictionary=True))
+                            dict_from_parser = await parser.get_content_from_one_link(vacancy_dict['vacancy_url'], return_raw_dictionary=True)
+                            if dict_from_parser:
+                                parser_response.update(dict_from_parser)
 
                             if 'salary' in parser_response:
                                 if not parser_response['salary']:
@@ -6216,6 +6218,9 @@ class InviteBot():
                                         parser_response[field] = 'Null'
                                 elif vacancy_dict['salary'] != parser_response['salary']:
                                     parser_response = await find_parameters.get_salary_all_fields(parser_response)
+                            else:
+                                for field in salary_fields:
+                                    parser_response[field] = 'Null'
 
 
                         for key in ['closed', 'salary', 'salary_from', 'salary_to', 'salary_currency', 'salary_period',
@@ -6240,8 +6245,8 @@ class InviteBot():
                             field=variable.admin_table_fields
                         )
                         control_response_dict = await helper.to_dict_from_admin_response(control_response[0], variable.admin_table_fields)
-                        print(f">>>>>> control salary: {control_response_dict['salary']}")
-                        print(f">>>>>> control closed: {control_response_dict['closed']}")
+                        print(f"control salary: {control_response_dict['salary']}")
+                        print(f"control closed: {control_response_dict['closed']}")
                     else:
                         print(f"NEXT\nsalary = {vacancy_dict['salary']}\n")
             else:
