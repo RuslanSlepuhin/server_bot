@@ -40,7 +40,7 @@ class RabotaGetInformation:
         self.browser = None
         self.count_message_in_one_channel = 1
         self.found_by_link = 0
-        self.response = None
+        self.response = {}
 
     async def get_content(self, db_tables=None):
         self.db_tables = db_tables
@@ -310,6 +310,8 @@ class RabotaGetInformation:
                             self.response = response
                         else:
                             self.response = results_dict
+                    else:
+                        self.response = {}
                 else:
                     print('not rabota.by')
             else:
