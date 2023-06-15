@@ -146,12 +146,22 @@ class HHKzGetInformation:
                     print(f"error in browser.get {ex}")
 
                 if found_vacancy:
-                    vacancy = soup.find('div', class_='vacancy-title').find('span').get_text()
-                    title = vacancy
+                    vacancy = ''
+                    try:
+                        vacancy = soup.find('div', class_='vacancy-title').find('span').get_text()
+                    except Exception as e:
+                        print(f"error vacancy: {e}")
 
-                    body = soup.find('div', class_='vacancy-section').get_text()
-                    body = body.replace('\n\n', '\n')
-                    body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
+                    title = vacancy
+                    body = ''
+                    try:
+                        body = soup.find('div', class_='vacancy-section').get_text()
+                    except Exception as ex:
+                        print(ex)
+
+                    if body:
+                        body = body.replace('\n\n', '\n')
+                        body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
                     # print('body = ',body)
 
                     # get tags --------------------------
