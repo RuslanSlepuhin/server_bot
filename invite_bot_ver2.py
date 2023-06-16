@@ -327,8 +327,8 @@ class InviteBot():
 
         @self.dp.message_handler(commands=['refactoring_vacancy_salary'])
         async def silent_get_news(message: types.Message):
-            await self.refactoring_vacancy_salary(message)
-
+            # await self.refactoring_vacancy_salary(message)
+            asyncio.create_task(self.refactoring_vacancy_salary(message))
 
         @self.dp.message_handler(commands=['silent_get_news'])
         async def silent_get_news(message: types.Message):
@@ -2732,6 +2732,38 @@ class InviteBot():
                         print(f'Was deleted id={id} from {i}')
 
         async def output_one_day(message):
+            await self.bot_aiogram.send_message(message.chat.id,
+                                                'Please wait for all vacancies from vacancies table...')
+            print('Please wait for all vacancies from vacancies table...')
+            responses = self.db.get_all_from_db(
+                table_name=variable.vacancies_database,
+                field=variable.admin_table_fields,
+                param="ORDER BY id DESC LIMIT 10000",
+                without_sort=True
+            )
+            excel_dict = {}
+            if responses:
+                print(len(responses))
+
+                for vacancy in responses:
+                    vacancy_dict = await helper.to_dict_from_admin_response(vacancy, variable.admin_table_fields)
+                    for key in vacancy_dict:
+                        if key not in excel_dict:
+                            excel_dict[key] = []
+                        excel_dict[key].append(vacancy_dict[key])
+
+                df = pd.DataFrame(excel_dict)
+
+                df.to_excel(f'./excel/excel/vacancies_table.xlsx', sheet_name='Sheet1')
+                print('File has been written')
+                await self.send_file_to_user(message, f'excel/excel/vacancies_table.xlsx')
+            else:
+                print('Not responses from vacancies table')
+            print('got it')
+
+            await self.bot_aiogram.send_message(message.chat.id, 'Please wait for not sorted vacancies from admin and reject tables...')
+            print('Please wait for not sorted vacancies from admin and reject tables...')
+
             responses = []
             date_now = datetime.now() - timedelta(hours=24*7)
             date_now = date_now.strftime('%Y-%m-%d')
@@ -2745,6 +2777,7 @@ class InviteBot():
                     responses.extend(response)
 
             excel_dict = {}
+            print(len(responses))
             for vacancy in responses:
                 vacancy_dict = await helper.to_dict_from_admin_response(vacancy, variable.admin_table_fields)
                 for key in vacancy_dict:
@@ -2757,6 +2790,7 @@ class InviteBot():
             df.to_excel(f'./excel/excel/one_day_vacancies.xlsx', sheet_name='Sheet1')
             print('File has been written')
             await self.send_file_to_user(message, f'excel/excel/one_day_vacancies.xlsx')
+            print('got it')
 
 
 
@@ -3025,8 +3059,8 @@ class InviteBot():
                 # # -----------------------parsing telegram channels -------------------------------------
                 bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
 
-                await main(report=self.report, client=self.client, bot_dict=bot_dict)
-                await self.report.add_to_excel(report_type='parsing')
+                # await main(report=self.report, client=self.client, bot_dict=bot_dict)
+                # await self.report.add_to_excel(report_type='parsing')
 
                 if silent:
                     sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
@@ -6182,20 +6216,27 @@ class InviteBot():
                     updated_vacancy_dict = {}
                     vacancy_dict = await helper.to_dict_from_admin_response(vacancy, variable.admin_table_fields)
                     if vacancy_dict:
-                        vacancy_dict = await find_parameters.get_salary_all_fields(vacancy_dict)
-                        for key in salary_fields:
-                            if vacancy_dict[key]:
-                                updated_vacancy_dict[key] = vacancy_dict[key]
-                        updated_vacancy_dict['id'] = vacancy_dict['id']
+                        result = False
+                        for i in vacancy_dict['salary']:
+                            if i.isdigit():
+                                result = True
+                        if result:
+                            vacancy_dict = await find_parameters.get_salary_all_fields(vacancy_dict)
+                            for key in salary_fields:
+                                if vacancy_dict[key]:
+                                    updated_vacancy_dict[key] = vacancy_dict[key]
+                            updated_vacancy_dict['id'] = vacancy_dict['id']
 
-                        query = self.db.compose_query(
-                            vacancy_dict=updated_vacancy_dict,
-                            table_name=table,
-                            update=True,
-                            define_id=True
-                        )
-                        if query:
-                            self.db.run_free_request(query, output_text=f"vacancy {vacancy_dict['id']} in {table} has been changed")
+                            query = self.db.compose_query(
+                                vacancy_dict=updated_vacancy_dict,
+                                table_name=table,
+                                update=True,
+                                define_id=True
+                            )
+                            if query:
+                                self.db.run_free_request(query, output_text=f"vacancy {vacancy_dict['id']} in {table} has been changed")
+                        else:
+                            print("Not Numbers in salary")
                     else:
                         print("Not vacancy_dict")
 
@@ -6204,7 +6245,9 @@ class InviteBot():
             query = f"WHERE (vacancy_url LIKE '%/hh.ru/%' OR vacancy_url LIKE '%/hh.kz/%' OR " \
                     f"vacancy_url LIKE '%/rabota.ru/%') AND (salary IN {companies_list2} OR LENGTH(salary) > 50) OR " \
                     f"(salary IS NOT NULL AND salary NOT LIKE '%не указана%' AND salary <> 'None' " \
-                    f"and salary <> 'NONE' AND salary <> '' AND salary_from IS NULL)"
+                    f"and salary <> 'NONE' AND salary <> '' AND salary NOT LIKE '%$%' AND salary NOT LIKE '%0%' " \
+                    f"AND salary NOT LIKE '%руб%'" \
+                    f"AND salary_from IS NULL)"
             # print(query)
 
             responses = self.db.get_all_from_db(
@@ -6215,19 +6258,15 @@ class InviteBot():
             )
             if responses and type(responses) is list:
                 print(f'len: {len(responses)}')
-                text = table_message.text + f"\n{len(responses)} responses for parser change"
-                await table_message.edit_text(text)
 
                 n = 0
+                await table_message.edit_text(f"{table}\n{len(responses)} responses for parser change\nworked out: {n}")
                 for vacancy in responses:
                     n += 1
                     print('-'*10, 'NEXT VACANCY: ', n,  '-'*10)
                     print(n)
-                    table_message.text += f"\n{len(responses)} responses for parser change"
-                    table_message.text += f"\n{len(responses)} responses for parser change"
-
                     await table_message.edit_text(
-                        f"{table_message.text}\n{n}")
+                        f"{table}\n{len(responses)} responses for parser change\nworked out: {n}")
 
                     if n == 1379:
                         pass
