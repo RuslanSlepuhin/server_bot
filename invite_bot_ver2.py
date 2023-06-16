@@ -6141,9 +6141,11 @@ class InviteBot():
         print('refactoring_vacancy_salary has started')
         from helper_functions.parser_find_add_parameters.parser_find_add_parameters import FinderAddParameters
         find_parameters = FinderAddParameters()
+        salary_fields = ['salary', 'salary_from', 'salary_to', 'salary_currency', 'salary_period',
+                         'rate', 'salary_from_usd_month', 'salary_to_usd_month']
 
-        tables = variable.valid_professions.copy()
-        tables.extend([variable.admin_database, variable.archive_database, variable.vacancies_database, variable.reject_table])
+        tables = [variable.vacancies_database, variable.admin_database, variable.archive_database, variable.reject_table]
+        tables.extend(variable.valid_professions)
 
         companies_list = self.db.get_all_from_db(
             table_name='companies',
@@ -6154,29 +6156,79 @@ class InviteBot():
         for i in companies_list:
             companies_list2.append(i[0])
         companies_list2 = tuple(companies_list2)
+        black_words = ['з/п не указана', 'з.п. не указана', ]
+
         for table in tables:
-            await self.bot_aiogram.send_message(message.chat.id, f'Table is {table}')
+            table_message = await self.bot_aiogram.send_message(message.chat.id, f'Table is {table}')
+
             responses = self.db.get_all_from_db(
                 table_name=table,
-                param=f"WHERE (vacancy_url LIKE '%/hh.ru/%' OR vacancy_url LIKE '%/hh.kz/%' OR vacancy_url LIKE '%/rabota.ru/%') AND (salary IN {companies_list2} OR LENGTH(salary) > 50)",
+                param=f"WHERE salary IS NOT NULL AND salary <> '' "
+                      f"AND salary <> 'None' AND salary <> 'NONE' "
+                      f"AND salary NOT LIKE '%не указана%' "
+                      f"AND salary NOT LIKE '%договор%' "
+                      f"AND salary NOT IN {companies_list2}"
+                      f"AND salary_from IS NULL",
+                field=variable.admin_table_fields
+            )
+            if responses and type(responses) is list:
+
+                await table_message.edit_text(table_message.text + f'\n{len(responses)} responses for autochange salary')
+
+                counter = 0
+                for vacancy in responses:
+                    print(counter)
+                    counter += 1
+                    updated_vacancy_dict = {}
+                    vacancy_dict = await helper.to_dict_from_admin_response(vacancy, variable.admin_table_fields)
+                    if vacancy_dict:
+                        vacancy_dict = await find_parameters.get_salary_all_fields(vacancy_dict)
+                        for key in salary_fields:
+                            if vacancy_dict[key]:
+                                updated_vacancy_dict[key] = vacancy_dict[key]
+                        updated_vacancy_dict['id'] = vacancy_dict['id']
+
+                        query = self.db.compose_query(
+                            vacancy_dict=updated_vacancy_dict,
+                            table_name=table,
+                            update=True,
+                            define_id=True
+                        )
+                        if query:
+                            self.db.run_free_request(query, output_text=f"vacancy {vacancy_dict['id']} in {table} has been changed")
+                    else:
+                        print("Not vacancy_dict")
+
+
+
+            query = f"WHERE (vacancy_url LIKE '%/hh.ru/%' OR vacancy_url LIKE '%/hh.kz/%' OR " \
+                    f"vacancy_url LIKE '%/rabota.ru/%') AND (salary IN {companies_list2} OR LENGTH(salary) > 50) OR " \
+                    f"(salary IS NOT NULL AND salary NOT LIKE '%не указана%' AND salary <> 'None' " \
+                    f"and salary <> 'NONE' AND salary <> '' AND salary_from IS NULL)"
+            # print(query)
+
+            responses = self.db.get_all_from_db(
+                table_name=table,
+                param=query,
                 without_sort=True,
                 field=variable.admin_table_fields
             )
             if responses and type(responses) is list:
                 print(f'len: {len(responses)}')
-                await self.bot_aiogram.send_message(message.chat.id, f'len: {len(responses)}')
+                await table_message.edit_text(f"{table_message.text}\n{len(responses)} responses for parser change")
 
                 n = 0
                 for vacancy in responses:
                     n += 1
                     print('-'*10, 'NEXT VACANCY: ', n,  '-'*10)
                     print(n)
+                    await table_message.edit_text(
+                        f"{table_message.text}\n{n}")
+
                     if n == 1379:
                         pass
                     parser_response = {}
                     vacancy_dict_for_update = {}
-                    salary_fields = ['salary', 'salary_from', 'salary_to', 'salary_currency', 'salary_period',
-                                    'rate', 'salary_from_usd_month', 'salary_to_usd_month']
 
                     vacancy_dict = await helper.to_dict_from_admin_response(
                         response=vacancy, fields=variable.admin_table_fields
