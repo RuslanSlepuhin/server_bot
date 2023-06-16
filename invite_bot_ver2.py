@@ -5658,7 +5658,7 @@ class InviteBot():
 
     async def hard_pushing_by_schedule(self, message, profession_list):
 
-        await self.check_all_vacancies_are_closed()
+        # await self.check_all_vacancies_are_closed()
 
         # if self.manual_admin_shorts:
         #     self.wait_until_manual_will_stop = asyncio.create_task(self.wait_until(argument=self.manual_admin_shorts))
@@ -6215,13 +6215,17 @@ class InviteBot():
             )
             if responses and type(responses) is list:
                 print(f'len: {len(responses)}')
-                await table_message.edit_text(f"{table_message.text}\n{len(responses)} responses for parser change")
+                text = table_message.text + f"\n{len(responses)} responses for parser change"
+                await table_message.edit_text(text)
 
                 n = 0
                 for vacancy in responses:
                     n += 1
                     print('-'*10, 'NEXT VACANCY: ', n,  '-'*10)
                     print(n)
+                    table_message.text += f"\n{len(responses)} responses for parser change"
+                    table_message.text += f"\n{len(responses)} responses for parser change"
+
                     await table_message.edit_text(
                         f"{table_message.text}\n{n}")
 
