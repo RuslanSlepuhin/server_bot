@@ -41,8 +41,8 @@ class FinderAddParameters:
         print('-'*10)
         print('add_parameters: self.text: ', self.text)
         self.clean_text_special_symbols()
-        match = re.findall(r"[0-9,]+[\s]?[0-9]+[\s]?[0-9]{0,4}", self.text)
-        self.salary_list = [number.replace(' ', '').replace(',', '') for number in match]
+        match = re.findall(r"[0-9,.]+[\s]?[0-9]+[\s]?[0-9]{0,4}", self.text)
+        self.salary_list = [number.replace(' ', '').replace(',', '').replace('.', '') for number in match]
         if 'тыс' in self.text:
             salary_list = []
             for number in self.salary_list:
