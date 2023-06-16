@@ -6246,8 +6246,9 @@ class InviteBot():
                     f"vacancy_url LIKE '%/rabota.ru/%') AND (salary IN {companies_list2} OR LENGTH(salary) > 50) OR " \
                     f"(salary IS NOT NULL AND salary NOT LIKE '%не указана%' AND salary <> 'None' " \
                     f"and salary <> 'NONE' AND salary <> '' AND salary NOT LIKE '%$%' AND salary NOT LIKE '%0%' " \
-                    f"AND salary NOT LIKE '%руб%'" \
-                    f"AND salary_from IS NULL)"
+                    f"AND salary NOT LIKE '%руб%' AND salary NOT LIKE '%договорен%' AND salary NOT LIKE '%не указана%'" \
+                    f"AND salary_from IS NULL AND (vacancy_url LIKE '%/hh.ru/%' OR vacancy_url LIKE '%/hh.kz/%' OR " \
+                    f"vacancy_url LIKE '%/rabota.ru/%'))"
             # print(query)
 
             responses = self.db.get_all_from_db(
@@ -6262,6 +6263,7 @@ class InviteBot():
                 n = 0
                 await table_message.edit_text(f"{table}\n{len(responses)} responses for parser change\nworked out: {n}")
                 for vacancy in responses:
+                    dict_from_parser = None
                     n += 1
                     print('-'*10, 'NEXT VACANCY: ', n,  '-'*10)
                     print(n)
@@ -6303,7 +6305,10 @@ class InviteBot():
                             print(f'parser: {parser}')
                             print('*'*10, 'PARSER HAS BEEN STARTED', '*'*10)
                             parser = parser(bot_dict={'bot': self.bot_aiogram, 'chat_id': message.chat.id})
-                            dict_from_parser = await parser.get_content_from_one_link(vacancy_dict['vacancy_url'], return_raw_dictionary=True)
+                            try:
+                                dict_from_parser = await parser.get_content_from_one_link(vacancy_dict['vacancy_url'], return_raw_dictionary=True)
+                            except Exception as e:
+                                print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!{e}')
                             if dict_from_parser:
                                 parser_response.update(dict_from_parser)
 
@@ -6333,11 +6338,7 @@ class InviteBot():
                             define_id=True
                         )
                         self.db.run_free_request(query, output_text=f"Id Vacancy: {vacancy_dict_for_update['id']} has been updated")
-                        try:
-                            print(f"---------\nREPLACING: {vacancy_dict['salary']} --> {vacancy_dict_for_update['salary']}\n---------")
-                        except Exception as ex:
-                            print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n{ex}')
-
+                        print(f"---------\nREPLACING: {vacancy_dict['salary']} --> {vacancy_dict_for_update['salary']}\n---------")
                         control_response = self.db.get_all_from_db(
                             table_name=table,
                             param=f"WHERE id={vacancy_dict_for_update['id']}",
