@@ -6143,7 +6143,7 @@ class InviteBot():
         find_parameters = FinderAddParameters()
 
         tables = variable.valid_professions.copy()
-        tables.extend([variable.admin_database, variable.archive_database, variable.vacancies_database])
+        tables.extend([variable.admin_database, variable.archive_database, variable.vacancies_database, variable.reject_table])
 
         companies_list = self.db.get_all_from_db(
             table_name='companies',
