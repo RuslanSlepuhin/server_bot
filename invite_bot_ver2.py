@@ -3059,8 +3059,8 @@ class InviteBot():
                 # # -----------------------parsing telegram channels -------------------------------------
                 bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
 
-                await main(report=self.report, client=self.client, bot_dict=bot_dict)
-                await self.report.add_to_excel(report_type='parsing')
+                # await main(report=self.report, client=self.client, bot_dict=bot_dict)
+                # await self.report.add_to_excel(report_type='parsing')
 
                 if silent:
                     sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
@@ -6171,10 +6171,13 @@ class InviteBot():
                 else:
                     print('False is make to dict func answer')
 
-    async def refactoring_vacancy_salary(self, message):
+    async def refactoring_vacancy_salary(self, message, **kwargs):
         print('refactoring_vacancy_salary has started')
         from helper_functions.parser_find_add_parameters.parser_find_add_parameters import FinderAddParameters
         find_parameters = FinderAddParameters()
+
+        check_salary = True if 'check_salary' in kwargs and kwargs['check_salary'] else False
+
         salary_fields = ['salary', 'salary_from', 'salary_to', 'salary_currency', 'salary_period',
                          'rate', 'salary_from_usd_month', 'salary_to_usd_month']
 
@@ -6242,8 +6245,8 @@ class InviteBot():
 
 
 
-            query = f"WHERE (vacancy_url LIKE '%/hh.ru/%' OR vacancy_url LIKE '%/hh.kz/%' OR " \
-                    f"vacancy_url LIKE '%/rabota.ru/%') AND (salary IN {companies_list2} OR LENGTH(salary) > 50) OR " \
+            query = f"WHERE (vacancy_url LIKE '%hh.ru/%' OR vacancy_url LIKE '%/hh.kz/%' OR " \
+                    f"vacancy_url LIKE '%/rabota.by/%' OR vacancy_url LIKE '%/rabota.by/%') AND (salary IN {companies_list2} OR LENGTH(salary) > 50) OR " \
                     f"(salary IS NOT NULL AND salary NOT LIKE '%не указана%' AND salary <> 'None' " \
                     f"and salary <> 'NONE' AND salary <> '' AND salary NOT LIKE '%$%' AND salary NOT LIKE '%0%' " \
                     f"AND salary NOT LIKE '%руб%' AND salary NOT LIKE '%договорен%' AND salary NOT LIKE '%не указана%'" \
