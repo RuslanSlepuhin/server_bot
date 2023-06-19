@@ -6224,7 +6224,12 @@ class InviteBot():
                             if i.isdigit():
                                 result = True
                         if result:
-                            vacancy_dict = await find_parameters.get_salary_all_fields(vacancy_dict)
+                            try:
+                                vacancy_dict = await find_parameters.get_salary_all_fields(vacancy_dict)
+                            except Exception as exception:
+                                if 'out of range' in exception:
+                                    print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+
                             for key in salary_fields:
                                 if vacancy_dict[key]:
                                     updated_vacancy_dict[key] = vacancy_dict[key]
