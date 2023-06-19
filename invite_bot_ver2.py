@@ -6341,7 +6341,8 @@ class InviteBot():
                             define_id=True
                         )
                         self.db.run_free_request(query, output_text=f"Id Vacancy: {vacancy_dict_for_update['id']} has been updated")
-                        print(f"---------\nREPLACING: {vacancy_dict['salary']} --> {vacancy_dict_for_update['salary']}\n---------")
+                        if 'salary' in [vacancy_dict, vacancy_dict_for_update]:
+                            print(f"---------\nREPLACING: {vacancy_dict['salary']} --> {vacancy_dict_for_update['salary']}\n---------")
                         control_response = self.db.get_all_from_db(
                             table_name=table,
                             param=f"WHERE id={vacancy_dict_for_update['id']}",
