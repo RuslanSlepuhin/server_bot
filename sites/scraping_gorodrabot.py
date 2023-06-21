@@ -11,6 +11,7 @@ from settings.browser_settings import options
 from utils.additional_variables.additional_variables import sites_search_words, how_much_pages
 from helper_functions.helper_functions import edit_message, send_message
 from sites.send_log_txt import send_log_txt
+from helper_functions import helper_functions as helper
 
 class GorodRabotGetInformation:
 
@@ -49,44 +50,39 @@ class GorodRabotGetInformation:
             self.bot = bot_dict['bot']
             self.chat_id = bot_dict['chat_id']
         self.browser = None
+        self.count_message_in_one_channel = 1
+        self.helper = helper
 
 
     async def get_content(self, db_tables=None):
-        """
-        If DB_tables = 'all', that it will push to all DB include professions.
-        If None (default), that will push in all_messages only
-        :param count_message_in_one_channel:
-        :param db_tables:
-        :return:
-        """
-        # self.browser.delete_all_cookies()
-        # print('all cookies have deleted')
         self.db_tables = db_tables
 
         self.count_message_in_one_channel = 1
 
-        await self.get_info()
+        try:
+            await self.get_info()
+        except Exception as ex:
+            print(f"Error: {ex}")
+            if self.bot:
+                await self.bot.send_message(self.chat_id, f"Error: {ex}")
+
+        if self.report and self.helper:
+            try:
+                await self.report.add_to_excel()
+                await self.helper.send_file_to_user(
+                    bot=self.bot,
+                    chat_id=self.chat_id,
+                    path=self.report.keys.report_file_path['parsing'],
+                )
+            except Exception as ex:
+                print(f"Error: {ex}")
+                if self.bot:
+                    await self.bot.send_message(self.chat_id, f"Error: {ex}")
         self.browser.quit()
 
     async def get_info(self):
         self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         for word in self.search_words:
-            # self.page_number = 0
-            # link = f'https://hh.ru/search/vacancy?text={word}&from=suggest_post&salary=&schedule=remote&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&excluded_text='
-            # await self.bot.send_message(self.chat_id, link, disable_web_page_preview=True)
-            #
-            # print('page link: ', link)
-            # try:
-            #     self.browser.get(link)
-            # except Exception as e:
-            #     print('bot could not to get the link', e)
-            #
-            # try:
-            #     self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            # except:
-            #     pass
-            # await self.get_link_message(self.browser.page_source, word) https://belarus.gorodrabot.by/?q=frontend&d=%D0%B7%D0%B0+%D0%BF%D0%BE%D1%81%D0%BB%D0%B5%D0%B4%D0%BD%D0%B8%D0%B9+%D0%B4%D0%B5%D0%BD%D1%8C
-            #
             while True:
                 try:
                     await self.bot.send_message(self.chat_id, f"https://belarus.gorodrabot.by/?q={word}&d=%D0%B7%D0%B0+%D0%BF%D0%BE%D1%81%D0%BB%D0%B5%D0%B4%D0%BD%D0%B8%D0%B9+%D0%B4%D0%B5%D0%BD%D1%8C&p={self.page_number}")
@@ -121,7 +117,7 @@ class GorodRabotGetInformation:
 
             # -------------------- check what is current session --------------
 
-            current_session = DataBaseOperations(None).get_all_from_db(
+            current_session = DataBaseOperations().get_all_from_db(
                 table_name='current_session',
                 param='ORDER BY id DESC LIMIT 1',
                 without_sort=True,
@@ -187,9 +183,12 @@ class GorodRabotGetInformation:
         db.write_to_db_companies(companies)
 
     async def get_content_from_link(self, i, links, word):
-        vacancy_url = i.get('href')
-        # vacancy_url = re.findall(r'https:\/\/hh.ru\/vacancy\/[0-9]{6,12}', vacancy_url)[0]
-        print('vacancy_url = ', vacancy_url)
+        try:
+            vacancy_url = i.get('href')
+            # vacancy_url = re.findall(r'https:\/\/hh.ru\/vacancy\/[0-9]{6,12}', vacancy_url)[0]
+            # print('vacancy_url = ', vacancy_url)
+        except:
+            vacancy_url = link
         links.append(vacancy_url)
 
         print('self.broswer.get(vacancy_url)')
@@ -345,6 +344,14 @@ class GorodRabotGetInformation:
             vacancy_url=vacancy_url
         )
 
+    async def get_content_from_one_link(self, vacancy_url):
+
+        self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=None)
+        # -------------------- check what is current session --------------
+        self.current_session = await self.helper_parser_site.get_name_session()
+        self.list_links= [vacancy_url]
+        response = await self.get_content_from_link()
+        return response
     async def output_logs(self, response_from_db, vacancy, word=None, vacancy_url=None):
 
         additional_message = ''
