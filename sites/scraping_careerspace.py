@@ -37,7 +37,10 @@ class CareerSpaceGetInformation:
 
     async def get_content(self, db_tables=None):
         self.db_tables = db_tables
-        await self.get_info()
+        try:
+            await self.get_info()
+        except:
+            pass
         if self.report and self.helper:
             if self.written_vacancies + self.rejected_vacancies > 0:
                 await self.report.add_to_excel()
@@ -69,7 +72,10 @@ class CareerSpaceGetInformation:
             await self.bot.send_message(self.chat_id, 'https://careerspace.app', disable_web_page_preview=True)
         self.browser.get('https://careerspace.app')
         self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
+        try:
+            vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
+        except:
+            pass
         if self.bot_dict:
             await self.bot.send_message(self.chat_id, 'careerspace.app parsing: Done!', disable_web_page_preview=True)
 
@@ -87,10 +93,15 @@ class CareerSpaceGetInformation:
             # --------------------- LOOP -------------------------
             self.written_vacancies = 0
             self.rejected_vacancies = 0
-            await self.get_content_from_link()
+            try:
+                await self.get_content_from_link()
+            except Exception as e:
+                print(f"Error: {e}")
+                if self.bot:
+                    await self.bot.send_message(self.chat_id, f"Error: {e}")
             # ----------------------- the statistics output ---------------------------
-            self.written_vacancies = 0
-            self.rejected_vacancies = 0
+            # self.written_vacancies = 0
+            # self.rejected_vacancies = 0
             return True
         else:
             return False
