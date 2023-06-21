@@ -3059,14 +3059,16 @@ class InviteBot():
                 # # -----------------------parsing telegram channels -------------------------------------
                 bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
 
-                # await main(report=self.report, client=self.client, bot_dict=bot_dict)
-                # await self.report.add_to_excel(report_type='parsing')
+                # TG channels parsing
+                await main(report=self.report, client=self.client, bot_dict=bot_dict)
+                await self.report.add_to_excel(report_type='parsing')
 
                 if silent:
                     sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
                 else:
                     sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
 
+                # Sites parsing
                 await sites_parser.call_sites()
                 self.db.push_to_db_common(
                     table_name='parser_at_work',
@@ -3085,9 +3087,6 @@ class InviteBot():
                 )
             else:
                 await self.bot_aiogram.send_message(message.chat.id, "Sorry, parser at work. Request a stop from developers")
-
-
-
 
 
         async def debug_function():
