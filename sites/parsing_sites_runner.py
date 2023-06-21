@@ -12,7 +12,7 @@ from sites.scraping_hh import HHGetInformation
 from sites.scraping_hhkz import HHKzGetInformation
 from sites.scraping_praca import PracaGetInformation
 from sites.scraping_rabota import RabotaGetInformation
-# from sites.scraping_remocate import RemocateGetInformation
+from sites.scraping_remocate import RemocateGetInformation
 from sites.scraping_remotehub import RemotehubGetInformation
 # from sites.scraping_remotejob import RemoteJobGetInformation
 from sites.scraping_superjob import SuperJobGetInformation

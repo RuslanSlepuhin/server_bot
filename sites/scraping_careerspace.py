@@ -39,16 +39,23 @@ class CareerSpaceGetInformation:
         self.db_tables = db_tables
         try:
             await self.get_info()
-        except:
-            pass
+        except Exception as ex:
+            print(f"Error: {ex}")
+            if self.bot:
+                await self.bot.send_message(self.chat_id, f"Error: {ex}")
+
         if self.report and self.helper:
-            if self.written_vacancies + self.rejected_vacancies > 0:
+            try:
                 await self.report.add_to_excel()
                 await self.helper.send_file_to_user(
                     bot=self.bot,
                     chat_id=self.chat_id,
                     path=self.report.keys.report_file_path['parsing'],
                 )
+            except Exception as ex:
+                print(f"Error: {ex}")
+                if self.bot:
+                    await self.bot.send_message(self.chat_id, f"Error: {ex}")
         self.browser.quit()
 
     async def get_info(self):
