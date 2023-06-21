@@ -595,7 +595,7 @@ class DataBaseOperations:
                 cur.execute(query)
                 print(f'Added columns to table {table}')
 
-    def run_free_request(self, request, output_text=None):
+    def run_free_request(self, request, output_text=None, notification=True):
 
         if not self.con:
             self.connect_db()
@@ -608,9 +608,11 @@ class DataBaseOperations:
         with self.con:
             try:
                 cur.execute(query)
-                print(output_text)
+                if notification:
+                    print(output_text)
             except Exception as e:
                 print('ERROR ', e)
+                return e
             pass
         if "select" in query.lower()[:10]:
             return cur.fetchall()
@@ -786,7 +788,7 @@ class DataBaseOperations:
         with self.con:
             try:
                 cur.execute(new_post)
-                print(f'+++++++++++++ The vacancy has been added to DB admin_last_session\n')
+                print(f'+++++++++++++ The vacancy has been added to DB {table_name}\n')
                 if self.report:
                     self.report.parsing_report(profession=results_dict['profession'])
                     self.report.parsing_report(has_been_added_to_db=True)
@@ -812,18 +814,28 @@ class DataBaseOperations:
         #     results_dict['body'] = self.clear_title_or_body(results_dict['body'])
         # if results_dict['company']:
         #     results_dict['company'] = self.clear_title_or_body(results_dict['company'])
+        
         for table in tables_list:
-            query = f"""SELECT * FROM {table} WHERE title='{title}'"""
-            query2 = f"""SELECT * FROM {table}
-                            WHERE title LIKE '%{title.strip()}%'"""
+            """
+            query1 - full text
+            query2 - like text
+            query3 - text without "'"
+            """
+            query1 = f"""SELECT * FROM {table} WHERE title='{title}'""" if "'" not in title \
+                else f"""SELECT * FROM {table} WHERE title=$${title}$$"""
+            query2 = f"""SELECT * FROM {table} WHERE title LIKE '%{title.strip()}%'""" if "'" not in title \
+                else f"""SELECT * FROM {table} WHERE title LIKE $$%{title.strip()}%$$"""
             query3 = f"""SELECT * FROM {table} WHERE title='{self.clear_title_or_body(title)}'"""
-            query += f" AND body='{body}'" if body else ""
-            query2 += f" AND body LIKE '%{body.strip()}%'" if body else ""
-            query3 += f" AND body='{self.clear_title_or_body(body)}'" if body else ""
+            
+            if body:
+                query1 += f" AND body='{body}'" if "'" not in body else f" AND body=$${body}$$"
+                query2 += f" AND body LIKE '%{body.strip()}%'" if "'" not in body else f" AND body LIKE $$%{body.strip()}%$$"
+                query3 += f" AND body='{self.clear_title_or_body(body)}'"
+
             try:
-                response_check = self.run_free_request(request=query)
-                response_check2 = self.run_free_request(request=query2)
-                response_check3 = self.run_free_request(request=query3)
+                response_check = self.run_free_request(request=query1, notification=False)
+                response_check2 = self.run_free_request(request=query2, notification=False)
+                response_check3 = self.run_free_request(request=query3, notification=False)
             except Exception as ex:
                 print(f'error in push_to_db_write_message: {ex}')
 
