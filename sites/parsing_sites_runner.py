@@ -70,8 +70,7 @@ class SitesParser:
         await DesignerGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await SvyaziGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await IngameJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-
-        # await SuperJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await SuperJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
 
         print(' -----------------------FINAL -------------------------------')
 
