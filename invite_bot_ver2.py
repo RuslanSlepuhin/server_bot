@@ -4162,12 +4162,12 @@ class InviteBot():
                 n += 1
                 if sub not in self.message_for_send_dict.keys():
                     self.message_for_send_dict[
-                        sub] = f"Дайджест вакансий для {sub.capitalize()} за {datetime.now().strftime('%d.%m.%Y')}\n\n"
+                        sub] = f"Дайджест вакансий для #{sub.capitalize()} за {datetime.now().strftime('%d.%m.%Y')}\n\n"
                 self.message_for_send_dict[sub] += f"{composed_message_dict['composed_message']}\n"
         else:
             if profession not in self.message_for_send_dict.keys():
                 self.message_for_send_dict[
-                    profession] = f"Дайджест вакансий для {profession.capitalize()} за {datetime.now().strftime('%d.%m.%Y')}\n\n"
+                    profession] = f"Дайджест вакансий для #{profession.capitalize()} за {datetime.now().strftime('%d.%m.%Y')}\n\n"
             self.message_for_send_dict[profession] += f"{composed_message_dict['composed_message']}\n"
         self.quantity_entered_to_shorts += 1
 
