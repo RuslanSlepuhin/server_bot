@@ -846,6 +846,9 @@ class DataBaseOperations:
                             response=response[0], fields=admin_table_fields
                         )
                         if response_dict:
+                            if self.report:
+                                self.report.parsing_report(found_body=body)
+                                self.report.parsing_report(found_title=title)
                             return {"has_been_found": True, "response_dict": response_dict}
         return {"has_been_found": False, "response_dict": {}}
 
