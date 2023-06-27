@@ -6507,7 +6507,7 @@ class InviteBot():
             profession_name = name_professions[profession] if profession in name_professions else profession.title()
             telegram_digest += f"{profession_name}:\n"
             for sub in digest_dict[profession]:
-                telegram_digest += f"<a href='{telegraph_links_dict[sub]}'><b>{sub.capitalize()}:</b></a> {numbers_vacancies_dict[sub]} предложений\n"
+                telegram_digest += f"    <a href='{telegraph_links_dict[sub]}'><b>{sub.capitalize()}:</b> {numbers_vacancies_dict[sub]} предложений</a>\n"
             telegram_digest += "\n"
 
         await self.bot_aiogram.send_message(message.chat.id, telegram_digest, disable_web_page_preview=True, parse_mode='html')
