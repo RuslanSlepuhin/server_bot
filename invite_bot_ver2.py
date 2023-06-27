@@ -4468,6 +4468,7 @@ class InviteBot():
             count += 1
 
             print(f'vacancies_list: {vacancies_list}')
+
             for short in vacancies_list:
                 try:
                     await helper.send_message(
