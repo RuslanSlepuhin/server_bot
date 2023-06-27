@@ -1,4 +1,7 @@
+import random
 import re
+import time
+
 from telegraph import Telegraph
 from utils.pictures.pictures_urls.pictures_urls import pictures_urls
 
@@ -11,8 +14,22 @@ class TelegraphPoster:
 
 
     def telegraph_post(self, title, text):
-        telegraph_article_url = self.telegraph.create_page(title=title,html_content=text, author_name="ITCoty.ru")
-        return telegraph_article_url['url']
+        while True:
+            try:
+                telegraph_article_url = self.telegraph.create_page(title=title,html_content=text, author_name="ITCoty.ru")
+                time.sleep(random.randrange(1, 2))
+                return telegraph_article_url['url']
+            except Exception as ex:
+                if 'Flood control exceeded' in str(ex):
+                    print(str(ex))
+                    time_sleep = re.findall(r'[0-9]+', str(ex))
+                    if time_sleep and time_sleep[0]:
+                        time_sleep = int(time_sleep[0])
+                    else:
+                        time_sleep = 15
+                    time.sleep(time_sleep+2)
+            break
+
 
     def telegraph_post_digests(self, shorts_dict):
         telegraph_links_dict = {}
