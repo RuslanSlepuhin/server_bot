@@ -278,6 +278,7 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '✅/refresh - to get the professions in excel format in all vacancies throgh the new filters logic (without rewriting)\n' \
             '✅/check_doubles - remove the vacancy"s doubles\n' \
             '✅/remove_completed_professions - remove complete professions\n' \
+            '/post_to_telegraph' \
             '---------------------------------------------------\n\n' \
             '---------------- STATISTICS: ----------------\n' \
             '/how_many_vacancies_published - get the statistic file (created by Anna)\n' \
@@ -335,4 +336,4 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
 preview_fields_for_web = "id, profession, vacancy, company, " \
                      "job_type, city, salary, created_at, level, salary_from_usd_month, salary_to_usd_month"
 vacancies_database = 'vacancies'
-manual_posting_shorts = ['junior', 'frontend']
+manual_posting_shorts = ['junior']

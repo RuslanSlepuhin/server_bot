@@ -147,6 +147,7 @@ class InviteBot():
         self.shorts_dict_for_teleraph_posting = {}
         self.shorts_for_telegraph_dictionary_collection_mode = False
         self.profession = None
+        self.sub = None
         logging.basicConfig(level=logging.DEBUG, filename="py_log.log",filemode="w")
 
         if token_in:
@@ -328,6 +329,14 @@ class InviteBot():
         @self.dp.message_handler(commands=['get'])
         async def silent_get_news(message: types.Message):
             await get_news(silent=True)
+
+        @self.dp.message_handler(commands=['post_to_telegraph'])
+        async def post_to_teleraph_func(message: types.Message):
+            self.profession = 'junior'
+            keyboard = await self.compose_keyboard_in_bar(['POST'])
+            await self.bot_aiogram.send_message(message.chat.id, 'Paste shorts (copy/paste) one by one and press POST',
+                                                reply_markup=keyboard)
+            self.shorts_for_telegraph_dictionary_collection_mode = True
 
         @self.dp.message_handler(commands=['refactoring_vacancy_salary'])
         async def silent_get_news(message: types.Message):
@@ -2070,7 +2079,7 @@ class InviteBot():
                     await self.bot_aiogram.send_message(message.chat.id, 'Paste shorts (copy/paste) one by one and press POST', reply_markup=keyboard)
                     self.shorts_for_telegraph_dictionary_collection_mode = True
 
-                if 'Дайджест вакансий для' in message.text and self.shorts_for_telegraph_dictionary_collection_mode:
+                if 'a href' in message.html_text and self.shorts_for_telegraph_dictionary_collection_mode:
                     await self.collect_shorts_dict_for_telegraph_posting(message)
 
                 if message.text == 'POST':
@@ -6462,7 +6471,14 @@ class InviteBot():
         try:
             sub = message.html_text.split('#', 1)[1].split(' ', 1)[0].lower()
         except:
-            sub = message.html_text('Дайджест вакансий для', 1)[1].split(' ', 1)[0].replace('#', '').lower()
+            try:
+                sub = message.html_text('Дайджест вакансий для', 1)[1].split(' ', 1)[0].replace('#', '').lower()
+            except:
+                sub = ''
+
+        if not sub:
+            sub = self.sub
+        self.sub = sub
 
         # body = message.html_text.split('\n\n', 1)[1]
         if sub in self.shorts_dict_for_teleraph_posting and self.shorts_dict_for_teleraph_posting[sub]:
@@ -6472,13 +6488,17 @@ class InviteBot():
 
     async def post_collected_shorts_dict_to_teleraph(self, message):
         from _apps.telegraph_post.telegraph_post import TelegraphPoster
+
+        if not self.profession:
+            self.profession = 'junior'
+
         t = TelegraphPoster()
         telegraph_links_dict = t.telegraph_post_digests(shorts_dict=self.shorts_dict_for_teleraph_posting)
         numbers_vacancies_dict = telegraph_links_dict['numbers_vacancies_dict']
         telegraph_links_dict = telegraph_links_dict['telegraph_links_dict']
 
         for i in telegraph_links_dict:
-            await self.bot_aiogram.send_message(message.chat.id, str(telegraph_links_dict[i]))
+            await self.bot_aiogram.send_message(message.chat.id, str(telegraph_links_dict[i]), disable_web_page_preview=True)
             await asyncio.sleep(1)
         # professions_and_subs = {}
         # for key in export_pattern['professions']:
@@ -6488,30 +6508,66 @@ class InviteBot():
         digest_dict = {}
         from utils.custom_subs.custom_subs import custom_subs, name_professions
 
-        for profession in custom_subs:
-            for key in telegraph_links_dict:
-
+        for key in telegraph_links_dict:
+            has_been_written = False
+            for profession in custom_subs:
                 if key in custom_subs[profession]:
                     if profession not in digest_dict:
                         digest_dict[profession] = {}
                     digest_dict[profession][key] = telegraph_links_dict[key]
+                    has_been_written = True
+                    break
+
                 elif key == profession:
                     if profession not in digest_dict:
                         digest_dict[profession] = {}
                     digest_dict[profession][profession] = telegraph_links_dict[key]
+                    has_been_written = True
+                    break
+
+            if not has_been_written:
+                if key not in digest_dict:
+                    digest_dict[key] = {}
+                digest_dict[key][key] = telegraph_links_dict[key]
+
+        for key in digest_dict:
+            print('key: ', key)
+            print('len: ', len(digest_dict[key]))
+            print('digest[key]: ', digest_dict[key])
+            if len(digest_dict[key]) == 1 and key in digest_dict[key]:
+                digest_dict[key] = digest_dict[key][key]
 
         config = configparser.ConfigParser()
         config.read("./settings/config.ini")
         telegram_digest = f"{sum(numbers_vacancies_dict.values())} вакансий и стажировок на канале для <a href='{config['Channel_links'][f'{self.profession}_channel']}'><b>{self.profession} специалистов</b></a> за {datetime.now().strftime('%d.%m.%Y')}:\n\n"
-        for profession in digest_dict:
-            profession_name = name_professions[profession] if profession in name_professions else profession.title()
-            telegram_digest += f"{profession_name}:\n"
-            for sub in digest_dict[profession]:
-                telegram_digest += f"    <a href='{telegraph_links_dict[sub]}'><b>{sub.capitalize()}:</b> {numbers_vacancies_dict[sub]} предложений</a>\n"
-            telegram_digest += "\n"
+
+        for prof in digest_dict:
+
+            if type(digest_dict[prof]) is str:
+                telegram_digest += f"<a href='{telegraph_links_dict[prof]}'><b>{prof.capitalize()}:</b> {numbers_vacancies_dict[prof]} предложений</a>\n\n"
+
+            elif type(digest_dict[prof]) is dict:
+                amount = 0
+                for key in digest_dict[prof].keys():
+                    amount += numbers_vacancies_dict[key]
+                profession_name = name_professions[prof] if prof in name_professions else prof.title()
+                telegram_digest += f"{profession_name} ({amount} предложений):\n\n"
+
+                for sub in digest_dict[prof]:
+                    profession_name = name_professions[sub] if sub in name_professions else sub.title()
+                    telegram_digest += f"    - <a href='{telegraph_links_dict[sub]}'><b>{profession_name.capitalize()}:</b> {numbers_vacancies_dict[sub]} предложений</a>\n\n"
+                telegram_digest += "\n"
+
+        # for profession in digest_dict:
+        #     profession_name = name_professions[profession] if profession in name_professions else profession.title()
+        #     telegram_digest += f"{profession_name}:\n"
+        #     for sub in digest_dict[profession]:
+        #         telegram_digest += f"    <a href='{telegraph_links_dict[sub]}'><b>{sub.capitalize()}:</b> {numbers_vacancies_dict[sub]} предложений</a>\n"
+        #     telegram_digest += "\n"
 
         await self.bot_aiogram.send_message(message.chat.id, telegram_digest, disable_web_page_preview=True, parse_mode='html')
-
+        self.sub = None
+        self.profession = None
         pass
 
 
