@@ -51,6 +51,7 @@ from sites.send_log_txt import send_log_txt
 from report.reports import Reports
 from report.report_variables import report_file_path
 from helper_functions.database_update_data.database_update_data import DatabaseUpdateData
+from _apps.telegraph_post.telegraph_post import TelegraphPoster
 
 logs = Logs()
 import settings.os_getenv as settings
@@ -3059,7 +3060,6 @@ class InviteBot():
                 # # -----------------------parsing telegram channels -------------------------------------
                 bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
 
-                # TG channels parsing
                 await main(report=self.report, client=self.client, bot_dict=bot_dict)
                 await self.report.add_to_excel(report_type='parsing')
 
@@ -3068,7 +3068,6 @@ class InviteBot():
                 else:
                     sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
 
-                # Sites parsing
                 await sites_parser.call_sites()
                 self.db.push_to_db_common(
                     table_name='parser_at_work',
@@ -3087,6 +3086,9 @@ class InviteBot():
                 )
             else:
                 await self.bot_aiogram.send_message(message.chat.id, "Sorry, parser at work. Request a stop from developers")
+
+
+
 
 
         async def debug_function():
@@ -4336,6 +4338,12 @@ class InviteBot():
 
     async def shorts_public(self, message, profession, channel_for_pushing=False, profession_channel=None):
 
+        pass
+        telegraph = TelegraphPoster()
+        telegraph_links_dict = telegraph.telegraph_post_digests(self.message_for_send_dict)
+        numbers_vacancies_dict = telegraph_links_dict['numbers_vacancies_dict']
+        telegraph_links_dict = telegraph_links_dict['telegraph_links_dict']
+
         with open(variable.shorts_copy_path, mode='w', encoding='utf-8') as shorts_file:
             shorts_file.write('')
 
@@ -4343,6 +4351,51 @@ class InviteBot():
         pre_message = variable.pre_message_for_shorts
         add_pre_message = True
         count = 1
+
+# --------------------------------------------------------------------
+        if profession in variable.valid_professions:
+            group_shorts = f"Дайджест для <b>{profession.title().replace('_', ' ')}</b> за {datetime.now().strftime('%d.%m.%Y')}\n\n"
+            for key in telegraph_links_dict:
+                group_shorts += f"Вакансии для <a href='{telegraph_links_dict[key]}'><b>#{key.capitalize()}</b></a> ({numbers_vacancies_dict[key]} предложений)\n\n"
+
+            photo_path = await helper.get_picture_path('junior', profession)
+
+            if profession_channel:
+                chat_id = config['My_channels'][f'{profession_channel}_channel']
+                try:
+                    with open(photo_path, 'rb') as file:
+                        try:
+                            await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file, caption=group_shorts, parse_mode='html')
+                        except Exception as ex:
+                            print(f'Key {count}: picture error: {ex}. Chat_id: profession channel')
+                            profession_channel = False
+                except Exception as e:
+                    print(f"Key {count}: Can not open the pictures: {e}. Path: {photo_path}")
+
+            if not profession_channel:
+                chat_id = variable.channel_id_for_shorts
+                try:
+                    with open(photo_path, 'rb') as file:
+                        try:
+                            await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file, caption=group_shorts, parse_mode='html')
+                        except Exception as ex:
+                            print(f'Key {count}: picture error: {ex}. Chat_id: channel for shorts')
+                            chat_id = message.chat.id
+                            try:
+                                with open(photo_path, 'rb') as file:
+                                    try:
+                                        await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file, caption=group_shorts,
+                                                                          parse_mode='html')
+                                    except Exception as ex:
+                                        print(f'Key {count}: picture error: {ex}. Chat_id: message chat id')
+                                        print(f'Key {count}: ONE SHORTS HAS BEEN LOOSED')
+                            except Exception as e:
+                                print(e)
+                except Exception as e:
+                    print(e)
+                    await helper.send_message(self.bot_aiogram, message.chat.id, f"ONE SHORTS HAS BEEN LOOSED{str(e)}")
+            return True
+# ------------------------------------------------------------------------
         for key in self.message_for_send_dict:
             message_for_send = self.message_for_send_dict[key]
             if add_pre_message:
@@ -4388,6 +4441,7 @@ class InviteBot():
                         await helper.send_message(self.bot_aiogram, message.chat.id, f"ONE SHORTS HAS BEEN LOOSED{str(e)}")
             count += 1
 
+            print(f'vacancies_list: {vacancies_list}')
             for short in vacancies_list:
                 try:
                     await helper.send_message(
@@ -6194,6 +6248,7 @@ class InviteBot():
         companies_list2 = tuple(companies_list2)
         black_words = ['з/п не указана', 'з.п. не указана', ]
 
+        out_of_range_list = []
         for table in tables:
             table_message = await self.bot_aiogram.send_message(message.chat.id, f'Table is {table}')
 
@@ -6218,16 +6273,20 @@ class InviteBot():
                     updated_vacancy_dict = {}
                     vacancy_dict = await helper.to_dict_from_admin_response(vacancy, variable.admin_table_fields)
                     if vacancy_dict:
+                        if vacancy_dict['id'] in [129696, 128938, 126723]:
+                            pass
                         result = False
                         for i in vacancy_dict['salary']:
                             if i.isdigit():
                                 result = True
+                                break
                         if result:
                             try:
                                 vacancy_dict = await find_parameters.get_salary_all_fields(vacancy_dict)
                             except Exception as exception:
-                                if 'out of range' in exception:
+                                if 'out of range' in str(exception) or 'целое вне диапазона' in str(exception):
                                     print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+                                    out_of_range_list.append(vacancy)
 
                             for key in salary_fields:
                                 if vacancy_dict[key]:
@@ -6241,7 +6300,11 @@ class InviteBot():
                                 define_id=True
                             )
                             if query:
-                                self.db.run_free_request(query, output_text=f"vacancy {vacancy_dict['id']} in {table} has been changed")
+                                try:
+                                    self.db.run_free_request(query, output_text=f"vacancy {vacancy_dict['id']} in {table} has been changed")
+                                except Exception as ex:
+                                    if 'целое вне диапазона' in str(ex):
+                                        out_of_range_list.append(vacancy)
                         else:
                             print("Not Numbers in salary")
                     else:
@@ -6267,6 +6330,7 @@ class InviteBot():
             if responses and type(responses) is list:
                 print(f'len: {len(responses)}')
 
+                responses.extend(out_of_range_list)
                 n = 0
                 await table_message.edit_text(f"{table}\n{len(responses)} responses for parser change\nworked out: {n}")
                 for vacancy in responses:
@@ -6345,15 +6409,17 @@ class InviteBot():
                             define_id=True
                         )
                         self.db.run_free_request(query, output_text=f"Id Vacancy: {vacancy_dict_for_update['id']} has been updated")
-                        if 'salary' in [vacancy_dict, vacancy_dict_for_update]:
-                            print(f"---------\nREPLACING: {vacancy_dict['salary']} --> {vacancy_dict_for_update['salary']}\n---------")
+                        # if 'salary' in vacancy_dict and 'salary' in vacancy_dict_for_update:
+                        #     print(f"---------\nREPLACING: {vacancy_dict['salary']} --> {vacancy_dict_for_update['salary']}\n---------")
+                        # else:
+                        #     pass
                         control_response = self.db.get_all_from_db(
                             table_name=table,
                             param=f"WHERE id={vacancy_dict_for_update['id']}",
                             field=variable.admin_table_fields
                         )
                         control_response_dict = await helper.to_dict_from_admin_response(control_response[0], variable.admin_table_fields)
-                        print(f">>>>>>>>>> control salary: {control_response_dict['salary']}")
+                        print(f">>>>>>>>>> control salary: {vacancy_dict['salary'][:10] if vacancy_dict['salary'] else None} -->> {control_response_dict['salary']}")
                         print(f">>>>>>>>>> control closed: {control_response_dict['closed']}")
                     else:
                         print(f"NEXT\nsalary = {vacancy_dict['salary']}\n")
