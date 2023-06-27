@@ -144,6 +144,9 @@ class InviteBot():
         self.autopushing_task = None
         self.wait_until_manual_will_stop = None
         self.buttons_bar_keyboard = []
+        self.shorts_dict_for_teleraph_posting = {}
+        self.shorts_for_telegraph_dictionary_collection_mode = False
+        self.profession = None
         logging.basicConfig(level=logging.DEBUG, filename="py_log.log",filemode="w")
 
         if token_in:
@@ -2062,6 +2065,20 @@ class InviteBot():
                     pass
                     # await bot.send_message(message.chat.id, 'Отправьте файл')
 
+                if message.text == 'Post to Telegraph':
+                    keyboard = await self.compose_keyboard_in_bar(['POST'])
+                    await self.bot_aiogram.send_message(message.chat.id, 'Paste shorts (copy/paste) one by one and press POST', reply_markup=keyboard)
+                    self.shorts_for_telegraph_dictionary_collection_mode = True
+
+                if 'Дайджест вакансий для' in message.text and self.shorts_for_telegraph_dictionary_collection_mode:
+                    await self.collect_shorts_dict_for_telegraph_posting(message)
+
+                if message.text == 'POST':
+                    await self.post_collected_shorts_dict_to_teleraph(message)
+                    pass
+                    self.shorts_dict_for_teleraph_posting = {}
+                    self.shorts_for_telegraph_dictionary_collection_mode = False
+
         async def get_separate_time(time_in):
 
             logs.write_log(f"invite_bot_2: function: get_separate_time")
@@ -3060,8 +3077,8 @@ class InviteBot():
                 # # -----------------------parsing telegram channels -------------------------------------
                 bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
 
-                await main(report=self.report, client=self.client, bot_dict=bot_dict)
-                await self.report.add_to_excel(report_type='parsing')
+                # await main(report=self.report, client=self.client, bot_dict=bot_dict)
+                # await self.report.add_to_excel(report_type='parsing')
 
                 if silent:
                     sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
@@ -4338,22 +4355,21 @@ class InviteBot():
 
     async def shorts_public(self, message, profession, channel_for_pushing=False, profession_channel=None):
 
-        pass
-        telegraph = TelegraphPoster()
-        telegraph_links_dict = telegraph.telegraph_post_digests(self.message_for_send_dict)
-        numbers_vacancies_dict = telegraph_links_dict['numbers_vacancies_dict']
-        telegraph_links_dict = telegraph_links_dict['telegraph_links_dict']
 
         with open(variable.shorts_copy_path, mode='w', encoding='utf-8') as shorts_file:
             shorts_file.write('')
 
         chat_id = config['My_channels'][f'{profession_channel}_channel'] if profession_channel else None
         pre_message = variable.pre_message_for_shorts
-        add_pre_message = True
+        add_pre_message = False
         count = 1
 
 # --------------------------------------------------------------------
-        if profession in variable.valid_professions:
+        if profession not in variable.manual_posting_shorts:
+            telegraph_links_dict = await self.telegraph_public_shorts()
+            numbers_vacancies_dict = telegraph_links_dict['numbers_vacancies_dict']
+            telegraph_links_dict = telegraph_links_dict['telegraph_links_dict']
+
             group_shorts = f"Дайджест для <b>{profession.title().replace('_', ' ')}</b> за {datetime.now().strftime('%d.%m.%Y')}\n\n"
             for key in telegraph_links_dict:
                 group_shorts += f"Вакансии для <a href='{telegraph_links_dict[key]}'><b>#{key.capitalize()}</b></a> ({numbers_vacancies_dict[key]} предложений)\n\n"
@@ -4395,7 +4411,8 @@ class InviteBot():
                     print(e)
                     await helper.send_message(self.bot_aiogram, message.chat.id, f"ONE SHORTS HAS BEEN LOOSED{str(e)}")
             return True
-# ------------------------------------------------------------------------
+# # ------------------------------------------------------------------------
+        self.profession = profession
         for key in self.message_for_send_dict:
             message_for_send = self.message_for_send_dict[key]
             if add_pre_message:
@@ -4513,6 +4530,14 @@ class InviteBot():
         if self.unlock_message:
             await self.unlock_message.delete()
             self.unlock_message = None
+        keyboard = await self.compose_keyboard_in_bar(buttons=['Post to Telegraph'])
+        await self.bot_aiogram.send_message(message.chat.id, "When you will be ready to public shorts in Telegra.ph, use the option by button below ⬇️", reply_markup=keyboard, parse_mode='html', disable_web_page_preview=True)
+
+    async def telegraph_public_shorts(self):
+        telegraph = TelegraphPoster()
+        telegraph_links_dict = telegraph.telegraph_post_digests(self.message_for_send_dict)
+
+        return telegraph_links_dict
 
     async def write_to_logs_error(self, text):
         with open("./logs/logs_errors.txt", "a", encoding='utf-8') as file:
@@ -6432,6 +6457,63 @@ class InviteBot():
         if response.status_code == 200:
             return False
         return True
+
+    async def collect_shorts_dict_for_telegraph_posting(self, message):
+        try:
+            sub = message.html_text.split('#', 1)[1].split(' ', 1)[0].lower()
+        except:
+            sub = message.html_text('Дайджест вакансий для', 1)[1].split(' ', 1)[0].replace('#', '').lower()
+
+        # body = message.html_text.split('\n\n', 1)[1]
+        if sub in self.shorts_dict_for_teleraph_posting and self.shorts_dict_for_teleraph_posting[sub]:
+            self.shorts_dict_for_teleraph_posting[sub] += f"\n\n{message.html_text}"
+        else:
+            self.shorts_dict_for_teleraph_posting[sub] = message.html_text
+
+    async def post_collected_shorts_dict_to_teleraph(self, message):
+        from _apps.telegraph_post.telegraph_post import TelegraphPoster
+        t = TelegraphPoster()
+        telegraph_links_dict = t.telegraph_post_digests(shorts_dict=self.shorts_dict_for_teleraph_posting)
+        numbers_vacancies_dict = telegraph_links_dict['numbers_vacancies_dict']
+        telegraph_links_dict = telegraph_links_dict['telegraph_links_dict']
+
+        for i in telegraph_links_dict:
+            await self.bot_aiogram.send_message(message.chat.id, str(telegraph_links_dict[i]))
+            await asyncio.sleep(1)
+        # professions_and_subs = {}
+        # for key in export_pattern['professions']:
+        #     if key not in ['ba', 'junior', 'fullstack']:
+        #         professions_and_subs[key] = list(export_pattern['professions'][key]['sub'].keys())
+
+        digest_dict = {}
+        from utils.custom_subs.custom_subs import custom_subs, name_professions
+
+        for profession in custom_subs:
+            for key in telegraph_links_dict:
+
+                if key in custom_subs[profession]:
+                    if profession not in digest_dict:
+                        digest_dict[profession] = {}
+                    digest_dict[profession][key] = telegraph_links_dict[key]
+                elif key == profession:
+                    if profession not in digest_dict:
+                        digest_dict[profession] = {}
+                    digest_dict[profession][profession] = telegraph_links_dict[key]
+
+        config = configparser.ConfigParser()
+        config.read("./settings/config.ini")
+        telegram_digest = f"{sum(numbers_vacancies_dict.values())} вакансий и стажировок на канале для <a href='{config['Channel_links'][f'{self.profession}_channel']}'><b>{self.profession} специалистов</b></a> за {datetime.now().strftime('%d.%m.%Y')}:\n\n"
+        for profession in digest_dict:
+            profession_name = name_professions[profession] if profession in name_professions else profession.title()
+            telegram_digest += f"{profession_name}:\n"
+            for sub in digest_dict[profession]:
+                telegram_digest += f"<a href='{telegraph_links_dict[sub]}'><b>{sub.capitalize()}:</b></a> {numbers_vacancies_dict[sub]} предложений\n"
+            telegram_digest += "\n"
+
+        await self.bot_aiogram.send_message(message.chat.id, telegram_digest, disable_web_page_preview=True, parse_mode='html')
+
+        pass
+
 
 
 def run(double=False, token_in=None):

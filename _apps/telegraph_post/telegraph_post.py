@@ -26,6 +26,7 @@ class TelegraphPoster:
             print(telegraph_links_dict[sub])
         return {'telegraph_links_dict': telegraph_links_dict, 'numbers_vacancies_dict': numbers_vacancies_dict}
 
+
 if '__main__' == __name__:
 
     shorts_dict = {

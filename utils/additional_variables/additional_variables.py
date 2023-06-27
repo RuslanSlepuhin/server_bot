@@ -335,3 +335,4 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
 preview_fields_for_web = "id, profession, vacancy, company, " \
                      "job_type, city, salary, created_at, level, salary_from_usd_month, salary_to_usd_month"
 vacancies_database = 'vacancies'
+manual_posting_shorts = ['junior']
