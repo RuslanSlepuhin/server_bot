@@ -1,17 +1,20 @@
 custom_subs = {
     'analyst': ['sys_analyst', 'data_analyst', 'data_scientist', 'ba'],
-    'backend': ['python', 'c', 'php', 'java', 'ruby', 'scala', 'net', 'nodejs', 'laravel', 'golang', 'delphi', 'abap', 'ml', 'data_engineer', 'unity', 'one_c', 'embedded'],
+    'backend': ['go', 'python', 'c', 'php', 'java', 'ruby', 'scala', 'net', 'nodejs', 'laravel', 'golang', 'delphi', 'abap', 'ml', 'data_engineer', 'unity', 'one_c', 'embedded'],
     'designer': ['ui_ux', 'motion', 'dd', 'ddd', 'game_designer', 'illustrator', 'graphic', 'uxre_searcher'],
     'devops': [],
     'frontend': ['vue', 'react', 'angular', 'wordpress', 'bitrix', 'joomla', 'drupal'],
     'game': [],
     'hr': [],
-    'marketing': ['smm', 'copyrighter', 'seo', 'link_builder', 'media_buyer', 'email_marketer', 'context', 'content_manager', 'tech_writer'],
+    'marketing': ['smm', 'copywriter', 'seo', 'link_builder', 'media_buyer', 'email_marketer', 'context', 'content_manager', 'tech_writer'],
     'mobile': ['ios', 'android', 'cross_mobile', 'flutter', 'react_native'],
     'pm': ['project', 'product'],
-    'qa': ['manual_qa', 'aqa', 'support'],
+    'qa': ['manual_qa', 'aqa'],
     'sales_manager': [],
-    'junior': []
+    'junior': [],
+    'support': [],
+    'hardware': [],
+    'security': []
 }
 
 name_professions = {
@@ -33,7 +36,7 @@ name_professions = {
     'data_scientist': 'Сециалисты по работе с данными',
     'ba': 'Бизнес аналитики',
     'python': 'Python разработчики',
-    'c': 'C++ разработчики',
+    'c': 'C family разработчики',
     'php': 'PHP разработчики',
     'java': 'Java разработчики',
     'ruby': 'Ruby разработчики',
@@ -41,6 +44,7 @@ name_professions = {
     'net': 'NET разработчики',
     'nodejs': 'NodeJs разработчики',
     'laravel': 'Laravel разработчики',
+    'go': 'Golang разработчики',
     'golang': 'Golang разработчики',
     'delphi': 'Delphi разработчики',
     'abap': 'Abap разработчики',
@@ -75,12 +79,15 @@ name_professions = {
     'flutter': 'Flutter разработчик',
     'react_native': 'React Native разработчик',
     'smm': 'SMM',
-    'copyrighter': 'Копирайтеры',
+    'copywriter': 'Copywriter',
     'seo': 'SEO',
     'link_builder': 'Link builder',
     'media_buyer': 'Media buyer',
     'email_marketer': 'Email marketer',
     'context': 'Context',
     'content_manager': 'Content manager',
-    'tech_writer': 'Tech writer'
+    'tech_writer': 'Tech writer',
+    'marketplace': 'Marketplace',
+    'security': 'Security',
+    'hardware': 'Hardware'
 }
