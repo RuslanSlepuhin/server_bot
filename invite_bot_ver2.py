@@ -2083,6 +2083,7 @@ class InviteBot():
                     await self.collect_shorts_dict_for_telegraph_posting(message)
 
                 if message.text == 'POST':
+                    await self.bot_aiogram.send_message(message.chat.id, "Please wait...")
                     await self.post_collected_shorts_dict_to_teleraph(message)
                     pass
                     self.shorts_dict_for_teleraph_posting = {}
@@ -4468,7 +4469,6 @@ class InviteBot():
             count += 1
 
             print(f'vacancies_list: {vacancies_list}')
-
             for short in vacancies_list:
                 try:
                     await helper.send_message(
@@ -6498,9 +6498,10 @@ class InviteBot():
         numbers_vacancies_dict = telegraph_links_dict['numbers_vacancies_dict']
         telegraph_links_dict = telegraph_links_dict['telegraph_links_dict']
 
-        for i in telegraph_links_dict:
-            await self.bot_aiogram.send_message(message.chat.id, str(telegraph_links_dict[i]), disable_web_page_preview=True)
-            await asyncio.sleep(1)
+        # for i in telegraph_links_dict:
+        #     await self.bot_aiogram.send_message(message.chat.id, str(telegraph_links_dict[i]), disable_web_page_preview=True)
+        #     await asyncio.sleep(1)
+
         # professions_and_subs = {}
         # for key in export_pattern['professions']:
         #     if key not in ['ba', 'junior', 'fullstack']:
@@ -6532,9 +6533,9 @@ class InviteBot():
                 digest_dict[key][key] = telegraph_links_dict[key]
 
         for key in digest_dict:
-            print('key: ', key)
-            print('len: ', len(digest_dict[key]))
-            print('digest[key]: ', digest_dict[key])
+            # print('key: ', key)
+            # print('len: ', len(digest_dict[key]))
+            # print('digest[key]: ', digest_dict[key])
             if len(digest_dict[key]) == 1 and key in digest_dict[key]:
                 digest_dict[key] = digest_dict[key][key]
 
@@ -6545,9 +6546,16 @@ class InviteBot():
         for prof in digest_dict:
 
             if type(digest_dict[prof]) is str:
-                telegram_digest += f"<a href='{telegraph_links_dict[prof]}'><b>{prof.capitalize()}:</b> {numbers_vacancies_dict[prof]} предложений</a>\n\n"
+                """
+                if it's the profession without subs
+                """
+                profession_name = name_professions[prof] if prof in name_professions else prof.title()
+                telegram_digest += f"<a href='{telegraph_links_dict[prof]}'><b>{profession_name}:</b> {numbers_vacancies_dict[prof]} предложений</a>\n\n"
 
             elif type(digest_dict[prof]) is dict:
+                """
+                If it's profession with subs
+                """
                 amount = 0
                 for key in digest_dict[prof].keys():
                     amount += numbers_vacancies_dict[key]
