@@ -56,6 +56,7 @@ name_professions = {
     'one_c': '1С разработчики',
     'embedded': 'Embedded разработчики',
     'ui_ux': 'UX/UI дизайнеры',
+    'ux_ui': 'UX/UI дизайнеры',
     'motion': 'Motion дизайнеры',
     'dd': '2D дизайнеры',
     'ddd': '3D дизайнеры',

@@ -1,3 +1,4 @@
+import configparser
 import random
 import re
 import time
@@ -31,12 +32,22 @@ class TelegraphPoster:
             break
 
 
-    def telegraph_post_digests(self, shorts_dict):
+    def telegraph_post_digests(self, shorts_dict, profession):
+
+        config = configparser.ConfigParser()
+        config.read("./settings/config.ini")
+        try:
+            profession_channel_link = config['Channel_links'][f'{profession}_channel']
+        except:
+            profession_channel_link = ''
+
         telegraph_links_dict = {}
         numbers_vacancies_dict = {}
         for sub in shorts_dict:
-            body = f"<img src={pictures_urls[sub.lower()]}>" if sub.lower() in pictures_urls else f"<img src={pictures_urls['common']}>"
+            body = f"<img src={pictures_urls[sub.lower()]}>" if sub.lower() in pictures_urls else f"<img src={pictures_urls['common']}><br>"
+            body += f"Ещё больше вакансий и стажировок в <a href='{profession_channel_link}'><b>телеграм канале {profession.title()}</b></a><br><br>"
             body += shorts_dict[sub].split('\n\n', 1)[1].replace('\n\n', '<br><br>')
+
             numbers_vacancies_dict[sub] = len(re.findall(r"a href", body))
             title = shorts_dict[sub].split('\n\n', 1)[0].replace("#", '')
             telegraph_links_dict[sub] = self.telegraph_post(title, body)
