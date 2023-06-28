@@ -520,7 +520,7 @@ pattern = {
                      # pattern['ML']['mex']=set(pattern['backend']['mex']).union(set(pattern['ML']['mex2']))
                 },
 
-                'data_engineer':{
+                 'data_engineer':{
                     'ma': ("[Dd]ata [Ee]ngineer","ETL","[Ii]nformatica ETL", "Pentaho ETL", "Talend","[Дд]ата-[Ии]нженер",
                           "[Ss]enior [Dd]ata [Ee]ngineer","специалист по обработке данных","[Jj]unior [Dd]ata [Ee]ngineer",),
                     'ma2': (),
@@ -532,7 +532,7 @@ pattern = {
                     # pattern['DataEngineer']['mex']=set(pattern['backend']['mex']).union(set(pattern['DataEngineer']['mex2']))
                 },
 
-                'unity':{
+                 'unity':{
                     'ma':("Unity developer",),
                     'ma2': (),
                     'mdef': (),
@@ -542,15 +542,15 @@ pattern = {
                     # pattern['Unity']['mex']=set(pattern['backend']['mex']).union(set(pattern['Unity']['mex2']))
                 },
 
-                'one_c':{
-                    'ma':("1С","Программист 1С",),
+                 'one_c':{
+                    'ma':("1С","Программист 1С", "1C"),
                     'ma2': (),
                     'mdef': (),
                     'mex': (),
                     'mex2':(),
                     'mincl': ()
                     # pattern['1C']['mex']=set(pattern['backend']['mex']).union(set(pattern['1C']['mex2']))
-                },
+                 },
 
                 'embedded':{
                     'ma':("Embedded developer",),
