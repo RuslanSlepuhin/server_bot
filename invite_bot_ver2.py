@@ -2076,7 +2076,7 @@ class InviteBot():
 
                 if message.text == 'Post to Telegraph':
                     keyboard = await self.compose_keyboard_in_bar(['POST'])
-                    await self.bot_aiogram.send_message(message.chat.id, 'Paste shorts (copy/paste) one by one and press POST', reply_markup=keyboard)
+                    self.message = await self.bot_aiogram.send_message(message.chat.id, 'Paste shorts (copy/paste) one by one and press POST', reply_markup=keyboard)
                     self.shorts_for_telegraph_dictionary_collection_mode = True
 
                 if 'a href' in message.html_text and self.shorts_for_telegraph_dictionary_collection_mode:
@@ -2085,7 +2085,12 @@ class InviteBot():
                 if message.text == 'POST':
                     await self.bot_aiogram.send_message(message.chat.id, "Please wait...")
                     await self.post_collected_shorts_dict_to_teleraph(message)
-                    pass
+                    if self.message:
+                        await self.message.delete()
+                        self.message = None
+                    keyboard_list = ['Digest', 'Subscr.statistics', '🦖 Search by link']
+                    parsing_kb = await self.compose_keyboard_in_bar(buttons=keyboard_list)
+                    self.message = await self.bot_aiogram.send_message(message.chat.id, 'Done!', reply_markup=parsing_kb)
                     self.shorts_dict_for_teleraph_posting = {}
                     self.shorts_for_telegraph_dictionary_collection_mode = False
 
@@ -4373,56 +4378,60 @@ class InviteBot():
         pre_message = variable.pre_message_for_shorts
         add_pre_message = False
         count = 1
+        self.profession = profession
 
 # --------------------------------------------------------------------
-        if profession not in variable.manual_posting_shorts:
-            telegraph_links_dict = await self.telegraph_public_shorts()
-            numbers_vacancies_dict = telegraph_links_dict['numbers_vacancies_dict']
-            telegraph_links_dict = telegraph_links_dict['telegraph_links_dict']
+        if self.profession not in variable.manual_posting_shorts:
+            telegraph = TelegraphPoster()
+            telegraph_links_dict = telegraph.telegraph_post_digests(self.message_for_send_dict, self.profession)
 
-            group_shorts = f"Дайджест для <b>{profession.title().replace('_', ' ')}</b> за {datetime.now().strftime('%d.%m.%Y')}\n\n"
-            for key in telegraph_links_dict:
-                group_shorts += f"Вакансии для <a href='{telegraph_links_dict[key]}'><b>#{key.capitalize()}</b></a> ({numbers_vacancies_dict[key]} предложений)\n\n"
+            await self.send_pivot_shorts(telegraph_links_dict, message)
 
-            photo_path = await helper.get_picture_path('junior', profession)
-
-            if profession_channel:
-                chat_id = config['My_channels'][f'{profession_channel}_channel']
-                try:
-                    with open(photo_path, 'rb') as file:
-                        try:
-                            await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file, caption=group_shorts, parse_mode='html')
-                        except Exception as ex:
-                            print(f'Key {count}: picture error: {ex}. Chat_id: profession channel')
-                            profession_channel = False
-                except Exception as e:
-                    print(f"Key {count}: Can not open the pictures: {e}. Path: {photo_path}")
-
-            if not profession_channel:
-                chat_id = variable.channel_id_for_shorts
-                try:
-                    with open(photo_path, 'rb') as file:
-                        try:
-                            await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file, caption=group_shorts, parse_mode='html')
-                        except Exception as ex:
-                            print(f'Key {count}: picture error: {ex}. Chat_id: channel for shorts')
-                            chat_id = message.chat.id
-                            try:
-                                with open(photo_path, 'rb') as file:
-                                    try:
-                                        await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file, caption=group_shorts,
-                                                                          parse_mode='html')
-                                    except Exception as ex:
-                                        print(f'Key {count}: picture error: {ex}. Chat_id: message chat id')
-                                        print(f'Key {count}: ONE SHORTS HAS BEEN LOOSED')
-                            except Exception as e:
-                                print(e)
-                except Exception as e:
-                    print(e)
-                    await helper.send_message(self.bot_aiogram, message.chat.id, f"ONE SHORTS HAS BEEN LOOSED{str(e)}")
+            # numbers_vacancies_dict = telegraph_links_dict['numbers_vacancies_dict']
+            # telegraph_links_dict = telegraph_links_dict['telegraph_links_dict']
+            #
+            # group_shorts = f"Дайджест для <b>{self.profession.title().replace('_', ' ')}</b> за {datetime.now().strftime('%d.%m.%Y')}\n\n"
+            # for key in telegraph_links_dict:
+            #     group_shorts += f"Вакансии для <a href='{telegraph_links_dict[key]}'><b>#{key.capitalize()}</b></a> ({numbers_vacancies_dict[key]} предложений)\n\n"
+            #
+            # photo_path = await helper.get_picture_path('junior', self.profession)
+            #
+            # if profession_channel:
+            #     chat_id = config['My_channels'][f'{profession_channel}_channel']
+            #     try:
+            #         with open(photo_path, 'rb') as file:
+            #             try:
+            #                 await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file, caption=group_shorts, parse_mode='html')
+            #             except Exception as ex:
+            #                 print(f'Key {count}: picture error: {ex}. Chat_id: profession channel')
+            #                 profession_channel = False
+            #     except Exception as e:
+            #         print(f"Key {count}: Can not open the pictures: {e}. Path: {photo_path}")
+            #
+            # if not profession_channel:
+            #     chat_id = variable.channel_id_for_shorts
+            #     try:
+            #         with open(photo_path, 'rb') as file:
+            #             try:
+            #                 await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file, caption=group_shorts, parse_mode='html')
+            #             except Exception as ex:
+            #                 print(f'Key {count}: picture error: {ex}. Chat_id: channel for shorts')
+            #                 chat_id = message.chat.id
+            #                 try:
+            #                     with open(photo_path, 'rb') as file:
+            #                         try:
+            #                             await self.bot_aiogram.send_photo(chat_id=chat_id, photo=file, caption=group_shorts,
+            #                                                               parse_mode='html')
+            #                         except Exception as ex:
+            #                             print(f'Key {count}: picture error: {ex}. Chat_id: message chat id')
+            #                             print(f'Key {count}: ONE SHORTS HAS BEEN LOOSED')
+            #                 except Exception as e:
+            #                     print(e)
+            #     except Exception as e:
+            #         print(e)
+            #         await helper.send_message(self.bot_aiogram, message.chat.id, f"ONE SHORTS HAS BEEN LOOSED{str(e)}")
             return True
 # # ------------------------------------------------------------------------
-        self.profession = profession
         for key in self.message_for_send_dict:
             message_for_send = self.message_for_send_dict[key]
             if add_pre_message:
@@ -4430,7 +4439,7 @@ class InviteBot():
                 add_pre_message = False
             vacancies_list = await self.cut_message_for_send(message_for_send)
 
-            photo_path = await helper.get_picture_path(key, profession)
+            photo_path = await helper.get_picture_path(key, self.profession)
 
             if profession_channel:
                 chat_id = config['My_channels'][f'{profession_channel}_channel']
@@ -4489,7 +4498,7 @@ class InviteBot():
                     channel = config['My_channels'][f'{profession_channel}_channel']
                     shorts_id = await self.get_shorts_id(channel, message)
 
-                linkedin_message = await self.compose_message_for_linkedin(key, message_for_send, profession,
+                linkedin_message = await self.compose_message_for_linkedin(key, message_for_send, self.profession,
                                                                       shorts_id)
                 # await self.bot_aiogram.send_message(
                 #     variable.channel_id_for_shorts,
@@ -4543,11 +4552,11 @@ class InviteBot():
         keyboard = await self.compose_keyboard_in_bar(buttons=['Post to Telegraph'])
         await self.bot_aiogram.send_message(message.chat.id, "When you will be ready to public shorts in Telegra.ph, use the option by button below ⬇️", reply_markup=keyboard, parse_mode='html', disable_web_page_preview=True)
 
-    async def telegraph_public_shorts(self):
-        telegraph = TelegraphPoster()
-        telegraph_links_dict = telegraph.telegraph_post_digests(self.message_for_send_dict)
-
-        return telegraph_links_dict
+    # async def telegraph_public_shorts(self):
+    #     telegraph = TelegraphPoster()
+    #     telegraph_links_dict = telegraph.telegraph_post_digests(self.message_for_send_dict, self.profession)
+    #
+    #     return telegraph_links_dict
 
     async def write_to_logs_error(self, text):
         with open("./logs/logs_errors.txt", "a", encoding='utf-8') as file:
@@ -6492,20 +6501,14 @@ class InviteBot():
 
         if not self.profession:
             self.profession = 'junior'
-
         t = TelegraphPoster()
-        telegraph_links_dict = t.telegraph_post_digests(shorts_dict=self.shorts_dict_for_teleraph_posting)
+        telegraph_links_dict = t.telegraph_post_digests(shorts_dict=self.shorts_dict_for_teleraph_posting, profession=self.profession)
+        await self.send_pivot_shorts(telegraph_links_dict, message)
+
+    async def send_pivot_shorts(self, telegraph_links_dict, message):
+
         numbers_vacancies_dict = telegraph_links_dict['numbers_vacancies_dict']
         telegraph_links_dict = telegraph_links_dict['telegraph_links_dict']
-
-        # for i in telegraph_links_dict:
-        #     await self.bot_aiogram.send_message(message.chat.id, str(telegraph_links_dict[i]), disable_web_page_preview=True)
-        #     await asyncio.sleep(1)
-
-        # professions_and_subs = {}
-        # for key in export_pattern['professions']:
-        #     if key not in ['ba', 'junior', 'fullstack']:
-        #         professions_and_subs[key] = list(export_pattern['professions'][key]['sub'].keys())
 
         digest_dict = {}
         from utils.custom_subs.custom_subs import custom_subs, name_professions
@@ -6574,11 +6577,22 @@ class InviteBot():
         #         telegram_digest += f"    <a href='{telegraph_links_dict[sub]}'><b>{sub.capitalize()}:</b> {numbers_vacancies_dict[sub]} предложений</a>\n"
         #     telegram_digest += "\n"
 
-        await self.bot_aiogram.send_message(message.chat.id, telegram_digest, disable_web_page_preview=True, parse_mode='html')
+        if self.profession in variable.manual_posting_shorts:
+            await self.bot_aiogram.send_message(message.chat.id, telegram_digest, disable_web_page_preview=True, parse_mode='html')
+        else:
+            from utils.pictures.pictures_urls.pictures_urls import pictures_urls
+            picture = pictures_urls[self.profession] if self.profession in pictures_urls else pictures_urls['common']
+
+            for id_channel in [int(config['My_channels'][f"{self.profession}_channel"]), variable.channel_id_for_shorts, message.chat.id]:
+                try:
+                    await self.bot_aiogram.send_photo(id_channel, picture, caption=telegram_digest, parse_mode='html')
+                    break
+                except Exception as ex:
+                    print(f'bot can\'t send shorts to channel {id_channel}: {str(ex)}')
+
         self.sub = None
         self.profession = None
         pass
-
 
 
 def run(double=False, token_in=None):

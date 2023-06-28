@@ -1136,8 +1136,8 @@ pattern = {
                     # pattern['SMM']['mex']=set(pattern['smm']['mex']).union(set(pattern['SMM']['mex2'])),
                 },
 
-                'copyrighter': {
-                    'ma':("[Cc]opyrighter","[Кк]опирайтер","Копирайтер-редактор",),
+                'copywriter': {
+                    'ma':("[Cc]opywriter", "[Cc]opyrighter","[Кк]опирайтер","Копирайтер-редактор",),
                     'ma2': (),
                     'mdef': ('[Кк]опирайтер',),
                     'mex': (),
