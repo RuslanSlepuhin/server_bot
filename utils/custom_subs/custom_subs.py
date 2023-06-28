@@ -1,9 +1,9 @@
 custom_subs = {
     'analyst': ['sys_analyst', 'data_analyst', 'data_scientist', 'ba'],
-    'backend': ['go', 'python', 'c', 'php', 'java', 'ruby', 'scala', 'net', 'nodejs', 'laravel', 'golang', 'delphi', 'abap', 'ml', 'data_engineer', 'unity', 'one_c', 'embedded'],
+    'backend': ['go', 'python', 'c', 'php', 'java', 'ruby', 'scala', 'net', 'nodejs', 'laravel', 'golang', 'delphi', 'abap', 'ml', 'data_engineer', 'unity', 'one_c', 'embedded', 'back-end'],
     'designer': ['ui_ux', 'motion', 'dd', 'ddd', 'game_designer', 'illustrator', 'graphic', 'uxre_searcher'],
     'devops': [],
-    'frontend': ['vue', 'react', 'angular', 'wordpress', 'bitrix', 'joomla', 'drupal'],
+    'frontend': ['vue', 'react', 'angular', 'wordpress', 'bitrix', 'joomla', 'drupal', 'front-end'],
     'game': [],
     'hr': [],
     'marketing': ['smm', 'copywriter', 'seo', 'link_builder', 'media_buyer', 'email_marketer', 'context', 'content_manager', 'tech_writer'],
@@ -20,9 +20,11 @@ custom_subs = {
 name_professions = {
     'analyst': 'Аналитики',
     'backend': 'Backend разработчики',
+    'bac-kend': 'Back-end разработчики',
     'designer': 'Дизайнеры',
     'devops': 'DevOps',
     'frontend': 'Frontend разработчики',
+    'front-end': 'Front-end разработчики',
     'game': 'Game разработчики',
     'hr': 'HR',
     'marketing': 'Маркетологи',

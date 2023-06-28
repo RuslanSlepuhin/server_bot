@@ -17,7 +17,7 @@ class TelegraphPoster:
         while True:
             try:
                 telegraph_article_url = self.telegraph.create_page(title=title,html_content=text, author_name="ITCoty.ru")
-                time.sleep(random.randrange(1, 2))
+                time.sleep(random.randrange(1, 3))
                 return telegraph_article_url['url']
             except Exception as ex:
                 if 'Flood control exceeded' in str(ex):
