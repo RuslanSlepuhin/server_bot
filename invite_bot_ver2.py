@@ -148,6 +148,7 @@ class InviteBot():
         self.shorts_for_telegraph_dictionary_collection_mode = False
         self.profession = None
         self.sub = None
+        self.new_start = True
         logging.basicConfig(level=logging.DEBUG, filename="py_log.log",filemode="w")
 
         if token_in:
@@ -520,6 +521,7 @@ class InviteBot():
                     )
                 )
                 await self.autopushing_task
+
                 if self.unlock_message_autopushing:
                     await self.unlock_message_autopushing.delete()
                 self.autopushing_task = None
@@ -1833,6 +1835,7 @@ class InviteBot():
                                                                                       'Or press the unlock button (only available to you)',
                                                                                       reply_markup=unlock_kb)
 
+
                 self.autopushing_task = asyncio.create_task(
                     self.hard_pushing_by_schedule(
                         message=callback.message,
@@ -1954,6 +1957,7 @@ class InviteBot():
                     await self.bot_aiogram.send_message(message.chat.id, 'Type the vacancy_url to check in db and add')
 
                 if message.text in ['Unlock admin', 'Unlock admin and stop autopushing']:
+
                     self.db.push_to_db_common(
                         table_name="shorts_at_work",
                         fields_values_dict={"shorts_at_work": False},
@@ -3101,6 +3105,7 @@ class InviteBot():
                     sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
 
                 await sites_parser.call_sites()
+
                 self.db.push_to_db_common(
                     table_name='parser_at_work',
                     fields_values_dict={"parser_at_work": False},
@@ -5789,15 +5794,6 @@ class InviteBot():
 
     async def hard_pushing_by_schedule(self, message, profession_list):
 
-        # await self.check_all_vacancies_are_closed()
-
-        # if self.manual_admin_shorts:
-        #     self.wait_until_manual_will_stop = asyncio.create_task(self.wait_until(argument=self.manual_admin_shorts))
-        # await self.wait_until_manual_will_stop
-
-        table_set = set()
-        time_marker = ''
-
         if not message:
             message = Message()
             message.chat = Chat()
@@ -5805,52 +5801,66 @@ class InviteBot():
 
         await self.bot_aiogram.send_message(message.chat.id, 'schedule shorts posting has started')
         print('schedule shorts posting has started')
-
-        tables_list = self.db.get_information_about_tables_and_fields()
-        for i in tables_list:
-            table_set.add(i[0])
-
-        if variable.last_autopushing_time_database not in table_set:
-            # get the last pushing time from db
-            self.db.create_table_common(
-                field_list=["time VARCHAR (10)", ],
-                table_name=variable.last_autopushing_time_database
-            )
-            self.db.push_to_db_common(
-                table_name=variable.last_autopushing_time_database,
-                fields_values_dict={'time': '0'}
-            )
-
-        last_autopushing_time = self.db.get_all_from_db(
-            table_name=variable.last_autopushing_time_database,
-            field='time',
-            param="WHERE id=1",
-            without_sort=True
-        )
-
-        print('last_autopushing_time', last_autopushing_time)
-
-        time_dict = {
-            '09': False,
-            '12': False,
-            '17': False,
-        }
-        if last_autopushing_time:
-            last_autopushing_time = last_autopushing_time[0][0]
-            time_dict[last_autopushing_time] = True
-
+    #     create table if it doesn't exist --------------
+    #     table_set = set()
+    #     time_marker = ''
+    #     tables_list = self.db.get_information_about_tables_and_fields()
+    #     for i in tables_list:
+    #         table_set.add(i[0])
+    #     if variable.last_autopushing_time_database not in table_set:
+    #         # get the last pushing time from db
+    #         self.db.create_table_common(
+    #             field_list=["time VARCHAR (10)", ],
+    #             table_name=variable.last_autopushing_time_database
+    #         )
+    #         self.db.push_to_db_common(
+    #             table_name=variable.last_autopushing_time_database,
+    #             fields_values_dict={'time': '0'}
+    #         )
+    # # -------------------------------------------------
+    #
+    #
+    #
+    #
+    # # --------------------------------------------------
+    #     last_autopushing_time = self.db.get_all_from_db(
+    #         table_name=variable.last_autopushing_time_database,
+    #         field='time',
+    #         param="WHERE id=1",
+    #         without_sort=True
+    #     )
+    #
+    #     print('last_autopushing_time', last_autopushing_time)
+    #
+    #     time_dict = {
+    #         '09': False,
+    #         '12': False,
+    #         '17': False,
+    #     }
+    #     if last_autopushing_time:
+    #         last_autopushing_time = last_autopushing_time[0][0]
+    #         time_dict[last_autopushing_time] = True
+    #
+    # # ------------------------------------------------------
+    #
         while True:
             if not self.schedule_pushing_shorts:
                 break
-
             print('the checking pushing schedule time')
-            current_time = int(datetime.now().time().strftime("%H"))
+            current_time_hour = int(datetime.now().time().strftime("%H"))
+            current_time_minutes = int(datetime.now().time().strftime("%M"))
 
-            if current_time >= 9 and current_time < 12 and not time_dict['09'] and not time_dict['09']:
-                print('hard pushing 09 is starting')
+            if (current_time_hour > variable.hard_pushing_time_hour[0] and current_time_minutes > variable.hard_pushing_time_hour[0]) or self.new_start:
+                self.new_start = False
+
+                if self.manual_admin_shorts:
+                    await self.bot_aiogram.send_message(message.chat.id, "Please wait until manual posting will finish")
+
                 while self.manual_admin_shorts:
+                    print('Manual shorts_post is running [pause 10 sec]')
                     await asyncio.sleep(10)
                 else:
+                    await self.bot_aiogram.send_message(message.chat.id, "Autopushing is starting")
                     await self.push_shorts_attempt_to_make_multi_function(
                         message=message,
                         callback_data="each",
@@ -5858,63 +5868,96 @@ class InviteBot():
                         hard_push_profession=profession_list,
                         channel_for_pushing=True
                     )
-                    time_dict['09'] = True
-                    time_dict['17'] = False
-                    time_dict['12'] = False
-                    time_marker = '9'
+                today = datetime.now()
+                tomorrow = today + timedelta(days=1)
+                year = int(tomorrow.strftime('%Y'))
+                month = int(tomorrow.strftime('%m'))
+                day = int(tomorrow.strftime('%d'))
 
-            elif current_time >= 12 and current_time < 20 and not time_dict['12']:
-                print('hard pushing 12 is starting')
-                while self.manual_admin_shorts:
-                    await asyncio.sleep(10)
-                else:
-                    await self.push_shorts_attempt_to_make_multi_function(
-                        message=message,
-                        callback_data="each",
-                        hard_pushing=True,
-                        hard_push_profession=profession_list,
-                        channel_for_pushing=True
-                    )
-                    time_dict['12'] = True
-                    time_dict['09'] = False
-                    time_dict['17'] = False
-                    time_marker = '12'
+                tomorrow = datetime(year, month, day, 10, 30, 0, 0)
+                delta = tomorrow - today
+                seconds = delta.seconds
+                await asyncio.sleep(seconds)
 
-            elif current_time >= 17 and current_time < 24 and not time_dict['17']:
-                print('hard pushing 17 is starting')
-                while self.manual_admin_shorts:
-                    await asyncio.sleep(10)
-                else:
-                    await self.push_shorts_attempt_to_make_multi_function(
-                        message=message,
-                        callback_data="each",
-                        hard_pushing=True,
-                        hard_push_profession=profession_list,
-                        channel_for_pushing=True
-                    )
-                    time_dict['17'] = True
-                    time_dict['12'] = False
-                    time_dict['09'] = False
-                    time_marker = '17'
 
-            if time_marker:
-                self.db.update_table(
-                    table_name=variable.last_autopushing_time_database,
-                    param="WHERE id=1",
-                    field='time',
-                    value=time_marker,
-                    output_text='time has been updated'
-                )
-            time_marker = ''
 
-            if (current_time >= 0 and current_time < 7) or (current_time >= 20 and current_time < 24):
-                print('the long pause')
-                await self.bot_aiogram.send_message(message.chat.id, 'the long pause 30 minutes')
-                await asyncio.sleep(1 * 60 * 30)
-            else:
-                print('the short pause')
-                await self.bot_aiogram.send_message(message.chat.id, 'the short pause 10 minutes')
-                await asyncio.sleep(1 * 60 * 10)
+
+        # while True:
+        #     if not self.schedule_pushing_shorts:
+        #         break
+        #
+        #     print('the checking pushing schedule time')
+        #     current_time = int(datetime.now().time().strftime("%H"))
+        #
+        #     if current_time >= 9 and current_time < 11 and not time_dict['09'] and not time_dict['09']:
+        #         print('hard pushing 09 is starting')
+        #         while self.manual_admin_shorts:
+        #             await asyncio.sleep(10)
+        #         else:
+        #             await self.push_shorts_attempt_to_make_multi_function(
+        #                 message=message,
+        #                 callback_data="each",
+        #                 hard_pushing=True,
+        #                 hard_push_profession=profession_list,
+        #                 channel_for_pushing=True
+        #             )
+        #             time_dict['09'] = True
+        #             time_dict['17'] = False
+        #             time_dict['12'] = False
+        #             time_marker = '9'
+        #
+            # elif current_time >= 12 and current_time < 20 and not time_dict['12']:
+            #     print('hard pushing 12 is starting')
+            #     while self.manual_admin_shorts:
+            #         await asyncio.sleep(10)
+            #     else:
+            #         await self.push_shorts_attempt_to_make_multi_function(
+            #             message=message,
+            #             callback_data="each",
+            #             hard_pushing=True,
+            #             hard_push_profession=profession_list,
+            #             channel_for_pushing=True
+            #         )
+            #         time_dict['12'] = True
+            #         time_dict['09'] = False
+            #         time_dict['17'] = False
+            #         time_marker = '12'
+            #
+            # elif current_time >= 17 and current_time < 24 and not time_dict['17']:
+            #     print('hard pushing 17 is starting')
+            #     while self.manual_admin_shorts:
+            #         await asyncio.sleep(10)
+            #     else:
+            #         await self.push_shorts_attempt_to_make_multi_function(
+            #             message=message,
+            #             callback_data="each",
+            #             hard_pushing=True,
+            #             hard_push_profession=profession_list,
+            #             channel_for_pushing=True
+            #         )
+            #         time_dict['17'] = True
+            #         time_dict['12'] = False
+            #         time_dict['09'] = False
+            #         time_marker = '17'
+
+            # if time_marker:
+            #     self.db.update_table(
+            #         table_name=variable.last_autopushing_time_database,
+            #         param="WHERE id=1",
+            #         field='time',
+            #         value=time_marker,
+            #         output_text='time has been updated'
+            #     )
+            # time_marker = ''
+            #
+            # if (current_time >= 0 and current_time < 7) or (current_time >= 20 and current_time < 24):
+            #     print('the long pause')
+            #     await self.bot_aiogram.send_message(message.chat.id, 'the long pause 30 minutes')
+            #     await asyncio.sleep(1 * 60 * 30)
+            # else:
+            #     print('the short pause')
+            #     await self.bot_aiogram.send_message(message.chat.id, 'the short pause 10 minutes')
+            #     await asyncio.sleep(1 * 60 * 10)
 
         return print('Schedule pushing has been stopped')
 
