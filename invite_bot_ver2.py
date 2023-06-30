@@ -5756,6 +5756,7 @@ class InviteBot():
             else:
                 print(f'{profession}: no vacancies')
                 await self.bot_aiogram.send_message(message.chat.id, f'{profession}: No vacancies')
+                await asyncio.sleep(1)
 
         self.db.push_to_db_common(
             table_name="shorts_at_work",
