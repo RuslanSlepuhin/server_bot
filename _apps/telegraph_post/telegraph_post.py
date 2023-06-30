@@ -48,7 +48,7 @@ class TelegraphPoster:
             body += f"Ещё больше вакансий и стажировок в <a href='{profession_channel_link}'><b>телеграм канале {profession.title()}</b></a><br><br>"
             body += shorts_dict[sub].split('\n\n', 1)[1].replace('\n\n', '<br><br>')
 
-            numbers_vacancies_dict[sub] = len(re.findall(r"a href", body))
+            numbers_vacancies_dict[sub] = len(re.findall(r"a href", body)) - 1
             title = shorts_dict[sub].split('\n\n', 1)[0].replace("#", '')
             telegraph_links_dict[sub] = self.telegraph_post(title, body)
             print(telegraph_links_dict[sub])
