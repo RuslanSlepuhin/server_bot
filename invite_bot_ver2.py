@@ -3101,8 +3101,11 @@ class InviteBot():
                 # # -----------------------parsing telegram channels -------------------------------------
                 bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
 
-                digest_parser = DigestParser(client=self.client, bot_dict=bot_dict, report=self.report)
-                await digest_parser.main_start()
+                try:
+                    digest_parser = DigestParser(client=self.client, bot_dict=bot_dict, report=self.report)
+                    await digest_parser.main_start()
+                except:
+                    pass
 
                 await main(report=self.report, client=self.client, bot_dict=bot_dict)
                 await self.report.add_to_excel(report_type='parsing')
