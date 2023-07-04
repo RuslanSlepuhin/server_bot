@@ -128,10 +128,10 @@ list_links = [
 ]
 
 digest_links = [
-    'https://t.me/young_june',
-    'https://t.me/helpukrainiansjooble',
-    'https://t.me/juno_jobs',
-    'https://t.me/remotejun',
+    # 'https://t.me/young_june',
+    # 'https://t.me/helpukrainiansjooble',
+    # 'https://t.me/juno_jobs',
+    # 'https://t.me/remotejun',
     'https://t.me/jobforjunior',
     'https://t.me/myresume_ru',
     'https://t.me/relocaty_jobs',
