@@ -132,7 +132,7 @@ digest_links = [
     # 'https://t.me/helpukrainiansjooble',
     # 'https://t.me/juno_jobs',
     # 'https://t.me/remotejun',
-    'https://t.me/jobforjunior',
+    # 'https://t.me/jobforjunior',
     'https://t.me/myresume_ru',
     'https://t.me/relocaty_jobs',
     'https://t.me/remoters',
