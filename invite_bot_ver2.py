@@ -328,6 +328,34 @@ class InviteBot():
             for text in text_list:
                 await self.bot_aiogram.send_message(message.chat.id, text)
 
+        @self.dp.message_handler(commands=['developer_help'])
+        async def get_courses_data(message: types.Message):
+            response = self.db.get_all_from_db(
+                table_name=variable.admin_database,
+                param="where profession like '%junior%'",
+                field=variable.admin_table_fields
+            )
+            for vacancy in response:
+                vacancy_dict = await helper.to_dict_from_admin_response(
+                    response=vacancy,
+                    fields=variable.admin_table_fields
+                )
+                self.db.update_table(
+                    table_name=variable.admin_database,
+                    field='sended_to_agregator',
+                    value='NULL',
+                    param=f"WHERE id={vacancy_dict['id']}"
+                )
+
+        @self.dp.message_handler(commands=['get_courses_data'])
+        async def get_courses_data(message: types.Message):
+            await self.bot_aiogram.send_message(message.chat.id, 'Please wait few minutes')
+            from sites.scraping_geek_courses import Courses
+            courses = Courses()
+            common_dict = await courses.get_content()
+            if common_dict:
+                await self.send_file_to_user(message=message, path=variable.excel_name_courses)
+
         @self.dp.message_handler(commands=['get'])
         async def silent_get_news(message: types.Message):
             await get_news(silent=True)
@@ -3101,12 +3129,6 @@ class InviteBot():
                 # # -----------------------parsing telegram channels -------------------------------------
                 bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
 
-                try:
-                    digest_parser = DigestParser(client=self.client, bot_dict=bot_dict, report=self.report)
-                    await digest_parser.main_start()
-                except Exception as ex:
-                    await self.bot_aiogram.send_message(message.chat.id, f"Error digest {str(ex)}")
-
                 await main(report=self.report, client=self.client, bot_dict=bot_dict)
                 await self.report.add_to_excel(report_type='parsing')
 
@@ -3116,6 +3138,9 @@ class InviteBot():
                     sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
 
                 await sites_parser.call_sites()
+
+                digest_parser = DigestParser(client=self.client, bot_dict=bot_dict, report=self.report)
+                await digest_parser.main_start()
 
                 self.db.push_to_db_common(
                     table_name='parser_at_work',
@@ -5174,6 +5199,7 @@ class InviteBot():
                     await asyncio.sleep(random.randrange(3, 4))
                 except Exception as e:
                     print('the problem in func push_vacancies_to_agregator_from_admin', e)
+                    await self.bot_aiogram.send_message(message.chat.id, f"It has a problem to send to aregator (5202):\n{str(e)}")
 
                 if vacancy_from_admin_dict:
                     # prof_list = vacancy_from_admin[0][4].split(', ')
