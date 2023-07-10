@@ -1306,7 +1306,10 @@ class DataBaseOperations:
         return answer_dict
 
     def update_table(self, table_name, field, value, output_text='vacancy has updated', param=""):
-        query = f"""UPDATE {table_name} SET {field}='{value}' {param}"""
+        if value == 'NULL':
+            query = f"""UPDATE {table_name} SET {field}=NULL {param}"""
+        else:
+            query = f"""UPDATE {table_name} SET {field}='{value}' {param}"""
         self.run_free_request(request=query, output_text=output_text)
 
     def update_table_multi(self, table_name: str, param: str, values_dict: dict, output_text='vacancy has updated'):
