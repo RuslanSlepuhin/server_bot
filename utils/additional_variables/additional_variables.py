@@ -285,7 +285,8 @@ help_text = '/log or /logs - get custom logs (useful for developer\n' \
             '/how_many_vacancies_total - new report (created by Anna)\n' \
             '/vacancies_from - how many juniors have been written today and tomorrow\n' \
             '/check_title_body\n' \
-            '/get_profession_parsing_tags_log - send the file with tags and antitags' \
+            '/get_profession_parsing_tags_log - send the file with tags and antitags\n' \
+            '/get_courses_data - get courses names and links from geek (excel)\n ' \
             '/add_statistics\n\n' \
             '---------------------------------------------------\n\n' \
             '---------------- PUSHING BY SCHEDULE: ----------------\n' \
@@ -338,3 +339,4 @@ preview_fields_for_web = "id, profession, vacancy, company, " \
 vacancies_database = 'vacancies'
 manual_posting_shorts = ['junior']
 hard_pushing_time_hour = [10, 30]
+excel_name_courses = './excel/courses.xlsx'
