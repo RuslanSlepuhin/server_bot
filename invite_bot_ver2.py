@@ -5388,8 +5388,8 @@ class InviteBot():
 
     async def push_shorts_attempt_to_make_multi_function(
             self,
-            message,
-            callback_data,
+            message=None,
+            callback_data=None,
             hard_pushing=False,
             hard_push_profession=None,
             channel_for_pushing=False,
