@@ -1411,6 +1411,7 @@ class DataBaseOperations:
     def transfer_vacancy(self, table_from, table_to, id=None, response_from_db=None):
         keys_str = ''
         values_str = ''
+        response_dict = {}
 
         if not response_from_db:
             response = self.get_all_from_db(
@@ -1431,19 +1432,20 @@ class DataBaseOperations:
             else:
                 return TypeError
 
-            for keys in response_dict:
-                if keys != 'id':
-                    if response_dict[keys]:
-                        keys_str += f"{keys}, "
-                        values_str += f"'{response_dict[keys]}', "
-            query = f"INSERT INTO {table_to} ({keys_str[:-2]}) VALUES ({values_str[:-2]})"
-            try:
-                self.run_free_request(query)
-                return True
-            except Exception:
-                return False
-        else:
-            return  False
+            exists = self.check_vacancy_exists_in_db(tables_list=['archive'], title=response_dict['title'], body=response_dict['body'])
+            if not exists['has_been_found']:
+                for keys in response_dict:
+                    if keys != 'id':
+                        if response_dict[keys]:
+                            keys_str += f"{keys}, "
+                            values_str += f"'{response_dict[keys]}', "
+                query = f"INSERT INTO {table_to} ({keys_str[:-2]}) VALUES ({values_str[:-2]})"
+                try:
+                    self.run_free_request(query)
+                    return True
+                except:
+                    return False
+        return False
 
     def check_or_create_stats_table(self, table_name=None, profession_list=[]):
         if not self.con:
