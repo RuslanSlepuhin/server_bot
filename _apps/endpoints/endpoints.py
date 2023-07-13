@@ -336,9 +336,8 @@ async def main_endpoints():
         return responses_dict
 
     # --------------------- admin panel --------------------------
-
     @app.route("/admin", methods=['GET'])
-    async def admin_admin():
+    async def admin():
         profession = request.args.get('prof')
         approve = request.args.get('approve')
         table = request.args.get('table')
@@ -394,17 +393,17 @@ async def main_endpoints():
 
     @app.route("/admin-delete/<int:id>", methods=['DELETE'])
     async def admin_delete(id):
-        response = db.transfer_vacancy(
+        transfer_response = db.transfer_vacancy(
             table_from=variable.admin_database,
             table_to=variable.archive_database,
             id=int(id)
         )
-        if response:
-            response = db.delete_data(
-                table_name=variable.admin_database,
-                param=f"WHERE id={int(id)}"
-            )
-        return {'response': True if response else False}
+        delete_response = db.delete_data(
+            table_name=variable.admin_database,
+            param=f"WHERE id={int(id)}"
+        )
+        return {'transfer_response': True if transfer_response else False,
+                'delete_response': True if delete_response else False}
 
     @app.route("/admin-push", methods=['GET'])
     async def admin_push():
@@ -418,7 +417,6 @@ async def main_endpoints():
         )
 
         return {}
-
     # --------------------- admin panel END --------------------------
 
     async def get_single_vacancies_for_web(vacancy_id):
