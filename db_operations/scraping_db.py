@@ -1426,15 +1426,16 @@ class DataBaseOperations:
         if response:
             if type(response) is dict:
                 response_dict = response
-            elif type(response) is list:
+            elif type(response) in [list, tuple]:
                 response_dict = helper.to_dict_from_admin_response_sync(response, admin_table_fields)
             else:
                 return TypeError
 
             for keys in response_dict:
                 if keys != 'id':
-                    keys_str += f"{keys}, "
-                    values_str += f"'{response_dict[keys]}', "
+                    if response_dict[keys]:
+                        keys_str += f"{keys}, "
+                        values_str += f"'{response_dict[keys]}', "
             query = f"INSERT INTO {table_to} ({keys_str[:-2]}) VALUES ({values_str[:-2]})"
             try:
                 self.run_free_request(query)
