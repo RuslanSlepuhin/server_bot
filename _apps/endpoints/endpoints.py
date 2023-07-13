@@ -335,6 +335,91 @@ async def main_endpoints():
         responses_dict = {'numbers': len(responses_dict), 'vacancies': responses_dict}
         return responses_dict
 
+        # --------------------- admin panel --------------------------
+        @app.route("/admin", methods=['GET'])
+        async def admin():
+            profession = request.args.get('prof')
+            approve = request.args.get('approve')
+            table = request.args.get('table')
+            limit = request.args.get('limit')
+            return await get_admin_vacancies(profession, approve, table, limit)
+
+        async def get_admin_vacancies(profession, approve, table, limit):
+            error = False
+            ex = ''
+            if not table:
+                table = variable.admin_database
+            approve = True if approve and approve.lower() == 'true' else False
+            approve = "approved <> 'approves by admin'" if not approve else ''
+
+            profession = f"profession LIKE '%{profession}%'" if profession else ''
+
+            query = "WHERE " if profession or approve else ""
+            if query:
+                for item in [profession, approve]:
+                    if item:
+                        query += f"{item} AND "
+            try:
+                responses = db.get_all_from_db(
+                    table_name=table,
+                    param=query[:-4] if query else '',
+                    field=variable.admin_table_fields
+                )
+            except Exception as ex:
+                responses = []
+                error = True
+
+            if error or type(responses) is str or not responses:
+                print(ex)
+                return {"error": responses if responses else ex.args[0]}
+
+            responses_list = []
+            for response in responses:
+                responses_list.append(await helper.to_dict_from_admin_response(response, variable.admin_table_fields))
+
+            limit = int(limit) if limit and limit.isdigit() and int(limit) < len(responses_list) else len(
+                responses_list)
+            return {'amount': len(responses_list[:limit]), 'vacancies': responses_list[:limit]}
+
+        @app.route("/admin-approve", methods=['POST'])
+        async def admin_approve():
+            card = request.json
+            response = db.update_table_multi(
+                table_name=variable.admin_database,
+                param=f"WHERE id={card['id']}",
+                values_dict=card
+            )
+            return {'response': True if response else False}
+
+        @app.route("/admin-delete/<int:id>", methods=['DELETE'])
+        async def admin_delete(id):
+            response = db.transfer_vacancy(
+                table_from=variable.admin_database,
+                table_to=variable.archive_database,
+                id=int(id)
+            )
+            if response:
+                response = db.delete_data(
+                    table_name=variable.admin_database,
+                    param=f"WHERE id={int(id)}"
+                )
+            return {'response': True if response else False}
+
+        @app.route("/admin-push", methods=['GET'])
+        async def admin_push():
+            prof = request.args.get('prof')
+            prof = 'junior' if not prof else prof
+            bot = InviteBot()
+            await bot.push_shorts_attempt_to_make_multi_function(
+                hard_push_profession=prof,
+                hard_pushing=True,
+                only_approved_vacancies=True
+            )
+
+            return {}
+
+    # --------------------- admin panel END --------------------------
+
     async def get_single_vacancies_for_web(vacancy_id):
         response = db.get_all_from_db(
                     table_name=vacancies_database,
