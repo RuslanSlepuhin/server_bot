@@ -5202,7 +5202,7 @@ class InviteBot():
                     print('the problem in func push_vacancies_to_agregator_from_admin', e)
                     await self.bot_aiogram.send_message(message.chat.id, f"It has a problem to send to aregator (5202):\n{str(e)}")
                     print(f'send_message:\n{send_message}')
-                    time.sleep(30)
+                    time.sleep(120)
 
                 if vacancy_from_admin_dict:
                     # prof_list = vacancy_from_admin[0][4].split(', ')
