@@ -137,6 +137,7 @@ class InviteBot():
         except Exception as e:
             print(e)
             self.client.connect()
+        # self.start_client()
         self.report = Reports(show_in_console=False)
         self.db = DataBaseOperations(report=self.report)
         self.tg_parser = WriteToDbMessages(report=self.report)
@@ -5394,7 +5395,8 @@ class InviteBot():
             hard_push_profession=None,
             channel_for_pushing=False,
             only_approved_vacancies=False,
-            only_pick_up_from_admin=False
+            only_pick_up_from_admin=False,
+            close_telethon_client=False
     ):
         """
         function push shorts in 3 cases:
@@ -5404,7 +5406,8 @@ class InviteBot():
         """
         # chat_id = variable.id_owner if not message else message.chat.id
         self.db.delete_table(table_name=variable.shorts_database)
-
+        if not callback_data:
+            callback_data = 'each'
         print(1)
         composed_message_dict = {}
         if not message:
@@ -5461,7 +5464,7 @@ class InviteBot():
                 # message_for_send = f'<b>Дайджест вакансий для {profession} за {datetime.now().strftime("%d.%m.%Y")}:</b>\n\n'
             else:
                 print(5)
-                query = f"WHERE profession LIKE '%{profession}%' AND approved = 'TRUE'" if only_approved_vacancies else f"WHERE profession LIKE '%{profession}%'"
+                query = f"WHERE profession LIKE '%{profession}%' AND approved='approves by admin'" if only_approved_vacancies else f"WHERE profession LIKE '%{profession}%'"
                 history_messages = self.db.get_all_from_db(
                     table_name=variable.admin_database,
                     param=query,
@@ -5478,7 +5481,7 @@ class InviteBot():
                     message=message,
                     channel=config['My_channels']['agregator_channel']
                 )
-
+                print('self.last_id_message_agregator', self.last_id_message_agregator)
                 print(7)
                 short_session_name = await helper.get_short_session_name(prefix=profession)
                 self.db.write_short_session(short_session_name)
@@ -5804,6 +5807,8 @@ class InviteBot():
             fields_values_dict={"shorts_at_work": False},
             params="WHERE id=1"
         )
+        if close_telethon_client:
+            await self.client.disconnect()
 
     async def check_all_vacancies_are_closed(self):
         tables = variable.valid_professions.copy
@@ -6681,6 +6686,7 @@ class InviteBot():
         self.sub = None
         self.profession = None
         pass
+        return True
 
 
 def run(double=False, token_in=None):
