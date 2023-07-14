@@ -242,100 +242,7 @@ async def main_endpoints():
             print(f"get each vacancy len={len(responses)} id={response_dict['id']} offset={request_data['offset']}")
         return response_dict
 
-# ---------------- endpoints by trainee database (Sasha frontend) ------------------
-    @app.route("/delete_vacancy_trainee/<int:id>", methods=['DELETE'])
-    async def delete_vacancy(id):
-        temporary_variable = True
-        if temporary_variable:
-            if db.delete_data(
-                table_name=admin_table,
-                param=f"WHERE id={id}"
-            ):
-                return {'response': f'the vacancy id={id} has been removed to the archive'}
-            else:
-                return {'response': 'vacancy has not been deleted'}
-        else:
-            return {'response': 'vacancy does not exist in DB'}
-
-    @app.route("/change_vacancy_trainee/<int:id>", methods=['PATCH'])
-    async def change_vacancy(id):
-        request_data = request.json
-        print(request_data)
-        vacancy = db.get_all_from_db(
-            table_name=admin_table,
-            param=f"WHERE id={id}",
-            field='id'
-        )
-        if vacancy:
-            try:
-                from_db = db.update_table_multi(
-                    table_name=admin_table,
-                    param=f"WHERE id={id}",
-                    values_dict=request_data
-                )
-                if from_db:
-                    return {'response': f'id {id} vacancy has been updated'}
-                else:
-                    return {'response': 'something wrong'}
-            except Exception as e:
-                return {'response': str(e)}
-        else:
-            return {'response': 'vacancy does not exist in DB'}
-
-    async def get_all_vacancies_from_db_trainee(param="WHERE profession <> 'no_sort'"):
-        all_vacancies = {}
-        all_vacancies['vacancies'] = {}
-        response = db.get_all_from_db(
-            table_name=admin_table,
-            param=param,
-            field=admin_table_fields
-        )
-        if type(response) is list:
-            number = 0
-            print(param)
-            for vacancy in response:
-                vacancy_dict = await to_dict_from_admin_response(
-                    response=vacancy,
-                    fields=admin_table_fields
-                )
-                if number < 100:
-                    all_vacancies['vacancies'][str(number)] = vacancy_dict
-                number += 1
-        elif type(response) is str:
-            return {'error': response}
-        return all_vacancies
-# ---------------- endpoints by trainee database END (Sasha frontend) ------------------
-
-    @app.route("/three-last-vacancies", methods=['GET'])
-    async def three_last_vacancies_request():
-        result_dict = await three_last_vacancies()
-        return result_dict
-
-    @app.route("/search-by-text", methods = ['POST'])
-    async def search_by_text():
-        print(request.json)
-        query_search = Predictive(request_from_frontend=request.json)
-        query = query_search.get_full_query()
-        search_tables = query_search.get_search_tables()
-        responses_from_db = []
-        for table in search_tables:
-            response = db.get_all_from_db(
-                table_name=table,
-                param=query,
-                order = "ORDER BY time_of_public DESC LIMIT 20",
-                field=admin_table_fields
-            )
-            if response:
-                if type(response) is not str:
-                    responses_from_db.extend(response)
-                else:
-                    print('BAD response: ', response)
-                    print(f'QUERY is:\n{query}')
-        responses_dict = await package_list_to_dict(responses_from_db)
-        responses_dict = {'numbers': len(responses_dict), 'vacancies': responses_dict}
-        return responses_dict
-
-    # --------------------- admin panel --------------------------
+# --------------------- admin panel --------------------------
     @app.route("/admin", methods=['GET'])
     async def admin():
         profession = request.args.get('prof')
@@ -371,14 +278,13 @@ async def main_endpoints():
 
         if error or type(responses) is str or not responses:
             print(ex)
-            return {"error": responses if responses else ex.args[0]}
+            return {"error": responses if responses else str(ex)}
 
         responses_list = []
         for response in responses:
             responses_list.append(await helper.to_dict_from_admin_response(response, variable.admin_table_fields))
 
-        limit = int(limit) if limit and limit.isdigit() and int(limit) < len(responses_list) else len(
-            responses_list)
+        limit = int(limit) if limit and limit.isdigit() and int(limit) < len(responses_list) else len(responses_list)
         return {'amount': len(responses_list[:limit]), 'vacancies': responses_list[:limit]}
 
     @app.route("/admin-approve", methods=['POST'])
@@ -402,22 +308,24 @@ async def main_endpoints():
             table_name=variable.admin_database,
             param=f"WHERE id={int(id)}"
         )
-        return {'transfer_response': True if transfer_response else False,
-                'delete_response': True if delete_response else False}
+        return {'transfer_response': True if transfer_response else False, 'delete_response': True if delete_response else False}
 
     @app.route("/admin-push", methods=['GET'])
     async def admin_push():
+        token = request.args.get('token')
         prof = request.args.get('prof')
         prof = 'junior' if not prof else prof
-        bot = InviteBot()
+        bot = InviteBot(token_in=token)
         await bot.push_shorts_attempt_to_make_multi_function(
             hard_push_profession=prof,
             hard_pushing=True,
-            only_approved_vacancies=True
+            only_approved_vacancies=True,
+            close_telethon_client=True
         )
 
         return {}
-    # --------------------- admin panel END --------------------------
+
+# --------------------- admin panel END --------------------------
 
     async def get_single_vacancies_for_web(vacancy_id):
         response = db.get_all_from_db(
