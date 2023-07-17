@@ -6083,7 +6083,7 @@ class InviteBot():
 
         profession = callback_data.split('/')[1]
         if profession == 'ba':
-            param = f"WHERE profession LIKE '%{profession}' OR profession LIKE '%{profession},%'"
+            param = f"(WHERE profession LIKE '%{profession}' OR profession LIKE '%{profession},%')"
         else:
             param = f"WHERE profession LIKE '%{profession}%'"
 
