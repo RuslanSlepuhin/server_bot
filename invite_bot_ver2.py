@@ -331,22 +331,7 @@ class InviteBot():
 
         @self.dp.message_handler(commands=['developer_help'])
         async def get_courses_data(message: types.Message):
-            response = self.db.get_all_from_db(
-                table_name=variable.admin_database,
-                param="where profession like '%junior%'",
-                field=variable.admin_table_fields
-            )
-            for vacancy in response:
-                vacancy_dict = await helper.to_dict_from_admin_response(
-                    response=vacancy,
-                    fields=variable.admin_table_fields
-                )
-                self.db.update_table(
-                    table_name=variable.admin_database,
-                    field='sended_to_agregator',
-                    value='NULL',
-                    param=f"WHERE id={vacancy_dict['id']}"
-                )
+            await helper.clean_argerator_id(db_class=self.db)
 
         @self.dp.message_handler(commands=['get_courses_data'])
         async def get_courses_data(message: types.Message):
@@ -6681,7 +6666,9 @@ class InviteBot():
             from utils.pictures.pictures_urls.pictures_urls import pictures_urls
             picture = pictures_urls[self.profession] if self.profession in pictures_urls else pictures_urls['common']
 
-            for id_channel in [int(config['My_channels'][f"{self.profession}_channel"]), variable.channel_id_for_shorts, message.chat.id]:
+            # for id_channel in [int(config['My_channels'][f"{self.profession}_channel"]), variable.channel_id_for_shorts, message.chat.id]:
+
+            for id_channel in [variable.channel_id_for_shorts, message.chat.id]:
                 try:
                     await self.bot_aiogram.send_photo(id_channel, picture, caption=telegram_digest, parse_mode='html')
                     break
