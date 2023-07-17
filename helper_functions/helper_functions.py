@@ -714,4 +714,32 @@ async def replace_NoneType(results_dict):
             results_dict[key] = ''
     return results_dict
 
+async def clean_argerator_id(db_class):
+    """
+    shorts_session: number short session
+    function clears field sended_agregator
+    """
+    table = admin_database
+    # tables = [admin_database]
+    responses = db_class.get_all_from_db(
+        table_name=table,
+        param="WHERE profession LIKE '%junior%'",
+        field=admin_table_fields
+    )
+    if responses and type(responses) in [tuple, list]:
+        for vacancy in responses:
+            vacancy_dict = await to_dict_from_admin_response(
+                response=vacancy,
+                fields=admin_table_fields
+            )
+            if vacancy_dict and type(vacancy_dict) is dict:
+                db_class.update_table(
+                    table_name=table,
+                    field='sended_to_agregator',
+                    value='NULL',
+                    param=f"WHERE id={vacancy_dict['id']}"
+                )
+            else:
+                print('vacancy_dict error')
+
 
