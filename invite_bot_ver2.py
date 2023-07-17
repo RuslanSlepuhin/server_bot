@@ -6086,6 +6086,12 @@ class InviteBot():
             param = f"WHERE profession LIKE '%{profession}' OR profession LIKE '%{profession},%'"
         else:
             param = f"WHERE profession LIKE '%{profession}%'"
+
+
+        if param:
+            param += " AND approved='approves by admin"
+
+
         response = self.db.get_all_from_db(
             table_name='admin_last_session',
             param=param,
