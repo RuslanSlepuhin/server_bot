@@ -505,6 +505,11 @@ async def main_endpoints():
             responses_dict['query'] = param
         return responses_dict
 
+    @app.route("/three-last-vacancies", methods=['GET'])
+    async def three_last_vacancies_request():
+        result_dict = await three_last_vacancies()
+        return result_dict
+
     async def three_last_vacancies():
         trainee = 'vacancies'
         common_vacancies = 'common_vacancies'
