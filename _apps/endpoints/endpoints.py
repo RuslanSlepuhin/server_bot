@@ -146,6 +146,29 @@ async def main_endpoints():
     async def get_all_vacancies_trainee():
         return await get_all_vacancies_from_db_trainee()
 
+    async def get_all_vacancies_from_db_trainee(param="WHERE profession <> 'no_sort'"):
+        all_vacancies = {}
+        all_vacancies['vacancies'] = {}
+        response = db.get_all_from_db(
+            table_name=admin_table,
+            param=param,
+            field=admin_table_fields
+        )
+        if type(response) is list:
+            number = 0
+            print(param)
+            for vacancy in response:
+                vacancy_dict = await to_dict_from_admin_response(
+                    response=vacancy,
+                    fields=admin_table_fields
+                )
+                if number < 100:
+                    all_vacancies['vacancies'][str(number)] = vacancy_dict
+                number += 1
+        elif type(response) is str:
+            return {'error': response}
+        return all_vacancies
+
     @app.route("/get-all-vacancies")
     async def get_all_vacancies():
         return await get_all_vacancies_from_db()
