@@ -24,15 +24,23 @@ def decompose_from_str_to_list(data_str):
     if data_str:
         data_dict = {}
         data_list = data_str.split('; ')
-        for i in data_list:
-            i = i.split(': ')
-            key = i[0]
-            sub_items = i[1]
-            if sub_items:
-                data_dict[key] = sub_items.split(', ')
-            else:
-                data_dict[key] = []
-        return data_dict
+        try:
+            for i in data_list:
+                if i and i[0]:
+                    i = i.split(': ')
+                    key = i[0]
+                    sub_items = i[1]
+                    if sub_items:
+                        data_dict[key] = sub_items.split(', ')
+                    else:
+                        data_dict[key] = []
+                else:
+                    pass
+            return data_dict
+        except Exception as e:
+            print(f"error in helper.decompose_from_str_to_list:\n{e}")
+            print(data_str)
+            pass
     else:
         return {}
 
