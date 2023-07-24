@@ -182,7 +182,14 @@ async def main_endpoints():
     async def get_all_vacancies_for_web():
         limit = request.args.get('limit')
         start_id = request.args.get('id')
-        return await get_all_vacancies_for_web(start_id=start_id, limit=limit)
+
+        print('request: ', request.json)
+        print('limit: ', limit)
+        print('start_id: ', start_id)
+
+        result = await get_all_vacancies_for_web(start_id=start_id, limit=limit)
+        print(result)
+        return result
 
     @app.route("/vacancies", methods=['POST'])
     async def vacancies_with_filters():
