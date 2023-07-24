@@ -205,6 +205,12 @@ async def main_endpoints():
             id_query = f" AND id < {data['id']}"
         else:
             id_query = ''
+
+        print('-'*25)
+        print('limit: ', limit)
+        print('id: ', data['id'])
+
+
         query = Predictive(data).get_full_query()
         responses_dict = {}
         amount_response = db.get_all_from_db(
@@ -225,6 +231,9 @@ async def main_endpoints():
 
             if vacancies_response:
                 responses_dict['vacancies'] = await package_list_to_dict(vacancies_response, preview_fields_for_web)
+
+        print(responses_dict)
+
         return responses_dict
 
 
