@@ -184,12 +184,13 @@ async def main_endpoints():
         start_id = request.args.get('id')
 
         print("-"*24)
-        print('request: ', request)
-        print('limit: ', limit)
-        print('start_id: ', start_id)
+        print('GET request: ', request)
+        print('GET limit: ', limit)
+        print('GET start_id: ', start_id)
 
         result = await get_all_vacancies_for_web(start_id=start_id, limit=limit)
-        print(result)
+        if result:
+            print('GET vacancies:', len(result))
         print("-"*25)
 
         return result
@@ -207,8 +208,8 @@ async def main_endpoints():
             id_query = ''
 
         print('-'*25)
-        print('limit: ', limit)
-        print('id: ', data['id'])
+        print('POST limit: ', limit)
+        print('POST id: ', data['id'])
 
 
         query = Predictive(data).get_full_query()
@@ -232,8 +233,8 @@ async def main_endpoints():
             if vacancies_response:
                 responses_dict['vacancies'] = await package_list_to_dict(vacancies_response, preview_fields_for_web)
 
-        print('amount:', responses_dict['amount'])
-        print('vacancies:', len(responses_dict['vacancies']) if 'vacancies' in responses_dict else {})
+        print('POST amount:', responses_dict['amount'])
+        print('POST vacancies:', len(responses_dict['vacancies']) if 'vacancies' in responses_dict else {})
         print('-'*25)
 
         return responses_dict
