@@ -233,7 +233,7 @@ async def main_endpoints():
                 responses_dict['vacancies'] = await package_list_to_dict(vacancies_response, preview_fields_for_web)
 
         print('amount:', responses_dict['amount'])
-        print('vacancies:', len(responses_dict['vacancies']))
+        print('vacancies:', len(responses_dict['vacancies']) if 'vacancies' in responses_dict else {})
         print('-'*25)
 
         return responses_dict
