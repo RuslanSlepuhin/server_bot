@@ -184,7 +184,7 @@ async def main_endpoints():
         start_id = request.args.get('id')
 
         print("-"*24)
-        print('GET request: ', request)
+        print('GET request: ', request.json)
         print('GET limit: ', limit)
         print('GET start_id: ', start_id)
 
@@ -208,7 +208,7 @@ async def main_endpoints():
             id_query = ''
 
         print('-'*25)
-        print('POST request:', request)
+        print('POST request:', request.json)
         print('POST limit: ', limit)
         print('POST id: ', data['id'])
 
