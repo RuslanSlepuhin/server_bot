@@ -183,12 +183,15 @@ async def main_endpoints():
         limit = request.args.get('limit')
         start_id = request.args.get('id')
 
+        print("-"*25)
         print('request: ', request.json)
         print('limit: ', limit)
         print('start_id: ', start_id)
 
         result = await get_all_vacancies_for_web(start_id=start_id, limit=limit)
         print(result)
+        print("-"*25)
+
         return result
 
     @app.route("/vacancies", methods=['POST'])
