@@ -221,6 +221,7 @@ async def main_endpoints():
             without_sort=True,
             field='COUNT(*)'
         )
+        param = ''
         if amount_response:
             responses_dict['amount'] = amount_response[0][0]
             param = f'{query}{id_query}'
@@ -234,7 +235,7 @@ async def main_endpoints():
             if vacancies_response:
                 responses_dict['vacancies'] = await package_list_to_dict(vacancies_response, preview_fields_for_web)
 
-            print('POST param:', param if param else 'None')
+        print('POST param:', param if param else 'None')
         print('POST amount:', responses_dict['amount'])
         print('POST vacancies:', len(responses_dict['vacancies']) if 'vacancies' in responses_dict else {})
         print('-'*25)
