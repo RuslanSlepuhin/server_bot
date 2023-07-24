@@ -184,7 +184,7 @@ async def main_endpoints():
         start_id = request.args.get('id')
 
         print("-"*24)
-        print('GET request: ', request.json)
+        print('GET request: ', request)
         print('GET limit: ', limit)
         print('GET start_id: ', start_id)
 
