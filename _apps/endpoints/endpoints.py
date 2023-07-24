@@ -235,6 +235,7 @@ async def main_endpoints():
             if vacancies_response:
                 responses_dict['vacancies'] = await package_list_to_dict(vacancies_response, preview_fields_for_web)
 
+        print('POST query:', query)
         print('POST param:', param if param else 'None')
         print('POST amount:', responses_dict['amount'])
         print('POST vacancies:', len(responses_dict['vacancies']) if 'vacancies' in responses_dict else {})
