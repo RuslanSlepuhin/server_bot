@@ -208,6 +208,7 @@ async def main_endpoints():
             id_query = ''
 
         print('-'*25)
+        print('POST request:', request)
         print('POST limit: ', limit)
         print('POST id: ', data['id'])
 
