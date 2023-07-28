@@ -6674,12 +6674,15 @@ class InviteBot():
 
             # for id_channel in [int(config['My_channels'][f"{self.profession}_channel"]), variable.channel_id_for_shorts, message.chat.id]:
 
-            for id_channel in [variable.channel_id_for_shorts, message.chat.id]:
-                try:
-                    await self.bot_aiogram.send_photo(id_channel, picture, caption=telegram_digest, parse_mode='html')
-                    break
-                except Exception as ex:
-                    print(f'bot can\'t send shorts to channel {id_channel}: {str(ex)}')
+            for id_channel in [int(config['My_channels'][f"{self.profession}_channel"]), variable.channel_id_for_shorts, message.chat.id]:
+                if self.profession.lower() != 'junior' and id_channel != int(config['My_channels'][f"{self.profession}_channel"]):
+                    try:
+                        await self.bot_aiogram.send_photo(id_channel, picture, caption=telegram_digest, parse_mode='html')
+                        break
+                    except Exception as ex:
+                        print(f'bot can\'t send shorts to channel {id_channel}: {str(ex)}')
+                else:
+                    pass
 
         self.sub = None
         self.profession = None
