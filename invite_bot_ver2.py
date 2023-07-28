@@ -17,8 +17,6 @@ from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton, Message, Chat
 from aiogram.utils import executor
-from aiogram.utils.executor import start_polling
-from asgiref.sync import sync_to_async, async_to_sync
 from telethon.sync import TelegramClient
 from telethon.tl import functions
 from telethon.tl.functions.channels import GetParticipantsRequest
@@ -47,7 +45,6 @@ from helper_functions import helper_functions as helper
 from utils.additional_variables import additional_variables as variable
 from patterns._export_pattern import export_pattern
 from patterns.data_pattern._data_pattern import pattern as data_pattern
-from multiprocessing import Process
 from sites.send_log_txt import send_log_txt
 from report.reports import Reports
 from report.report_variables import report_file_path
@@ -76,13 +73,23 @@ con = None
 print(f'Bot started at {datetime.now()}')
 logs.write_log(f'\n------------------ restart --------------------')
 
-
-
-
 class InviteBot():
 
-    def __init__(self, token_in=None, double=False, telethon_username=None):
-        username = telethon_username if telethon_username else settings.username
+    def __init__(self, token_in=None, double=False, telethon_username=None, telethon_client=None):
+        if not telethon_client:
+            username = telethon_username if telethon_username else settings.username
+            if double:
+                self.client = TelegramClient(username_double, int(api_id_double), api_hash_double)
+            else:
+                self.client = TelegramClient(username, int(api_id), api_hash)
+            try:
+                if not self.client.is_connected():
+                    self.client.start()
+            except Exception as e:
+                print(e)
+                self.client.connect()
+        else:
+            self.client = telethon_client
         self.chat_id = None
         self.start_time_listen_channels = datetime.now()
         self.start_time_scraping_channels = None
@@ -128,15 +135,6 @@ class InviteBot():
             'message': '',
             'profession': ''
         }
-        if double:
-            self.client = TelegramClient(username_double, int(api_id_double), api_hash_double)
-        else:
-            self.client = TelegramClient(username, int(api_id), api_hash)
-        try:
-            self.client.start()
-        except Exception as e:
-            print(e)
-            self.client.connect()
         # self.start_client()
         self.report = Reports(show_in_console=False)
         self.db = DataBaseOperations(report=self.report)
@@ -3115,8 +3113,8 @@ class InviteBot():
                 # # -----------------------parsing telegram channels -------------------------------------
                 bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
 
-                await main(report=self.report, client=self.client, bot_dict=bot_dict)
-                await self.report.add_to_excel(report_type='parsing')
+                # await main(report=self.report, client=self.client, bot_dict=bot_dict)
+                # await self.report.add_to_excel(report_type='parsing')
 
                 if silent:
                     sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
@@ -4412,11 +4410,11 @@ class InviteBot():
         self.profession = profession
 
 # --------------------------------------------------------------------
-        if self.profession not in variable.manual_posting_shorts:
-            telegraph = TelegraphPoster()
-            telegraph_links_dict = telegraph.telegraph_post_digests(self.message_for_send_dict, self.profession)
+#         if self.profession not in variable.manual_posting_shorts:
+        telegraph = TelegraphPoster()
+        telegraph_links_dict = telegraph.telegraph_post_digests(self.message_for_send_dict, self.profession)
 
-            await self.send_pivot_shorts(telegraph_links_dict, message)
+        await self.send_pivot_shorts(telegraph_links_dict, message)
 
             # numbers_vacancies_dict = telegraph_links_dict['numbers_vacancies_dict']
             # telegraph_links_dict = telegraph_links_dict['telegraph_links_dict']
@@ -4461,7 +4459,7 @@ class InviteBot():
             #     except Exception as e:
             #         print(e)
             #         await helper.send_message(self.bot_aiogram, message.chat.id, f"ONE SHORTS HAS BEEN LOOSED{str(e)}")
-            return True
+        return True
 # # ------------------------------------------------------------------------
         for key in self.message_for_send_dict:
             message_for_send = self.message_for_send_dict[key]
@@ -5164,14 +5162,14 @@ class InviteBot():
 
                 if links_on_prof_channels:
                     links_message = '\n----\nВ этом канале выводятся все собранные вакансии (агрегатор), для вашего удобства мы рекомендуем подписаться на наиболее подходящие для вас каналы (ссылки подобраны в каждом из сообщений):\n'
-                    links_message += f"<a href=\"{config['Links']['junior']}\">Канал с вакансиями для Junior IT специалистов\n</a>"
+                    links_message += f"<a href=\"{config['Links']['junior']}\">Канал с вакансиями для Junior IT специалистов</a>\n"
                     prof_stack = prof_stack.split(', ')
                     if 'junior' in prof_stack:
                         prof_stack.remove('junior')
                     for i_prof in prof_stack:
                         i_prof = i_prof.strip()
                         if i_prof in self.valid_profession_list:
-                            link = f"<a href=\"{config['Links'][i_prof]}\">Канал с вакансиями для {i_prof.title()} IT специалистов\n</a>"
+                            link = f"<a href=\"{config['Links'][i_prof]}\">Канал с вакансиями для {i_prof.title()} IT специалистов</a>\n"
                             links_message += link
                     if (len(links_message) + len(str(vacancy_message['message']))) <= 4096:
                         send_message = vacancy_message['message'] + links_message
@@ -5185,11 +5183,24 @@ class InviteBot():
                     self.last_id_message_agregator += 1
                     await asyncio.sleep(random.randrange(3, 4))
                 except Exception as e:
-                    print('the problem in func push_vacancies_to_agregator_from_admin', e)
-                    await self.bot_aiogram.send_message(message.chat.id, f"It has a problem to send to aregator (5202):\n{str(e)}")
-                    print(f'send_message:\n{send_message}')
-                    time.sleep(30)
-                    error = True
+                    if 'tag' in e.args[0]:
+                        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1')
+                        supported_message = re.sub(r"[^bap\"](>)", ' больше ', send_message)
+                        supported_message = re.sub(r"(<)[^bap\/]", " меньше ", supported_message)
+                        # supported_message = re.sub(r"%", " процентов ", supported_message)
+                        try:
+                            await self.bot_aiogram.send_message(int(config['My_channels']['agregator_channel']), supported_message,
+                                                            parse_mode='html', disable_notification=True, disable_web_page_preview=True)
+                            print('step 4')
+                            self.last_id_message_agregator += 1
+                            await asyncio.sleep(random.randrange(3, 4))
+                        except Exception as error_2:
+                            print("error_2: ", error_2)
+                    else:
+                        await self.bot_aiogram.send_message(message.chat.id, f"It has a problem to send to aregator (5202):\n{str(e)}")
+                        print(f'send_message:\n{send_message}')
+                        time.sleep(30)
+                        error = True
 
                 if vacancy_from_admin_dict and not error:
                     # prof_list = vacancy_from_admin[0][4].split(', ')
@@ -5228,7 +5239,7 @@ class InviteBot():
             for i in all_messages:
                 await self.client.delete_messages(peer_channel, i['id'])
         except Exception as e:
-            await self.bot_aiogram.send_message(message.chat.id, f'for admin channel: {e}')
+            await self.bot_aiogram.send_message(message.chat.id, f'get_last_admin_channel_id: {e}')
 
         return last_admin_channel_id
 
@@ -5781,11 +5792,11 @@ class InviteBot():
                     write_mode='a',
                     text=f"------------------------\n"
                 )
-                await self.send_file_to_user(
-                    message=message,
-                    path=variable.path_push_shorts_report_file,
-                    send_to_developer=True
-                )
+                # await self.send_file_to_user(
+                #     message=message,
+                #     path=variable.path_push_shorts_report_file,
+                #     send_to_developer=True
+                # )
 
             else:
                 print(f'{profession}: no vacancies')
@@ -6083,15 +6094,9 @@ class InviteBot():
 
         profession = callback_data.split('/')[1]
         if profession == 'ba':
-            param = f"(WHERE profession LIKE '%{profession}' OR profession LIKE '%{profession},%')"
+            param = f"WHERE profession LIKE '%{profession}' OR profession LIKE '%{profession},%'"
         else:
             param = f"WHERE profession LIKE '%{profession}%'"
-
-# # ---------------------------  TRY!!!!  -------------------------------------
-#         if param:
-#             param += " AND approved='approves by admin"
-# # ---------------------------  END TRY!!!!  -------------------------------------
-
         response = self.db.get_all_from_db(
             table_name='admin_last_session',
             param=param,
@@ -6674,15 +6679,12 @@ class InviteBot():
 
             # for id_channel in [int(config['My_channels'][f"{self.profession}_channel"]), variable.channel_id_for_shorts, message.chat.id]:
 
-            for id_channel in [int(config['My_channels'][f"{self.profession}_channel"]), variable.channel_id_for_shorts, message.chat.id]:
-                if self.profession.lower() != 'junior' and id_channel != int(config['My_channels'][f"{self.profession}_channel"]):
-                    try:
-                        await self.bot_aiogram.send_photo(id_channel, picture, caption=telegram_digest, parse_mode='html')
-                        break
-                    except Exception as ex:
-                        print(f'bot can\'t send shorts to channel {id_channel}: {str(ex)}')
-                else:
-                    pass
+            for id_channel in [variable.channel_id_for_shorts, message.chat.id]:
+                try:
+                    await self.bot_aiogram.send_photo(id_channel, picture, caption=telegram_digest, parse_mode='html')
+                    break
+                except Exception as ex:
+                    print(f'bot can\'t send shorts to channel {id_channel}: {str(ex)}')
 
         self.sub = None
         self.profession = None
