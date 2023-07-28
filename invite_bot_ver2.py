@@ -6679,7 +6679,9 @@ class InviteBot():
 
             # for id_channel in [int(config['My_channels'][f"{self.profession}_channel"]), variable.channel_id_for_shorts, message.chat.id]:
 
-            for id_channel in [variable.channel_id_for_shorts, message.chat.id]:
+            channels_list = [int(config['My_channels'][f"{self.profession}_channel"]), variable.channel_id_for_shorts, message.chat.id] \
+                if self.profession != 'junior' else [variable.channel_id_for_shorts, message.chat.id]
+            for id_channel in channels_list:
                 try:
                     await self.bot_aiogram.send_photo(id_channel, picture, caption=telegram_digest, parse_mode='html')
                     break
