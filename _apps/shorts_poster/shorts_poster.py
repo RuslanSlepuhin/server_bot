@@ -376,7 +376,9 @@ class ShortsPoster:
             from utils.pictures.pictures_urls.pictures_urls import pictures_urls
             picture = pictures_urls[self.profession] if self.profession in pictures_urls else pictures_urls['common']
 
-            for id_channel in [int(self.config['My_channels'][f"{self.profession}_channel"]), self.variable.channel_id_for_shorts, self.message.chat.id]:
+            channel_list = [int(self.config['My_channels'][f"{self.profession}_channel"]), self.variable.channel_id_for_shorts, self.message.chat.id] if self.profession not in self.variable.manual_posting_shorts else [self.variable.channel_id_for_shorts, self.message.chat.id]
+
+            for id_channel in channel_list:
                 try:
                     await self.bot_aiogram.send_photo(id_channel, picture, caption=telegram_digest, parse_mode='html')
                     break
