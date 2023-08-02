@@ -750,4 +750,30 @@ async def clean_argerator_id(db_class):
             else:
                 print('vacancy_dict error')
 
+def split_text_limit(message_for_send, limit=4096, separator="\n\n"):
+    vacancies_list = []
+    if len(message_for_send) > limit:
+        message_limit = ''
+        messages = message_for_send.split(separator)
+        for i in messages:
+            if len(message_limit + f"{i}{separator}") < limit:
+                message_limit += f"{i}{separator}"
+            else:
+                vacancies_list.append(message_limit)
+                message_limit = f"{i}{separator}"
+        vacancies_list.append(message_limit)
+    else:
+        vacancies_list = [message_for_send]
+    return vacancies_list
 
+async def reset_aggregator_sending_numbers(**kwargs):
+    from utils.additional_variables.additional_variables import manual_posting_shorts
+    param = f"WHERE profession NOT IN {tuple(manual_posting_shorts)}" if len(manual_posting_shorts) > 1 else f"WHERE profession NOT LIKE '%{manual_posting_shorts[0]}%'"
+    db_class = kwargs['db_class'] if 'db_class' in kwargs else None
+    if db_class:
+        try:
+            db_class.update_table(table_name=admin_database, field='sended_to_agregator', value="NULL", param=param)
+        except Exception as ex:
+            print("error 5", ex)
+        return True
+    return False
