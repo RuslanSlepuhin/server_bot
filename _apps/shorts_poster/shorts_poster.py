@@ -63,8 +63,8 @@ class ShortsPoster:
                     self.db.write_short_session(self.short_session_name)
                     await self.bot_aiogram.send_message(message.chat.id, f"Shorts session: {self.short_session_name}")
 
-                    # # update shorts session in current vacancies in table
-                    # await self.update_shorts_session_vacancies()
+                    # update shorts session in current vacancies in table
+                    await self.update_shorts_session_vacancies()
 
                     # compose the dict by subs
                     await self.compose_message_for_send()
@@ -265,13 +265,13 @@ class ShortsPoster:
                             param=f"WHERE id={vacancy['id']}",
                             output_text=f'{n}:vacancy has been updated [field: sended_to_agregator]'
                         )
-                        self.db.update_table(
-                            table_name=self.variable.admin_database,
-                            field='short_session_numbers',
-                            value=self.short_session_name,
-                            param=f"WHERE id={vacancy['id']}",
-                            output_text=f'{n}:vacancy has been updated [field: short_session_numbers]'
-                        )
+                        # self.db.update_table(
+                        #     table_name=self.variable.admin_database,
+                        #     field='short_session_numbers',
+                        #     value=self.short_session_name,
+                        #     param=f"WHERE id={vacancy['id']}",
+                        #     output_text=f'{n}:vacancy has been updated [field: short_session_numbers]'
+                        # )
                         self.history_messages[vacancy['id']]['sended_to_agregator'] = self.current_aggregator_id
                     else:
                         print("vacancy has been not changed :)")
