@@ -1799,14 +1799,10 @@ class InviteBot():
             if callback.data == 'one_day':
                 await output_one_day(callback.message)
 
-            if callback.data == 'go_by_admin':  # next step if callback.data[2:] in self.valid_profession_list:
-                # make the keyboard with all professions
-                # if int(callback.message.from_user.id) in variable.white_admin_list:
+            if callback.data == 'go_by_admin':
                 self.markup = await compose_inline_keyboard(prefix='admin')
                 await self.bot_aiogram.send_message(callback.message.chat.id, 'choose the channel for vacancy checking',
                                                     reply_markup=self.markup)
-                # else:
-                #     await self.bot_aiogram.send_message(callback.message.chat.id, "Sorry, You have not the permissions")
 
             if callback.data[0:5] == 'admin':
                 tables = self.db.get_information_about_tables_and_fields(only_tables=True)
@@ -1996,7 +1992,19 @@ class InviteBot():
                 await self.bot_aiogram.send_message(callback.message.chat.id, "Type the date from which to leave the vacancies (FORMAT: YYYY-MM-DD)")
 
             if callback.data == "reset_aggregator_sending_numbers":
+                with_manual_button = InlineKeyboardButton('RESET ALL PROFESSIONS', callback_data='reset_aggregator_sending_numbers_with_manual')
+                except_manual_button = InlineKeyboardButton('RESET EXCEPT MANUAL', callback_data='reset_aggregator_sending_numbers_except_manual')
+                keyboard = InlineKeyboardMarkup()
+                keyboard.row(except_manual_button, with_manual_button)
+                await self.bot_aiogram.send_message(callback.message.chat.id, "CHOOSE", reply_markup=keyboard)
+
+            if callback.data == "reset_aggregator_sending_numbers_except_manual":
                 completed_successfully = await helper.reset_aggregator_sending_numbers(db_class=self.db)
+                text = "Done" if completed_successfully else "Something wrong"
+                await self.bot_aiogram.send_message(callback.message.chat.id, text)
+
+            if callback.data == "reset_aggregator_sending_numbers_with_manual":
+                completed_successfully = await helper.reset_aggregator_sending_numbers(db_class=self.db, reset_all_profession=True)
                 text = "Done" if completed_successfully else "Something wrong"
                 await self.bot_aiogram.send_message(callback.message.chat.id, text)
 
@@ -6826,6 +6834,37 @@ class InviteBot():
                     await progress.show_the_progress(message=None, current_number=n, end_number=length)
 
         await msg.edit_text(f"{msg.text}\nDone! Data has restored")
+
+    async def run_pushing_from_admin_throw_admin_panel(self, chat_id, profession):
+        from _apps.shorts_poster.shorts_poster import ShortsPoster
+        short_poster = ShortsPoster(
+            bot=self.bot_aiogram,
+            report=self.report,
+            db=self.db,
+            variable=variable,
+            helper=helper,
+            bot_class=self,
+            telegraph_poster=TelegraphPoster(),
+            client=self.client,
+            config=config
+        )
+
+        message = Message()
+        message.chat = Chat()
+        message.chat.id = int(chat_id)
+
+        profession_list = profession if type(profession) in [list, tuple, set] else [profession]
+        try:
+            await short_poster.compose_and_send_short(
+                message=message,
+                hard_push_profession=profession_list,
+                get_vacancies_from_tg_admin=False,
+                only_approved_by_admin=True
+            )
+            pass
+        except Exception as e:
+            print('error:', e)
+            pass
 
 
 def run(double=False, token_in=None):
