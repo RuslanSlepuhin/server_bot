@@ -2000,8 +2000,10 @@ class InviteBot():
                 text = "Done" if completed_successfully else "Something wrong"
                 await self.bot_aiogram.send_message(callback.message.chat.id, text)
 
-
-
+            if callback.data == 'how_many_vacancies_total':
+                await Form_report_total.date_in.set()
+                await self.bot_aiogram.send_message(callback.message.chat.id,
+                                                    'Type the starting date in format: YYYY-MM-DD not earlier than 2023-01-01')
 
         @self.dp.message_handler(content_types=['text'])
         async def messages(message):
@@ -2184,12 +2186,11 @@ class InviteBot():
                     but_get_news = InlineKeyboardButton('🔋 PARSER: GET NEWS', callback_data='get_news')
                     but_hard_push = InlineKeyboardButton('🧨 HARD PUSHING', callback_data='hard_push')
                     but_reduce_database = InlineKeyboardButton('🙅🏻‍♂️ RESTORE', callback_data='restore')
-
+                    but_how_many_vacancies_total = InlineKeyboardButton('REPORT: VACANCIES SOURCE', callback_data='how_many_vacancies_total')
                     # self.markup.row(but_show, but_send_digest_full)
                     # self.markup.row(but_send_digest_full_all, but_separate_channel)
-                    self.markup.add(but_show, but_excel_all_statistics)
+                    self.markup.add(but_show, but_excel_all_statistics, but_get_news, but_how_many_vacancies_total, but_excel_one_day_vacancies, but_reduce_database, but_hard_push, but_do_by_admin)
                     # self.markup.add(but_stat_today)
-                    self.markup.add(but_get_news, but_excel_one_day_vacancies, but_reduce_database, but_hard_push, but_do_by_admin)
 
                     time_start = await get_time_start()
                     await self.bot_aiogram.send_message(

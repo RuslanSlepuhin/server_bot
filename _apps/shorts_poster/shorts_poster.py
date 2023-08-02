@@ -256,7 +256,7 @@ class ShortsPoster:
                     if not self.history_messages[vacancy['id']]['sended_to_agregator']:
 
                         await self.send_message(chat_id=int(self.config['My_channels']['agregator_channel']), html_text=vacancy['vacancy_text'])
-                        await asyncio.sleep(random.randrange(1, 4))
+                        await asyncio.sleep(random.randrange(2, 4))
                         self.current_aggregator_id += 1
                         self.db.update_table(table_name=self.variable.admin_database, field='sended_to_agregator',
                                              value=self.current_aggregator_id, param=f"WHERE id={vacancy['id']}",
