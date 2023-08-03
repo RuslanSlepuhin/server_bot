@@ -84,12 +84,18 @@ class InviteBot():
                 self.client = TelegramClient(username, int(api_id), api_hash)
             try:
                 if not self.client.is_connected():
+                    # c = asyncio.get_event_loop()
+                    # c.run_until_complete(self.client.start())
                     self.client.start()
             except Exception as e:
                 print(e)
                 self.client.connect()
         else:
             self.client = telethon_client
+            if not self.client.is_connected():
+                loop = asyncio.get_event_loop()
+                loop.create_task(self.client.connect())
+            pass
         self.chat_id = None
         self.start_time_listen_channels = datetime.now()
         self.start_time_scraping_channels = None
@@ -1848,10 +1854,11 @@ class InviteBot():
                 # print(datetime.now().strftime('%Y-%m-%d'))
 
             if callback.data == 'hard_push':
-                button_all_vacancies = InlineKeyboardButton('all', callback_data='all')
-                button_each_vacancy = InlineKeyboardButton('choose profession', callback_data='each_profession')
+                button_all_vacancies = InlineKeyboardButton('ALL PROFESSION', callback_data='all')
+                button_each_vacancy = InlineKeyboardButton('CHOOSE THE PROFESSION', callback_data='each_profession')
                 markup = InlineKeyboardMarkup()
-                markup.row(button_all_vacancies, button_each_vacancy)
+                markup.add(button_all_vacancies)
+                markup.add(button_each_vacancy)
                 await self.bot_aiogram.send_message(callback.message.chat.id, "It's the pushing without admin",
                                                     reply_markup=markup)
 
@@ -1936,15 +1943,54 @@ class InviteBot():
                 await self.bot_aiogram.send_message(callback.message.chat.id, "Choose profession", reply_markup=markup,
                                                     parse_mode='html')
 
+            # if callback.data == 'each_profession_only_approved_by_admin':
+            #     markup = await compose_inline_keyboard(prefix='approved_by_admin')
+            #     await self.bot_aiogram.send_message(callback.message.chat.id, "Choose profession", reply_markup=markup,
+            #                                         parse_mode='html')
+            #
+
+
             elif 'each' in callback.data:
                 channel = callback.data.split('/')[1]
-                # await hard_post(callback.message, channels=channel)
-                await self.push_shorts_attempt_to_make_multi_function(
-                    message=callback.message,
-                    callback_data=callback.data,
-                    hard_pushing=True,
-                    hard_push_profession=channel
+                all_button = InlineKeyboardButton('ALL', callback_data=f'without_approved/{channel}')
+                approved_button = InlineKeyboardButton('APPROVED BU ADMIN ONLY', callback_data=f'approved_by_admin/{channel}')
+                markup = InlineKeyboardMarkup()
+                markup.add(all_button, approved_button)
+                await self.bot_aiogram.send_message(callback.message.chat.id, 'CHOOSE', reply_markup=markup)
+
+            elif 'without_approved' in callback.data or 'approved_by_admin' in callback.data:
+                profession = callback.data.split('/')[1]
+                only_approved_by_admin = True if 'approved_by_admin' in callback.data else False
+
+                from _apps.shorts_poster.shorts_poster import ShortsPoster
+                short_poster = ShortsPoster(
+                    bot=self.bot_aiogram,
+                    report=self.report,
+                    db=self.db,
+                    variable=variable,
+                    helper=helper,
+                    bot_class=self,
+                    telegraph_poster=TelegraphPoster(),
+                    client=self.client,
+                    config=config
                 )
+                try:
+                    await short_poster.compose_and_send_short(
+                        message=callback.message,
+                        hard_push_profession=[profession],
+                        get_vacancies_from_tg_admin=False,
+                        only_approved_by_admin=only_approved_by_admin
+                    )
+                    pass
+                except Exception as e:
+                    print('error:', e)
+                    pass
+                # await self.push_shorts_attempt_to_make_multi_function(
+                #     message=callback.message,
+                #     callback_data=callback.data,
+                #     hard_pushing=True,
+                #     hard_push_profession=channel
+                # )
 
             if callback.data == 'choose_one_channel':  # compose keyboard for each profession
 
@@ -6865,7 +6911,11 @@ class InviteBot():
         except Exception as e:
             print('error:', e)
             pass
-
+        if self.client.is_connected:
+            self.client.disconnect()
+            print('client has been disconnected')
+        else:
+            print('client not is connection!')
 
 def run(double=False, token_in=None):
     InviteBot(

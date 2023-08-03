@@ -183,6 +183,10 @@ class ShortsPoster:
                     if self.sub_name != 'junior':
                         self.sub_value = sub.split(": ")[1]
 
+                        # await self.decompose_sub_values()
+
+                        print('ATTENTION! YOU MUST CHECK HOW DECOMPOSE SUBS IN SHORTS CODE IN COMPOSE_MESSAGE FUNCTION! THIS POINT FOR CHANGE COMPOSING SUBS IN MANUAL ADMIN PANEL!')
+
                         if self.sub_value:
                             await self.build_aggregator_vacancy()
                             found_subs = True
@@ -472,3 +476,7 @@ class ShortsPoster:
             seconds = match[0].split(' ')[0]
             print(f"\n--------------\nFlood control [{seconds} seconds]\n--------------\n")
             time.sleep(int(seconds) + 5)
+
+    # async def decompose_sub_values(self):
+    #     values = self.sub_value.split(", ")
+    #     pass
