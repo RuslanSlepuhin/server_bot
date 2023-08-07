@@ -548,6 +548,12 @@ class InviteBot():
                     await self.unlock_message_autopushing.delete()
                 self.autopushing_task = None
 
+        @self.dp.message_handler(commands=['set_approved_is_null'])
+        async def hard_pushing_by_schedule_commands(message: types.Message):
+            completed_successfully = await helper.set_approved_like_null(db_class=self.db)
+            text = "Done" if completed_successfully else "Something wrong"
+            await self.bot_aiogram.send_message(message.chat.id, text)
+
         @self.dp.message_handler(commands=['stop_hard_pushing_by_schedule'])
         async def hard_pushing_by_schedule_commands(message: types.Message):
             self.schedule_pushing_shorts = False
@@ -6271,7 +6277,14 @@ class InviteBot():
                     except Exception as e:
                         if 'Flood control exceeded' in str(e):
                             print(f'ERROR {e},\n PLEASE WAIT')
-                            await asyncio.sleep(60 * 2)
+                            match = re.findall(r"[0-9]{1,4} seconds", e.args[0])
+                            if match:
+                                seconds = match[0].split(' ')[0]
+                                print(f"\n--------------\nFlood control [{seconds} seconds]\n--------------\n")
+                                time.sleep(int(seconds) + 5)
+                            else:
+                                time.sleep(4*60)
+
                             # await self.bot_aiogram.send_message(config['My_channels']['admin_channel'], text,
                             #                                     parse_mode='html', disable_web_page_preview=True)
                             await helper.send_message(bot=self.bot_aiogram, chat_id=config['My_channels']['admin_channel'],

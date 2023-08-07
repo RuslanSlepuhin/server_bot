@@ -790,3 +790,25 @@ async def reset_aggregator_sending_numbers(**kwargs):
             pass
         return True
     return False
+
+async def set_approved_like_null(**kwargs):
+    db_class = kwargs['db_class'] if 'db_class' in kwargs else None
+    param = "WHERE profession LIKE '%junior%'"
+
+    if db_class:
+        try:
+            db_class.update_table(table_name=admin_database, field='approved', value="NULL", param=param)
+        except Exception as ex:
+            print("error 6", ex)
+
+        responses = db_class.get_all_from_db(
+            table_name=admin_database,
+            field=admin_table_fields,
+            param="WHERE approved IS NOT NULL"
+        )
+        if responses and type(responses) in [tuple, list, set]:
+            pass
+        else:
+            pass
+        return True
+    return False
