@@ -797,14 +797,14 @@ async def set_approved_like_null(**kwargs):
 
     if db_class:
         try:
-            db_class.update_table(table_name=admin_database, field='approved', value="NULL", param=param)
+            db_class.update_table(table_name=admin_database, field='approved', value="approves by filter", param=param)
         except Exception as ex:
             print("error 6", ex)
 
         responses = db_class.get_all_from_db(
             table_name=admin_database,
             field=admin_table_fields,
-            param="WHERE approved IS NOT NULL"
+            param="WHERE approved = 'approves by admin' and profession LIKE '%junior%'"
         )
         if responses and type(responses) in [tuple, list, set]:
             pass
