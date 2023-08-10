@@ -793,7 +793,7 @@ async def reset_aggregator_sending_numbers(**kwargs):
 
 async def set_approved_like_null(**kwargs):
     db_class = kwargs['db_class'] if 'db_class' in kwargs else None
-    param = "WHERE profession LIKE '%junior%'"
+    param = f"WHERE profession LIKE '%{kwargs['profession']}%'" if 'profession' in kwargs else ''
 
     if db_class:
         try:

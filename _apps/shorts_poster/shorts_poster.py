@@ -51,6 +51,9 @@ class ShortsPoster:
                 self.prof_list = hard_push_profession
 
         if self.prof_list:
+            # this logic only for juniors when check all subs by all profession\
+            # I need the other logic for the mono profession
+
             for profession in self.prof_list:
                 self.profession = profession
 
@@ -89,7 +92,7 @@ class ShortsPoster:
                         await self.clean_admin_table()
 
                         markup = InlineKeyboardMarkup()
-                        button = InlineKeyboardButton('rollback short session', callback_data=f"rollback_short_session|{self.short_session_name}")
+                        button = InlineKeyboardButton('rollback short session', callback_data=f"rollback_short_session|{self.short_session_name}|{self.profession}")
                         markup.add(button)
                         await self.bot_aiogram.send_message(self.message.chat.id, "Pushing has been done", reply_markup=markup)
 
@@ -166,6 +169,7 @@ class ShortsPoster:
 
     async def compose_message_for_send(self):
         self.sub_short_vacancies_dict = {}
+        subs = []
         if self.history_messages:
             self.last_id_message_agregator = await self.bot_class.get_last_admin_channel_id(
                 message=self.message,
@@ -177,22 +181,50 @@ class ShortsPoster:
                 subs = self.vacancy['sub'].split(self.variable.sub_separator)
 
                 found_subs = False
+
+# -------------------------------------------------------------------------------------------
+                self.subs_dict = {}
+                removed_subs = []
                 for sub in subs:
-                    self.sub_value = ''
-                    self.sub_name = sub.split(": ")[0]
-                    if self.sub_name != 'junior':
-                        self.sub_value = sub.split(": ")[1]
+                    sub_split = sub.split(": ")
 
-                        # await self.decompose_sub_values()
+                    if self.profession == 'junior':
+                        if sub_split[0] != 'junior':
+                            if sub_split[0] not in self.subs_dict:
+                                self.subs_dict[sub_split[0]] = []
+                            self.subs_dict[sub_split[0]].append(sub_split[1])
+                        else:
+                            removed_subs.append(sub)
 
-                        print('ATTENTION! YOU MUST CHECK HOW DECOMPOSE SUBS IN SHORTS CODE IN COMPOSE_MESSAGE FUNCTION! THIS POINT FOR CHANGE COMPOSING SUBS IN MANUAL ADMIN PANEL!')
+                    else:
+                        if sub_split[0] == self.profession:
+                            if sub_split[0] not in self.subs_dict:
+                                self.subs_dict[sub_split[0]] = []
+                            self.subs_dict[sub_split[0]].append(sub_split[1])
+                            removed_subs.append(sub)
 
-                        if self.sub_value:
-                            await self.build_aggregator_vacancy()
-                            found_subs = True
-                if not found_subs:
-                    self.sub_value = self.profession
-                    await self.build_aggregator_vacancy()
+                self.vacancy['sub'] = ", ".join(set(subs) - set(removed_subs))
+                await self.build_aggregator_vacancy()
+
+# -------------------------------------------------------------------------------------------
+
+                # for sub in subs:
+                #     if 'junior' not in sub:
+                #         self.sub_value = ''
+                #         self.sub_name = sub.split(": ")[0]
+                #         if self.sub_name != 'junior':
+                #             self.sub_value = sub.split(": ")[1]
+                #
+                #             print('ATTENTION! YOU MUST CHECK HOW DECOMPOSE SUBS IN SHORTS CODE IN COMPOSE_MESSAGE FUNCTION! THIS POINT FOR CHANGE COMPOSING SUBS IN MANUAL ADMIN PANEL!')
+                #
+                #             if self.sub_value:
+                #                 await self.build_aggregator_vacancy(self.sub_value)
+                #             else:
+                #                 await self.build_aggregator_vacancy(self.sub_name)
+                #                 found_subs = True
+                # if not found_subs:
+                #     self.sub_value = self.profession
+                #     await self.build_aggregator_vacancy()
 
                 if self.vacancy['approved'] != 'approves by admin':
                     self.db.update_table(table_name=self.variable.admin_database, field='approved',
@@ -201,7 +233,48 @@ class ShortsPoster:
         else:
             print('there are not vacancies')
 
+        # professions = ", ".join(list(filter(self.profession, self.vacancy['profession'].split(", "))))
+
+    # async def build_aggregator_vacancy(self, sub=None):
+    #     self.sub_value = sub if sub else self.sub_value
+    #     vacancy_text = ''
+    #     if 'sorted_by_subs' not in self.sub_short_vacancies_dict:
+    #         self.sub_short_vacancies_dict['sorted_by_subs'] = {}
+    #     for key in self.variable.fields_for_agregator_vacancy:
+    #         if key in self.vacancy:
+    #             if key not in ['title', 'body']:
+    #                 vacancy_text += f"{key.capitalize().replace('_', ' ')}: {self.vacancy[key]}\n" if key != self.variable.double_n_before_field else f"{key.capitalize().replace('_', ' ')}: {self.vacancy[key]}\n\n"
+    #             else:
+    #                 vacancy_text += f"{self.vacancy[key]}\n"
+    #     if vacancy_text:
+    #         self.vacancy_text = vacancy_text
+    #         await self.check_len_and_add_extra()
+    #         if self.sub_value not in self.sub_short_vacancies_dict['sorted_by_subs']:
+    #             self.sub_short_vacancies_dict['sorted_by_subs'][self.sub_value] = []
+    #         self.sub_short_vacancies_dict['sorted_by_subs'][self.sub_value].append(
+    #             {
+    #                 'id': self.vacancy['id'],
+    #                 'id_admin_channel': self.vacancy['id_admin_channel'] if 'id_admin_channel' in self.vacancy else None,
+    #                 'vacancy_text': self.vacancy_text,
+    #             }
+    #         )
+    #     else:
+    #         self.vacancy_text = ''
+    #         print('There is not vacancy_text 103')
+
     async def build_aggregator_vacancy(self):
+        subs_list = []
+        for profession in self.subs_dict:
+            result = list(filter(None, self.subs_dict[profession]))
+            if result:
+                subs_list.extend(result)
+            else:
+                subs_list.append(profession)
+        if not subs_list:
+            subs_list.append(self.profession)
+
+
+
         vacancy_text = ''
         if 'sorted_by_subs' not in self.sub_short_vacancies_dict:
             self.sub_short_vacancies_dict['sorted_by_subs'] = {}
@@ -212,20 +285,22 @@ class ShortsPoster:
                 else:
                     vacancy_text += f"{self.vacancy[key]}\n"
         if vacancy_text:
-            self.vacancy_text = vacancy_text
-            await self.check_len_and_add_extra()
-            if self.sub_value not in self.sub_short_vacancies_dict['sorted_by_subs']:
-                self.sub_short_vacancies_dict['sorted_by_subs'][self.sub_value] = []
-            self.sub_short_vacancies_dict['sorted_by_subs'][self.sub_value].append(
-                {
-                    'id': self.vacancy['id'],
-                    'id_admin_channel': self.vacancy['id_admin_channel'] if 'id_admin_channel' in self.vacancy else None,
-                    'vacancy_text': self.vacancy_text,
-                }
-            )
+            for sub in subs_list:
+                self.vacancy_text = vacancy_text
+                await self.check_len_and_add_extra()
+                if sub not in self.sub_short_vacancies_dict['sorted_by_subs']:
+                    self.sub_short_vacancies_dict['sorted_by_subs'][sub] = []
+                self.sub_short_vacancies_dict['sorted_by_subs'][sub].append(
+                    {
+                        'id': self.vacancy['id'],
+                        'id_admin_channel': self.vacancy['id_admin_channel'] if 'id_admin_channel' in self.vacancy else None,
+                        'vacancy_text': self.vacancy_text,
+                    }
+                )
         else:
             self.vacancy_text = ''
             print('There is not vacancy_text 103')
+
 
     async def check_len_and_add_extra(self):
         extra_text_html = f"\n---- \n" \
@@ -287,21 +362,24 @@ class ShortsPoster:
     async def rebuild_subs_to_str_dict(self):
         self.sub_short_vacancies_dict['shorts_for_publishing'] = {}
         for sub in self.sub_short_vacancies_dict['sorted_by_subs']:
-            for vacancy_id in self.sub_short_vacancies_dict['sorted_by_subs'][sub]:
-                short_str = await self.get_short_str(vacancy_id['id'])
-                if sub not in self.sub_short_vacancies_dict['shorts_for_publishing']:
-                    self.sub_short_vacancies_dict['shorts_for_publishing'][sub] = ''
-                self.sub_short_vacancies_dict['shorts_for_publishing'][sub] += f"{short_str}\n\n"
-            self.sub_short_vacancies_dict['shorts_for_publishing'][sub] = f"Дайджест вакансий для #{sub.title()} за {datetime.now().strftime('%d-%m-%Y')}\n\n" + self.sub_short_vacancies_dict['shorts_for_publishing'][sub]
-            if self.profession in self.variable.manual_posting_shorts:
-                try:
-                    # await self.bot_aiogram.send_message(self.message.chat.id, self.sub_short_vacancies_dict['shorts_for_publishing'][sub], parse_mode='html', disable_web_page_preview=True)
+            # if sub in self.profession:
+                for vacancy_id in self.sub_short_vacancies_dict['sorted_by_subs'][sub]:
+                    short_str = await self.get_short_str(vacancy_id['id'])
+                    if sub not in self.sub_short_vacancies_dict['shorts_for_publishing']:
+                        self.sub_short_vacancies_dict['shorts_for_publishing'][sub] = ''
+                    self.sub_short_vacancies_dict['shorts_for_publishing'][sub] += f"{short_str}\n\n"
+                self.sub_short_vacancies_dict['shorts_for_publishing'][sub] = f"Дайджест вакансий для #{sub.title()} за {datetime.now().strftime('%d-%m-%Y')}\n\n" + self.sub_short_vacancies_dict['shorts_for_publishing'][sub]
+                if self.profession in self.variable.manual_posting_shorts:
+                    try:
+                        # await self.bot_aiogram.send_message(self.message.chat.id, self.sub_short_vacancies_dict['shorts_for_publishing'][sub], parse_mode='html', disable_web_page_preview=True)
 
-                    await self.send_message(html_text=self.sub_short_vacancies_dict['shorts_for_publishing'][sub], chat_id=self.message.chat.id)
-                    await asyncio.sleep(random.randrange(1, 3))
+                        await self.send_message(html_text=self.sub_short_vacancies_dict['shorts_for_publishing'][sub], chat_id=self.message.chat.id)
+                        await asyncio.sleep(random.randrange(1, 3))
 
-                except Exception as ex:
-                    print(ex, 'error 2')
+                    except Exception as ex:
+                        print(ex, 'error 2')
+            # else:
+            #     pass
         pass
 
     async def get_short_str(self, vacancy_id):
