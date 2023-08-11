@@ -1322,11 +1322,14 @@ class DataBaseOperations:
             query = f"""UPDATE {table_name} SET {field}='{value}' {param}"""
         self.run_free_request(request=query, output_text=output_text, notification=notification)
 
-    def update_table_multi(self, table_name: str, param: str, values_dict: dict, output_text='vacancy has updated', notification=True):
-        query = f"""UPDATE {table_name} SET"""
+    def update_table_multi(self, table_name: str, param: str, values_dict: dict, output_text='vacancy has updated', notification=True, null_if_empty=False):
+        query = f"""UPDATE {table_name} SET """
         for key in values_dict:
             if key != 'id':
-                query += f" {key}='{values_dict[key]}', " if values_dict[key] else ''
+                if values_dict[key]:
+                    query += f"{key}='{values_dict[key]}', "
+                elif null_if_empty:
+                     query += f"{key}=NULL, "
 
         if query.split(' ')[-1] != "SET":
             query = f"{query[:-2]} {param}"
