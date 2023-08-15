@@ -658,6 +658,7 @@ async def main_endpoints():
     @app.route("/vacancy", methods=['GET'])
     async def get_single_vacancy_for_web():
         vacancy_id = request.args.get('id')
+        print('request.json', request.json)
         return await get_single_vacancies_for_web(vacancy_id)
 
 
