@@ -237,12 +237,15 @@ class DataBaseOperations:
 
         try:
             with self.con:
-                try:
-                    cur.execute(query)
-                    response = cur.fetchall()
-                except Exception as e:
-                    print(e)
-                    return str(e)
+                while True:
+                    try:
+                        cur.execute(query)
+                        response = cur.fetchall()
+                        break
+                    except Exception as e:
+                        print("!!! error in get_all_from_db_async2: ", e)
+                        if 're-entered recursively' not in e.args[0]:
+                            return str(e)
             if curs:
                 return cur
             return response
