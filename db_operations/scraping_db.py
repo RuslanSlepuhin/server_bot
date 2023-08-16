@@ -245,7 +245,7 @@ class DataBaseOperations:
                     break
                 except Exception as e:
                     print(e)
-                    if 'entered recursively' not in str(e):
+                    if 'recursively' not in str(e):
                         return str(e)
                     else:
                         print("else, ", e)
