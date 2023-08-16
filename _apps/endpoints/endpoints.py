@@ -421,7 +421,6 @@ class Endpoints:
                         field=variable.admin_table_fields
                     ), name='db_request'
                 )
-                await response.join()
             except Exception as ex:
                 print(ex)
 
@@ -497,7 +496,6 @@ class Endpoints:
                         field=f'DISTINCT ON (id, body) {preview_fields_for_web}'
                     )
                 )
-                await response.join()
             except Exception as ex:
                 print(ex)
 
