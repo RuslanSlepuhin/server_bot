@@ -410,11 +410,26 @@ class Endpoints:
     # --------------------- admin panel END --------------------------
 
         async def get_single_vacancies_for_web(vacancy_id):
-            response = db.get_all_from_db(
+            response = []
+            loop = asyncio.get_running_loop()
+            pass
+            try:
+                response = await loop.create_task(
+                    db.get_all_from_db_async2(
                         table_name=vacancies_database,
                         param=f"WHERE id={vacancy_id}",
                         field=variable.admin_table_fields
-                    )
+                    ), name='db_request'
+                )
+                await response.join()
+            except Exception as ex:
+                print(ex)
+
+            # response = db.get_all_from_db(
+            #             table_name=vacancies_database,
+            #             param=f"WHERE id={vacancy_id}",
+            #             field=variable.admin_table_fields
+            #         )
             if response:
                 vacancy_dict = await to_dict_from_admin_response(
                     response=response[0],
@@ -469,12 +484,29 @@ class Endpoints:
             if not limit:
                 limit = 200
             param = f"WHERE {id_query}DATE (created_at) BETWEEN '{date_start}' AND '{date.today()}'"
-            response = db.get_all_from_db(
-                table_name='vacancies',
-                order=f'ORDER BY id DESC LIMIT {limit}',
-                param=param,
-                field=f'DISTINCT ON (id, body) {preview_fields_for_web}'
-            )
+
+            response = []
+            loop = asyncio.get_running_loop()
+            pass
+            try:
+                response = await loop.create_task(
+                    db.get_all_from_db(
+                        table_name='vacancies',
+                        order=f'ORDER BY id DESC LIMIT {limit}',
+                        param=param,
+                        field=f'DISTINCT ON (id, body) {preview_fields_for_web}'
+                    )
+                )
+                await response.join()
+            except Exception as ex:
+                print(ex)
+
+            # response = db.get_all_from_db(
+            #     table_name='vacancies',
+            #     order=f'ORDER BY id DESC LIMIT {limit}',
+            #     param=param,
+            #     field=f'DISTINCT ON (id, body) {preview_fields_for_web}'
+            # )
             if type(response) is list:
                 number = 0
                 for vacancy in response:
