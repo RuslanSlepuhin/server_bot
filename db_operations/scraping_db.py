@@ -244,10 +244,13 @@ class DataBaseOperations:
                         response = cur.fetchall()
                         break
                     except Exception as e:
-                        print("!!! error in get_all_from_db_async2: ", e)
+                        print(e)
                         if 're-entered recursively' not in e.args[0]:
                             return str(e)
                         else:
+                            print("else, ", e)
+                            print("!!! error in get_all_from_db_async2: ", e)
+                            print('WAIT')
                             await asyncio.sleep(0.1)
             if curs:
                 return cur
