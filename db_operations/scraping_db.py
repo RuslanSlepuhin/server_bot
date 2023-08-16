@@ -236,28 +236,28 @@ class DataBaseOperations:
         else:
             query = f"""SELECT {field} FROM {table_name} {param} """
 
-        try:
-            while True:
-                with self.con:
-                    try:
-                        cur.execute(query)
-                        response = cur.fetchall()
-                        break
-                    except Exception as e:
-                        print(e)
-                        if 'entered recursively' not in str(e):
-                            return str(e)
-                        else:
-                            print("else, ", e)
-                            print("!!! error in get_all_from_db_async2: ", e)
-                            print('WAIT')
-                            await asyncio.sleep(0.1)
-            if curs:
-                return cur
-            return response
-        except Exception as ex:
-            print(f"\nerror in get_all_from_db: {ex}\n")
-            return False
+        # try:
+        while True:
+            with self.con:
+                try:
+                    cur.execute(query)
+                    response = cur.fetchall()
+                    break
+                except Exception as e:
+                    print(e)
+                    if 'entered recursively' not in str(e):
+                        return str(e)
+                    else:
+                        print("else, ", e)
+                        print("!!! error in get_all_from_db_async2: ", e)
+                        print('WAIT')
+                        await asyncio.sleep(0.1)
+        if curs:
+            return cur
+        return response
+        # except Exception as ex:
+        #     print(f"\nerror in get_all_from_db: {ex}\n")
+        #     return False
 
 
     async def get_all_from_db_async(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
