@@ -121,12 +121,13 @@ class Endpoints:
 
         @app.route("/vacancy", methods = ['GET'])
         async def get_single_vacancy_for_web():
-            print("!!! ", request)
+            print("124 vacancy")
             vacancy_id = request.args.get('id')
             return await get_single_vacancies_for_web(vacancy_id)
 
         @app.route("/vacancies", methods = ['GET'])
         async def get_all_vacancies_for_web_vacancies():
+            print('128 vacancies')
             limit = request.args.get('limit')
             start_id = request.args.get('id')
             return await get_all_vacancies_for_web(start_id=start_id, limit=limit)
