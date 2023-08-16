@@ -120,7 +120,7 @@ class Endpoints:
             return await get_all_vacancies_from_db()
 
         @app.route("/vacancy", methods = ['GET'])
-        async def get_single_vacancy_for_web():
+        async def get_single_vacancy_for_web_vacancy():
             print("124 vacancy")
             vacancy_id = request.args.get('id')
             return await get_single_vacancies_for_web(vacancy_id)
