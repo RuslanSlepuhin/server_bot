@@ -237,8 +237,8 @@ class DataBaseOperations:
             query = f"""SELECT {field} FROM {table_name} {param} """
 
         try:
-            with self.con:
-                while True:
+            while True:
+                with self.con:
                     try:
                         cur.execute(query)
                         response = cur.fetchall()
