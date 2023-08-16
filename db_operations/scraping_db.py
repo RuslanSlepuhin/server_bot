@@ -224,6 +224,33 @@ class DataBaseOperations:
             print(f"\nerror in get_all_from_db: {ex}\n")
             return False
 
+    async def get_all_from_db_async2(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
+
+        self.connect_db()
+        cur = self.con.cursor()
+        if not order:
+            order = "ORDER BY time_of_public"
+        if not without_sort:
+            query = f"""SELECT {field} FROM {table_name} {param} {order}"""
+        else:
+            query = f"""SELECT {field} FROM {table_name} {param} """
+
+        try:
+            with self.con:
+                try:
+                    cur.execute(query)
+                    response = cur.fetchall()
+                except Exception as e:
+                    print(e)
+                    return str(e)
+            if curs:
+                return cur
+            return response
+        except Exception as ex:
+            print(f"\nerror in get_all_from_db: {ex}\n")
+            return False
+
+
     async def get_all_from_db_async(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
         response = []
         cur = None
