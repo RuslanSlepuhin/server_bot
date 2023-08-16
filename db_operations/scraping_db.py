@@ -1,3 +1,4 @@
+import asyncio
 import configparser
 import json
 import re
@@ -246,6 +247,8 @@ class DataBaseOperations:
                         print("!!! error in get_all_from_db_async2: ", e)
                         if 're-entered recursively' not in e.args[0]:
                             return str(e)
+                        else:
+                            await asyncio.sleep(0.1)
             if curs:
                 return cur
             return response
