@@ -489,7 +489,7 @@ class Endpoints:
             pass
             try:
                 response = await loop.create_task(
-                    db.get_all_from_db(
+                    db.get_all_from_db_async2(
                         table_name='vacancies',
                         order=f'ORDER BY id DESC LIMIT {limit}',
                         param=param,
