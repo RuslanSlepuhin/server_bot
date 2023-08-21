@@ -344,9 +344,10 @@ class InviteBot():
 
         @self.dp.message_handler(commands=['developer_help'])
         async def get_courses_data(message: types.Message):
-            self.db.change_type_column(
-                list_table_name=['vacancies'],
-                name_and_type="profession TYPE VARCHAR (100)"
+            await self.rollback_by_number_short_session(
+                message=message,
+                short_session_number='junior: ',
+                additional_param="DATE(created_at)>='2023-08-18'"
             )
 
         @self.dp.message_handler(commands=['get_courses_data'])
@@ -6825,7 +6826,10 @@ class InviteBot():
         pass
         return True
 
-    async def rollback_by_number_short_session(self, message, short_session_number=None):
+    async def rollback_by_number_short_session(self, message, short_session_number=None, **kwargs):
+
+        additional_param = kwargs['additional_param'] if 'additional_param' in kwargs else None
+
         msg = await self.bot_aiogram.send_message(message.chat.id, "Please wait a few seconds")
         if not short_session_number:
             short_session_number = self.db.get_all_from_db(
@@ -6841,73 +6845,76 @@ class InviteBot():
         # table_list.append(variable.admin_database)
         table_list.append(variable.archive_database)
 
+        params = f"WHERE short_session_numbers='{short_session_number}'" if not additional_param else f"WHERE short_session_numbers LIKE '%{short_session_number}%' AND {additional_param}"
+
         for table_name in table_list:
             responses = self.db.get_all_from_db(
                 table_name=table_name,
-                param=f"WHERE short_session_numbers='{short_session_number}'",
+                param=params,
                 field=variable.admin_table_fields
             )
             if responses:
+                print(f'{table_name}: {len(responses)} vacancies')
 
-                progress = ShowProgress({'bot': self.bot_aiogram, 'chat_id': message.chat.id})
-                length = len(responses)
-                n = 0
-                await progress.reset_percent()
-                await progress.start()
-
-                for response in responses:
-                    response_dict = await helper.to_dict_from_admin_response(
-                        response=response,
-                        fields=variable.admin_table_fields
-                    )
-                    id_vacancy = response_dict['id']
-                # ---------------------------------------------------------------------------------
-                    exists_in_admin_table = self.db.check_vacancy_exists_in_db(
-                        tables_list=[variable.admin_database],
-                        title=response_dict['title'],
-                        body=response_dict['body']
-                    )
-                    if exists_in_admin_table['has_been_found']:
-                        admin_table_professions = exists_in_admin_table['response_dict']['profession'].split(", ")
-
-                        if table_name in variable.valid_professions:
-                            if table_name not in admin_table_professions:
-                                admin_table_professions.append(table_name)
-
-                                self.db.update_table(
-                                    table_name=variable.admin_database,
-                                    field='profession',
-                                    value=", ".join(admin_table_professions),
-                                    param=f"WHERE id={exists_in_admin_table['response_dict']['id']}"
-                                )
-                                self.db.update_table(
-                                    table_name=variable.admin_database,
-                                    field='short_session_numbers',
-                                    value="NULL",
-                                    param=f"WHERE id={exists_in_admin_table['response_dict']['id']}"
-                                )
-
-                            self.db.delete_data(
-                                table_name=table_name,
-                                param=f"WHERE id={id_vacancy}"
-                            )
-                        else:
-                            self.db.delete_data(
-                                table_name=table_name,
-                                param=f"WHERE id={response_dict['id']}"
-                            )
-
-                    else:
-                        response_dict['short_session_numbers'] = "NULL"
-                        self.db.push_to_db_common(
-                            table_name=variable.admin_database,
-                            fields_values_dict=response_dict.copy(),
-                        )
-                        self.db.delete_data(
-                            table_name=table_name,
-                            param=f"WHERE id={id_vacancy}"
-                        )
-
+                # progress = ShowProgress({'bot': self.bot_aiogram, 'chat_id': message.chat.id})
+                # length = len(responses)
+                # n = 0
+                # await progress.reset_percent()
+                # await progress.start()
+                #
+                # for response in responses:
+                #     response_dict = await helper.to_dict_from_admin_response(
+                #         response=response,
+                #         fields=variable.admin_table_fields
+                #     )
+                #     id_vacancy = response_dict['id']
+                # # ---------------------------------------------------------------------------------
+                #     exists_in_admin_table = self.db.check_vacancy_exists_in_db(
+                #         tables_list=[variable.admin_database],
+                #         title=response_dict['title'],
+                #         body=response_dict['body']
+                #     )
+                #     if exists_in_admin_table['has_been_found']:
+                #         admin_table_professions = exists_in_admin_table['response_dict']['profession'].split(", ")
+                #
+                #         if table_name in variable.valid_professions:
+                #             if table_name not in admin_table_professions:
+                #                 admin_table_professions.append(table_name)
+                #
+                #                 self.db.update_table(
+                #                     table_name=variable.admin_database,
+                #                     field='profession',
+                #                     value=", ".join(admin_table_professions),
+                #                     param=f"WHERE id={exists_in_admin_table['response_dict']['id']}"
+                #                 )
+                #                 self.db.update_table(
+                #                     table_name=variable.admin_database,
+                #                     field='short_session_numbers',
+                #                     value="NULL",
+                #                     param=f"WHERE id={exists_in_admin_table['response_dict']['id']}"
+                #                 )
+                #
+                #             self.db.delete_data(
+                #                 table_name=table_name,
+                #                 param=f"WHERE id={id_vacancy}"
+                #             )
+                #         else:
+                #             self.db.delete_data(
+                #                 table_name=table_name,
+                #                 param=f"WHERE id={response_dict['id']}"
+                #             )
+                #
+                #     else:
+                #         response_dict['short_session_numbers'] = "NULL"
+                #         self.db.push_to_db_common(
+                #             table_name=variable.admin_database,
+                #             fields_values_dict=response_dict.copy(),
+                #         )
+                #         self.db.delete_data(
+                #             table_name=table_name,
+                #             param=f"WHERE id={id_vacancy}"
+                #         )
+                #
                     n += 1
                     await progress.show_the_progress(message=None, current_number=n, end_number=length)
 
