@@ -347,7 +347,8 @@ class InviteBot():
             await self.rollback_by_number_short_session(
                 message=message,
                 short_session_number='junior: ',
-                additional_param="DATE(created_at)>='2023-08-18'"
+                additional_param="DATE(created_at)>='2023-08-15' AND profession LIKE '%junior%'",
+
             )
 
         @self.dp.message_handler(commands=['get_courses_data'])
