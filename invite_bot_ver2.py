@@ -6863,62 +6863,62 @@ class InviteBot():
 
                 print(f'{table_name}: {len(responses)} vacancies')
 
-                #
-                # for response in responses:
-                #     response_dict = await helper.to_dict_from_admin_response(
-                #         response=response,
-                #         fields=variable.admin_table_fields
-                #     )
-                #     id_vacancy = response_dict['id']
-                # # ---------------------------------------------------------------------------------
-                #     exists_in_admin_table = self.db.check_vacancy_exists_in_db(
-                #         tables_list=[variable.admin_database],
-                #         title=response_dict['title'],
-                #         body=response_dict['body']
-                #     )
-                #     if exists_in_admin_table['has_been_found']:
-                #         admin_table_professions = exists_in_admin_table['response_dict']['profession'].split(", ")
-                #
-                #         if table_name in variable.valid_professions:
-                #             if table_name not in admin_table_professions:
-                #                 admin_table_professions.append(table_name)
-                #
-                #                 self.db.update_table(
-                #                     table_name=variable.admin_database,
-                #                     field='profession',
-                #                     value=", ".join(admin_table_professions),
-                #                     param=f"WHERE id={exists_in_admin_table['response_dict']['id']}"
-                #                 )
-                #                 self.db.update_table(
-                #                     table_name=variable.admin_database,
-                #                     field='short_session_numbers',
-                #                     value="NULL",
-                #                     param=f"WHERE id={exists_in_admin_table['response_dict']['id']}"
-                #                 )
-                #
-                #             self.db.delete_data(
-                #                 table_name=table_name,
-                #                 param=f"WHERE id={id_vacancy}"
-                #             )
-                #         else:
-                #             self.db.delete_data(
-                #                 table_name=table_name,
-                #                 param=f"WHERE id={response_dict['id']}"
-                #             )
-                #
-                #     else:
-                #         response_dict['short_session_numbers'] = "NULL"
-                #         self.db.push_to_db_common(
-                #             table_name=variable.admin_database,
-                #             fields_values_dict=response_dict.copy(),
-                #         )
-                #         self.db.delete_data(
-                #             table_name=table_name,
-                #             param=f"WHERE id={id_vacancy}"
-                #         )
-                #
-                n += 1
-                await progress.show_the_progress(message=None, current_number=n, end_number=length)
+
+                for response in responses:
+                    response_dict = await helper.to_dict_from_admin_response(
+                        response=response,
+                        fields=variable.admin_table_fields
+                    )
+                    id_vacancy = response_dict['id']
+                # ---------------------------------------------------------------------------------
+                    exists_in_admin_table = self.db.check_vacancy_exists_in_db(
+                        tables_list=[variable.admin_database],
+                        title=response_dict['title'],
+                        body=response_dict['body']
+                    )
+                    if exists_in_admin_table['has_been_found']:
+                        admin_table_professions = exists_in_admin_table['response_dict']['profession'].split(", ")
+
+                        if table_name in variable.valid_professions:
+                            if table_name not in admin_table_professions:
+                                admin_table_professions.append(table_name)
+
+                                self.db.update_table(
+                                    table_name=variable.admin_database,
+                                    field='profession',
+                                    value=", ".join(admin_table_professions),
+                                    param=f"WHERE id={exists_in_admin_table['response_dict']['id']}"
+                                )
+                                self.db.update_table(
+                                    table_name=variable.admin_database,
+                                    field='short_session_numbers',
+                                    value="NULL",
+                                    param=f"WHERE id={exists_in_admin_table['response_dict']['id']}"
+                                )
+
+                            self.db.delete_data(
+                                table_name=table_name,
+                                param=f"WHERE id={id_vacancy}"
+                            )
+                        else:
+                            self.db.delete_data(
+                                table_name=table_name,
+                                param=f"WHERE id={response_dict['id']}"
+                            )
+
+                    else:
+                        response_dict['short_session_numbers'] = "NULL"
+                        self.db.push_to_db_common(
+                            table_name=variable.admin_database,
+                            fields_values_dict=response_dict.copy(),
+                        )
+                        self.db.delete_data(
+                            table_name=table_name,
+                            param=f"WHERE id={id_vacancy}"
+                        )
+
+                    n += 1
+                    await progress.show_the_progress(message=None, current_number=n, end_number=length)
 
         await msg.edit_text(f"{msg.text}\nDone! Data has restored")
 
