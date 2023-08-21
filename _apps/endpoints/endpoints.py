@@ -122,6 +122,7 @@ class Endpoints:
         @app.route("/vacancy", methods = ['GET'])
         async def get_single_vacancy_for_web_vacancy():
             print("124 vacancy")
+            await asyncio.sleep(1)
             vacancy_id = request.args.get('id')
             return await get_single_vacancies_for_web(vacancy_id)
 
