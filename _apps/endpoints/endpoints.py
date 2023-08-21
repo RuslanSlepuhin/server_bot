@@ -476,7 +476,7 @@ class Endpoints:
         async def get_all_vacancies_for_web(limit=None, start_id=None):
             all_vacancies = {}
             all_vacancies['vacancies'] = {}
-            date_start = date.today() - timedelta(days=10)
+            date_start = date.today() - timedelta(days=20)
             if start_id:
                 id_query = f"id < {start_id} AND "
             else:
