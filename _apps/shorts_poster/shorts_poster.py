@@ -66,8 +66,8 @@ class ShortsPoster:
                     self.db.write_short_session(self.short_session_name)
                     await self.bot_aiogram.send_message(message.chat.id, f"Shorts session: {self.short_session_name}")
 
-                    # update shorts session in current vacancies in table
-                    await self.update_shorts_session_vacancies()
+                    # # update shorts session in current vacancies in table
+                    # await self.update_shorts_session_vacancies()
 
                     # compose the dict by subs
                     await self.compose_message_for_send()
@@ -88,11 +88,14 @@ class ShortsPoster:
                         # push the final pivot general short
                         await self.send_pivot_shorts()
 
-                        # remove vacancies from admin_table
+                        # spread across prof tables
+                        await self.spread_across_prof_tables()
+
+                       # remove vacancies from admin_table
                         await self.clean_admin_table()
 
                         markup = InlineKeyboardMarkup()
-                        button = InlineKeyboardButton('rollback short session', callback_data=f"rollback_short_session|{self.short_session_name}|{self.profession}")
+                        button = InlineKeyboardButton('rollback short session', callback_data=f"rollback_short_session|{self.short_session_name}")
                         markup.add(button)
                         await self.bot_aiogram.send_message(self.message.chat.id, "Pushing has been done", reply_markup=markup)
 
@@ -336,7 +339,9 @@ class ShortsPoster:
 
                         await self.send_message(chat_id=int(self.config['My_channels']['agregator_channel']), html_text=vacancy['vacancy_text'])
                         await asyncio.sleep(random.randrange(2, 4))
+
                         self.current_aggregator_id += 1
+
                         self.db.update_table(
                             table_name=self.variable.admin_database,
                             field='sended_to_agregator',
@@ -344,16 +349,21 @@ class ShortsPoster:
                             param=f"WHERE id={vacancy['id']}",
                             output_text=f'{n}:vacancy has been updated [field: sended_to_agregator]'
                         )
-                        # self.db.update_table(
-                        #     table_name=self.variable.admin_database,
-                        #     field='short_session_numbers',
-                        #     value=self.short_session_name,
-                        #     param=f"WHERE id={vacancy['id']}",
-                        #     output_text=f'{n}:vacancy has been updated [field: short_session_numbers]'
-                        # )
                         self.history_messages[vacancy['id']]['sended_to_agregator'] = self.current_aggregator_id
+
                     else:
                         print("vacancy has been not changed :)")
+
+                    self.db.update_table(
+                        table_name=self.variable.admin_database,
+                        field='short_session_numbers',
+                        value=self.short_session_name,
+                        param=f"WHERE id={vacancy['id']}",
+                        output_text=f'{n}:vacancy has been updated [field: short_session_numbers]'
+                    )
+                    self.history_messages[vacancy['id']]['short_session_numbers'] = self.short_session_name
+
+
                 except Exception as ex:
                     print(ex, "error 1")
                 n += 1
@@ -535,6 +545,7 @@ class ShortsPoster:
                         msg = await self.bot_aiogram.send_message(chat_id, text, parse_mode='html', disable_web_page_preview=True)
                         if len(html_text_list)>1:
                             await asyncio.sleep(random.randrange(0, 2))
+
                     except Exception as ex:
                         if 'flood control' in ex.args[0].lower():
                             await self.flood_control(ex)
@@ -555,6 +566,49 @@ class ShortsPoster:
             print(f"\n--------------\nFlood control [{seconds} seconds]\n--------------\n")
             time.sleep(int(seconds) + 5)
 
-    # async def decompose_sub_values(self):
-    #     values = self.sub_value.split(", ")
-    #     pass
+    async def spread_across_prof_tables(self):
+        for key in self.history_messages:
+            time = datetime.now()
+            vacancy = self.history_messages[key]
+
+            vacancy['created_at'] = time
+            vacancy['short_session_numbers'] = self.short_session_name
+
+            self.db.update_table(table_name=self.variable.admin_database, field='created_at', value=time, param=f"WHERE id={key}")
+
+            for table_to in [self.variable.vacancies_database, self.profession]:
+                exists = self.db.check_vacancy_exists_in_db(tables_list=[table_to, ], title=vacancy['title'], body=vacancy['body'])
+                if not exists['has_been_found']:
+
+                    # response = self.db.push_to_db_common(table_name=table_to, fields_values_dict=vacancy)
+
+                    transfer = self.db.transfer_vacancy(
+                        table_from=self.variable.admin_database,
+                        table_to=table_to,
+                        id=vacancy['id'])
+
+
+                    if transfer:
+                        print(f'Vacancy has been added to {table_to}')
+                else:
+                    print(f"vacancy has been found in {table_to}")
+                    self.db.update_table(
+                        table_name=table_to,
+                        field='short_session_numbers',
+                        value=self.short_session_name,
+                        param=f"WHERE id={exists['id']}"
+                    )
+
+                # transfer = self.db.transfer_vacancy(table_from=self.variable.admin_database, table_to=table_to, id=key)
+                #
+                # if type(transfer) is bool and transfer:
+                #     print(f"vacancy has been transferred to {table_to}")
+                # elif type(transfer) is dict and 'exists_id' in transfer:
+                #     # self.db.update_table(table_name=table_to, field='created_at', value=time, param=f"WHERE id={transfer['exists_id']}")
+                #     pass
+                # else:
+                #     pass
+
+
+
+

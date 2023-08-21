@@ -1,4 +1,3 @@
-import asyncio
 import configparser
 import json
 import re
@@ -236,28 +235,23 @@ class DataBaseOperations:
         else:
             query = f"""SELECT {field} FROM {table_name} {param} """
 
-        # try:
-        while True:
+        try:
             with self.con:
-                try:
-                    cur.execute(query)
-                    response = cur.fetchall()
-                    break
-                except Exception as e:
-                    print(e)
-                    if 'recursively' not in str(e):
-                        return str(e)
-                    else:
-                        print("else, ", e)
+                while True:
+                    try:
+                        cur.execute(query)
+                        response = cur.fetchall()
+                        break
+                    except Exception as e:
                         print("!!! error in get_all_from_db_async2: ", e)
-                        print('WAIT')
-                        await asyncio.sleep(0.1)
-        if curs:
-            return cur
-        return response
-        # except Exception as ex:
-        #     print(f"\nerror in get_all_from_db: {ex}\n")
-        #     return False
+                        if 're-entered recursively' not in e.args[0]:
+                            return str(e)
+            if curs:
+                return cur
+            return response
+        except Exception as ex:
+            print(f"\nerror in get_all_from_db: {ex}\n")
+            return False
 
 
     async def get_all_from_db_async(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
@@ -348,7 +342,7 @@ class DataBaseOperations:
         query = f"""DELETE FROM {table_name} {param}"""
         with self.con:
             try:
-                cur.execute(query)
+                response = cur.execute(query)
                 print(output_text)
             except Exception as e:
                 print(f'did not delete the data from {table_name}: {e}')
@@ -759,7 +753,7 @@ class DataBaseOperations:
                                 chat_name VARCHAR(150),
                                 title VARCHAR(1000),
                                 body VARCHAR (6000),
-                                profession VARCHAR (30),
+                                profession VARCHAR (100),
                                 vacancy VARCHAR (700),
                                 vacancy_url VARCHAR (150),
                                 company VARCHAR (200),
@@ -895,7 +889,7 @@ class DataBaseOperations:
                                 if self.report:
                                     self.report.parsing_report(found_body=body)
                                     self.report.parsing_report(found_title=title)
-                                return {"has_been_found": True, "response_dict": response_dict}
+                                return {"has_been_found": True, "response_dict": response_dict, "id": response_dict['id']}
         return {"has_been_found": False, "response_dict": {}}
 
         #
@@ -1495,7 +1489,7 @@ class DataBaseOperations:
                     return True if vacancy_has_been_sent else False
 
                 else:
-                    return True
+                    return {'exists_id': id}
         return False
 
     def check_or_create_stats_table(self, table_name=None, profession_list=[]):
@@ -1739,6 +1733,13 @@ class DataBaseOperations:
                 return True
             except Exception as ex:
                 print(f"error in push_to_db_common function: {ex}")
+
+                for key in fields_values_dict:
+                    if fields_values_dict[key] and type(fields_values_dict[key]) is str:
+                        print(key, f"len: {len(fields_values_dict[key])}")
+                    else:
+                        pass
+
                 if report and self.report:
                     self.report.parsing_report(has_been_added_to_db=False)
                     self.report.parsing_report(error=str(ex))
