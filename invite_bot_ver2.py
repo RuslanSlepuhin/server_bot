@@ -6853,14 +6853,16 @@ class InviteBot():
                 param=params,
                 field=variable.admin_table_fields
             )
+            print(table_name)
             if responses:
-                print(f'{table_name}: {len(responses)} vacancies')
-
                 progress = ShowProgress({'bot': self.bot_aiogram, 'chat_id': message.chat.id})
                 length = len(responses)
                 n = 0
                 await progress.reset_percent()
                 await progress.start()
+
+                print(f'{table_name}: {len(responses)} vacancies')
+
                 #
                 # for response in responses:
                 #     response_dict = await helper.to_dict_from_admin_response(
