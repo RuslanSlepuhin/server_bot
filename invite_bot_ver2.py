@@ -6845,7 +6845,7 @@ class InviteBot():
         # table_list.append(variable.admin_database)
         table_list.append(variable.archive_database)
 
-        params = f"WHERE short_session_numbers='{short_session_number}'" if not additional_param else f"WHERE short_session_numbers LIKE '%{short_session_number}%' AND {additional_param}"
+        params = f"WHERE short_session_numbers='{short_session_number}'" if not additional_param else f"WHERE {additional_param}"
 
         for table_name in table_list:
             responses = self.db.get_all_from_db(
