@@ -6915,8 +6915,8 @@ class InviteBot():
                 #             param=f"WHERE id={id_vacancy}"
                 #         )
                 #
-                    n += 1
-                    await progress.show_the_progress(message=None, current_number=n, end_number=length)
+                n += 1
+                await progress.show_the_progress(message=None, current_number=n, end_number=length)
 
         await msg.edit_text(f"{msg.text}\nDone! Data has restored")
 
