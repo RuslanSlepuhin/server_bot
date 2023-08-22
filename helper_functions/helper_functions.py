@@ -769,9 +769,13 @@ def split_text_limit(message_for_send, limit=4096, separator="\n\n"):
 async def reset_aggregator_sending_numbers(**kwargs):
     from utils.additional_variables.additional_variables import manual_posting_shorts
     db_class = kwargs['db_class'] if 'db_class' in kwargs else None
+    approved = True if 'approved' in kwargs and kwargs['approved'] else False
+
     reset_all_profession = True if 'reset_all_profession' in kwargs and kwargs['reset_all_profession'] else False
     param = '' if reset_all_profession else f"WHERE profession NOT IN {tuple(manual_posting_shorts)}" if len(manual_posting_shorts) > 1 else f"WHERE profession NOT LIKE '%{manual_posting_shorts[0]}%'"
     # param = f"WHERE profession NOT IN {tuple(manual_posting_shorts)}" if len(manual_posting_shorts) > 1 else f"WHERE profession NOT LIKE '%{manual_posting_shorts[0]}%'"
+    if approved:
+        param = "WHERE approved = 'approves by admin'"
 
     if db_class:
         try:
