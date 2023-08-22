@@ -2056,7 +2056,7 @@ class InviteBot():
                 # text = "Approved has been set" if completed_successfully else "Something wrong"
                 # await self.bot_aiogram.send_message(callback.message.chat.id, text)
 
-                completed_successfully = await helper.reset_aggregator_sending_numbers(db_class=self.db, reset_all_profession=True)
+                completed_successfully = await helper.reset_aggregator_sending_numbers(db_class=self.db, reset_all_profession=True, approved=True)
                 text = "Agreggator has been reset" if completed_successfully else "Something wrong"
                 await self.bot_aiogram.send_message(callback.message.chat.id, text)
 

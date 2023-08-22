@@ -353,6 +353,7 @@ class ShortsPoster:
 
                     else:
                         print("vacancy has been not changed :)")
+                        print(vacancy['vacancy'], sub, vacancy['sended_to_agregator'])
 
                     self.db.update_table(
                         table_name=self.variable.admin_database,
