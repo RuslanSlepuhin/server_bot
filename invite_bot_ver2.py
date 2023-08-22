@@ -2052,9 +2052,9 @@ class InviteBot():
                     profession = ''
                 await self.rollback_by_number_short_session(message=callback.message,
                                                             short_session_number=short_session)
-                completed_successfully = await helper.set_approved_like_null(db_class=self.db, profession=profession)
-                text = "Approved has been set" if completed_successfully else "Something wrong"
-                await self.bot_aiogram.send_message(callback.message.chat.id, text)
+                # completed_successfully = await helper.set_approved_like_null(db_class=self.db, profession=profession)
+                # text = "Approved has been set" if completed_successfully else "Something wrong"
+                # await self.bot_aiogram.send_message(callback.message.chat.id, text)
 
                 completed_successfully = await helper.reset_aggregator_sending_numbers(db_class=self.db, reset_all_profession=True)
                 text = "Agreggator has been reset" if completed_successfully else "Something wrong"
