@@ -326,7 +326,7 @@ class ShortsPoster:
                             await asyncio.sleep(random.randrange(2, 4))
                         else:
                             print("!!!ALARM !!!")
-                            await self.send_message(chat_id=self.message.chat.id, html_text="Vacancies numbering failure, please get a help from developer")
+                            await self.send_message(chat_id=self.message.chat.id, html_text="!!!ALARM !!! Vacancies numbering failure, please get a help from developer")
                             pass
 
                     else:
