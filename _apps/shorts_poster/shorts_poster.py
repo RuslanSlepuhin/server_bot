@@ -73,7 +73,12 @@ class ShortsPoster:
                     await self.compose_message_for_send()
 
                     # public shorts to aggregator
-                    await self.aggregator_vacancies_publisher()
+                    loop = asyncio.get_event_loop()
+                    task = loop.create_task(self.aggregator_vacancies_publisher())
+                    await task
+                    # await self.aggregator_vacancies_publisher()
+
+                    await self.check_dictionaries()
 
                     # build several text short vacancy in common sub key
                     await self.rebuild_subs_to_str_dict()
@@ -211,24 +216,6 @@ class ShortsPoster:
 
 # -------------------------------------------------------------------------------------------
 
-                # for sub in subs:
-                #     if 'junior' not in sub:
-                #         self.sub_value = ''
-                #         self.sub_name = sub.split(": ")[0]
-                #         if self.sub_name != 'junior':
-                #             self.sub_value = sub.split(": ")[1]
-                #
-                #             print('ATTENTION! YOU MUST CHECK HOW DECOMPOSE SUBS IN SHORTS CODE IN COMPOSE_MESSAGE FUNCTION! THIS POINT FOR CHANGE COMPOSING SUBS IN MANUAL ADMIN PANEL!')
-                #
-                #             if self.sub_value:
-                #                 await self.build_aggregator_vacancy(self.sub_value)
-                #             else:
-                #                 await self.build_aggregator_vacancy(self.sub_name)
-                #                 found_subs = True
-                # if not found_subs:
-                #     self.sub_value = self.profession
-                #     await self.build_aggregator_vacancy()
-
                 if self.vacancy['approved'] != 'approves by admin':
                     self.db.update_table(table_name=self.variable.admin_database, field='approved',
                                          value='approves by admin', param=f"WHERE id={self.vacancy['id']}")
@@ -238,32 +225,6 @@ class ShortsPoster:
 
         # professions = ", ".join(list(filter(self.profession, self.vacancy['profession'].split(", "))))
 
-    # async def build_aggregator_vacancy(self, sub=None):
-    #     self.sub_value = sub if sub else self.sub_value
-    #     vacancy_text = ''
-    #     if 'sorted_by_subs' not in self.sub_short_vacancies_dict:
-    #         self.sub_short_vacancies_dict['sorted_by_subs'] = {}
-    #     for key in self.variable.fields_for_agregator_vacancy:
-    #         if key in self.vacancy:
-    #             if key not in ['title', 'body']:
-    #                 vacancy_text += f"{key.capitalize().replace('_', ' ')}: {self.vacancy[key]}\n" if key != self.variable.double_n_before_field else f"{key.capitalize().replace('_', ' ')}: {self.vacancy[key]}\n\n"
-    #             else:
-    #                 vacancy_text += f"{self.vacancy[key]}\n"
-    #     if vacancy_text:
-    #         self.vacancy_text = vacancy_text
-    #         await self.check_len_and_add_extra()
-    #         if self.sub_value not in self.sub_short_vacancies_dict['sorted_by_subs']:
-    #             self.sub_short_vacancies_dict['sorted_by_subs'][self.sub_value] = []
-    #         self.sub_short_vacancies_dict['sorted_by_subs'][self.sub_value].append(
-    #             {
-    #                 'id': self.vacancy['id'],
-    #                 'id_admin_channel': self.vacancy['id_admin_channel'] if 'id_admin_channel' in self.vacancy else None,
-    #                 'vacancy_text': self.vacancy_text,
-    #             }
-    #         )
-    #     else:
-    #         self.vacancy_text = ''
-    #         print('There is not vacancy_text 103')
 
     async def build_aggregator_vacancy(self):
         subs_list = []
@@ -320,6 +281,9 @@ class ShortsPoster:
             self.vacancy_text = self.vacancy_text[:4093] + '...'
 
     async def aggregator_vacancies_publisher(self):
+        with open("./aggregator_vacancies_publisher.txt", 'w') as file:
+            file.write("\n")
+
         self.current_aggregator_id = await self.bot_class.get_last_admin_channel_id(
                     message=self.message,
                     channel=self.config['My_channels']['agregator_channel']
@@ -337,48 +301,86 @@ class ShortsPoster:
                 try:
                     if not self.history_messages[vacancy['id']]['sended_to_agregator']:
 
-                        await self.send_message(chat_id=int(self.config['My_channels']['agregator_channel']), html_text=vacancy['vacancy_text'])
-                        await asyncio.sleep(random.randrange(2, 4))
+                        # loop = asyncio.get_event_loop()
+                        # task = loop.create_task(self.send_message(chat_id=int(self.config['My_channels']['agregator_channel']), html_text=vacancy['vacancy_text']))
+                        # await task
+                        msg = await self.send_message(chat_id=int(self.config['My_channels']['agregator_channel']), html_text=vacancy['vacancy_text'])
+                        if msg:
+                            self.current_aggregator_id += 1
 
-                        self.current_aggregator_id += 1
+                            self.db.update_table(
+                                table_name=self.variable.admin_database,
+                                field='sended_to_agregator',
+                                value=self.current_aggregator_id,
+                                param=f"WHERE id={vacancy['id']}",
+                                output_text=f'{n}:vacancy has been updated [field: sended_to_agregator]'
+                            )
+                            self.history_messages[vacancy['id']]['sended_to_agregator'] = self.current_aggregator_id
+                            index_vacancy = self.sub_short_vacancies_dict['sorted_by_subs'][sub].index(vacancy)
+                            self.sub_short_vacancies_dict['sorted_by_subs'][sub][index_vacancy]['id_admin_channel'] = self.current_aggregator_id
 
-                        self.db.update_table(
-                            table_name=self.variable.admin_database,
-                            field='sended_to_agregator',
-                            value=self.current_aggregator_id,
-                            param=f"WHERE id={vacancy['id']}",
-                            output_text=f'{n}:vacancy has been updated [field: sended_to_agregator]'
-                        )
-                        self.history_messages[vacancy['id']]['sended_to_agregator'] = self.current_aggregator_id
+                            vacancy_name = vacancy['vacancy_text'].split("\n")[0].split(": ")[1]
+                            with open("./aggregator_vacancies_publisher.txt", 'a') as file:
+                                file.write(f"{vacancy['id']}: {self.current_aggregator_id}\n{vacancy_name} (vacancy_name)\n{self.history_messages[vacancy['id']]['vacancy']} (vacancy_history)\n")
+
+                            await asyncio.sleep(random.randrange(2, 4))
+                        else:
+                            print("!!!ALARM !!!")
+                            await self.send_message(chat_id=self.message.chat.id, html_text="Vacancies numbering failure, please get a help from developer")
+                            pass
 
                     else:
                         print("vacancy has been not changed :)")
-                        print(vacancy['vacancy'], sub, vacancy['sended_to_agregator'])
+                        vacancy_name = vacancy['vacancy_text'].split("\n")[0].split(": ")[1]
+                        with open("./aggregator_vacancies_publisher.txt", 'a') as file:
+                            file.write(f"->{vacancy['id']}: {self.history_messages[vacancy['id']]['sended_to_agregator']}\n{vacancy_name} (vacancy_name)\n{self.history_messages[vacancy['id']]['vacancy']} (vacancy_history)\n")
 
-                    self.db.update_table(
-                        table_name=self.variable.admin_database,
-                        field='short_session_numbers',
-                        value=self.short_session_name,
-                        param=f"WHERE id={vacancy['id']}",
-                        output_text=f'{n}:vacancy has been updated [field: short_session_numbers]'
-                    )
-                    self.history_messages[vacancy['id']]['short_session_numbers'] = self.short_session_name
+                        index_vacancy = self.sub_short_vacancies_dict['sorted_by_subs'][sub].index(vacancy)
+                        self.sub_short_vacancies_dict['sorted_by_subs'][sub][index_vacancy]['id_admin_channel'] = self.history_messages[vacancy['id']]['sended_to_agregator']
 
+                    try:
+                        self.db.update_table(
+                            table_name=self.variable.admin_database,
+                            field='short_session_numbers',
+                            value=self.short_session_name,
+                            param=f"WHERE id={vacancy['id']}",
+                            output_text=f'{n}:vacancy has been updated [field: short_session_numbers]'
+                        )
+                        self.history_messages[vacancy['id']]['short_session_numbers'] = self.short_session_name
+
+
+                    except Exception as e:
+                        print('error 22', e)
+                        pass
 
                 except Exception as ex:
                     print(ex, "error 1")
+                    pass
                 n += 1
                 await self.show_progress.show_the_progress(message=None, current_number=n, end_number=length)
+        pass
 
     async def rebuild_subs_to_str_dict(self):
         self.sub_short_vacancies_dict['shorts_for_publishing'] = {}
         for sub in self.sub_short_vacancies_dict['sorted_by_subs']:
             # if sub in self.profession:
                 for vacancy_id in self.sub_short_vacancies_dict['sorted_by_subs'][sub]:
+
+                    vacancy_from_agregator = vacancy_id['vacancy_text'].split('\n')[0].split(': ')[1]
+                    print(f"{vacancy_from_agregator} vacancy from sub_shorts")
+                    print(f"{self.history_messages[vacancy_id['id']]['vacancy']} vacancy from history")
+                    pass
+
+
                     short_str = await self.get_short_str(vacancy_id['id'])
+
+                    pass
+
                     if sub not in self.sub_short_vacancies_dict['shorts_for_publishing']:
                         self.sub_short_vacancies_dict['shorts_for_publishing'][sub] = ''
                     self.sub_short_vacancies_dict['shorts_for_publishing'][sub] += f"{short_str}\n\n"
+                    pass
+
                 self.sub_short_vacancies_dict['shorts_for_publishing'][sub] = f"Дайджест вакансий для #{sub.title()} за {datetime.now().strftime('%d-%m-%Y')}\n\n" + self.sub_short_vacancies_dict['shorts_for_publishing'][sub]
                 if self.profession in self.variable.manual_posting_shorts:
                     try:
@@ -389,6 +391,7 @@ class ShortsPoster:
 
                     except Exception as ex:
                         print(ex, 'error 2')
+                        pass
             # else:
             #     pass
         pass
@@ -396,7 +399,10 @@ class ShortsPoster:
     async def get_short_str(self, vacancy_id):
         short_str = ''
         vacancy = self.history_messages[vacancy_id]
-        short_str += f"<a href='{self.config['My_channels']['agregator_link']}/{vacancy['sended_to_agregator']}'>{vacancy['vacancy'].title()}</a> " if 'vacancy' in vacancy and vacancy['vacancy'] else f"<a href='{self.config['Channel_links']['agregator_channel']}/{vacancy['sended_to_agregator']}'>987 </a>"
+        short_str += f"<a href='{self.config['My_channels']['agregator_link']}/{vacancy['sended_to_agregator']}'>{vacancy['vacancy'].title()}</a> " \
+            if 'vacancy' in vacancy and vacancy['vacancy'] \
+            else f"<a href='{self.config['Channel_links']['agregator_channel']}/{vacancy['sended_to_agregator']}'>987 </a>"
+        print(short_str)
         short_str += f"в {vacancy['company'].title()} " if 'company' in vacancy and vacancy['company'] else ''
         short_str += '('
         short_str += f"eng: {vacancy['english'].title()}, " if 'english' in vacancy and vacancy['english'] else ''
@@ -533,32 +539,77 @@ class ShortsPoster:
             await self.show_progress.show_the_progress(message=None, current_number=n, end_number=length)
 
     async def send_message(self, html_text, chat_id=None):
+        msg = None
         if not chat_id:
             chat_id = self.message.chat.id
 
         html_text_list = self.helper.split_text_limit(html_text)
-
-        while True:
-            msg = None
+        counter = 0
+        # while True:
+        #     try:
+        while counter <= len(html_text_list) - 1:
             try:
-                for text in html_text_list:
-                    try:
-                        msg = await self.bot_aiogram.send_message(chat_id, text, parse_mode='html', disable_web_page_preview=True)
-                        if len(html_text_list)>1:
-                            await asyncio.sleep(random.randrange(0, 2))
+                msg = await self.bot_aiogram.send_message(chat_id, html_text_list[counter], parse_mode='html', disable_web_page_preview=True)
+                counter += 1
 
-                    except Exception as ex:
-                        if 'flood control' in ex.args[0].lower():
-                            await self.flood_control(ex)
-                            msg = await self.bot_aiogram.send_message(chat_id, text, parse_mode='html', disable_web_page_preview=True)
-                            await asyncio.sleep(random.randrange(1, 3))
-                return msg
-            except Exception as ex:
-                if 'flood control' in ex.args[0].lower():
-                    await self.flood_control(ex)
-                if 'unsupported start tag "100%"' in ex.args[0]:
-                    html_text = re.sub(r"[^bap\"](>)", ' больше ', html_text)
-                    html_text = re.sub(r"(<)[^bap\/]", " меньше ", html_text)
+            except Exception as ex1:
+
+                if 'flood control' in ex1.args[0].lower():
+                    print('error 34: flood control: ')
+                    await self.flood_control(ex1)
+
+                elif 'unsupported start tag "100%"' in ex1.args[0]:
+                    print('error 35: unsupported start tag "100%": ')
+                    html_text_list[counter] = re.sub(r"[^bap\"](>)", ' больше ', html_text_list[counter])
+                    html_text_list[counter] = re.sub(r"(<)[^bap\/]", " меньше ", html_text_list[counter])
+
+                elif 'unsupported start tag' in ex1.args[0]:
+                    print('error 36: ', ex1)
+                    match = re.findall(r"<[a-zA-Zа-яА-Я\s,.]*>", html_text_list[counter])
+                    if match:
+                        for one_match in match:
+                            html_text_list[counter] = re.sub(rf"{one_match}", one_match[1:-1], html_text_list[counter])
+                    else:
+                        return False
+
+                else:
+                    print('error 37: ', ex1)
+                    print(html_text_list[counter])
+                    pass
+                    return False
+
+        # msg = await self.bot_aiogram.send_message(chat_id, html_text, parse_mode='html', disable_web_page_preview=True)
+        return msg
+            # except Exception as ex2:
+            #     if 'flood control' in ex2.args[0].lower():
+            #         print('error 36: flood control: ')
+            #         await self.flood_control(ex2)
+            #     if 'unsupported start tag "100%"' in ex2.args[0]:
+            #         print('error 37: flood unsupported start tag "100%": ')
+            #         html_text = re.sub(r"[^bap\"](>)", ' больше ', html_text)
+            #         html_text = re.sub(r"(<)[^bap\/]", " меньше ", html_text)
+
+        # while True:
+        #     msg = None
+        #     try:
+        #         for text in html_text_list:
+        #             try:
+        #                 msg = await self.bot_aiogram.send_message(chat_id, text, parse_mode='html', disable_web_page_preview=True)
+        #                 if len(html_text_list)>1:
+        #                     await asyncio.sleep(random.randrange(0, 2))
+        #
+        #             except Exception as ex:
+        #                 if 'flood control' in ex.args[0].lower():
+        #                     await self.flood_control(ex)
+        #                     msg = await self.bot_aiogram.send_message(chat_id, text, parse_mode='html', disable_web_page_preview=True)
+        #                     await asyncio.sleep(random.randrange(1, 3))
+        #         return msg
+        #     except Exception as ex:
+        #         if 'flood control' in ex.args[0].lower():
+        #             await self.flood_control(ex)
+        #         if 'unsupported start tag "100%"' in ex.args[0]:
+        #             html_text = re.sub(r"[^bap\"](>)", ' больше ', html_text)
+        #             html_text = re.sub(r"(<)[^bap\/]", " меньше ", html_text)
 
     async def flood_control(self, ex):
         match = re.findall(r"[0-9]{1,4} seconds", ex.args[0])
@@ -600,16 +651,16 @@ class ShortsPoster:
                         param=f"WHERE id={exists['id']}"
                     )
 
-                # transfer = self.db.transfer_vacancy(table_from=self.variable.admin_database, table_to=table_to, id=key)
-                #
-                # if type(transfer) is bool and transfer:
-                #     print(f"vacancy has been transferred to {table_to}")
-                # elif type(transfer) is dict and 'exists_id' in transfer:
-                #     # self.db.update_table(table_name=table_to, field='created_at', value=time, param=f"WHERE id={transfer['exists_id']}")
-                #     pass
-                # else:
-                #     pass
-
+    async def check_dictionaries(self):
+        for sub in self.sub_short_vacancies_dict['sorted_by_subs']:
+            for item in self.sub_short_vacancies_dict['sorted_by_subs'][sub]:
+                id = item['id']
+                aggregator_id = item['id_admin_channel']
+                if aggregator_id != self.history_messages[id]['sended_to_agregator']:
+                    print("NOT MATCHING ID: ", id)
+                    pass
+                else:
+                    print("MATCH")
 
 
 
