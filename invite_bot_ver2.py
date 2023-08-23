@@ -348,15 +348,8 @@ class InviteBot():
                 message=message,
                 short_session_number='junior: ',
                 additional_param="DATE(created_at)>='2023-08-15' AND profession LIKE '%junior%'",
-            )
-            completed_successfully = await helper.set_approved_like_null(db_class=self.db, profession='junior')
-            text = "Approved has been set" if completed_successfully else "Something wrong"
-            await self.bot_aiogram.send_message(message.chat.id, text)
 
-            completed_successfully = await helper.reset_aggregator_sending_numbers(db_class=self.db,
-                                                                                   reset_all_profession=True)
-            text = "Agreggator has been reset" if completed_successfully else "Something wrong"
-            await self.bot_aiogram.send_message(message.chat.id, text)
+            )
 
         @self.dp.message_handler(commands=['get_courses_data'])
         async def get_courses_data(message: types.Message):
