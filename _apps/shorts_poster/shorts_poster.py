@@ -628,20 +628,32 @@ class ShortsPoster:
 
             self.db.update_table(table_name=self.variable.admin_database, field='created_at', value=time, param=f"WHERE id={key}")
 
+            vacancy_from_admin_table = self.db.get_all_from_db(
+                table_name=self.variable.admin_database,
+                param=f"WHERE id={key}",
+                field=self.variable.admin_table_fields,
+            )
+            vacancy_from_admin_table_dict = await self.helper.to_dict_from_admin_response(vacancy_from_admin_table[0], self.variable.admin_table_fields)
+
             for table_to in [self.variable.vacancies_database, self.profession]:
                 exists = self.db.check_vacancy_exists_in_db(tables_list=[table_to, ], title=vacancy['title'], body=vacancy['body'])
                 if not exists['has_been_found']:
 
                     # response = self.db.push_to_db_common(table_name=table_to, fields_values_dict=vacancy)
+                    print('3689545')
+                    # transfer = self.db.transfer_vacancy(
+                    #     table_from=self.variable.admin_database,
+                    #     table_to=table_to,
+                    #     id=vacancy['id'])
+                    # transfer=True
+                    profession_list = {}
+                    profession_list['profession'] = [self.profession]
+                    # results_dict = {'title': 'title', 'body': 'body', 'profession': 'junior', 'sub': ''}
 
-                    transfer = self.db.transfer_vacancy(
-                        table_from=self.variable.admin_database,
-                        table_to=table_to,
-                        id=vacancy['id'])
+                    self.db.push_to_bd(results_dict=vacancy_from_admin_table_dict, profession_list=profession_list)
 
-
-                    if transfer:
-                        print(f'Vacancy has been added to {table_to}')
+                    # if transfer:
+                    #     print(f'Vacancy has been added to {table_to}')
                 else:
                     print(f"vacancy has been found in {table_to}")
                     self.db.update_table(

@@ -2006,7 +2006,7 @@ class InviteBot():
                 #     message=callback.message,
                 #     callback_data=callback.data,
                 #     hard_pushing=True,
-                #     hard_push_profession=channel
+                #     hard_push_profession=profession
                 # )
 
             if callback.data == 'choose_one_channel':  # compose keyboard for each profession
@@ -3327,7 +3327,7 @@ class InviteBot():
                 try:
                     await digest_parser.main_start()
                 except Exception as e:
-                    await self.bot_aiogram.send_message(message.chat.id, f"DIGEST parser: error: {e} ")
+                    await self.bot_aiogram.send_message(Message.chat.id, f"DIGEST error: {e}")
 
                 self.db.push_to_db_common(
                     table_name='parser_at_work',
