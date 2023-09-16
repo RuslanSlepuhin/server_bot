@@ -96,20 +96,22 @@ class DigestParser():
                 )
                 if response:
                     status = "found in db by url"
-                    return {'status': status, 'domain': domain}
+                    return {'status': status, 'domain': domain, 'error': None}
+        status = "no parser"
         try:
             parser = parser_sites.get(domain)
             if parser:
                 print('START PARSING VACANCY')
-                parser_response = await parser(report=self.report, bot_dict=self.bot_dict).get_content_from_one_link(
-                    url)
-                if parser_response['response']['vacancy']:
-                    status = f"{parser_response['response']['vacancy']}"
-            else:
-                status = "no parser"
-            return {'status': status, 'domain': domain}
+                try:
+                    parser_response = await parser(report=self.report, bot_dict=self.bot_dict).get_content_from_one_link(
+                        url)
+                    if parser_response['response']['vacancy']:
+                        status = f"{parser_response['response']['vacancy']}"
+                except Exception as ex:
+                    print('!!!! db_check_add_single_vacancy: Something is wrong')
+            return {'status': status, 'domain': domain, 'error': None}
         except Exception as e:
-            return e
+            return {'status': status, 'domain': domain, 'error': e}
 
     async def parse_message(self, message, channel):
 
