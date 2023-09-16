@@ -223,21 +223,25 @@ class DataBaseOperations:
             query = f"""SELECT {field} FROM {table_name} {param} {order}"""
         else:
             query = f"""SELECT {field} FROM {table_name} {param} """
-
-        try:
-            with self.con:
-                try:
-                    cur.execute(query)
-                    response = cur.fetchall()
-                except Exception as e:
-                    print(e)
-                    return str(e)
-            if curs:
-                return cur
-            return response
-        except Exception as ex:
-            print(f"\nerror in get_all_from_db: {ex}\n")
-            return False
+        while self.db_is_busy:
+            pass
+        else:
+            try:
+                self.db_is_busy = True
+                with self.con:
+                    try:
+                        cur.execute(query)
+                        response = cur.fetchall()
+                    except Exception as e:
+                        print(e)
+                        return str(e)
+                self.db_is_busy = False
+                if curs:
+                    return cur
+                return response
+            except Exception as ex:
+                print(f"\nerror in get_all_from_db: {ex}\n")
+                return False
 
     async def get_all_from_db_async2(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
 
