@@ -227,6 +227,7 @@ class DataBaseOperations:
             query = f"""SELECT {field} FROM {table_name} {param} """
         while self.db_is_busy:
             time.sleep(0.1)
+            print('*')
         else:
             try:
                 self.db_is_busy = True
