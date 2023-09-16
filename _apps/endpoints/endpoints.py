@@ -138,6 +138,7 @@ class Endpoints:
 
         @app.route("/vacancies", methods=['POST'])
         async def vacancies_with_filters():
+            time.sleep(0.2)
             data = request.json
             if 'limit' in data and data['limit']:
                 limit = data['limit']
