@@ -124,6 +124,7 @@ class Endpoints:
             print("124 vacancy")
             await asyncio.sleep(0.2)
             vacancy_id = request.args.get('id')
+            print('-------------------------------')
             return await get_single_vacancies_for_web(vacancy_id)
 
         @app.route("/vacancies", methods = ['GET'])
@@ -132,6 +133,7 @@ class Endpoints:
             print('128 vacancies')
             limit = request.args.get('limit')
             start_id = request.args.get('id')
+            print('-------------------------------')
             return await get_all_vacancies_for_web(start_id=start_id, limit=limit)
 
         @app.route("/vacancies", methods=['POST'])
