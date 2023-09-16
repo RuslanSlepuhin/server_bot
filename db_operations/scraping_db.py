@@ -25,6 +25,7 @@ class DataBaseOperations:
             self.connect_db()
         self.report = kwargs['report'] if 'report' in kwargs else None
         self.admin_check_file = './logs/check_file.txt'
+        self.db_is_busy = False
 
     def connect_db(self):
 
@@ -197,6 +198,20 @@ class DataBaseOperations:
     def clear_title_or_body(self, text):
         text = text.replace('\'', '\"')
         return text
+
+    def get_db_data(self, query):
+        cur = self.con.cursor()
+        while self.db_is_busy:
+            pass
+        else:
+            self.db_is_busy = True
+            with self.con:
+                try:
+                    cur.execute(query)
+                    return {'error': None, 'response': cur.fetchall()}
+                except Exception as ex:
+                    return {'error': ex, 'response': None}
+            self.db_is_busy = False
 
     def get_all_from_db(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
 
