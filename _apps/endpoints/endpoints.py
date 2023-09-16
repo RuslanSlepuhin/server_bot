@@ -492,25 +492,25 @@ class Endpoints:
             param = f"WHERE {id_query}(DATE (created_at) BETWEEN '{date_start}' AND '{date_today}') AND id is NOT NULL"
 
             response = []
-            order = f'ORDER BY id DESC LIMIT {limit}'
-            fields = f'DISTINCT ON (id, body) {preview_fields_for_web}'
-            try:
-                response = db.get_db_data(query=f"select {fields} {preview_fields_for_web} from vacancies {param} {order}")
-            except Exception as ex:
-                print("501 endpoint", ex)
-
+            # order = f'ORDER BY id DESC LIMIT {limit}'
+            # fields = f'DISTINCT ON (id, body) {preview_fields_for_web}'
             # try:
-            #     loop = asyncio.get_running_loop()
-            #     response = await loop.create_task(
-            #         db.get_all_from_db_async2(
-            #             table_name='vacancies',
-            #             order=f'ORDER BY id DESC LIMIT {limit}',
-            #             param=param,
-            #             field=f'DISTINCT ON (id, body) {preview_fields_for_web}'
-            #         )
-            #     )
+            #     response = db.get_db_data(query=f"select {fields} {preview_fields_for_web} from vacancies {param} {order}")
             # except Exception as ex:
             #     print("501 endpoint", ex)
+
+            try:
+                loop = asyncio.get_running_loop()
+                response = await loop.create_task(
+                    db.get_all_from_db_async2(
+                        table_name='vacancies',
+                        order=f'ORDER BY id DESC LIMIT {limit}',
+                        param=param,
+                        field=f'DISTINCT ON (id, body) {preview_fields_for_web}'
+                    )
+                )
+            except Exception as ex:
+                print("501 endpoint", ex)
 
             # response = db.get_all_from_db(
             #     table_name='vacancies',
