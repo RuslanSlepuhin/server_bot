@@ -516,7 +516,7 @@ class Endpoints:
                         fields=preview_fields_for_web
                     )
                     all_vacancies['vacancies'][str(number)] = vacancy_dict
-                    print(all_vacancies['vacancies'][str(number)]['id'])
+                    # print(all_vacancies['vacancies'][str(number)]['id'])
                     number += 1
             elif type(response) is str:
                 return {'error': response}
