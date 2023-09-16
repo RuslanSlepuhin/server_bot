@@ -154,7 +154,7 @@ class Endpoints:
             )
             if amount_response:
                 responses_dict['amount'] = amount_response[0][0]
-                param = f'{query}{id_query}'
+                param = f'{query}{id_query} AND id is NOT NULL'
                 vacancies_response = db.get_all_from_db(
                     table_name=vacancies_database,
                     param=param,
