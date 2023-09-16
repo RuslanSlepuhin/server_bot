@@ -131,7 +131,7 @@ class Endpoints:
         @app.route("/vacancies", methods = ['GET'])
         # async def get_all_vacancies_for_web_vacancies():
         def get_all_vacancies_for_web_vacancies():
-            time.sleep(1)
+            time.sleep(0.5)
             print('128 vacancies')
             limit = request.args.get('limit')
             start_id = request.args.get('id')
@@ -141,7 +141,7 @@ class Endpoints:
         @app.route("/vacancies", methods=['POST'])
         # async def vacancies_with_filters():
         def vacancies_with_filters():
-            time.sleep(0.2)
+            time.sleep(0.5)
             data = request.json
             if 'limit' in data and data['limit']:
                 limit = data['limit']
