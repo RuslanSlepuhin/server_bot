@@ -154,7 +154,7 @@ class Endpoints:
             )
             if amount_response:
                 responses_dict['amount'] = amount_response[0][0]
-                param = f'{query}{id_query} AND id is NOT NULL'
+                param = f'{query}{id_query} AND id IS NOT NULL'
                 vacancies_response = db.get_all_from_db(
                     table_name=vacancies_database,
                     param=param,
@@ -164,6 +164,7 @@ class Endpoints:
 
                 if vacancies_response:
                     responses_dict['vacancies'] = await package_list_to_dict(vacancies_response, preview_fields_for_web)
+            await asyncio.sleep(0.2)
             return responses_dict
 
 
