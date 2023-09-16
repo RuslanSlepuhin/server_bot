@@ -143,7 +143,6 @@ class Endpoints:
         @app.route("/vacancies", methods=['POST'])
         async def vacancies_with_filters():
             print('start | POST vacancies')
-            time.sleep(0.2)
             data = request.json
             if 'limit' in data and data['limit']:
                 limit = data['limit']
@@ -155,6 +154,7 @@ class Endpoints:
                 id_query = ''
             query = Predictive(data).get_full_query()
             responses_dict = {}
+            time.sleep(0.5)
             amount_response = db.get_all_from_db(
                 table_name=vacancies_database,
                 param=query,
