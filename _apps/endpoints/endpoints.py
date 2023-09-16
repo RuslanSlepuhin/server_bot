@@ -163,7 +163,7 @@ class Endpoints:
             )
             print(f'*** amount response: {amount_response}')
             if amount_response:
-                time.sleep(0.5)
+                # time.sleep(0.5)
                 responses_dict['amount'] = amount_response[0][0]
                 param = f'{query}{id_query} AND id IS NOT NULL'
                 vacancies_response = db.get_all_from_db(
