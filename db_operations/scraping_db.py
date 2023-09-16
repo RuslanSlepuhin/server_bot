@@ -199,20 +199,20 @@ class DataBaseOperations:
         text = text.replace('\'', '\"')
         return text
 
-    def get_db_data(self, query):
-        cur = self.con.cursor()
-        while self.db_is_busy:
-            pass
-        else:
-            self.db_is_busy = True
-            with self.con:
-                try:
-                    cur.execute(query)
-                    return {'error': None, 'response': cur.fetchall()}
-                except Exception as ex:
-                    return {'error': ex, 'response': None}
-            self.db_is_busy = False
-
+    # def get_db_data(self, query):
+    #     cur = self.con.cursor()
+    #     while self.db_is_busy:
+    #         pass
+    #     else:
+    #         self.db_is_busy = True
+    #         with self.con:
+    #             try:
+    #                 cur.execute(query)
+    #                 return {'error': None, 'response': cur.fetchall()}
+    #             except Exception as ex:
+    #                 return {'error': ex, 'response': None}
+    #         self.db_is_busy = False
+    #
     def get_all_from_db(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
 
         self.connect_db()
@@ -224,7 +224,7 @@ class DataBaseOperations:
         else:
             query = f"""SELECT {field} FROM {table_name} {param} """
         while self.db_is_busy:
-            pass
+            print('*')
         else:
             try:
                 self.db_is_busy = True
