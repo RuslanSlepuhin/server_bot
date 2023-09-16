@@ -121,23 +121,28 @@ class Endpoints:
 
         @app.route("/vacancy", methods = ['GET'])
         async def get_single_vacancy_for_web_vacancy():
+            print('start | GET vacancy alone')
             print("124 vacancy")
             await asyncio.sleep(0.2)
             vacancy_id = request.args.get('id')
             print('-------------------------------')
+            print('finish | GET vacancy alone')
             return await get_single_vacancies_for_web(vacancy_id)
 
         @app.route("/vacancies", methods = ['GET'])
         async def get_all_vacancies_for_web_vacancies():
+            print('start | GET vacancies')
             time.sleep(0.2)
             print('128 vacancies')
             limit = request.args.get('limit')
             start_id = request.args.get('id')
             print('-------------------------------')
+            print('finish | GET vacancies')
             return await get_all_vacancies_for_web(start_id=start_id, limit=limit)
 
         @app.route("/vacancies", methods=['POST'])
         async def vacancies_with_filters():
+            print('start | POST vacancies')
             time.sleep(0.2)
             data = request.json
             if 'limit' in data and data['limit']:
@@ -171,6 +176,7 @@ class Endpoints:
 
                 if vacancies_response:
                     responses_dict['vacancies'] = await package_list_to_dict(vacancies_response, preview_fields_for_web)
+            print('finish | POST vacancies')
             return responses_dict
 
 
