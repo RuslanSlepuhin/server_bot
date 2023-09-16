@@ -628,7 +628,7 @@ class Endpoints:
             # get 3 trainee vacancies
             responses = db.get_all_from_db(
                 table_name=variable.vacancies_database,
-                param="WHERE level LIKE '%trainee%' ORDER BY id DESC LIMIT 4",
+                param="WHERE level LIKE '%trainee%' AND id is NOT NULL ORDER BY created_at DESC LIMIT 4",
                 field=variable.preview_fields_for_web,
                 without_sort=True
             )
@@ -637,7 +637,7 @@ class Endpoints:
             # get 3 common vacancies
             responses = db.get_all_from_db(
                 table_name=variable.vacancies_database,
-                param="WHERE level NOT LIKE '%trainee%' ORDER BY id DESC LIMIT 4",
+                param="WHERE level NOT LIKE '%trainee%' AND id IS NOT NULL ORDER BY created_at DESC LIMIT 4",
                 field=variable.preview_fields_for_web,
                 without_sort=True
             )
