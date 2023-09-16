@@ -1,6 +1,8 @@
 import configparser
 import json
 import re
+import time
+
 from utils.additional_variables.additional_variables import admin_database, archive_database, admin_table_fields, \
     valid_professions, reject_table as reject_database
 from utils.additional_variables.additional_variables import table_list_for_checking_message_in_db, \
@@ -224,7 +226,7 @@ class DataBaseOperations:
         else:
             query = f"""SELECT {field} FROM {table_name} {param} """
         while self.db_is_busy:
-            print('*')
+            time.sleep(0.1)
         else:
             try:
                 self.db_is_busy = True
