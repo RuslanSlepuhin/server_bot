@@ -128,6 +128,7 @@ class Endpoints:
 
         @app.route("/vacancies", methods = ['GET'])
         async def get_all_vacancies_for_web_vacancies():
+            time.sleep(0.2)
             print('128 vacancies')
             limit = request.args.get('limit')
             start_id = request.args.get('id')
@@ -164,7 +165,6 @@ class Endpoints:
 
                 if vacancies_response:
                     responses_dict['vacancies'] = await package_list_to_dict(vacancies_response, preview_fields_for_web)
-            await asyncio.sleep(0.2)
             return responses_dict
 
 
