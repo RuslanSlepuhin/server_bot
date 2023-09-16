@@ -123,7 +123,7 @@ class Endpoints:
         # async def get_single_vacancy_for_web_vacancy():
         def get_single_vacancy_for_web_vacancy():
             print("124 vacancy")
-            await asyncio.sleep(0.2)
+            time.sleep(0.2)
             vacancy_id = request.args.get('id')
             print('-------------------------------')
             return asyncio.run(get_single_vacancies_for_web(vacancy_id))
