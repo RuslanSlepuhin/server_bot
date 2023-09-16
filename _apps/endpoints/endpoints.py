@@ -476,14 +476,15 @@ class Endpoints:
         async def get_all_vacancies_for_web(limit=None, start_id=None):
             all_vacancies = {}
             all_vacancies['vacancies'] = {}
-            date_start = date.today() - timedelta(days=20)
+            date_start = date.today() - timedelta(days=10)
             if start_id:
                 id_query = f"id < {start_id} AND "
             else:
                 id_query = ''
             if not limit:
                 limit = 200
-            param = f"WHERE {id_query}DATE (created_at) BETWEEN '{date_start}' AND '{date.today()}'"
+            date_today = date.today()
+            param = f"WHERE {id_query}(DATE (created_at) BETWEEN '{date_start}' AND '{date_today}') AND id is NOT NULL"
 
             response = []
             loop = asyncio.get_running_loop()
