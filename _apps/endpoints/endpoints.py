@@ -156,6 +156,7 @@ class Endpoints:
                 without_sort=True,
                 field='COUNT(*)'
             )
+            print(f'*** amount response: {amount_response}')
             if amount_response:
                 time.sleep(0.5)
                 responses_dict['amount'] = amount_response[0][0]
@@ -166,6 +167,7 @@ class Endpoints:
                     order=f'ORDER BY id DESC LIMIT {limit}',
                     field=preview_fields_for_web
                 )
+                print(f'*** vacancies_response: {len(vacancies_response)}')
 
                 if vacancies_response:
                     responses_dict['vacancies'] = await package_list_to_dict(vacancies_response, preview_fields_for_web)
