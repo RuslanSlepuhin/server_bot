@@ -226,7 +226,7 @@ class DataBaseOperations:
         else:
             query = f"""SELECT {field} FROM {table_name} {param} """
         while self.db_is_busy:
-            # time.sleep(0.1)
+            time.sleep(0.1)
             print('time.sleep 0.1')
         else:
             try:
@@ -238,12 +238,13 @@ class DataBaseOperations:
                     except Exception as e:
                         print(e)
                         return str(e)
-                self.db_is_busy = False
                 if curs:
                     return cur
+                self.db_is_busy = False
                 return response
             except Exception as ex:
                 print(f"\nerror in get_all_from_db: {ex}\n")
+                self.db_is_busy = False
                 return False
 
     async def get_all_from_db_async2(self, table_name, param='', without_sort=False, order=None, field='*', curs=None):
