@@ -237,6 +237,7 @@ class DataBaseOperations:
                         response = cur.fetchall()
                     except Exception as e:
                         print(e)
+                        self.db_is_busy = False
                         return str(e)
                 if curs:
                     return cur
