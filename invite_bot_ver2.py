@@ -3324,10 +3324,10 @@ class InviteBot():
                 await sites_parser.call_sites()
 
                 digest_parser = DigestParser(client=self.client, bot_dict=bot_dict, report=self.report)
-                try:
-                    await digest_parser.main_start()
-                except Exception as e:
-                    await self.bot_aiogram.send_message(Message.chat.id, f"DIGEST error: {e}")
+                # try:
+                #     await digest_parser.main_start()
+                # except Exception as e:
+                #     await self.bot_aiogram.send_message(Message.chat.id, f"DIGEST error: {e}")
 
                 self.db.push_to_db_common(
                     table_name='parser_at_work',
