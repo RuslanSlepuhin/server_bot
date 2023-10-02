@@ -570,7 +570,8 @@ class ShortsPoster:
                         for one_match in match:
                             html_text_list[counter] = re.sub(rf"{one_match}", one_match[1:-1], html_text_list[counter])
                     else:
-                        return False
+                        print('error 37: ', ex1, html_text_list[counter])
+                        html_text_list[counter] = re.sub(r"< ", "", html_text_list[counter])
 
                 else:
                     print('error 37: ', ex1)
