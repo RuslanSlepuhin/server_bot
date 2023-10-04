@@ -62,6 +62,8 @@ class ShortsPoster:
 
                 if there_are_vacancies:
 
+                    await self.clear_unknown_tags()
+
                     self.short_session_name = await self.helper.get_short_session_name(prefix=profession)
                     self.db.write_short_session(self.short_session_name)
                     await self.bot_aiogram.send_message(message.chat.id, f"Shorts session: {self.short_session_name}")
@@ -677,3 +679,11 @@ class ShortsPoster:
 
 
 
+    async def clear_unknown_tags(self):
+        for key in self.history_messages:
+            if re.findall(r"<+|>+", self.history_messages[key]['body']):
+                print(self.history_messages[key]['body'])
+                pass
+                self.history_messages[key]['body'] = re.sub(r"<+|>+", "", self.history_messages[key]['body'])
+                print(self.history_messages[key]['body'])
+                pass
