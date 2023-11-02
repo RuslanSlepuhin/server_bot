@@ -7,7 +7,7 @@ from aiogram.utils import executor
 from _apps.coffee_customer_bot_apps.variables import variables
 
 config = configparser.ConfigParser()
-config.read("./coffee_customer_bot_apps/settings/config.ini")
+config.read("./_apps/coffee_customer_bot_apps/settings/config.ini")
 
 class CustomerBot:
     def __init__(self, token=None):
