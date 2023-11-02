@@ -15,8 +15,8 @@ config_FCM.read('_apps/coffee_customer_bot_apps/settings/config.ini')
 
 customer_token = config_FCM['Bot']['customer_token']
 horeca_token = config_FCM['Bot']['horeca_token']
-horeca_bot = HorecaBot()
-customer_bot = CustomerBot()
+horeca_bot = HorecaBot(horeca_token)
+customer_bot = CustomerBot(customer_token)
 
 num_processes = os.cpu_count()
 
