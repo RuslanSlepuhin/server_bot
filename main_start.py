@@ -11,7 +11,7 @@ from _apps.coffee_customer_bot_apps.coffee_horeca_bot.coffee_horeca_bot import H
 from _apps.coffee_customer_bot_apps.endpoints.endpoints import Endpoints
 
 config_FCM = configparser.ConfigParser()
-config_FCM.read('./_apps/coffee_customer_bot_apps/settings/config.ini')
+config_FCM.read('_apps/coffee_customer_bot_apps/settings/config.ini')
 
 customer_token = config_FCM['Bot']['customer_token']
 horeca_token = config_FCM['Bot']['horeca_token']
