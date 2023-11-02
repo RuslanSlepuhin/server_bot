@@ -24,6 +24,7 @@ class CustomerBot:
 
         @self.dp.message_handler(commands=['start'])
         async def start(message: types.Message):
+            await self.bot.send_message(message.chat.id, "Hey")
             keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
             button1 = KeyboardButton("Отмена заказа")
             button2 = KeyboardButton("Верните бабло")
