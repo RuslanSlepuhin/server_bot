@@ -32,6 +32,10 @@ def start_admin_panel():
     bot = BotView(token=__token)
     bot.handlers()
 
+def startFMCBots():
+    from _apps.coffee_customer_bot_apps import main
+    main.start_method()
+
 if __name__ == "__main__":
 
     # start_bot(double=True, token_in=settings.token_red)
