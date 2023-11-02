@@ -6,12 +6,21 @@ from invite_bot_ver2 import run as run_parser_bot
 from _apps.endpoints import endpoints
 from multiprocessing import Process, Pool
 import settings.os_getenv as settings
-# ev = Event()
+from _apps.coffee_customer_bot_apps.coffee_customer_bot.coffee_customer_bot import CustomerBot
+from _apps.coffee_customer_bot_apps.coffee_horeca_bot.coffee_horeca_bot import HorecaBot
+from _apps.coffee_customer_bot_apps.endpoints.endpoints import Endpoints
+
+config_FCM = configparser.ConfigParser()
+config_FCM.read('./_apps/coffee_customer_bot_apps/settings/config.ini')
+
+customer_token = config_FCM['Bot']['customer_token']
+horeca_token = config_FCM['Bot']['horeca_token']
+horeca_bot = HorecaBot()
+customer_bot = CustomerBot()
 
 num_processes = os.cpu_count()
 
 def start_bot(double=False, token_in=None):
-    # time.sleep(3)
     print('main_bot is starting')
     run_parser_bot(
         double=double,
@@ -32,30 +41,33 @@ def start_admin_panel():
     bot = BotView(token=__token)
     bot.handlers()
 
-def startFMCBots():
-    from _apps.coffee_customer_bot_apps import main
-    main.start_method()
+# ---------- FCM -----------
+def start_customer_bot_FCM():
+    customer_bot.bot_handlers()
+
+def start_horeca_bot_FCM():
+    horeca_bot.bot_handlers()
+
+def start_endpoints_FCM():
+    ep = Endpoints()
+    ep.main_endpoints(customer_bot, horeca_bot)
 
 if __name__ == "__main__":
-
-    # start_bot(double=True, token_in=settings.token_red)
 
     p1 = Process(target=start_endpoints, args=())
     p2 = Process(target=start_bot, args=())
     p3 = Process(target=start_bot, args=(True, settings.token_red))
     p4 = Process(target=talking_bot_run, args=())
     p5 = Process(target=start_admin_panel, args=())
+    p6 = Process(target=start_customer_bot_FCM, args=())
+    p7 = Process(target=start_horeca_bot_FCM, args=())
+    p8 = Process(target=start_endpoints_FCM, args=())
 
     p1.start()
     p4.start()
     p2.start()
     p3.start()
     p5.start()
-
-    # start_bot(double=True, token_in=settings.token_red)
-
-    # p1.join()
-    # p2.join()
-    # p3.join()
-
-
+    p6.start()
+    p7.start()
+    p8.start()
