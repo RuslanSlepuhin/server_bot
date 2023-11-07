@@ -342,6 +342,12 @@ class InviteBot():
             text = "Approved has been set" if completed_successfully else "Something wrong"
             await self.bot_aiogram.send_message(message.chat.id, text)
 
+        @self.dp.message_handler(commands=['hhmanyTrue'])
+        async def hhmanyTrue(message: types.Message):
+            count = self.db.run_free_request(request="SELECT COUNT(id) FROM vacancies WHERE chat_name LIKE '%hh.ru%' AND (DATE(created_at) BETWEEN '2023-10-07' AND '2023-11-07')")
+            await self.bot_aiogram.send_message(message.chat.id, str(count))
+
+
         @self.dp.message_handler(commands=['developer_help'])
         async def get_courses_data(message: types.Message):
             await self.rollback_by_number_short_session(
