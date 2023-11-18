@@ -1,7 +1,7 @@
 import os
-from flask import Flask, request
+from flask import Flask, request, Response
 from flask_cors import CORS
-from _apps.coffee_customer_bot_apps.variables import variables
+from coffee_customer_bot_apps.variables import variables
 import requests
 
 class BackServer:
@@ -18,10 +18,9 @@ class BackServer:
 
         @app.route(variables.server_test_status_endpoint_from_customer, methods=['POST'])
         def status_from_customer():
-            print('1')
             data = request.json
             print('data', data)
-            url = f"http://127.0.0.1:7000{variables.provide_message_to_horeca_endpoint}"
+            url = f"{variables.horeca_bot_domain}{variables.provide_message_to_horeca_endpoint}"
             print(url)
             requests.post(url, json=data)
             return {"response": data}
@@ -31,12 +30,18 @@ class BackServer:
             print('1')
             data = request.json
             print('data', data)
-            url = f"http://127.0.0.1:7000{variables.provide_message_to_user_endpoint}"
+            url = f"{variables.customer_bot_domain}{variables.provide_message_to_user_endpoint}"
             print(url)
             requests.post(url, json=data)
             return {"response": data}
 
-        app.run(host='127.0.0.1', port=int(os.environ.get('PORT', 5000)))
+        @app.route(variables.get_user_verification_info, methods=["GET"])
+        def get_user_verification_info():
+            return Response({"user_id": variables.rus, "verification_code": "Gh533", "status": "placed"})
+
+
+
+        app.run(host='127.0.0.1', port=int(os.environ.get('PORT', 7000)))
 
 if __name__ == '__main__':
     ep = BackServer()

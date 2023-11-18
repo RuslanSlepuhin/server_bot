@@ -15,65 +15,61 @@ from patterns.data_pattern._data_pattern import cities_pattern, params
 from helper_functions.parser_find_add_parameters.parser_find_add_parameters import FinderAddParameters
 from report.report_variables import report_file_path
 from helper_functions import helper_functions as helper
+from sites.scraping_hh import HHGetInformation
 
-class HHKzGetInformation:
+class HHKzGetInformation(HHGetInformation):
 
     def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-        self.report = kwargs['report'] if 'report' in kwargs else None
-        self.bot_dict = kwargs['bot_dict'] if 'bot_dict' in kwargs else None
-        self.search_words = [kwargs['search_word']] if 'search_word' in kwargs else sites_search_words
-        self.helper_parser_site = HelperSite_Parser(report=self.report)
-        self.db = DataBaseOperations(report=self.report)
-        self.db_tables = None
-        self.options = None
-        self.page = None
-        self.page_number = 1
-        self.current_message = None
-        self.msg = None
-        self.written_vacancies = 0
-        self.rejected_vacancies = 0
-        if self.bot_dict:
-            self.bot = self.bot_dict['bot']
-            self.chat_id = self.bot_dict['chat_id']
-        self.browser = None
-        self.find_parameters = FinderAddParameters()
-        self.count_message_in_one_channel = 1
-        self.found_by_link = 0
-        self.response = {}
-        self.helper = helper
-
-    async def get_content(self, db_tables=None):
-        self.db_tables = db_tables
-        try:
-            await self.get_info()
-        except Exception as ex:
-            print(f"Error: {ex}")
-            if self.bot:
-                await self.bot.send_message(self.chat_id, f"Error: {ex}")
-
-        if self.report and self.helper:
-            try:
-                await self.report.add_to_excel()
-                await self.helper.send_file_to_user(
-                    bot=self.bot,
-                    chat_id=self.chat_id,
-                    path=self.report.keys.report_file_path['parsing'],
-                )
-            except Exception as ex:
-                print(f"Error: {ex}")
-                if self.bot:
-                    await self.bot.send_message(self.chat_id, f"Error: {ex}")
-        self.browser.quit()
+    #     self.report = kwargs['report'] if 'report' in kwargs else None
+    #     self.bot_dict = kwargs['bot_dict'] if 'bot_dict' in kwargs else None
+    #     self.search_words = [kwargs['search_word']] if 'search_word' in kwargs else sites_search_words
+    #     self.helper_parser_site = HelperSite_Parser(report=self.report)
+    #     self.db = DataBaseOperations(report=self.report)
+    #     self.db_tables = None
+    #     self.options = None
+    #     self.page = None
+    #     self.page_number = 1
+    #     self.current_message = None
+    #     self.msg = None
+    #     self.written_vacancies = 0
+    #     self.rejected_vacancies = 0
+    #     if self.bot_dict:
+    #         self.bot = self.bot_dict['bot']
+    #         self.chat_id = self.bot_dict['chat_id']
+    #     self.browser = None
+    #     self.find_parameters = FinderAddParameters()
+    #     self.count_message_in_one_channel = 1
+    #     self.found_by_link = 0
+    #     self.response = {}
+    #     self.helper = helper
+    #
+    # async def get_content(self, db_tables=None):
+    #     self.db_tables = db_tables
+    #     try:
+    #         await self.get_info()
+    #     except Exception as ex:
+    #         print(f"Error: {ex}")
+    #         if self.bot:
+    #             await self.bot.send_message(self.chat_id, f"Error: {ex}")
+    #
+    #     if self.report and self.helper:
+    #         try:
+    #             await self.report.add_to_excel()
+    #             await self.helper.send_file_to_user(
+    #                 bot=self.bot,
+    #                 chat_id=self.chat_id,
+    #                 path=self.report.keys.report_file_path['parsing'],
+    #             )
+    #         except Exception as ex:
+    #             print(f"Error: {ex}")
+    #             if self.bot:
+    #                 await self.bot.send_message(self.chat_id, f"Error: {ex}")
+    #     self.browser.quit()
 
     async def get_info(self):
-        try:
-            self.browser = webdriver.Chrome(
-                executable_path=chrome_driver_path,
-                options=options
-            )
-        except:
-            self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        await self.get_browser()
         # -------------------- check what is current session --------------
         self.current_session = await self.helper_parser_site.get_name_session()
         for word in self.search_words:

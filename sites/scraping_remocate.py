@@ -12,6 +12,7 @@ from settings.browser_settings import options, chrome_driver_path
 from sites.write_each_vacancy_to_db import HelperSite_Parser
 from utils.additional_variables.additional_variables import admin_database, archive_database
 from helper_functions import helper_functions as helper
+from sites.scraping_hh import HHGetInformation
 
 params = {
     'english_level': (
@@ -53,68 +54,63 @@ def convert_date_to_timestamp(date_string):
                 timedelta_obj += delta
             break
 
-    timestamp = int((datetime.now() - timedelta_obj).timestamp())
+    timestamp = (datetime.now() - timedelta_obj)
     return timestamp
 
 
-class RemocateGetInformation:
+class RemocateGetInformation(HHGetInformation):
 
     def __init__(self, **kwargs):
-
-        self.report = kwargs['report'] if 'report' in kwargs else None
-        self.search_words = kwargs['search_word'] if 'search_word' in kwargs else None
-        self.bot_dict = kwargs['bot_dict'] if 'bot_dict' in kwargs else None
-        self.db = kwargs['db'] if 'db' in kwargs else None
-        self.helper = kwargs['helper'] if 'helper' in kwargs else None
-        self.helper_parser_site = HelperSite_Parser(report=self.report, db=self.db)
-        self.db_tables = None
-        self.options = None
-        self.current_message = None
-        self.written_vacancies = 0
-        self.rejected_vacancies = 0
-        if self.bot_dict:
-            self.bot = self.bot_dict['bot']
-            self.chat_id = self.bot_dict['chat_id']
-        self.browser = None
-        self.main_url = 'https://www.remocate.app/'
-        self.count_message_in_one_channel = 1
-        self.found_by_link = 0
-        self.response = None
-        self.current_session = None
+        super().__init__(**kwargs)
+        # self.bot = None
+        # self.report = kwargs['report'] if 'report' in kwargs else None
+        # self.search_words = kwargs['search_word'] if 'search_word' in kwargs else None
+        # self.bot_dict = kwargs['bot_dict'] if 'bot_dict' in kwargs else None
+        # self.db = kwargs['db'] if 'db' in kwargs else None
+        # self.helper = kwargs['helper'] if 'helper' in kwargs else None
+        # self.helper_parser_site = HelperSite_Parser(report=self.report, db=self.db)
+        # self.db_tables = None
+        # self.options = None
+        # self.current_message = None
+        # self.written_vacancies = 0
+        # self.rejected_vacancies = 0
+        # if self.bot_dict:
+        #     self.bot = self.bot_dict['bot']
+        #     self.chat_id = self.bot_dict['chat_id']
+        # self.browser = None
+        # self.main_url = 'https://www.remocate.app/'
+        # self.count_message_in_one_channel = 1
+        # self.found_by_link = 0
+        # self.response = None
+        # self.current_session = None
         self.categories = ['Support', 'UX/UI', 'HR', 'QA', 'Analytics', 'Design', 'Development', 'Marketing']
-        self.helper = helper
-
-    async def get_content(self, db_tables=None):
-        self.db_tables = db_tables
-        try:
-            await self.get_info()
-        except Exception as ex:
-            print(f"Error: {ex}")
-            if self.bot:
-                await self.bot.send_message(self.chat_id, f"Error: {ex}")
-
-        if self.report and self.helper:
-            try:
-                await self.report.add_to_excel()
-                await self.helper.send_file_to_user(
-                    bot=self.bot,
-                    chat_id=self.chat_id,
-                    path=self.report.keys.report_file_path['parsing'],
-                )
-            except Exception as ex:
-                print(f"Error: {ex}")
-                if self.bot:
-                    await self.bot.send_message(self.chat_id, f"Error: {ex}")
-        self.browser.quit()
+        # self.helper = helper
+    #
+    # async def get_content(self, db_tables=None):
+    #     self.db_tables = db_tables
+    #     try:
+    #         await self.get_info()
+    #     except Exception as ex:
+    #         print(f"Error: {ex}")
+    #         if self.bot:
+    #             await self.bot.send_message(self.chat_id, f"Error: {ex}")
+    #
+    #     if self.report and self.helper:
+    #         try:
+    #             await self.report.add_to_excel()
+    #             await self.helper.send_file_to_user(
+    #                 bot=self.bot,
+    #                 chat_id=self.chat_id,
+    #                 path=self.report.keys.report_file_path['parsing'],
+    #             )
+    #         except Exception as ex:
+    #             print(f"Error: {ex}")
+    #             if self.bot:
+    #                 await self.bot.send_message(self.chat_id, f"Error: {ex}")
+    #     self.browser.quit()
 
     async def get_info(self):
-        try:
-            self.browser = webdriver.Chrome(
-                executable_path=chrome_driver_path,
-                options=options
-            )
-        except:
-            self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        await self.get_browser()
 
         self.current_session = await self.helper_parser_site.get_name_session() if self.db else None
 
@@ -136,7 +132,7 @@ class RemocateGetInformation:
         if self.bot_dict:
             await self.bot.send_message(self.chat_id, 'remocate.app parsing: Done!', disable_web_page_preview=True)
 
-    async def get_link_message(self):
+    async def get_link_message(self, **kwargs):
         open_links = self.browser.find_elements(By.CLASS_NAME, "job-card")
         self.list_links = list(set(open_links))
 
@@ -156,7 +152,7 @@ class RemocateGetInformation:
         else:
             return False
 
-    async def get_content_from_link(self):
+    async def get_content_from_link(self, **kwargs):
         check_vacancy_not_exists = True
         links = []
         soup = None
@@ -199,8 +195,8 @@ class RemocateGetInformation:
 
                 if found_vacancy:
                     try:
-                        title = self.browser.find_element(By.CSS_SELECTOR, ".job-top-title").text.strip()
-                    except AttributeError as ex:
+                        title = self.browser.find_element(By.CSS_SELECTOR, "h1.top-title-job").text.strip()
+                    except Exception as ex:
                         title = None
                         print(f"Exception occurred: {ex}")
 
@@ -314,7 +310,7 @@ class RemocateGetInformation:
                     msg=self.current_message
                 )
 
-    async def get_content_from_one_link(self, vacancy_url):
+    async def get_content_from_one_link(self, vacancy_url, return_raw_dictionary=False):
         try:
             self.browser = webdriver.Chrome(
                 executable_path=chrome_driver_path,
