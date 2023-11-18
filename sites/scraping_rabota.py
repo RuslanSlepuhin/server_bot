@@ -15,65 +15,61 @@ from helper_functions.helper_functions import edit_message, send_message, send_f
 from patterns.data_pattern._data_pattern import cities_pattern, params
 from report.report_variables import report_file_path
 from helper_functions import helper_functions as helper
+from sites.scraping_hh import HHGetInformation
 
-class RabotaGetInformation:
+class RabotaGetInformation(HHGetInformation):
 
     def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # self.report = kwargs['report'] if 'report' in kwargs else None
+        # self.search_words = kwargs['search_word'] if 'search_word' in kwargs else sites_search_words
+        # self.bot_dict = kwargs['bot_dict'] if 'bot_dict' in kwargs else None
+        # self.find_parameters = FinderAddParameters()
+        # self.helper_parser_site = HelperSite_Parser(report=self.report)
+        # self.db = DataBaseOperations(report=self.report)
+        # self.db_tables = None
+        # self.options = None
+        # self.page = None
+        # self.page_number = 1
+        # self.current_message = None
+        # self.msg = None
+        # self.written_vacancies = 0
+        # self.rejected_vacancies = 0
+        # if self.bot_dict:
+        #     self.bot = self.bot_dict['bot']
+        #     self.chat_id = self.bot_dict['chat_id']
+        # self.browser = None
+        # self.count_message_in_one_channel = 1
+        # self.found_by_link = 0
+        # self.response = {}
+        # self.helper = helper
 
-        self.report = kwargs['report'] if 'report' in kwargs else None
-        self.search_words = kwargs['search_word'] if 'search_word' in kwargs else sites_search_words
-        self.bot_dict = kwargs['bot_dict'] if 'bot_dict' in kwargs else None
-        self.find_parameters = FinderAddParameters()
-        self.helper_parser_site = HelperSite_Parser(report=self.report)
-        self.db = DataBaseOperations(report=self.report)
-        self.db_tables = None
-        self.options = None
-        self.page = None
-        self.page_number = 1
-        self.current_message = None
-        self.msg = None
-        self.written_vacancies = 0
-        self.rejected_vacancies = 0
-        if self.bot_dict:
-            self.bot = self.bot_dict['bot']
-            self.chat_id = self.bot_dict['chat_id']
-        self.browser = None
-        self.count_message_in_one_channel = 1
-        self.found_by_link = 0
-        self.response = {}
-        self.helper = helper
-
-    async def get_content(self, db_tables=None):
-        self.db_tables = db_tables
-        try:
-            await self.get_info()
-        except Exception as ex:
-            print(f"Error: {ex}")
-            if self.bot:
-                await self.bot.send_message(self.chat_id, f"Error: {ex}")
-
-        if self.report and self.helper:
-            try:
-                await self.report.add_to_excel()
-                await self.helper.send_file_to_user(
-                    bot=self.bot,
-                    chat_id=self.chat_id,
-                    path=self.report.keys.report_file_path['parsing'],
-                )
-            except Exception as ex:
-                print(f"Error: {ex}")
-                if self.bot:
-                    await self.bot.send_message(self.chat_id, f"Error: {ex}")
-        self.browser.quit()
+    # async def get_content(self, db_tables=None):
+    #     self.db_tables = db_tables
+    #     try:
+    #         await self.get_info()
+    #     except Exception as ex:
+    #         print(f"Error: {ex}")
+    #         if self.bot:
+    #             await self.bot.send_message(self.chat_id, f"Error: {ex}")
+    #
+    #     if self.report and self.helper:
+    #         try:
+    #             await self.report.add_to_excel()
+    #             await self.helper.send_file_to_user(
+    #                 bot=self.bot,
+    #                 chat_id=self.chat_id,
+    #                 path=self.report.keys.report_file_path['parsing'],
+    #             )
+    #         except Exception as ex:
+    #             print(f"Error: {ex}")
+    #             if self.bot:
+    #                 await self.bot.send_message(self.chat_id, f"Error: {ex}")
+    #     self.browser.quit()
 
     async def get_info(self):
-        try:
-            self.browser = webdriver.Chrome(
-                executable_path=chrome_driver_path,
-                options=options
-            )
-        except:
-            self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        await self.get_browser()
+
         for word in self.search_words:
             self.word = word
             self.page_number = 0
@@ -96,7 +92,8 @@ class RabotaGetInformation:
             till = 13
             for self.page_number in range(1, till):
                 try:
-                    await self.bot.send_message(self.chat_id, f'https://rabota.by/search/vacancy?text={self.word}&from=suggest_post&salary=&area=16&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&page={self.page_number}&hhtmFrom=vacancy_search_list',
+                    if self.bot:
+                        await self.bot.send_message(self.chat_id, f'https://rabota.by/search/vacancy?text={self.word}&from=suggest_post&salary=&area=16&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&page={self.page_number}&hhtmFrom=vacancy_search_list',
                                           disable_web_page_preview=True)
                     self.browser.get(f'https://rabota.by/search/vacancy?text={self.word}&from=suggest_post&salary=&area=16&no_magic=true&ored_clusters=true&enable_snippets=true&search_period=1&page={self.page_number}&hhtmFrom=vacancy_search_list')
                     self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -114,7 +111,8 @@ class RabotaGetInformation:
         self.list_links = soup.find_all('a', class_='serp-item__title')
 
         if self.list_links:
-            self.current_message = await self.bot.send_message(self.chat_id, f'rabota.by:\nПо слову {self.word} найдено {len(self.list_links)} вакансий на странице {self.page_number+1}', disable_web_page_preview=True)
+            if self.bot:
+                self.current_message = await self.bot.send_message(self.chat_id, f'rabota.by:\nПо слову {self.word} найдено {len(self.list_links)} вакансий на странице {self.page_number+1}', disable_web_page_preview=True)
             current_session = self.db.get_all_from_db(
                 table_name='current_session',
                 param='ORDER BY id DESC LIMIT 1',
@@ -449,11 +447,12 @@ class RabotaGetInformation:
                 )
             else:
                 new_text = f"{self.count_message_in_one_channel}. {vacancy}\n{additional_message}"
-                self.current_message = await send_message(
-                    bot=self.bot,
-                    chat_id=self.chat_id,
-                    text=new_text
-                )
+                if self.bot:
+                    self.current_message = await send_message(
+                        bot=self.bot,
+                        chat_id=self.chat_id,
+                        text=new_text
+                    )
 
         # print(f"\n{self.count_message_in_one_channel} from_channel remote-job.ru search {self.word}")
         self.count_message_in_one_channel += 1

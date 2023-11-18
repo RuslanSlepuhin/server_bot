@@ -1,6 +1,6 @@
 from selenium.webdriver.common.by import By
 import pandas as pd
-from sites.scraping_careerspace import CareerSpaceGetInformation
+from sites._scraping_careerspace import CareerSpaceGetInformation
 from utils.additional_variables.additional_variables import excel_name_courses
 
 class Courses(CareerSpaceGetInformation):

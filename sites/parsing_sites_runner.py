@@ -2,7 +2,7 @@ import configparser
 from db_operations.scraping_db import DataBaseOperations
 from logs.logs import Logs
 from sites.scraping_careerjet import СareerjetGetInformation
-from sites.scraping_careerspace import CareerSpaceGetInformation
+from sites._scraping_careerspace import CareerSpaceGetInformation
 from sites.scraping_designer import DesignerGetInformation
 from sites.scraping_dev import DevGetInformation
 from sites.scraping_epam_anywhere import EpamGetInformation
@@ -15,11 +15,11 @@ from sites.scraping_rabota import RabotaGetInformation
 from sites.scraping_remocate import RemocateGetInformation
 from sites.scraping_remotehub import RemotehubGetInformation
 # from sites.scraping_remotejob import RemoteJobGetInformation
-from sites.scraping_superjob import SuperJobGetInformation
+from sites._scraping_superjob import SuperJobGetInformation
 from sites.scraping_svyazi import SvyaziGetInformation
 from sites.scrapping_finder import FinderGetInformation
 from sites.scraping_ingamejob import IngameJobGetInformation
-from sites.scraping_remotejob_upgrade import RemoteJobGetInformation
+from sites._scraping_remotejob_upgrade import RemoteJobGetInformation
 from helper_functions import helper_functions as helper
 
 logs = Logs()
@@ -54,14 +54,14 @@ class SitesParser:
 
         bot_dict = {'bot': self.bot, 'chat_id': self.chat_id}
 
-        # await RemocateGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
+        await RemocateGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
 
-        await CareerSpaceGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
+        # await CareerSpaceGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
         await EpamGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
         await СareerjetGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
-
+        #
         await RemotehubGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        await RemoteJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await RemoteJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await HHGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await HHKzGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await RabotaGetInformation(bot_dict=bot_dict, report=self.report).get_content()

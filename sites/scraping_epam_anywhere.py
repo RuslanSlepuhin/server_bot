@@ -9,66 +9,18 @@ from bs4 import BeautifulSoup
 from sites.write_each_vacancy_to_db import HelperSite_Parser
 from settings.browser_settings import options, chrome_driver_path
 from utils.additional_variables.additional_variables import admin_database, archive_database
-
+from sites.scraping_hh import HHGetInformation
 # --- change before push
 
 
-class EpamGetInformation:
+class EpamGetInformation(HHGetInformation):
 
     def __init__(self, **kwargs):
-
-        self.report = kwargs['report'] if 'report' in kwargs else None
-        self.search_words = kwargs['search_word'] if 'search_word' in kwargs else None
-        self.bot_dict = kwargs['bot_dict'] if 'bot_dict' in kwargs else None
-        self.db = kwargs['db'] if 'db' in kwargs else None
-        self.helper = kwargs['helper'] if 'helper' in kwargs else None
-        self.helper_parser_site = HelperSite_Parser(report=self.report, db=self.db)
-        self.db_tables = None
-        self.options = None
-        self.current_message = None
-        self.written_vacancies = 0
-        self.rejected_vacancies = 0
-        if self.bot_dict:
-            self.bot = self.bot_dict['bot']
-            self.chat_id = self.bot_dict['chat_id']
-        self.browser = None
+        super().__init__(**kwargs)
         self.main_url = 'https://anywhere.epam.com'
-        self.count_message_in_one_channel = 1
-        self.found_by_link = 0
-        self.response = None
-        self.current_session = None
-
-    async def get_content(self, db_tables=None):
-        self.db_tables = db_tables
-        try:
-            await self.get_info()
-        except Exception as ex:
-            print(f"Error: {ex}")
-            if self.bot:
-                await self.bot.send_message(self.chat_id, f"Error: {ex}")
-
-        if self.report and self.helper:
-            try:
-                await self.report.add_to_excel()
-                await self.helper.send_file_to_user(
-                    bot=self.bot,
-                    chat_id=self.chat_id,
-                    path=self.report.keys.report_file_path['parsing'],
-                )
-            except Exception as ex:
-                print(f"Error: {ex}")
-                if self.bot:
-                    await self.bot.send_message(self.chat_id, f"Error: {ex}")
-        self.browser.quit()
 
     async def get_info(self):
-        try:
-            self.browser = webdriver.Chrome(
-                executable_path=chrome_driver_path,
-                options=options
-            )
-        except:
-            self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        await self.get_browser()
 
         self.current_session = await self.helper_parser_site.get_name_session() if self.db else None
 
@@ -102,7 +54,7 @@ class EpamGetInformation:
         else:
             return False
 
-    async def get_content_from_link(self):
+    async def get_content_from_link(self, return_raw_dictionary=False):
         experience = ''
         check_vacancy_not_exists = True
         links = []

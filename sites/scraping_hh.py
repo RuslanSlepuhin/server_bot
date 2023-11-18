@@ -35,6 +35,8 @@ class HHGetInformation:
         if self.bot_dict:
             self.bot = self.bot_dict['bot']
             self.chat_id = self.bot_dict['chat_id']
+        else:
+            self.bot = None
         self.browser = None
         self.find_parameters = FinderAddParameters()
         self.count_message_in_one_channel = 1
@@ -65,7 +67,7 @@ class HHGetInformation:
                     await self.bot.send_message(self.chat_id, f"Error: {ex}")
         self.browser.quit()
 
-    async def get_info(self):
+    async def get_browser(self):
         try:
             self.browser = webdriver.Chrome(
                 executable_path=chrome_driver_path,
@@ -73,6 +75,9 @@ class HHGetInformation:
             )
         except:
             self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
+    async def get_info(self):
+        await self.get_browser()
         # -------------------- check what is current session --------------
         self.current_session = await self.helper_parser_site.get_name_session()
 
@@ -385,21 +390,6 @@ class HHGetInformation:
 
         # print(f"\n{self.count_message_in_one_channel} from_channel remote-job.ru search {self.word}")
         self.count_message_in_one_channel += 1
-
-    async def get_content_by_link_alone(self, link):
-        self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-        try:
-            self.browser.get(link)
-        except Exception as e:
-            print(e)
-            if self.bot_dict:
-                await self.bot.send_message(self.chat_id, str(e))
-            return False
-        try:
-            self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        except Exception as e:
-            print(e)
-        self.browser.quit()
 
     def normalize_date(self, date):
         convert = {

@@ -6,10 +6,10 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.utils import executor
 
-from _apps.coffee_customer_bot_apps.variables import variables
+from coffee_customer_bot_apps.variables import variables
 
 config = configparser.ConfigParser()
-config.read("./_apps/coffee_customer_bot_apps/settings/config.ini")
+config.read("./coffee_customer_bot_apps/settings/config.ini")
 
 class HorecaBot:
     # print('HorecaBot has been started\nhttps://t.me/medicine_card_bot\n')
@@ -28,7 +28,6 @@ class HorecaBot:
 
         @self.dp.message_handler(commands=['start'])
         async def start(message: types.Message):
-            await self.bot.send_message(message.chat.id, "Hey")
             keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
             button1 = KeyboardButton("Заказ готов")
             button2 = KeyboardButton("Заказ протух")
@@ -42,7 +41,7 @@ class HorecaBot:
 
         @self.dp.message_handler(content_types=['text'])
         async def text_message(message):
-            self.test_data['user_id'] = message.chat.id
+            self.test_data['telegram_user_id'] = message.chat.id
             self.test_data['status'] = message.text
 
             if message.text == 'Заказ готов':
@@ -57,5 +56,14 @@ class HorecaBot:
         executor.start_polling(self.dp, skip_updates=True)
 
     async def custom_send_message(self, data):
-        user_id = data['user_id']
+        user_id = data['telegram_user_id']
         await self.bot.send_message(user_id, str(data))
+        pass
+
+    async def check_subscriber(self, user_id):
+        try:
+            msg = await self.bot.send_message(int(user_id), "Вы можете отслеживать Ваш заказ в этом боте")
+            await msg.delete()
+            return True
+        except:
+            return False
