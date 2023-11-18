@@ -1,6 +1,6 @@
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
-from coffee_customer_bot_apps.variables import variables
+from _apps.coffee_customer_bot_apps.variables import variables
 
 
 class FormVerificationCode(StatesGroup):

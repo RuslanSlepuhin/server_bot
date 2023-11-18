@@ -6,7 +6,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.utils import executor
 
-from coffee_customer_bot_apps.variables import variables
+from _apps.coffee_customer_bot_apps.variables import variables
 
 config = configparser.ConfigParser()
 config.read("./coffee_customer_bot_apps/settings/config.ini")
