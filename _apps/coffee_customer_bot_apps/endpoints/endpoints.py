@@ -4,7 +4,7 @@ from flask import Flask, request
 from flask_cors import CORS
 
 
-from coffee_customer_bot_apps.variables import variables
+from _apps.coffee_customer_bot_apps.variables import variables
 
 class Endpoints:
     def __init__(self, horeca_bot, customer_bot):

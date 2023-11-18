@@ -4,10 +4,10 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 import requests
 from aiogram.dispatcher import FSMContext
 from aiogram.utils import executor
-from coffee_customer_bot_apps.variables import variables
-from coffee_customer_bot_apps.coffee_customer_bot.coffee_customer_bot_addit_methods import CustBotAddMethods
-from coffee_customer_bot_apps.coffee_customer_bot.coffee_customer_bot_addit_methods import FormVerificationCode
-from coffee_customer_bot_apps.database.database_methods import DataBase
+from _apps.coffee_customer_bot_apps.variables import variables
+from _apps.coffee_customer_bot_apps.coffee_customer_bot.coffee_customer_bot_addit_methods import CustBotAddMethods
+from _apps.coffee_customer_bot_apps.coffee_customer_bot.coffee_customer_bot_addit_methods import FormVerificationCode
+from _apps.coffee_customer_bot_apps.database.database_methods import DataBase
 
 config = configparser.ConfigParser()
 config.read("./coffee_customer_bot_apps/settings/config.ini")
