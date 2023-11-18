@@ -14,7 +14,7 @@ from sites.scraping_praca import PracaGetInformation
 from sites.scraping_rabota import RabotaGetInformation
 from sites.scraping_remocate import RemocateGetInformation
 from sites.scraping_remotehub import RemotehubGetInformation
-# from sites.scraping_remotejob import RemoteJobGetInformation
+from sites.scraping_remotejob import RemoteJobGetInformation
 from sites._scraping_superjob import SuperJobGetInformation
 from sites.scraping_svyazi import SvyaziGetInformation
 from sites.scrapping_finder import FinderGetInformation
