@@ -9,6 +9,7 @@ import settings.os_getenv as settings
 from _apps.coffee_customer_bot_apps.coffee_customer_bot.coffee_customer_bot import CustomerBot
 from _apps.coffee_customer_bot_apps.coffee_horeca_bot.coffee_horeca_bot import HorecaBot
 from _apps.coffee_customer_bot_apps.endpoints.endpoints import Endpoints
+from _apps.chat.bot_tg import ChatBot
 
 config_FCM = configparser.ConfigParser()
 config_FCM.read('_apps/coffee_customer_bot_apps/settings/config.ini')
@@ -49,8 +50,12 @@ def start_horeca_bot_FCM():
     horeca_bot.bot_handlers()
 
 def start_endpoints_FCM():
-    ep = Endpoints()
-    ep.main_endpoints(customer_bot, horeca_bot)
+    ep = Endpoints(customer_bot, horeca_bot)
+    ep.main_endpoints()
+
+def start_chat():
+    chat = ChatBot()
+    chat.bot_handlers()
 
 if __name__ == "__main__":
 
@@ -62,6 +67,8 @@ if __name__ == "__main__":
     p6 = Process(target=start_customer_bot_FCM, args=())
     p7 = Process(target=start_horeca_bot_FCM, args=())
     p8 = Process(target=start_endpoints_FCM, args=())
+    p9 = Process(target=start_chat, args=())
+
 
     p1.start()
     p4.start()
@@ -71,3 +78,4 @@ if __name__ == "__main__":
     p6.start()
     p7.start()
     p8.start()
+    p9.start()
