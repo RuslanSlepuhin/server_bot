@@ -22,8 +22,8 @@ def start_horeca_bot():
     horeca_bot.bot_handlers()
 
 def start_endpoints():
-    ep = Endpoints()
-    ep.main_endpoints(customer_bot, horeca_bot)
+    ep = Endpoints(customer_bot, horeca_bot)
+    ep.main_endpoints()
 
 def start_back_server():
     back_server = BackServer()
