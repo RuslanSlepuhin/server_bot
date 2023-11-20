@@ -30,8 +30,16 @@ class ChatBot:
                 data['code'] = message.text
                 self.request = message.text
             await state.finish()
+            answer_list = []
             answer = self.chat.get_answer(self.request)
-            await self.bot.send_message(message.chat.id, answer)
+            if len(answer)> 256:
+                while len(answer)>256:
+                    answer_list.append(answer[:256])
+                    answer = answer[256:]
+            else:
+                answer_list = [answer,]
+            for item in answer_list:
+                await self.bot.send_message(message.chat.id, item)
             await dialog(message)
 
         @self.dp.message_handler(commands=['start'])
