@@ -23,7 +23,7 @@ class Chat:
             response = g4f.ChatCompletion.create(
                 model=g4f.models.gpt_4,
                 messages=[{"role": "user", "content": request}],
-                provider=You,
+                provider=Bing,
                 cookies={"cookie_name": "value", "cookie_name2": "value2"},
                 auth=True
             )  # Alternative model setting
