@@ -5,7 +5,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.utils import executor
-from chat import Chat
+from _apps.chat.chat import Chat
 
 config = configparser.ConfigParser()
 config.read("./settings/config.ini")
