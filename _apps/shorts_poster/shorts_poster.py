@@ -680,10 +680,16 @@ class ShortsPoster:
 
 
     async def clear_unknown_tags(self):
-        for key in self.history_messages:
-            if re.findall(r"<+|>+", self.history_messages[key]['body']):
-                print(self.history_messages[key]['body'])
-                pass
-                self.history_messages[key]['body'] = re.sub(r"<+|>+", "", self.history_messages[key]['body'])
-                print(self.history_messages[key]['body'])
-                pass
+        try:
+            for key in self.history_messages:
+                if self.history_messages[key]['body']:
+                    if re.findall(r"<+|>+", self.history_messages[key]['body']):
+                        print(self.history_messages[key]['body'])
+                        pass
+                        self.history_messages[key]['body'] = re.sub(r"<+|>+", "", self.history_messages[key]['body'])
+                        print(self.history_messages[key]['body'])
+                        pass
+        except Exception as ex:
+            print(ex)
+            pass
+        pass
