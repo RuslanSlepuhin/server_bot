@@ -1,13 +1,14 @@
+import asyncio
 import configparser
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.utils import executor
-from _apps.chat.chat import Chat
+from chat import Chat
 
 config = configparser.ConfigParser()
-config.read("./_apps/chat/settings/config.ini")
+config.read("./settings/config.ini")
 
 class ChatBot:
 
@@ -30,22 +31,20 @@ class ChatBot:
                 data['code'] = message.text
                 self.request = message.text
             await state.finish()
-            answer_list = []
             answer = self.chat.get_answer(self.request)
-            if len(answer)> 256:
-                while len(answer)>256:
-                    answer_list.append(answer[:256])
-                    answer = answer[256:]
-            else:
-                answer_list = [answer,]
-            for item in answer_list:
-                await self.bot.send_message(message.chat.id, item)
+            await self.bot.send_message(message.chat.id, answer)
             await dialog(message)
 
         @self.dp.message_handler(commands=['start'])
         async def start(message: types.Message):
             await dialog(message)
             pass
+
+        @self.dp.message_handler(content_types=['text'])
+        async def text_message(message):
+            answer = self.chat.get_answer(message.text)
+            await self.bot.send_message(message.chat.id, answer)
+            await dialog(message)
 
         async def dialog(message):
             await FormVerificationCode.code.set()
