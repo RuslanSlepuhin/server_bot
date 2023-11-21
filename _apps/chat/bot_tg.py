@@ -13,8 +13,8 @@ config.read("./_apps/chat/settings/config.ini")
 class ChatBot:
 
 
-    def __init__(self):
-        self.token = config['Bot']['token']
+    def __init__(self, token=None):
+        self.token = token if token else config['Bot']['token']
         self.bot = Bot(token=self.token)
         self.dp = Dispatcher(self.bot, storage=MemoryStorage())
         self.chat = Chat()
@@ -43,17 +43,19 @@ class ChatBot:
         @self.dp.message_handler(content_types=['text'])
         async def text_message(message):
             answer = self.chat.get_answer(message.text)
-
-            await self.bot.send_message(message.chat.id, answer) if answer else "no answer"
+            await self.bot.send_message(message.chat.id, answer)
             await dialog(message)
 
         async def dialog(message):
             await FormVerificationCode.code.set()
             await self.bot.send_message(message.chat.id, "You:")
 
+
         executor.start_polling(self.dp, skip_updates=True)
 
 if __name__ == '__main__':
     chatBot = ChatBot()
     chatBot.bot_handlers()
+
+
 
