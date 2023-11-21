@@ -43,7 +43,8 @@ class ChatBot:
         @self.dp.message_handler(content_types=['text'])
         async def text_message(message):
             answer = self.chat.get_answer(message.text)
-            await self.bot.send_message(message.chat.id, answer)
+
+            await self.bot.send_message(message.chat.id, answer) if answer else ""
             await dialog(message)
 
         async def dialog(message):
