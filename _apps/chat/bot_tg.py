@@ -44,7 +44,7 @@ class ChatBot:
         async def text_message(message):
             answer = self.chat.get_answer(message.text)
 
-            await self.bot.send_message(message.chat.id, answer) if answer else ""
+            await self.bot.send_message(message.chat.id, answer) if answer else "no answer"
             await dialog(message)
 
         async def dialog(message):
