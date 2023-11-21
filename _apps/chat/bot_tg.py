@@ -8,13 +8,13 @@ from aiogram.utils import executor
 from _apps.chat.chat import Chat
 
 config = configparser.ConfigParser()
-config.read("./settings/config.ini")
+config.read("./_apps/chat/settings/config.ini")
 
 class ChatBot:
 
 
-    def __init__(self, token=None):
-        self.token = token if token else config['Bot']['token']
+    def __init__(self):
+        self.token = config['Bot']['token']
         self.bot = Bot(token=self.token)
         self.dp = Dispatcher(self.bot, storage=MemoryStorage())
         self.chat = Chat()
