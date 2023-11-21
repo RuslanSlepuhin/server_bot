@@ -27,6 +27,7 @@ class Chat:
                 cookies={"cookie_name": "value", "cookie_name2": "value2"},
                 auth=True
             )  # Alternative model setting
+            print(resposne)
             return response
         except Exception as ex:
             print("Что-то пошло не так")
