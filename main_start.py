@@ -50,8 +50,8 @@ def start_horeca_bot_FCM():
     horeca_bot.bot_handlers()
 
 def start_endpoints_FCM():
-    ep = Endpoints(customer_bot, horeca_bot)
-    ep.main_endpoints()
+    ep = Endpoints(horeca_bot, customer_bot)
+    ep.main_endpoints(customer_bot, horeca_bot)
 
 def start_chat():
     chat = ChatBot()
@@ -64,9 +64,10 @@ if __name__ == "__main__":
     p3 = Process(target=start_bot, args=(True, settings.token_red))
     # p4 = Process(target=talking_bot_run, args=())
     p5 = Process(target=start_admin_panel, args=())
-    # p6 = Process(target=start_customer_bot_FCM, args=())
-    # p7 = Process(target=start_horeca_bot_FCM, args=())
-    # p8 = Process(target=start_endpoints_FCM, args=())
+
+    p6 = Process(target=start_customer_bot_FCM, args=())
+    p7 = Process(target=start_horeca_bot_FCM, args=())
+    p8 = Process(target=start_endpoints_FCM, args=())
     # p9 = Process(target=start_chat, args=())
 
 
@@ -75,7 +76,7 @@ if __name__ == "__main__":
     p2.start()
     p3.start()
     p5.start()
-    # p6.start()
-    # p7.start()
-    # p8.start()
+    p6.start()
+    p7.start()
+    p8.start()
     # p9.start()

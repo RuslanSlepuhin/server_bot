@@ -16,9 +16,18 @@ class CustBotAddMethods:
         return keyboard.add(*[KeyboardButton(item) for item in keys_list])
 
     async def start_dialog_with_user(self, message, status=None):
-        bar_keyboard = self.composeReplyKeyboard([variables.user_status_buttons['cancel_order'],])
+        bar_keyboard = self.composeReplyKeyboard([variables.USER_STATUS_BUTTONS['canceled_by_user'], ])
         await self.bot.send_message(message.chat.id, "PRESS BUTTON" if not status else status, reply_markup=bar_keyboard)
 
     async def verify_user(self, message):
         await FormVerificationCode.code.set()
         await self.bot.send_message(message.chat.id, variables.dialog_customer['verification'])
+
+    async def check_start(self, json_response):
+        try:
+            if json_response['telegram_user_id'] and json_response['status'] not in variables.complete_statuses and json_response['order_id']:
+                return True
+        except Exception as ex:
+            print("error methods 1", ex)
+        return False
+
