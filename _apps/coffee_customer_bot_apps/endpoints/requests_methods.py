@@ -1,5 +1,5 @@
 import requests
-from _apps.coffee_customer_bot_apps.variables import variables
+from coffee_customer_bot_apps.variables import variables
 
 
 class RequestsClass:
