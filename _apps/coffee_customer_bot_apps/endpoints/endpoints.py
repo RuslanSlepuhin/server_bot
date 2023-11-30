@@ -14,7 +14,7 @@ class Endpoints:
         self.horeca_bot = horeca_bot
         self.customer_bot = customer_bot
 
-    def main_endpoints(self, customer_bot, horeca_bot):
+    def main_endpoints(self):
         app = Flask(__name__)
         CORS(app)
 

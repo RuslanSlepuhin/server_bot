@@ -18,7 +18,7 @@ server_test_status_endpoint_from_horeca = "/client/status_from_horeca/" # take t
 # POST -> {"user_id": user_id:int , "verification_code": verification_code:str}
 verification_endpoint = "/client/enter_key_from_user/"
 
-request_exists_user_id = "/user-id-exists/"
+request_exists_user_id = "/user_id_exists/"
 get_user_verification_info = "/client/user-info/" # GET
 
 get_user_data = "/client/user_info/"
