@@ -51,7 +51,7 @@ def start_horeca_bot_FCM():
 
 def start_endpoints_FCM():
     ep = Endpoints(horeca_bot, customer_bot)
-    ep.main_endpoints(customer_bot, horeca_bot)
+    ep.main_endpoints()
 
 def start_chat():
     chat = ChatBot()
