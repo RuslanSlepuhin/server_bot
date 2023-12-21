@@ -6056,45 +6056,7 @@ class InviteBot():
         return print('Schedule pushing has been stopped')
 
     async def show_statistics(self):
-        result_dict = {}
-        # --------- compose data from last session --------------
-        result_dict['last_session'] = {}
-        result_dict['all'] = {}
-        if not self.current_session:
-            self.current_session = await self.get_last_session()
-        # ------------------------------ new ------------------------------------
-        message_for_send = 'Statistics results:\n\n'
-        for one_prof in variable.valid_professions:
-            param = f"WHERE profession LIKE '%{one_prof}, %' OR profession LIKE '%, {one_prof}%' " \
-                    f"OR profession='{one_prof}'" if one_prof == 'ba' else f"WHERE profession LIKE '%{one_prof}%'"
-            response_all = self.db.get_all_from_db(
-                table_name=variable.admin_database,
-                param=param,
-                field='id'
-            )
-            result_dict['all'][one_prof] = len(response_all)
-
-            param += " AND session='{self.current_session}'"
-
-            response_last_session = self.db.get_all_from_db(
-                table_name=variable.admin_database,
-                param=param,
-                field='id'
-            )
-            result_dict['last_session'][one_prof] = len(response_last_session)
-            # prof_dict = helper.string_to_list(
-            #     text=variable.admin_table_fields,
-            #     separator=', '
-            # )
-        responses = self.db.get_all_from_db(
-            table_name=variable.admin_database,
-            param="WHERE profession <> 'no_sort'",
-            field='id'
-        )
-        for item in variable.valid_professions:
-            message_for_send += f"{item}: {result_dict['last_session'][item]}/{result_dict['all'][item]}\n"
-        message_for_send += f"-----------------\nSumm: {sum(result_dict['last_session'].values())}/{sum(result_dict['all'].values())}\n" \
-                            f"vacancies number: {len(responses)}"
+        message_for_send = await helper.statistics_from_db(self.db)
         return message_for_send
         # -----------------------------------------------------------------------
 

@@ -54,9 +54,6 @@ class BotHelper:
 
         self.card = cards[offset]
 
-        # print('**** profession_card: ', self.card['profession'])
-        # print('**** sub_card: ', self.card['sub'])
-
         length = len(cards)
         if length > 0:
             if length > 1:
