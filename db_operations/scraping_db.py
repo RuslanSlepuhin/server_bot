@@ -237,7 +237,6 @@ class DataBaseOperations:
                         response = cur.fetchall()
                     except Exception as e:
                         print(e)
-                        self.db_is_busy = False
                         return str(e)
                 if curs:
                     return cur
@@ -816,6 +815,7 @@ class DataBaseOperations:
         # results_dict['body'] = self.clear_title_or_body(results_dict['body'])
 
         if check_or_exists:
+            print('check or exists')
             tables_list_for_vacancy_searching = set(profession['profession']).copy()
             tables_list_for_vacancy_searching.discard('no_sort')
             tables_list_for_vacancy_searching = tables_list_for_vacancy_searching.union(additional_elements)
@@ -836,6 +836,7 @@ class DataBaseOperations:
         if results_dict['profession'] == 'no_sort':
             table_name = archive_database
 
+        print('new post')
         new_post = self.compose_query(vacancy_dict=results_dict, table_name=table_name)
 
         if not self.con:
@@ -844,6 +845,7 @@ class DataBaseOperations:
         self.check_or_create_table_admin(cur)
         with self.con:
             try:
+                print('cur execute')
                 cur.execute(new_post)
                 print(f'+++++++++++++ The vacancy has been added to DB {table_name}\n')
                 if self.report:

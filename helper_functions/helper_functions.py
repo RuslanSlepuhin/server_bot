@@ -816,3 +816,55 @@ async def set_approved_like_null(**kwargs):
             pass
         return True
     return False
+
+async def get_last_session_number(db_class) -> [str]:
+    return db_class.get_all_from_db(
+        field='session',
+        table_name='current_session',
+        order="ORDER BY id DESC LIMIT 1"
+    )[0][0]
+
+async def statistics_from_db(db_class, table=admin_database, fields=admin_table_fields, last_session_required=False):
+    last_session = await get_last_session_number(db_class)
+
+    statistics_dict = {}
+    for profession in valid_professions:
+        params = f"WHERE profession LIKE '%{profession}%'" if profession !='ba' else f"profession='{profession}' "
+        params += f"AND session='{last_session}'"
+        last_session_vacancies = db_class.get_all_from_db(
+            field="COUNT(*)",
+            without_sort=True,
+            table_name=table,
+            param=params,
+        )
+        statistics_dict[profession] = str(last_session_vacancies[0][0])
+
+    for profession in valid_professions:
+        params = f"WHERE profession LIKE '%{profession}%'" if profession !='ba' else f"profession='{profession}' "
+        all_vacancies = db_class.get_all_from_db(
+            field="COUNT(*)",
+            without_sort=True,
+            table_name=table,
+            param=params,
+        )
+        statistics_dict[profession] += f"/{str(all_vacancies[0][0])}"
+
+    for profession in valid_professions:
+        params = f"WHERE profession LIKE '%{profession}%' " if profession !='ba' else f"profession='{profession}' "
+        params += "AND approved NOT LIKE '%admin%'"
+        all_vacancies = db_class.get_all_from_db(
+            field="COUNT(*)",
+            without_sort=True,
+            table_name=table,
+            param=params,
+        )
+        statistics_dict[profession] += f"/{str(all_vacancies[0][0])}"
+
+
+    output_text = "Statistics:\nby last session/all vacancies/not approved:\n\n"
+    for key in statistics_dict:
+        output_text += f"{key}: {statistics_dict[key]}\n"
+    # output_text += [f"{key}: {statistics_dict[key]}" for key in statistics_dict]
+    return output_text
+
+
