@@ -3,6 +3,7 @@ from datetime import datetime
 import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from db_operations.scraping_db import DataBaseOperations
@@ -43,6 +44,7 @@ class HHGetInformation:
         self.found_by_link = 0
         self.response = {}
         self.helper = helper
+        self.list_links = []
 
     async def get_content(self, db_tables=None):
         self.db_tables = db_tables
@@ -120,8 +122,9 @@ class HHGetInformation:
             await self.bot.send_message(self.chat_id, 'hh.ru parsing: Done!', disable_web_page_preview=True)
 
     async def get_link_message(self, raw_content):
-        soup = BeautifulSoup(raw_content, 'lxml')
-        self.list_links = soup.find_all('a', class_='serp-item__title')
+        links = self.browser.find_elements(By.XPATH, "//*[@data-page-analytics-event='vacancy_search_suitable_item']/a")
+        for link in links:
+            self.list_links.append(link.get_attribute('href'))
         if self.list_links:
             if self.bot_dict:
                 self.current_message = await self.bot.send_message(self.chat_id, f'hh.ru:\nПо слову {self.word} найдено {len(self.list_links)} вакансий на странице {self.page_number+1}', disable_web_page_preview=True)
