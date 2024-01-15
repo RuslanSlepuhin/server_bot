@@ -54,7 +54,7 @@ class SitesParser:
 
         bot_dict = {'bot': self.bot, 'chat_id': self.chat_id}
 
-        # await RemocateGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
+        await RemocateGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
 
         # await CareerSpaceGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
         await EpamGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
