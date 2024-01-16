@@ -54,26 +54,24 @@ class SitesParser:
 
         bot_dict = {'bot': self.bot, 'chat_id': self.chat_id}
 
-        await RemocateGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
-
-        # await CareerSpaceGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
-        await EpamGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
-        await СareerjetGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
-        #
-        await RemotehubGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        # await RemoteJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await RemocateGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
+        # await EpamGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
+        # await СareerjetGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
+        # await RemotehubGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await HHGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        await HHKzGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        await RabotaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        await PracaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        await DevGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        await HabrGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        await FinderGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        await GeekGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        await DesignerGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        await SvyaziGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        await IngameJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await HHKzGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await RabotaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await PracaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await DevGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await HabrGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await FinderGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await GeekGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await DesignerGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await SvyaziGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await IngameJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
 
+        # await RemoteJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await CareerSpaceGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
         # await SuperJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
 
         print(' -----------------------FINAL -------------------------------')
