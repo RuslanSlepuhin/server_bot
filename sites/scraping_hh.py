@@ -361,7 +361,7 @@ class HHGetInformation:
             self.rejected_vacancies += 1
 
         elif about_vacancy['response']['vacancy'] == 'no vacancy by anti-tags':
-            additional_message = f'-ANTI-TAG by vacancy\n\n'
+            additional_message = f"-ANTI-TAG by vacancy:\a{about_vacancy['profession']['anti_tag']}\n\n"
             self.rejected_vacancies += 1
 
         elif about_vacancy['response']['vacancy'] == 'written to db':
