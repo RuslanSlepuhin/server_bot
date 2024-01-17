@@ -178,6 +178,11 @@ class HHGetInformation:
                         vacancy = soup.find('div', class_='vacancy-title').find('span').get_text()
                     except Exception as e:
                         print(f"error vacancy: {e}")
+                        try:
+                            vacancy = self.browser.find_elements(By.XPATH, "//div[@class='vacancy-title']")[0]
+                            vacancy = vacancy.text.split("\n")[0]
+                        except Exception as ex:
+                            print(f"error vacancy: {ex}")
 
                     if vacancy:
                         title = ''
