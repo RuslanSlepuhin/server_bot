@@ -91,6 +91,7 @@ class HHGetInformation:
             for self.page_number in range(0, how_much_pages - 1):
                 try:
                     url = f'{self.base_url}/search/vacancy?search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={self.word}&ored_clusters=true&search_period=3&page={self.page_number}'
+
                     if self.bot_dict:
                         await self.bot.send_message(self.chat_id, url, disable_web_page_preview=True)
                     self.browser.get(url)
