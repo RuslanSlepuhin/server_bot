@@ -90,11 +90,12 @@ class HHGetInformation:
             # not remote
             for self.page_number in range(0, how_much_pages - 1):
                 try:
-                    url = f'{self.base_url}/search/vacancy?search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={self.word}&ored_clusters=true&search_period=3&page={self.page_number}'
-
                     if self.bot_dict:
-                        await self.bot.send_message(self.chat_id, url, disable_web_page_preview=True)
-                    self.browser.get(url)
+                        await self.bot.send_message(self.chat_id,
+                                                    f'{self.base_url}/search/vacancy?search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={self.word}&ored_clusters=true&search_period=3&page={self.page_number}',
+                                                    disable_web_page_preview=True)
+                    self.browser.get(
+                        f'https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={self.word}&ored_clusters=true&search_period=3&page={self.page_number}')
                     self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                     vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
                     if not vacancy_exists_on_page:
