@@ -45,6 +45,7 @@ class HHGetInformation:
         self.response = {}
         self.helper = helper
         self.list_links = []
+        self.base_url = "https://hh.ru"
 
     async def get_content(self, db_tables=None):
         self.db_tables = db_tables
@@ -89,12 +90,10 @@ class HHGetInformation:
             # not remote
             for self.page_number in range(0, how_much_pages - 1):
                 try:
+                    url = f'{self.base_url}/search/vacancy?search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={self.word}&ored_clusters=true&search_period=3&page={self.page_number}'
                     if self.bot_dict:
-                        await self.bot.send_message(self.chat_id,
-                                                    f'https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={self.word}&ored_clusters=true&search_period=3&page={self.page_number}',
-                                                    disable_web_page_preview=True)
-                    self.browser.get(
-                        f'https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={self.word}&ored_clusters=true&search_period=3&page={self.page_number}')
+                        await self.bot.send_message(self.chat_id, url, disable_web_page_preview=True)
+                    self.browser.get(url)
                     self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                     vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
                     if not vacancy_exists_on_page:
@@ -104,25 +103,27 @@ class HHGetInformation:
                     break
 
             # remote
-            for self.page_number in range(0, how_much_pages - 1):
-                try:
-                    if self.bot_dict:
-                        await self.bot.send_message(self.chat_id,
-                                                    f"https://hh.ru/search/vacancy?area=1002&area=16&area=113&area=40&schedule=remote&search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={self.word}&ored_clusters=true&search_period=3&page={self.page_number}")
-                    self.browser.get(
-                        f"https://hh.ru/search/vacancy?area=1002&area=16&area=113&area=40&schedule=remote&search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={self.word}&ored_clusters=true&search_period=3&page={self.page_number}")
-                    self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                    vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
-                    if not vacancy_exists_on_page:
-                        break
-                except Exception as e:
-                    print(e)
-                    break
+            # for self.page_number in range(0, how_much_pages - 1):
+            #     try:
+            #         if self.bot_dict:
+            #             await self.bot.send_message(self.chat_id,
+            #                                         f"https://hh.ru/search/vacancy?area=1002&area=16&area=113&area=40&schedule=remote&search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={self.word}&ored_clusters=true&search_period=3&page={self.page_number}")
+            #         self.browser.get(
+            #             f"https://hh.ru/search/vacancy?area=1002&area=16&area=113&area=40&schedule=remote&search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={self.word}&ored_clusters=true&search_period=3&page={self.page_number}")
+            #         self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            #         vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
+            #         if not vacancy_exists_on_page:
+            #             break
+            #     except Exception as e:
+            #         print(e)
+            #         break
         if self.bot_dict:
             await self.bot.send_message(self.chat_id, 'hh.ru parsing: Done!', disable_web_page_preview=True)
 
     async def get_link_message(self, raw_content):
         links = self.browser.find_elements(By.XPATH, "//*[@data-page-analytics-event='vacancy_search_suitable_item']/a")
+        if not links:
+            return False
         for link in links:
             self.list_links.append(link.get_attribute('href'))
         if self.list_links:
