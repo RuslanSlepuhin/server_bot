@@ -1,3 +1,4 @@
+import asyncio
 import re
 from datetime import datetime
 import pandas as pd
@@ -7,7 +8,7 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from db_operations.scraping_db import DataBaseOperations
-from patterns.data_pattern._data_pattern import cities_pattern, params
+from utils.additional_variables.additional_variables import vacancies_database
 from sites.write_each_vacancy_to_db import HelperSite_Parser
 from settings.browser_settings import options, chrome_driver_path
 from utils.additional_variables.additional_variables import sites_search_words, how_much_pages, parsing_report_path, admin_database, archive_database
@@ -45,10 +46,20 @@ class HHGetInformation:
         self.response = {}
         self.helper = helper
         self.list_links = []
+        self.searching_text_separator = None
         self.base_url = "https://hh.ru"
+        self.debug = False
+        self.additional = "/search/vacancy?search_field=name&enable_snippets=true&ored_clusters=true&search_period=3&text=**word&page=**page"
+        self.main_class = kwargs['main_class']
+        self.source_title_name = "https://hh.ru"
+        self.source_short_name = "HH"
 
-    async def get_content(self, db_tables=None):
-        self.db_tables = db_tables
+        self.links_in_past = []
+        self.links_x_path = "//*[@data-page-analytics-event='vacancy_search_suitable_item']/a"
+
+    async def get_content(self, *args, **kwargs):
+        self.words_pattern = kwargs['words_pattern']
+        self.db_tables = kwargs['db_tables'] if kwargs.get('db_tables') else vacancies_database
         try:
             await self.get_info()
         except Exception as ex:
@@ -79,58 +90,37 @@ class HHGetInformation:
         except:
             self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-    async def get_info(self):
+    async def get_info(self, how_much_pages=10, separator="+"):
+        separator = separator if not self.searching_text_separator else self.searching_text_separator
         await self.get_browser()
-        # -------------------- check what is current session --------------
-        self.current_session = await self.helper_parser_site.get_name_session()
 
-        for word in self.search_words:
-            self.word = word
+        self.words_pattern = [self.words_pattern] if type(self.words_pattern) is str else self.words_pattern
+        for word in self.words_pattern:
+            self.word = separator.join(word.split(" "))
 
             # not remote
             for self.page_number in range(0, how_much_pages - 1):
-                try:
-                    if self.bot_dict:
-                        await self.bot.send_message(self.chat_id,
-                                                    f'{self.base_url}/search/vacancy?search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={self.word}&ored_clusters=true&search_period=3&page={self.page_number}',
-                                                    disable_web_page_preview=True)
-                    self.browser.get(
-                        f'https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={self.word}&ored_clusters=true&search_period=3&page={self.page_number}')
-                    self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                    vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
-                    if not vacancy_exists_on_page:
-                        break
-                except Exception as e:
-                    print(e)
+                url = f'{self.base_url}{self.additional.replace("**word", self.word).replace("**page", str(self.page_number))}'
+                if self.debug:
+                    await self.main_class.bot.send_message(self.chat_id, f"Url: {url}",
+                                                           disable_web_page_preview=True)
+                self.browser.get(url)
+                await asyncio.sleep(2)
+                self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
+                if not vacancy_exists_on_page:
                     break
-
-            # remote
-            # for self.page_number in range(0, how_much_pages - 1):
-            #     try:
-            #         if self.bot_dict:
-            #             await self.bot.send_message(self.chat_id,
-            #                                         f"https://hh.ru/search/vacancy?area=1002&area=16&area=113&area=40&schedule=remote&search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={self.word}&ored_clusters=true&search_period=3&page={self.page_number}")
-            #         self.browser.get(
-            #             f"https://hh.ru/search/vacancy?area=1002&area=16&area=113&area=40&schedule=remote&search_field=name&search_field=company_name&search_field=description&enable_snippets=true&text={self.word}&ored_clusters=true&search_period=3&page={self.page_number}")
-            #         self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            #         vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
-            #         if not vacancy_exists_on_page:
-            #             break
-            #     except Exception as e:
-            #         print(e)
-            #         break
         if self.bot_dict:
-            await self.bot.send_message(self.chat_id, 'hh.ru parsing: Done!', disable_web_page_preview=True)
+            await self.bot.send_message(self.chat_id, f'{self.source_title_name} parsing: Done!',
+                                        disable_web_page_preview=True)
 
     async def get_link_message(self, raw_content):
-        links = self.browser.find_elements(By.XPATH, "//*[@data-page-analytics-event='vacancy_search_suitable_item']/a")
-        if not links:
-            return False
+        links = self.browser.find_elements(By.XPATH, self.links_x_path)
         for link in links:
             self.list_links.append(link.get_attribute('href'))
         if self.list_links:
             if self.bot_dict:
-                self.current_message = await self.bot.send_message(self.chat_id, f'hh.ru:\nПо слову {self.word} найдено {len(self.list_links)} вакансий на странице {self.page_number+1}', disable_web_page_preview=True)
+                self.current_message = await self.bot.send_message(self.chat_id, f'{self.source_short_name}:\nПо слову {self.word} найдено {len(self.list_links)} вакансий на странице {self.page_number+1}', disable_web_page_preview=True)
 
             # --------------------- LOOP -------------------------
             self.written_vacancies = 0
@@ -145,206 +135,173 @@ class HHGetInformation:
             return False
 
     async def get_content_from_link(self, return_raw_dictionary=False):
-        links = []
-        soup = None
         self.found_by_link = 0
         for link in self.list_links:
-            found_vacancy = True
             try:
                 vacancy_url = link.get('href')
             except:
                 vacancy_url = link
-            try:
-                vacancy_url = vacancy_url.split('?')[0]
-            except Exception as e:
-                print('/////////////////// ALARM in hh scraper /////////////////////\n', e)
-                return False
-
-            print(f"\n{vacancy_url}")
+            print('url', vacancy_url)
             # pre-checking by link
             check_vacancy_not_exists = self.db.check_exists_message_by_link_or_url(
                 vacancy_url=vacancy_url,
                 table_list=[admin_database, archive_database]
             )
-            if check_vacancy_not_exists or not check_vacancy_not_exists and return_raw_dictionary:
-                links.append(vacancy_url)
-                try:
-                    self.browser.get(vacancy_url)
-                    soup = BeautifulSoup(self.browser.page_source, 'lxml')
-                except Exception as ex:
-                    found_vacancy = False
-                    print(f"error in browser.get {ex}")
-
-                if found_vacancy:
-                    vacancy = ''
-                    try:
-                        vacancy = soup.find('div', class_='vacancy-title').find('span').get_text()
-                    except Exception as e:
-                        print(f"error vacancy: {e}")
-                        try:
-                            vacancy = self.browser.find_elements(By.XPATH, "//div[@class='vacancy-title']")[0]
-                            vacancy = vacancy.text.split("\n")[0]
-                        except Exception as ex:
-                            print(f"error vacancy: {ex}")
-
-                    if vacancy:
-                        title = ''
-                        try:
-                            title = vacancy
-                        except Exception as e:
-                            print(f"error title: {e}")
-
-                        body = ''
-                        try:
-                            body = soup.find('div', class_='vacancy-section').get_text()
-                            body = body.replace('\n\n', '\n')
-                            body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
-                        except Exception as e:
-                            print(f"error body: {e}")
-
-                        tags = ''
-                        try:
-                            tags_list = soup.find('div', class_="bloko-tag-list")
-                            for i in tags_list:
-                                tags += f'{i.get_text()}, '
-                            tags = tags[0:-2]
-                        except Exception as e:
-                            print(f"error tags: {e}")
-
-                        english = ''
-                        if re.findall(r'[Аа]нглийский', tags) or re.findall(r'[Ee]nglish', tags):
-                            english = 'English'
-
-                        try:
-                            company = soup.find('span', class_='vacancy-company-name').get_text()
-                            company = company.replace('\xa0', ' ')
-                        except Exception as e:
-                            print(f"error company: {e}")
-                            company = ''
-
-                        try:
-                            salary = soup.find('div', attrs={'data-qa': 'vacancy-salary'}).get_text()
-                        except Exception as e:
-                            print(f"error salary: {e}")
-                            salary = ''
-
-                        try:
-                            experience = soup.find('p', class_='vacancy-description-list-item').find('span').get_text()
-                        except Exception as e:
-                            print(f"error experience: {e}")
-                            experience = ''
-
-                        raw_content_2 = soup.findAll('p', class_='vacancy-description-list-item')
-                        counter = 1
-                        job_type = ''
-                        for value in raw_content_2:
-                            match counter:
-                                case 1:
-                                    experience = value.find('span').get_text()
-                                case 2:
-                                    job_type = str(value.get_text())
-                                case 3:
-                                    job_type += f'\n{value.get_text}'
-                            counter += 1
-                        job_type = re.sub(r'\<[a-zA-Z\s\.\-\'"=!\<_\/]+\>', " ", job_type)
-
-                        contacts = ''
-
-                        try:
-                            date = soup.find('p', class_="vacancy-creation-time-redesigned").get_text()
-                        except Exception as e:
-                            print(f"error date: {e}")
-                            date = ''
-                        if date:
-                            date = re.findall(r'[0-9]{1,2}\W[а-я]{3,}\W[0-9]{4}', date)
-                            date = date[0]
-                            date = self.normalize_date(date)
-
-                        # ------------------------- search relocation ----------------------------
-                        relocation = ''
-                        if re.findall(r'[Рр]елокация', body):
-                            relocation = 'релокация'
-
-                        # ------------------------- search city ----------------------------
-                        city = ''
-                        try:
-                            city = soup.find('a', class_='bloko-link bloko-link_kind-tertiary bloko-link_disable-visited').text
-                        except:
-                            for key in cities_pattern:
-                                for item in cities_pattern[key]:
-                                    match = re.findall(rf"{item}", body)
-                                    if match and key != 'others':
-                                        for i in match:
-                                            city += f"{i} "
-
-                        # ------------------------- search english ----------------------------
-                        english_additional = ''
-                        for item in params['english_level']:
-                            match1 = re.findall(rf"{item}", body)
-                            match2 = re.findall(rf"{item}", tags)
-                            if match1:
-                                for i in match1:
-                                    english_additional += f"{i} "
-                            if match2:
-                                for i in match2:
-                                    english_additional += f"{i} "
-
-                        if english and ('upper' in english_additional or 'b1' in english_additional or 'b2' in english_additional \
-                                or 'internediate' in english_additional or 'pre' in english_additional):
-                            english = english_additional
-                        elif not english and english_additional:
-                            english = english_additional
-
-                        self.db.write_to_db_companies([company])
-
-                        #-------------------- compose one writting for ione vacancy ----------------
-
-                        results_dict = {
-                            'chat_name': 'https://hh.ru/',
-                            'title': title,
-                            'body': body,
-                            'vacancy': vacancy,
-                            'vacancy_url': vacancy_url,
-                            'company': company,
-                            'company_link': '',
-                            'english': english,
-                            'relocation': relocation,
-                            'job_type': job_type,
-                            'city':city,
-                            'salary':salary,
-                            'experience':experience,
-                            'time_of_public':date,
-                            'contacts':contacts,
-                            'session': self.current_session
-                        }
-
-                        if not return_raw_dictionary:
-                            response = await self.helper_parser_site.write_each_vacancy(results_dict)
-
-                            print('sort profession (33)')
-                            await self.output_logs(
-                                about_vacancy=response,
-                                vacancy=vacancy,
-                                vacancy_url=vacancy_url
-                            )
-                            # return response
-                            self.response = response
-                        else:
-                            self.response = results_dict
-                    else:
-                        self.response = {}
+            if (check_vacancy_not_exists or not check_vacancy_not_exists and return_raw_dictionary) and vacancy_url not in self.links_in_past:
+                self.links_in_past.append(vacancy_url)
+                await self.get_vacancy_data(vacancy_url, return_raw_dictionary)
             else:
                 self.found_by_link += 1
                 print("vacancy link exists")
 
-        if self.found_by_link > 0:
-            self.count_message_in_one_channel += self.found_by_link
-            if self.bot_dict:
-                self.current_message = await edit_message(
-                    bot=self.bot,
-                    text=f"\n---\nfound by link: {self.found_by_link}",
-                    msg=self.current_message
+            # if self.found_by_link > 0:
+            #     self.count_message_in_one_channel += self.found_by_link
+            #     if self.bot_dict:
+            #         self.current_message = await edit_message(
+            #             bot=self.bot,
+            #             text=f"\n---\nfound by link: {self.found_by_link}",
+            #             msg=self.current_message
+            #         )
+
+    async def get_vacancy_data(self, vacancy_url, return_raw_dictionary):
+                self.browser.get(vacancy_url)
+                soup = BeautifulSoup(self.browser.page_source, 'lxml')
+                vacancy = ''
+                try:
+                    vacancy = self.browser.find_elements(By.XPATH, "//div[@class='vacancy-title']")[0]
+                    vacancy = vacancy.text.split("\n")[0]
+                except Exception as e:
+                    print(f"error vacancy: {e}")
+
+                if vacancy:
+                    company_link = ""
+                    title = ''
+                    try:
+                        title = vacancy
+                    except Exception as e:
+                        print(f"error title: {e}")
+
+                    body = ''
+                    try:
+                        body = soup.find('div', class_='vacancy-section').get_text()
+                        body = body.replace('\n\n', '\n')
+                        body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
+                    except Exception as e:
+                        print(f"error body: {e}")
+
+                    tags = ''
+                    try:
+                        tags_list = soup.find('div', class_="bloko-tag-list")
+                        for i in tags_list:
+                            tags += f'{i.get_text()}, '
+                        tags = tags[0:-2]
+                    except Exception as e:
+                        print(f"error tags: {e}")
+
+                    english = ''
+                    if re.findall(r'[Аа]нглийский', tags) or re.findall(r'[Ee]nglish', tags):
+                        english = 'English'
+
+                    try:
+                        company = soup.find('span', class_='vacancy-company-name').get_text()
+                        company = company.replace('\xa0', ' ')
+                        if company:
+                            self.db.write_to_db_companies([company])
+                    except Exception as e:
+                        print(f"error company: {e}")
+                        company = ''
+
+                    try:
+                        salary = soup.find('div', attrs={'data-qa': 'vacancy-salary'}).get_text()
+                    except Exception as e:
+                        print(f"error salary: {e}")
+                        salary = ''
+
+                    try:
+                        experience = soup.find('p', class_='vacancy-description-list-item').find('span').get_text()
+                    except Exception as e:
+                        print(f"error experience: {e}")
+                        experience = ''
+
+                    raw_content_2 = soup.findAll('p', class_='vacancy-description-list-item')
+                    counter = 1
+                    job_type = ''
+                    for value in raw_content_2:
+                        match counter:
+                            case 1:
+                                experience = value.find('span').get_text()
+                            case 2:
+                                job_type = str(value.get_text())
+                            case 3:
+                                job_type += f'\n{value.get_text}'
+                        counter += 1
+                    job_type = re.sub(r'\<[a-zA-Z\s\.\-\'"=!\<_\/]+\>', " ", job_type)
+
+                    contacts = ''
+
+                    try:
+                        date = soup.find('p', class_="vacancy-creation-time-redesigned").get_text()
+                    except Exception as e:
+                        print(f"error date: {e}")
+                        date = ''
+                    if date:
+                        date = re.findall(r'[0-9]{1,2}\W[а-я]{3,}\W[0-9]{4}', date)
+                        date = date[0]
+                        date = self.normalize_date(date)
+
+                    # ------------------------- search relocation ----------------------------
+                    relocation = ''
+                    if re.findall(r'[Рр]елокация', body):
+                        relocation = 'релокация'
+
+                    # ------------------------- search city ----------------------------
+                    try:
+                        city = soup.find('a',
+                                         class_='bloko-link bloko-link_kind-tertiary bloko-link_disable-visited').text
+                    except:
+                        try:
+                            city = self.browser.find_elements(By.XPATH, "//p[@data-qa='vacancy-view-location']")[0].text
+                        except:
+                            city = ''
+
+                    await self.collect_result_dict(
+                        title, body, vacancy, vacancy_url, company, company_link, english, relocation, job_type,
+                        city, salary, experience, date, contacts, return_raw_dictionary, vacancy=vacancy)
+                else:
+                    self.response = {}
+
+    async def collect_result_dict(self, *args, **kwargs):
+            results_dict = {
+                'chat_name': self.source_title_name,
+                'title': args[0],
+                'body': args[1],
+                'vacancy': args[2],
+                'vacancy_url': args[3],
+                'company': args[4],
+                'company_link': args[5],
+                'english': args[6],
+                'relocation': args[7],
+                'job_type': args[8],
+                'city': args[9],
+                'salary': args[10],
+                'experience': args[11],
+                'time_of_public': args[12],
+                'contacts': args[13],
+            }
+
+            if not args[14]:
+                response = await self.helper_parser_site.write_each_vacancy(results_dict)
+
+                print('sort profession (33)')
+                await self.output_logs(
+                    about_vacancy=response,
+                    vacancy=kwargs['vacancy'],
+                    vacancy_url=args[3]
                 )
+                # return response
+                self.response = response
+            else:
+                self.response = results_dict
 
     async def get_content_from_one_link(self, vacancy_url, return_raw_dictionary=False):
         try:
@@ -427,13 +384,6 @@ class HHGetInformation:
 
         return date
 
-    def clean_company_name(self, text):
-        text = re.sub('Прямой работодатель', '', text)
-        text = re.sub(r'[(]{1} [a-zA-Z0-9\W\.]{1,30} [)]{1}', '', text)
-        text = re.sub(r'Аккаунт зарегистрирован с (публичной почты|email) \*@[a-z.]*[, не email компании!]{0,1}', '', text)
-        text = text.replace(f'\n', '')
-        return text
-
     async def compose_in_one_file(self):
         hiring = []
         link = []
@@ -455,15 +405,6 @@ class HHGetInformation:
         )
 
         df.to_excel(f'all_geek.xlsx', sheet_name='Sheet1')
-
-    async def write_to_db_table_companies(self):
-        excel_data_df = pd.read_excel('all_geek.xlsx', sheet_name='Sheet1')
-        companies = excel_data_df['hiring'].tolist()
-        links = excel_data_df['access_hash'].tolist()
-
-        companies = set(companies)
-
-        self.db.write_to_db_companies(companies)
 
     async def one_url(self, url):
         self.list_links = [url]
