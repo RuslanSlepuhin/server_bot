@@ -11,6 +11,7 @@ from _apps.amin_panel_tg_view.data.get_data import GetData
 # from views.bot.client_init import ClientTelethon
 
 class BotView:
+    print("Start")
     def __init__(self, token):
         # self.client = ClientTelethon().init()
         self.bot = Bot(token=token)
@@ -22,7 +23,6 @@ class BotView:
         self.user_data = {}
         self.helper = BotHelper(bot=self.bot)
         self.markup = None
-
         self.menu_current_point = {} # active inline buttons dict
         self.menu_history = []
         self.menu_offset = 0
@@ -31,21 +31,20 @@ class BotView:
         self.prof = ''
         self.card_offset = 0
         self.cards = None
-
         self.info_message = None
         self.message = None
         self.bar_message = None
         self.additional_menu_message = None
-
         self.bar_keyboard = None
-
         self.local = False
 
 
     def handlers(self):
+        print("handlers")
 
         @self.dp.message_handler(commands=['start'])
         async def start(message: types.Message):
+            print("func start")
             await self.get_new_vacancies(message)
 
         @self.dp.message_handler(content_types=['text'])
@@ -204,18 +203,14 @@ class BotView:
 
     async def get_new_vacancies(self, message):
         self.markup = None
-
         self.menu_current_point = {}  # active inline buttons dict
         self.menu_history = []
         self.menu_offset = 0
         self.callback_data_dict = {}
         self.menu_title = []
-
         self.card_offset = 0
         self.cards = None
-
         self.prof = None
-
         if self.message:
             await self.message.delete()
             self.message = None
