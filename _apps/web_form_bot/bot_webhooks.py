@@ -11,7 +11,7 @@ Bot.set_current(bot)
 dp = Dispatcher(bot)
 app = web.Application()
 
-webhook_path = variables.webhook_path  #
+webhook_path = f'/{TOKEN_API}'  #
 port = variables.port
 host = variables.host
 bot_server_host = variables.bot_domain
