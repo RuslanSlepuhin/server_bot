@@ -63,10 +63,10 @@ def start_webForm_bot():
 
 if __name__ == "__main__":
 
-    p1 = Process(target=start_endpoints, args=())
-    p2 = Process(target=start_bot, args=())
-    p3 = Process(target=start_bot, args=(True, settings.token_red))
-    p4 = Process(target=start_admin_panel, args=())
+    # p1 = Process(target=start_endpoints, args=())
+    # p2 = Process(target=start_bot, args=())
+    # p3 = Process(target=start_bot, args=(True, settings.token_red))
+    # p4 = Process(target=start_admin_panel, args=())
 
     # p5 = Process(target=talking_bot_run, args=())
     # p6 = Process(target=start_customer_bot_FCM, args=())
@@ -76,10 +76,10 @@ if __name__ == "__main__":
     p10 = Process(target=start_webForm_bot, args=())
 
 
-    p1.start()
-    p2.start()
-    p3.start()
-    p4.start()
+    # p1.start()
+    # p2.start()
+    # p3.start()
+    # p4.start()
 
     # p5.start()
     # p6.start()
