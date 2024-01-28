@@ -77,6 +77,7 @@ async def handle_webhook(request):
 
 async def external_post(request):
     data = await request.json()
+    print(data)
     if "name" not in data.keys():
         data['name'] = "-"
     text = await helper.text_object_from_form(data)
