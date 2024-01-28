@@ -75,10 +75,10 @@ if __name__ == "__main__":
     # p10 = Process(target=start_webForm_bot, args=())
 
 
-    # p1.start()
-    # p2.start()
-    # p3.start()
-    # p4.start()
+    p1.start()
+    p2.start()
+    p3.start()
+    p4.start()
     # p5.start()
     # p6.start()
     # p7.start()
