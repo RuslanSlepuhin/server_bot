@@ -8,7 +8,7 @@ endpoint_form = "form/"
 media_excel_path = "_apps/web_form_bot/media/excel/"
 form_excel_name = "form_data.xlsx"
 caption_send_file = "take it"
-port = 3001
+port = 10050
 host = "0.0.0.0"
 
 bot_domain = "https://4dev.itcoty.ru"
