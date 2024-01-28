@@ -12,7 +12,7 @@ dp = Dispatcher(bot)
 app = web.Application()
 
 # webhook_path = f'/{TOKEN_API}'  #
-webhook_path = variables.webhook_path  #
+webhook_path = f"/webhook"  #
 
 port = variables.port
 host = variables.host
@@ -70,7 +70,7 @@ async def handle_webhook(request):
     url = str(request.url)
     index = url.rfind('/')
     token = url[index + 1:]
-    if token == TOKEN_API:
+    if token == "webhook":
         update = types.Update(**await request.json())
         await dp.process_update(update)
         return web.Response()
@@ -89,7 +89,7 @@ async def external_post(request):
     return web.Response(status=200, text="text was delivered")
 
 
-app.router.add_post(f'/{TOKEN_API}', handle_webhook)
+app.router.add_post(f"/webhook", handle_webhook)
 app.router.add_post('/external', external_post)
 
 
