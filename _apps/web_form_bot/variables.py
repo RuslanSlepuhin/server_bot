@@ -1,6 +1,6 @@
 admins_user_id = [5884559465, 758905227]
 bar_buttons_start = ["Excel"]
-server_domain = "https://5c9e-178-127-23-53.ngrok-free.app/"
+server_domain = "https://4309-178-127-23-53.ngrok-free.app/"
 # server_domain = "http://127.0.0.1:8000/"
 
 form_page = "/home/"
