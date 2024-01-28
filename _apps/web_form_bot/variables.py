@@ -11,7 +11,8 @@ caption_send_file = "take it"
 port = 3000
 host = "0.0.0.0"
 
-bot_domain = "https://4dev.itcoty.ru"
+# bot_domain = "https://4dev.itcoty.ru"
+bot_domain = "http://87.249.53.232"
 external_webhook_path = "/external"
 webhook_path = "/webhook"
 
