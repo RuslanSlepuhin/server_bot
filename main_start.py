@@ -72,7 +72,7 @@ if __name__ == "__main__":
     # p7 = Process(target=start_horeca_bot_FCM, args=())
     # p8 = Process(target=start_endpoints_FCM, args=())
     # p9 = Process(target=start_chat, args=())
-    # p10 = Process(target=start_webForm_bot, args=())
+    p10 = Process(target=start_webForm_bot, args=())
 
 
     p1.start()
@@ -84,4 +84,4 @@ if __name__ == "__main__":
     # p7.start()
     # p8.start()
     # p9.start()
-    # p10.start()
+    p10.start()
