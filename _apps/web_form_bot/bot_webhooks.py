@@ -61,7 +61,7 @@ async def content_type_text(message: types.Message):
             case "Excel":
                 excel_path = await helper.send_form_excel()
                 if excel_path:
-                    await helper.send_file(message, excel_path)
+                    await helper.send_file(bot, message, excel_path)
                 else:
                     print("Server is not connection")
 

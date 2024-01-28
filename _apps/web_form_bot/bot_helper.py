@@ -47,12 +47,12 @@ class HelperBot:
         else:
             return False
 
-    async def send_file(self, message, file_full_path, caption=variables.caption_send_file) -> bool:
+    async def send_file(self, bot, message, file_full_path, caption=variables.caption_send_file) -> bool:
         with open(file_full_path, 'rb') as file:
             try:
-                await self.bot_class.bot.send_document(message.chat.id, file, caption=caption)
+                await bot.send_document(message.chat.id, file, caption=caption)
             except Exception as ex:
-                await self.bot_class.bot.send_message(message.chat.id, ex)
+                await bot.send_message(message.chat.id, ex)
                 return False
 
     async def text_object_from_form(self, data:dict) -> str:
