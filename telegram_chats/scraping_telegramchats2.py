@@ -4,6 +4,9 @@ import pandas as pd
 import configparser
 import time
 from datetime import timedelta
+
+from telethon import TelegramClient
+
 from db_operations.scraping_db import DataBaseOperations
 from telethon.tl.functions.channels import GetParticipantsRequest
 from telethon.tl.types import ChannelParticipantsSearch
@@ -48,6 +51,18 @@ class WriteToDbMessages():
         self.msg = None
         self.report = kwargs['report'] if 'report' in kwargs else None
         self.db = DataBaseOperations(report=self.report)
+
+    async def client_init(self):
+        if not self.client:
+            config.read("./settings/config_keys.ini")
+            username = config["Telegram_double"]["username"]
+            api_id = config["Telegram_double"]["api_id"]
+            api_hash = config["Telegram_double"]["api_hash"]
+            self.client = TelegramClient(username, int(api_id), api_hash)
+            await self.client.start()
+            print("connection done")
+            self.client.disconnect()
+            print("disconnect")
 
 
     async def dump_all_participants(self, channel, bot_dict=None):
