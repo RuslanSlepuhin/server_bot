@@ -1,4 +1,4 @@
-admins_user_id = [5884559465, 758905227]
+admins_user_id = [5884559465, 758905227, 156815785]
 bar_buttons_start = ["Excel"]
 server_domain = "https://dev.fcm.by/form/"
 # server_domain = "http://127.0.0.1:8000/"
