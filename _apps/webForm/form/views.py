@@ -13,6 +13,8 @@ from .models import *
 from .serializers import FormSerializer
 
 def home(request):
+  print(bot_domain, external_web_hook, server_domain, endpoint_form, form_page)
+
   return render(request, 'home.html', {'server_domain': server_domain, 'endpoint_form': endpoint_form})
 
 def form_is_completed(request):
