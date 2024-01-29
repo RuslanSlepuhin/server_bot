@@ -1,5 +1,7 @@
 import configparser
 import os
+import subprocess
+
 from _apps.amin_panel_tg_view.views.bot.bot_view import BotView
 from _apps.talking_bot.mvp_connect_talking_bot import talking_bot_run
 from _apps.web_form_bot.bot_webhooks import bot_init
@@ -61,6 +63,11 @@ def start_chat():
 def start_webForm_bot():
     bot_init()
 
+def form_app_start():
+    command = 'python _apps/webForm/manage.py runserver'
+    process = subprocess.Popen(command, shell=True)
+    process.communicate()
+
 if __name__ == "__main__":
 
     p1 = Process(target=start_endpoints, args=())
@@ -74,6 +81,7 @@ if __name__ == "__main__":
     # p8 = Process(target=start_endpoints_FCM, args=())
     # p9 = Process(target=start_chat, args=())
     p10 = Process(target=start_webForm_bot, args=())
+    p11 = Process(target=form_app_start, args=())
 
 
     p1.start()
@@ -87,3 +95,4 @@ if __name__ == "__main__":
     # p8.start()
     # p9.start()
     p10.start()
+    p11.start()
