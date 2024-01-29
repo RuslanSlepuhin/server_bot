@@ -1,5 +1,5 @@
 import json
-from _apps.webForm.variables.variables import bot_domain, external_web_hook, server_domain, endpoint_form, form_page
+from variables.variables import bot_domain, external_web_hook, server_domain, endpoint_form, form_page
 
 import requests
 from django.http import HttpResponse
