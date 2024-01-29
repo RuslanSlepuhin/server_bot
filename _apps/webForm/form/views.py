@@ -1,5 +1,5 @@
 import json
-from telegram.variables import bot_domain, external_web_hook, server_domain, endpoint_form, form_page
+from _apps.web_form_bot.variables import bot_domain, external_webhook_path, server_domain, endpoint_form, form_page
 
 import requests
 from django.http import HttpResponse
@@ -41,14 +41,14 @@ class webFormView(generics.ListCreateAPIView, generics.ListAPIView):
         pass
       # self.create_object(data)
       serializer.save()
-      path = bot_domain + external_web_hook
+      path = bot_domain + external_webhook_path
       serializer_data = dict(serializer.data)
       response = requests.post(path, json=serializer_data)
       if 200 >=response.status_code < 300:
         # return Response({"message": "Data was saved"})
-        return redirect("/form_is_completed/")
+        # return redirect("/form_is_completed/")
 
-        # return render(request, "form_is_completed.html", {'server_domain': server_domain, 'endpoint_form': endpoint_form})
+        return render(request, "form_is_completed.html", {'server_domain': server_domain, 'endpoint_form': endpoint_form})
     return Response({"message": "Data wasn't saved"})
 
   def get(self, request, *args, **kwargs):
