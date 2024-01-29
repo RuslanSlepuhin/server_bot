@@ -41,9 +41,7 @@ class webFormView(generics.ListCreateAPIView, generics.ListAPIView):
     form = FormForms(data)
     if form.is_valid():
       serializer = self.get_serializer(data=data)
-      if serializer.is_valid(raise_exception=True):
-        pass
-      # self.create_object(data)
+      serializer.is_valid(raise_exception=True)
       serializer.save()
       path = bot_domain + external_web_hook
       serializer_data = dict(serializer.data)
