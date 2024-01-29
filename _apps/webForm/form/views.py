@@ -20,7 +20,7 @@ def home(request):
   return render(request, 'home.html', {'server_domain': server_domain, 'endpoint_form': endpoint_form})
 
 def form_is_completed(request):
-  return render(request, 'form_is_completed.html',{'server_domain': server_domain, 'endpoint_form': endpoint_form})
+  return render(request, 'https://4dev.itcoty.ru/form_is_completed.html',{'server_domain': server_domain, 'endpoint_form': endpoint_form})
 
 class webFormView(generics.ListCreateAPIView, generics.ListAPIView):
   queryset = webFormModel
