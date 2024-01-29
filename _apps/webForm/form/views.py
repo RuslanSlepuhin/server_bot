@@ -1,5 +1,5 @@
 import json
-from _apps.web_form_bot.variables import bot_domain, external_webhook_path, server_domain, endpoint_form, form_page
+from ..variables.variables import bot_domain, external_web_hook, server_domain, endpoint_form, form_page
 
 import requests
 from django.http import HttpResponse
@@ -41,7 +41,7 @@ class webFormView(generics.ListCreateAPIView, generics.ListAPIView):
         pass
       # self.create_object(data)
       serializer.save()
-      path = bot_domain + external_webhook_path
+      path = bot_domain + external_web_hook
       serializer_data = dict(serializer.data)
       response = requests.post(path, json=serializer_data)
       if 200 >=response.status_code < 300:
