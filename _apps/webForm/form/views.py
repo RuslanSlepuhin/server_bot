@@ -51,9 +51,9 @@ class webFormView(generics.ListCreateAPIView, generics.ListAPIView):
       if 200 >=response.status_code < 300:
         # return Response({"message": "Data was saved"})
         print(server_domain)
-        return redirect(f"https://4dev.itcoty.ru/form_is_completed/")
-        #
-        # return render(request, f"form_is_completed.html", {'server_domain': server_domain, 'endpoint_form': endpoint_form})
+        # return redirect(f"https://4dev.itcoty.ru/form_is_completed/")
+
+        return render(request, f"form_is_completed.html", {'server_domain': server_domain, 'endpoint_form': endpoint_form})
     return Response({"message": "Data wasn't saved"})
 
   def get(self, request, *args, **kwargs):
