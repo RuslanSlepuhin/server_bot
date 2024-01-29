@@ -1,6 +1,6 @@
 admins_user_id = [5884559465, 758905227]
 bar_buttons_start = ["Excel"]
-server_domain = "https://dev.fcm.by/"
+server_domain = "https://dev.fcm.by/form/"
 # server_domain = "http://127.0.0.1:8000/"
 
 form_page = "/home/"
