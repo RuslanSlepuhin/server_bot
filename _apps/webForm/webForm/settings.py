@@ -111,7 +111,7 @@ USE_I18N = True
 USE_TZ = True
 
 ALLOWED_HOSTS = [
-    "4309-178-127-23-53.ngrok-free.app",
+    "4dev.itcoty.ru",
     "127.0.0.1",
     "localhost",
 ]
