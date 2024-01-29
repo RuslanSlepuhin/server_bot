@@ -1,6 +1,6 @@
 admins_user_id = [5884559465, 758905227]
 bar_buttons_start = ["Excel"]
-server_domain = "http://127.0.0.1:8000/"
+server_domain = "4dev.itcoty.ru/"
 
 form_page = "/home/"
 endpoint_form = "form/"
