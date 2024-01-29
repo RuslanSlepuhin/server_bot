@@ -20,7 +20,7 @@ def home(request):
   return render(request, 'home.html', {'server_domain': server_domain, 'endpoint_form': endpoint_form})
 
 def form_is_completed(request):
-  return render(request, 'https://4dev.itcoty.ru/form_is_completed.html',{'server_domain': server_domain, 'endpoint_form': endpoint_form})
+  return render(request, 'form_is_completed.html',{'server_domain': server_domain, 'endpoint_form': endpoint_form})
 
 class webFormView(generics.ListCreateAPIView, generics.ListAPIView):
   queryset = webFormModel
@@ -51,9 +51,9 @@ class webFormView(generics.ListCreateAPIView, generics.ListAPIView):
       if 200 >=response.status_code < 300:
         # return Response({"message": "Data was saved"})
         print(server_domain)
-        # return redirect(f"https://4dev.itcoty.ru/form_is_completed/")
+        return redirect('https://4dev.itcoty.ru/form_is_completed/')
 
-        return render(request, f"form_is_completed.html", {'server_domain': server_domain, 'endpoint_form': endpoint_form})
+        # return render(request, f"form_is_completed.html", {'server_domain': server_domain, 'endpoint_form': endpoint_form})
     return Response({"message": "Data wasn't saved"})
 
   def get(self, request, *args, **kwargs):
