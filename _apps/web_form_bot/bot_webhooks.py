@@ -46,6 +46,7 @@ async def on_shutdown(_):
 @dp.message_handler(commands=['start', 'help'])
 async def cmd_start_help(message: types.Message) -> None:
     await message.answer(f"Hello, {(message.from_user.full_name)}!")
+    await bot.send_message(message.chat.id, f"Your id: {message.chat.id}")
     print("your user id:", message.chat.id)
     if message.chat.id not in variables.admins_user_id:
         await bot.send_message(message.chat.id, "You have not permissions to use this bot")
