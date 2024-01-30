@@ -20,6 +20,6 @@ keys_as_questions = {
     "instrumentWorks": "Do you understand how this investment instrument works and have you familiarized yourself with the information about it?",
     "whatAmount": "What amount are you willing to allocate to work with our trading instruments (in USDT)?",
     "whatTradingStrategy": "What trading strategy do you prefer?",
-    "optimalInvestmentPeriod": "What is the optimal investment period for you?",
+    "optimalInvestmentPeriod": "What investment period suits you best?",
     "howToReach": "How to reach you (preferably Telegram)",
 }
