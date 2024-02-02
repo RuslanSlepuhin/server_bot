@@ -65,7 +65,7 @@ async def content_type_text(message: types.Message):
                     await helper.send_file(bot, message, excel_path)
                 else:
                     print("Server is not connection")
-                    await bot.send_message(message.chat.id, "There are no records in the database or the server is not responding")
+                    await bot.send_message(message.chat.id, "No entries in the database")
 
 
 async def handle_webhook(request):

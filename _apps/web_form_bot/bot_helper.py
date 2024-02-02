@@ -18,7 +18,7 @@ class HelperBot:
     async def send_form_excel(self) -> [str, bool]:
         excel_dict = {}
         responses = requests.get(url=f"{variables.server_domain}{variables.endpoint_form}")
-        if 200 <= responses.status_code < 400:
+        if 200 <= responses.status_code < 400 and responses:
             responses = json.loads(responses.content.decode('utf-8'))['response']
             for item in responses:
                 if not item.get('name'):
