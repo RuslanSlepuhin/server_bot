@@ -58,7 +58,12 @@ class HelperBot:
     async def text_object_from_form(self, data:dict) -> str:
         text = ""
         for key in data:
-            text += f"{variables.keys_as_questions[key]}\n- {data[key]}\n\n" if key in variables.keys_as_questions else f"{key}: {data[key]}\n\n"
+            if key.lower() == 'submit':
+                text += f"Form: {data[key]}\n"
+            elif key.lower() == "form":
+                text += f"{key}: {data[key]}\n"
+            else:
+                text += f"{variables.keys_as_questions[key]}\n- {data[key]}\n\n" if key in variables.keys_as_questions else f"{key}: {data[key]}\n\n"
         return text
 
 
