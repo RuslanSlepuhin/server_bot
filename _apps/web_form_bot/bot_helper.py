@@ -61,7 +61,7 @@ class HelperBot:
             text += f"Form: {data['form']}\n\n"
             data.pop('form')
         if "submit" in data:
-            text += f"Form: {data['form']}\n\n"
+            text += f"Form: {data['submit']}\n\n"
             data.pop('submit')
 
         for key in data:
