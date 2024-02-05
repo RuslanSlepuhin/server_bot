@@ -60,6 +60,9 @@ class HelperBot:
         if "form" in data:
             text += f"Form: {data['form']}\n\n"
             data.pop('form')
+        if "submit" in data:
+            text += f"Form: {data['form']}\n\n"
+            data.pop('submit')
 
         for key in data:
             text += f"{variables.keys_as_questions[key]}\n- {data[key]}\n\n" if key in variables.keys_as_questions else f"{key}: {data[key]}\n\n"

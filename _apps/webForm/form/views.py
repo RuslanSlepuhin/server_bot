@@ -44,8 +44,8 @@ class webFormView(generics.ListCreateAPIView, generics.ListAPIView):
       serializer.is_valid(raise_exception=True)
       serializer.save()
       path = bot_domain + external_web_hook
-      serializer_data = dict(serializer.data)
-      response = requests.post(path, json=serializer_data)
+      # serializer_data = dict(serializer.data)
+      response = requests.post(path, json=data)
       if 200 >=response.status_code < 300:
         # return Response({"message": "Data was saved"})
         print(server_domain)
