@@ -55,7 +55,7 @@ class HHGetInformation:
         self.source_short_name = "HH"
 
         self.links_in_past = []
-        self.links_x_path = "//*[@data-page-analytics-event='vacancy_search_suitable_item']/a"
+        self.links_x_path = "//h3[@class='bloko-header-section-3']/span/span/a"
 
     async def get_content(self, *args, **kwargs):
         self.words_pattern = kwargs['words_pattern']
