@@ -9,7 +9,7 @@ from _apps.endpoints import endpoints
 from multiprocessing import Process, Pool
 import settings.os_getenv as settings
 from _apps.coffee_customer_bot_apps.coffee_customer_bot.coffee_customer_bot import CustomerBot
-from _apps.coffee_customer_bot_apps.coffee_horeca_bot.coffee_horeca_bot import HorecaBot
+from _apps.coffee_customer_bot_apps.coffee_horeca_bot.coffee_horeca_bot_NEW import HorecaBot
 from _apps.coffee_customer_bot_apps.endpoints.endpoints import Endpoints
 from _apps.chat.bot_tg import ChatBot
 
