@@ -1,7 +1,6 @@
 import configparser
 import os
 import subprocess
-
 from _apps.amin_panel_tg_view.views.bot.bot_view import BotView
 from _apps.talking_bot.mvp_connect_talking_bot import talking_bot_run
 from _apps.web_form_bot.bot_webhooks import bot_init
@@ -54,7 +53,7 @@ def start_horeca_bot_FCM():
 
 def start_endpoints_FCM():
     ep = Endpoints(horeca_bot, customer_bot)
-    ep.main_endpoints()
+    ep.main_endpoints(customer_bot, horeca_bot)
 
 def start_chat():
     chat = ChatBot()
