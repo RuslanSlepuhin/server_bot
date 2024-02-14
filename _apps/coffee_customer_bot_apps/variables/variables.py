@@ -39,8 +39,8 @@ get_horeca_info = "/client/horeca_info" # for horeca bot -> GET data by horeca t
 
 # -------------- common info --------------
 main_endpoint = "http://127.0.0.1:5000/is_user_active"
-server_domain = "https://083d-46-53-248-34.ngrok-free.app"
-# server_domain = "https://dev.fcm.by" # tunnel
+# server_domain = "https://083d-46-53-248-34.ngrok-free.app"
+server_domain = "https://dev.fcm.by" # tunnel
 customer_bot_domain = "http://127.0.0.1:5000"
 horeca_bot_domain = "http://127.0.0.1:5000"
 
