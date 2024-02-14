@@ -86,7 +86,7 @@ class HorecaBotMethods:
                 self.main_class.message_dict[kwargs['order_id']] = await self.main_class.bot.edit_message_text(chat_id=kwargs['message'].chat.id, message_id=kwargs['message'].message_id, text=kwargs['text'], reply_markup=markup)
             except Exception as ex:
                 print(ex)
-                self.main_class.message_dict[kwargs['order_id']].edit_text(text=kwargs['text'], reply_markup=markup)
+                await self.main_class.message_dict[kwargs['order_id']].edit_text(text=kwargs['text'], reply_markup=markup)
 
 
     async def compose_full_text_from_order(self, order) -> [str]:
