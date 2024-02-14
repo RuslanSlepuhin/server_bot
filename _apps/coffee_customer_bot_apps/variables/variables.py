@@ -8,7 +8,7 @@ customer_add_username_to_database_endpoint = "https://test.ru"
 # impossible_to_cancel_order_endpoints = "/impossible_to_cancel_order"
 # user_verification_endpoint = "/verification"
 is_user_active_endpoint = "/is_user_active"
-provide_message_to_user_endpoint = "/client/provide_message_to_user"
+provide_message_to_user_endpoint = "/provide_message_to_user"
 provide_message_to_horeca_endpoint = "/provide_message_to_horeca"
 
 #--------------- server urls ---------------
