@@ -75,5 +75,5 @@ class Reports:
             self.excel_sheet = {}
             return True
         except Exception as e:
-            print(f"Something is wrong: {str(e)}")
+            print(f"Something is wrong of reports.py: {str(e)}\nThis is mean I can't add to the report excel ")
             return False
