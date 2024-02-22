@@ -56,7 +56,7 @@ class SitesParser:
 
         bot_dict = {'bot': self.bot, 'chat_id': self.chat_id}
 
-        await GeekGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await GeekGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await HHGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
         await HHKzGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
         await EpamGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
