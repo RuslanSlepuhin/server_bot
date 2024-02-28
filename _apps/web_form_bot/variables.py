@@ -1,5 +1,5 @@
-# admins_user_id = [5884559465, 758905227, 156815785, 498109732, 840293048]
-admins_user_id = [5884559465]
+admins_user_id = [5884559465, 758905227, 156815785, 498109732, 840293048]
+# admins_user_id = [5884559465]
 
 superuser = [5884559465]
 bar_buttons_start = ["Excel"]
