@@ -110,7 +110,7 @@ class CustBotAddMethods:
     async def get_users_info(self, message):
         conditions = f"?telegram_user_id={message.chat.id}&active=true"
         response = requests.get(variables.server_domain + variables.user_info + conditions)
-        return json.loads(response.content.decode('utf-8'))['response']
+        return response.json()
 
     async def send_status_to_horeca(self, status):
         order = self.CustomerBot.user_orders[self.CustomerBot.order_index]
