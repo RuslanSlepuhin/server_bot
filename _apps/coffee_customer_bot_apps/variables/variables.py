@@ -30,7 +30,7 @@ server_status_from_horeca = "/client/status_from_horeca/" # take the POST from h
 # GET# -> take json from customer with verification code and user_id
 # POST -> {"user_id": user_id:int , "verification_code": verification_code:str}
 verification_endpoint = "/client/enter_key_from_user/"
-user_info = "/client/user-info" # GET
+user_info = "/client/user_info" # GET
 request_exists_user_id = "/user-id-exists/"
 
 get_user_info = "/client/user_info" # for customer bot > GET data by customer telegram id
@@ -40,9 +40,9 @@ get_horeca_info = "/client/horeca_info" # for horeca bot -> GET data by horeca t
 # -------------- common info --------------
 main_endpoint = "http://127.0.0.1:5000/is_user_active"
 
-# server_domain = "http://127.0.0.1:7000"
+server_domain = "http://127.0.0.1:7000"
 # server_domain = "https://083d-46-53-248-34.ngrok-free.app"
-server_domain = "https://dev.fcm.by" # tunnel
+# server_domain = "https://dev.fcm.by" # tunnel
 customer_bot_domain = "http://127.0.0.1:5000"
 horeca_bot_domain = "http://127.0.0.1:5000"
 
