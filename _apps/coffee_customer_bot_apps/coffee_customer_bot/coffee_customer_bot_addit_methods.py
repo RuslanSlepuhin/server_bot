@@ -25,7 +25,7 @@ class CustBotAddMethods:
         self.message = message
         response = requests.get(variables.server_domain + variables.user_info + f"?telegram_user_id={self.message.chat.id}")
         if 200 <= response.status_code <= 300:
-            response = json.loads(response.content.decode('utf-8'))['response']
+            response = response.json()
             if not response:
                 await self.verify_user()
             elif len(response) > 0 and response[0]['telegram_user_id']:
