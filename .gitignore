@@ -14,3 +14,4 @@ delete*.py
 
 *.session-journal
 *.xlsx
+main_start.py
