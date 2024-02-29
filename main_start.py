@@ -73,25 +73,26 @@ if __name__ == "__main__":
     p2 = Process(target=start_bot, args=())
     p3 = Process(target=start_bot, args=(True, settings.token_red))
     p4 = Process(target=start_admin_panel, args=())
-
-    # p5 = Process(target=talking_bot_run, args=())
-    p6 = Process(target=start_customer_bot_FCM, args=())
-    p7 = Process(target=start_horeca_bot_FCM, args=())
-    p8 = Process(target=start_endpoints_FCM, args=())
-    # p9 = Process(target=start_chat, args=())
+    # p6 = Process(target=start_customer_bot_FCM, args=())
+    # p7 = Process(target=start_horeca_bot_FCM, args=())
+    # p8 = Process(target=start_endpoints_FCM, args=())
     p10 = Process(target=start_webForm_bot, args=())
+
+    # p9 = Process(target=start_chat, args=())
     # p11 = Process(target=form_app_start, args=())
+    # p5 = Process(target=talking_bot_run, args=())
 
 
     p1.start()
     p2.start()
     p3.start()
     p4.start()
-
-    # p5.start()
-    p6.start()
-    p7.start()
-    p8.start()
-    # p9.start()
+    # p6.start()
+    # p7.start()
+    # p8.start()
     p10.start()
+
+    # p9.start()
     # p11.start()
+    # p5.start()
+
