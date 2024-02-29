@@ -53,9 +53,11 @@ class CustBotAddMethods:
         text = ''
         keyboard = await self.fuckingReplyKeyboard()
 
+        print(self.CustomerBot.user_orders)
+
         text += f"ЗАКАЗ: {self.CustomerBot.user_orders[self.CustomerBot.order_index]['order_id']}\n"
-        text += f"КОФЕЙНЯ: {self.CustomerBot.user_orders[self.CustomerBot.order_index]['horeca_id']}\n"
-        text += f"ОПИСАНИЕ ЗАКАЗА: {self.CustomerBot.user_orders[self.CustomerBot.order_index]['order_description']}\n"
+        text += f"КОФЕЙНЯ: {self.CustomerBot.user_orders[self.CustomerBot.order_index]['cafe_id__name']}\n"
+        text += f"ОПИСАНИЕ ЗАКАЗА: {self.CustomerBot.user_orders[self.CustomerBot.order_index]['order_description']}\n" if type(self.CustomerBot.user_orders[self.CustomerBot.order_index]['order_description']) is str else f"ОПИСАНИЕ ЗАКАЗА: {', '.join(self.CustomerBot.user_orders[self.CustomerBot.order_index]['order_description'])}\n"
         text += f"СТАТУС ЗАКАЗА: {self.CustomerBot.user_orders[self.CustomerBot.order_index]['status']}\n"
 
         if not keyboard:
