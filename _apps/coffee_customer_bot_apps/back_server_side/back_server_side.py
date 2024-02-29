@@ -2,8 +2,8 @@ import os
 from flask import Flask, request, Response, jsonify
 from flask_cors import CORS
 
-from coffee_customer_bot_apps.database.database_methods import DataBase
-from coffee_customer_bot_apps.variables import variables
+from _apps.coffee_customer_bot_apps.database.database_methods import DataBase
+from _apps.coffee_customer_bot_apps.variables import variables
 import requests
 
 class BackServer:
@@ -98,7 +98,7 @@ class BackServer:
                 case "SQLite": response = self.database.select_from("coffee", conditions)
             for i in response:
                 response_list.append(from_list_to_dict(variables.fields, i))
-            return jsonify({"response": response_list})
+            return jsonify(response_list)
 
 
         def from_list_to_dict(keys, values):
