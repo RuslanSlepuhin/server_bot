@@ -38,7 +38,7 @@ class CustBotAddMethods:
                 print("Something is wrong")
                 await self.bot.send_message(self.message.chat.id, "Something is wrong")
         else:
-            await self.bot.send_message(message.chat.id, f"Server is not responding: {str(response.status_code)}")
+            await self.bot.send_message(message.chat.id, f"Server is not responding: {str(response.status_code)}\nresponse url: {response.url}")
 
     async def dialog_with_user(self, user_orders=None, order_index=None):
         self.CustomerBot.user_orders = user_orders if user_orders else self.CustomerBot.user_orders
