@@ -32,7 +32,10 @@ class HorecaBotMethods:
         orders_dict = {}
         order_list = self.main_class.orders if not order_list else order_list
         for item in order_list:
-            orders_dict[item['order_id']] = item
+            try:
+                orders_dict[item['order_id']] = item
+            except:
+                pass
         return orders_dict
 
     async def send_short_cards(self, **kwargs):

@@ -1,3 +1,4 @@
+import asyncio
 import configparser
 import json
 from aiogram import Bot, Dispatcher, types
@@ -106,9 +107,18 @@ class CustomerBot:
     async def customer_custom_send_message(self, data):
         self.user_data = data
         user_id = data['telegram_user_id']
-        status_text = str(data)
+        status_text = await self.get_text_from_status_data(data)
         # status_text = f"{variables.status_text_customer}{data['id_order']}: {data['status']}"
-        await self.bot.send_message(user_id, status_text)
+        try:
+            await self.bot.send_message(user_id, status_text)
+        except Exception as ex:
+            await self.bot.send_message(int(data['telegram_horeca_id']), f"Пользователь не получил уведомление по причине {str(ex)}")
+
+    async def get_text_from_status_data(self, data) -> str:
+        text = f"СТАТУС: {data['status'].capitalize()}\n\n"
+        text += f"ЗАКАЗ №{data['order_id']}\n"
+        text += f"{data['order_description']}" if type(data['order_description']) is str else ", ".join(data['order_description'])
+        return text
 
     async def check_subscriber(self, user_id):
         try:
@@ -133,3 +143,6 @@ class CustomerBot:
     #         print("Something is wrong")
     #         await self.bot.send_message(message.chat.id, "Something is wrong")
 
+    async def bot_name(self):
+        bot_name = await self.bot.get_me()
+        print("BOT_NAME", bot_name)
