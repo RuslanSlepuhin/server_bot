@@ -24,18 +24,21 @@ class CustBotAddMethods:
     async def start(self, message):
         self.message = message
         response = requests.get(variables.server_domain + variables.user_info + f"?telegram_user_id={self.message.chat.id}")
-        response = json.loads(response.content.decode('utf-8'))['response']
-        if not response:
-            await self.verify_user()
-        elif len(response) > 0 and response[0]['telegram_user_id']:
-            await self.refresh_user_orders(message)
-            if self.CustomerBot.user_orders:
-                await self.dialog_with_user()
+        if 200 <= response.status_code <= 300:
+            response = json.loads(response.content.decode('utf-8'))['response']
+            if not response:
+                await self.verify_user()
+            elif len(response) > 0 and response[0]['telegram_user_id']:
+                await self.refresh_user_orders(message)
+                if self.CustomerBot.user_orders:
+                    await self.dialog_with_user()
+                else:
+                    await self.customer_custom_send_message(text=variables.you_have_any_order, keyboard=None)
             else:
-                await self.customer_custom_send_message(text=variables.you_have_any_order, keyboard=None)
+                print("Something is wrong")
+                await self.bot.send_message(self.message.chat.id, "Something is wrong")
         else:
-            print("Something is wrong")
-            await self.bot.send_message(self.message.chat.id, "Something is wrong")
+            await self.bot.send_message(message.chat.id, f"Server is not responding: {str(response.status_code)}")
 
     async def dialog_with_user(self, user_orders=None, order_index=None):
         self.CustomerBot.user_orders = user_orders if user_orders else self.CustomerBot.user_orders
