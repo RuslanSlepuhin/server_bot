@@ -332,7 +332,7 @@ class InviteBot():
             """
             from report.vacancies_title import VacanciesTitleReport
             vt = VacanciesTitleReport(self, message)
-            report_file_path = vt.get_titles_from_db(fields=['title', 'created_at', 'profession'], conditions="DATE(created_at) > '2024-01-01'")
+            report_file_path = vt.get_titles_from_db(fields=['title', 'created_at', 'profession', 'chat_name'], conditions="DATE(created_at) > '2024-01-01'")
             await self.send_file_to_user(message, report_file_path)
 
         @self.dp.message_handler(commands=['reset'])
