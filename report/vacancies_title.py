@@ -17,7 +17,7 @@ class VacanciesTitleReport:
         return self.write_data_to_excel(data, fields) if data else ""
 
     def get_from_db(self, fields, conditions) -> dict:
-        responses = self.main_class.db.get_all_from_db(table_name=variables.vacancies_database, field=", ".join(fields), param=f"WHERE {conditions}")
+        responses = self.main_class.db.get_all_from_db(table_name=variables.admin_database, field=", ".join(fields), param=f"WHERE {conditions}")
         if responses:
             data = {}
             for i in fields:
