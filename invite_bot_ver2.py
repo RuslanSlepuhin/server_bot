@@ -323,6 +323,18 @@ class InviteBot():
             for text in text_list:
                 await self.bot_aiogram.send_message(message.chat.id, text)
 
+        @self.dp.message_handler(commands=['vacancies_title'])
+        async def vacancies_title(message: types.Message):
+            """
+            get vacancies titles from database for comparing with sources
+            :param message:
+            :return:
+            """
+            from report.vacancies_title import VacanciesTitleReport
+            vt = VacanciesTitleReport(self, message)
+            report_file_path = vt.get_titles_from_db(fields=['title', 'created_at', 'profession'], conditions="DATE(created_at) > '2024-01-01'")
+            await self.send_file_to_user(message, report_file_path)
+
         @self.dp.message_handler(commands=['reset'])
         async def get_courses_data(message: types.Message):
             completed_successfully = await helper.set_approved_like_null(db_class=self.db, profession='junor')
