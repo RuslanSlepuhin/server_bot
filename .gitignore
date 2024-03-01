@@ -15,6 +15,4 @@ delete*.py
 *.xlsx
 main_start.py
 /settings/server/
-/settings/config.ini
-/settings/config_keys.ini
-./main_start.py
+/settings/local/
