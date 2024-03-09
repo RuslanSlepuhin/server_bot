@@ -12,6 +12,7 @@ from _apps.coffee_customer_bot_apps.coffee_customer_bot.coffee_customer_bot impo
 from _apps.coffee_customer_bot_apps.coffee_horeca_bot.coffee_horeca_bot_NEW import HorecaBot
 from _apps.coffee_customer_bot_apps.endpoints.endpoints import Endpoints
 from _apps.chat.bot_tg import ChatBot
+from _apps.coffee_customer_bot_apps.back_server_side.back_server_side import BackServer
 
 config_FCM = configparser.ConfigParser()
 config_FCM.read('_apps/coffee_customer_bot_apps/settings/config.ini')
@@ -63,9 +64,13 @@ def start_webForm_bot():
     bot_init()
 
 def form_app_start():
-    command = 'python _apps/webForm/manage.py runserver'
+    command = 'python _apps/simpleatom/manage.py runserver'
     process = subprocess.Popen(command, shell=True)
     process.communicate()
+
+def mock_server_FCM():
+    bs = BackServer()
+    bs.main_back_server()
 
 if __name__ == "__main__":
 
@@ -73,25 +78,44 @@ if __name__ == "__main__":
     p2 = Process(target=start_bot, args=())
     p3 = Process(target=start_bot, args=(True, settings.token_red))
     p4 = Process(target=start_admin_panel, args=())
-
-    # p5 = Process(target=talking_bot_run, args=())
-    p6 = Process(target=start_customer_bot_FCM, args=())
-    p7 = Process(target=start_horeca_bot_FCM, args=())
-    p8 = Process(target=start_endpoints_FCM, args=())
-    # p9 = Process(target=start_chat, args=())
+    # p6 = Process(target=start_customer_bot_FCM, args=())
+    # p7 = Process(target=start_horeca_bot_FCM, args=())
+    # p8 = Process(target=start_endpoints_FCM, args=())
     p10 = Process(target=start_webForm_bot, args=())
-    # p11 = Process(target=form_app_start, args=())
+
+    # p12 = Process(target=mock_server_FCM, args=())
+
+    # p9 = Process(target=start_chat, args=())
+    p11 = Process(target=form_app_start, args=())
+    # p5 = Process(target=talking_bot_run, args=())
 
 
     p1.start()
     p2.start()
     p3.start()
     p4.start()
-
-    # p5.start()
-    p6.start()
-    p7.start()
-    p8.start()
-    # p9.start()
+    # p6.start()
+    # p7.start()
+    # p8.start()
     p10.start()
-    # p11.start()
+
+    # p12.start()
+
+    # p9.start()
+    p11.start()
+    # p5.start()
+
+    p1.join()
+    p2.join()
+    p3.join()
+    p4.join()
+    # p6.join()
+    # p7.join()
+    # p8.join()
+    p10.join()
+
+    # p12.join()
+
+    # p9.join()
+    p11.join()
+    # p5.join()
