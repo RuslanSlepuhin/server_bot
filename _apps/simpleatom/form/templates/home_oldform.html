@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Django Form</title>
+    <style>
+        /* Для больших экранов */
+        @media screen and (min-width: 1200px) {
+            body {
+                font-family: Arial, sans-serif;
+                font-size: 20px;
+                background-image: url('static/form/body_background.PNG');
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-position: center;
+            }
+            .answer-text {
+                font-size: 20px;
+            }
+            form {
+                width: 66.66%;
+                max-width: 800px;
+                margin: auto;
+                background-color: rgba(255, 255, 255, 0.8); /* Белый фон с 50% прозрачности */
+                padding: 20px;
+                border-radius: 5px;
+            }
+            .other_style {
+                font-family: Arial, sans-serif;
+                font-size: 20px;
+                width: 100%;
+                height: 30px;
+            }
+            input[type="checkbox"], input[type="radio"] {
+                appearance: none;
+                width: 20px;
+                height: 20px;
+                transform: scale(1);
+                background-color: #fff;
+                border: 1px solid #ccc;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05);
+                cursor: pointer;
+                margin: 0;
+                position: relative;
+                flex-shrink: 0;
+            }
+            input[type="checkbox"]:before, input[type="radio"]:before {
+                content: '';
+                width: 1em;
+                height: 1em;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                background-color: #00AA72;
+                transform: translate(-50%, -50%) scale(0);
+                transition: all 0.3s ease;
+            }
+
+            input[type="checkbox"]:checked:before, input[type="radio"]:checked:before {
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            input[type="checkbox"].unchecked {
+                border: 1px solid red;
+            }
+        }
+
+        /* Для средних экранов */
+        @media screen and (max-width: 1199px) and (min-width: 768px) {
+            body {
+                font-family: Verdana, sans-serif;
+                font-size: 35px; /* Увеличиваем размер шрифта на 1.5 раза */
+                background-image: url('static/form/body_background.PNG');
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-position: center;
+            }
+            .answer-text {
+                font-size: 40px;
+            }
+            form {
+                width: 90%; /* 2/3 экрана */
+                max-width: 800px; /* Ограничение максимальной ширины */
+                margin: auto;
+                background-color: rgba(255, 255, 255, 0.8); /* Белый фон с 50% прозрачности */
+                padding: 20px;
+                border-radius: 5px;
+            }
+            .other_style {
+                font-family: Arial, sans-serif;
+                font-size: 35px;
+                width: 100%;
+                height: 50px;
+            }
+            input[type="checkbox"], input[type="radio"] {
+                appearance: none;
+                width: 30px;
+                height: 30px;
+                transform: scale(1);
+                background-color: #fff;
+                border: 1px solid #ccc;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05);
+                cursor: pointer;
+                margin: 0;
+                position: relative;
+                flex-shrink: 0;
+            }
+            input[type="checkbox"]:before, input[type="radio"]:before {
+                content: '';
+                width: 20px;
+                height: 20px;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                background-color: #00AA72;
+                transform: translate(-50%, -50%) scale(0);
+                transition: all 0.3s ease;
+            }
+
+            input[type="checkbox"]:checked:before, input[type="radio"]:checked:before {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        /* Для маленьких экранов */
+        @media screen and (max-width: 767px) {
+            body {
+                font-family: Courier New, monospace;
+                font-size: 30px; /* Увеличиваем размер шрифта на 1.5 раза */
+                background-image: url('static/form/body_background.PNG');
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-position: center;
+            }
+            .answer-text {
+                font-size: 40px;
+            }
+            form {
+                width: 66.66%; /* 2/3 экрана */
+                max-width: 800px; /* Ограничение максимальной ширины */
+                margin: auto;
+                background-color: rgba(255, 255, 255, 0.8); /* Белый фон с 50% прозрачности */
+                padding: 20px;
+                border-radius: 5px;
+            }
+            .other_style {
+                font-family: Arial, sans-serif;
+                font-size: 1em;
+                width: 100%;
+                height: 50px;
+            }
+            /*label {*/
+            /*    display: flex;*/
+            /*    align-items: center;*/
+            /*}*/
+
+            input[type="checkbox"], input[type="radio"] {
+                /*flex: none;*/
+                appearance: none;
+                width: 30px;
+                height: 30px;
+                transform: scale(1);
+                background-color: #fff;
+                border: 1px solid #ccc;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05);
+                cursor: pointer;
+                margin: 0;
+                /*vertical-align: middle;*/
+                position: relative;
+                flex-shrink: 0;
+            }
+            input[type="checkbox"]:before, input[type="radio"]:before {
+                content: '';
+                width: 1em;
+                height: 1em;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                background-color: #00AA72;
+                transform: translate(-50%, -50%) scale(0);
+                transition: all 0.3s ease;
+            }
+
+            input[type="checkbox"]:checked:before, input[type="radio"]:checked:before {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        input[type="radio"], input[type="checkbox"] {
+            margin-bottom: 15px;
+        }
+        .input-container {
+            position: relative;
+        }
+        .input-container input {
+            border: none;
+            outline: none;
+            background: white;
+            width: 100%;
+            border-bottom: 1px solid grey;
+        }
+        .input-container::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            /*border-bottom: 1px solid black;*/
+            border-bottom: none;
+        }
+        .stylized-input {
+            font-size: 1em;
+            height: 100%;
+            /*maxlength: 100;*/
+        }
+        .big-button {
+            font-size: 1em;
+            padding: 10px 20px;
+            border: 2px solid #00AA72;
+            background-color: #00AA72;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .big-button:hover {
+            background-color: #ff99b7;
+        }
+
+        .required {
+            color: red;
+        }
+        .option-block {
+            background-color: rgba(255, 255, 255, 0.8); /* Белый фон с 50% прозрачности */
+            padding: 15px; /* Добавьте отступы, чтобы блок не занимал всю ширину экрана */
+            margin-bottom: 20px; /* Добавьте отступ снизу, чтобы блоки не сливались друг с другом */
+            border-radius: 20px; /* Закругляем углы */
+        }
+    </style>
+
+</head>
+<body>
+
+    <form id="myForm" action="{{ server_domain }}{{ endpoint_form }}" method="post">
+<!--        {% csrf_token %}-->
+
+
+
+        <h1>
+            Simpleatom connection form
+        </h1><br><br><br>
+        <div>
+            <b><span class="required">* required question</span></b>
+        </div>
+
+        <div class="input-container option-block">
+            <h3>Your name</h3>
+             <input type="text" class="stylized-input" id="name" name="name">
+        </div>
+
+
+
+<!--        <div class="option-block">-->
+<!--            <h3>Do you understand how this investment instrument works and have you familiarized yourself with the information about it? <span class="required">*</span></h3>-->
+<!--            <input type="radio" id="instrumentWorks1" name="instrumentWorks" value="Yes" required>-->
+<!--            <label for="instrumentWorks1" class="answer-text">Yes</label>-->
+<!--            <br>-->
+<!--            <input type="radio" id="instrumentWorks2" name="instrumentWorks" value="No, I'd like to know more" required>-->
+<!--            <label for="instrumentWorks2" class="answer-text">No, I'd like to know more</label>-->
+<!--            <br><br>-->
+<!--        </div>-->
+
+
+
+        <div class="option-block">
+            <h3>Do you understand how this investment instrument works and have you familiarized yourself with the information about it? <span class="required">*</span></h3>
+            <div style="display: flex; flex-direction: column;">
+                <div style="display: flex; align-items: baseline;">
+                    <input type="radio" id="instrumentWorks1" name="instrumentWorks" value="Yes" required>
+                    <label for="instrumentWorks1" class="answer-text" style="margin-left: 10px;">Yes</label>
+                </div>
+                <div style="display: flex; align-items: baseline;">
+                    <input type="radio" id="instrumentWorks2" name="instrumentWorks" value="No, I'd like to know more" required>
+                    <label for="whatAmount2" class="answer-text" style="margin-left: 10px;">No, I'd like to know more</label>
+                </div>
+            </div>
+        </div>
+
+
+        <!--        <div class="option-block">-->
+<!--            <h3>What amount are you willing to allocate to work with our trading instruments (in USDT)? <span class="required">*</span></h3>-->
+<!--            <input type="radio" id="whatAmount1" name="whatAmount" value="Less than 10.000" required>-->
+<!--            <label for="whatAmount1" class="answer-text">Less than 10.000</label>-->
+<!--            <br>-->
+<!--            <input type="radio" id="whatAmount2" name="whatAmount" value="10.000 - 50.000" required>-->
+<!--            <label for="whatAmount2" class="answer-text">10.000 - 50.000</label>-->
+<!--            <br>-->
+<!--            <input type="radio" id="whatAmount3" name="whatAmount" value="50.000 - 100.000" required>-->
+<!--            <label for="whatAmount3" class="answer-text">50.000 - 100.000</label>-->
+<!--            <br>-->
+<!--            <input type="radio" id="whatAmount4" name="whatAmount" value="More that 100.000" required>-->
+<!--            <label for="whatAmount4" class="answer-text">More that 100.000</label>-->
+<!--            <br><br>-->
+<!--        </div>-->
+
+
+
+        <div class="option-block">
+            <h3>What amount are you willing to allocate to work with our trading instruments (in USDT)? <span class="required">*</span></h3>
+            <div style="display: flex; flex-direction: column;">
+                <div style="display: flex; align-items: baseline;">
+                    <input type="radio" id="whatAmount1" name="whatAmount" value="Less than 10.000" required>
+                    <label for="whatAmount1" class="answer-text" style="margin-left: 10px;">Less than 10.000</label>
+                </div>
+                <div style="display: flex; align-items: baseline;">
+                    <input type="radio" id="whatAmount2" name="whatAmount" value="10.000 - 50.000" required>
+                    <label for="whatAmount2" class="answer-text" style="margin-left: 10px;">10.000 - 50.000</label>
+                </div>
+                <div style="display: flex; align-items: baseline;">
+                    <input type="radio" id="whatAmount3" name="whatAmount" value="50.000 - 100.000" required>
+                    <label for="whatAmount3" class="answer-text" style="margin-left: 10px;">50.000 - 100.000</label>
+                </div>
+                <div style="display: flex; align-items: baseline;">
+                    <input type="radio" id="whatAmount4" name="whatAmount" value="More that 100.000" required>
+                    <label for="whatAmount4" class="answer-text" style="margin-left: 10px;">More that 100.000</label>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="option-block">
+            <h3>What trading strategy do you prefer? <span class="required">*</span></h3>
+                <div style="display: flex; flex-direction: column;">
+                    <div style="display: flex; align-items: baseline;">
+                        <input type="radio" id="whatTradingStrategy1" name="whatTradingStrategy" value="Conservative Crypto - 60-300% profit per year with temporary drawdowns up to 20%" required>
+                        <label for="whatTradingStrategy1" class="answer-text" style="margin-left: 10px;">Conservative Crypto - 60-300% profit per year with temporary drawdowns up to 20%</label>
+                    </div>
+                    <div style="display: flex; align-items: baseline;">
+                        <input type="radio" id="whatTradingStrategy2" name="whatTradingStrategy" value="Crypto Atom - up to 1500% profit per year with temporary drawdowns up to 40%" required>
+                        <label for="whatTradingStrategy2" class="answer-text" style="margin-left: 10px;">Crypto Atom - up to 1500% profit per year with temporary drawdowns up to 40%</label>
+                    </div>
+                    <div style="display: flex; align-items: baseline;">
+                        <input type="radio" id="whatTradingStrategy3" name="whatTradingStrategy" value="I'm interested in both strategies" required>
+                        <label for="whatTradingStrategy3" class="answer-text" style="margin-left: 10px;">I'm interested in both strategies</label>
+                    </div>
+                </div>
+        </div>
+
+
+
+
+<!--        <div class="option-block">-->
+<!--            <h3>What is the optimal investment period for you? <span class="required">*</span></h3>-->
+<!--            <input type="checkbox" id="optimalInvestmentPeriod1" name="optimalInvestmentPeriod" value="3-6 months">-->
+<!--            <label for="optimalInvestmentPeriod1" class="answer-text"> 3-6 months</label><br>-->
+<!--            <input type="checkbox" id="optimalInvestmentPeriod2" name="optimalInvestmentPeriod" value="6-12 months">-->
+<!--            <label for="optimalInvestmentPeriod2" class="answer-text"> 6-12 months</label><br>-->
+<!--            <input type="checkbox" id="optimalInvestmentPeriod3" name="optimalInvestmentPeriod" value="12-24 months">-->
+<!--            <label for="optimalInvestmentPeriod3" class="answer-text"> 12-24 months</label><br>-->
+<!--            <input type="checkbox" id="optimalInvestmentPeriod4" name="optimalInvestmentPeriod" value="More than 24 months">-->
+<!--            <label for="optimalInvestmentPeriod4" class="answer-text"> More than 24 months</label><br>-->
+<!--            <input type="checkbox" id="checkboxOther">-->
+<!--            <label for="optimalInvestmentPeriod5" class="answer-text"> Other</label>-->
+<!--            <input type="text" id="optimalInvestmentPeriod5" name="optimalInvestmentPeriod" class="stylized-input">-->
+<!--        </div>-->
+
+
+
+
+        <div class="option-block">
+            <h3>What trading strategy do you prefer? <span class="required">*</span></h3>
+            <div style="display: flex; flex-direction: column;">
+                <div style="display: flex; align-items: baseline;">
+                    <input type="checkbox" id="optimalInvestmentPeriod1" name="optimalInvestmentPeriod" value="3-6 months">
+                    <label for="optimalInvestmentPeriod1" class="answer-text" style="margin-left: 10px;">3-6 months</label>
+                </div>
+                <div style="display: flex; align-items: baseline;">
+                    <input type="checkbox" id="optimalInvestmentPeriod2" name="optimalInvestmentPeriod" value="6-12 months">
+                    <label for="optimalInvestmentPeriod2" class="answer-text" style="margin-left: 10px;">6-12 months</label>
+                </div>
+                <div style="display: flex; align-items: baseline;">
+                    <input type="checkbox" id="optimalInvestmentPeriod3" name="optimalInvestmentPeriod" value="12-24 months">
+                    <label for="optimalInvestmentPeriod3" class="answer-text" style="margin-left: 10px;">12-24 months</label>
+                </div>
+                <div style="display: flex; align-items: baseline;">
+                    <input type="checkbox" id="optimalInvestmentPeriod4" name="optimalInvestmentPeriod" value="More than 24 months">
+                    <label for="optimalInvestmentPeriod4" class="answer-text" style="margin-left: 10px;">More than 24 months</label>
+                </div>
+                <div style="display: flex; align-items: baseline;">
+                    <input type="checkbox" id="checkboxOther">
+<!--                    <div class="input-container option-block">-->
+                    <label for="optimalInvestmentPeriod5" style="margin-left: 10px;" class="answer-text"> Other</label>
+                    <input type="text" class="stylized-input" style="margin-left: 10px; border: none; outline: none; background: white; width: 100%; border-bottom: 1px solid grey;" id="optimalInvestmentPeriod5" name="optimalInvestmentPeriod" >
+<!--                    </div>-->
+                </div>
+            </div>
+        </div>
+
+
+        <div class="input-container option-block">
+            <h3>How to reach you (preferably Telegram) <span class="required">*</span></h3>
+             <input type="text" class="stylized-input" id="howToReach" name="howToReach" required>
+        </div>
+        <br><br>
+
+
+
+        <button class="big-button" name="formName" value="{{ form_name }}">SUBMIT</button>
+<!--        <input type="submit" value="Submit">-->
+
+
+
+    </form>
+
+
+
+    <script>
+    window.onload = function() {
+        // Получить кнопку отправки формы
+        var submitButton = document.querySelector('input[type="submit"]');
+
+        // Добавить обработчик событий для кнопки отправки
+        submitButton.addEventListener('click', validateForm);
+    };
+
+    // Функция для проверки, выбрано ли хотя бы одно значение
+    function validateForm(event) {
+        // Получить все чекбоксы
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+        // Проверить, выбрано ли хотя бы одно значение
+        var isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+
+        // Если ни одно значение не выбрано, показать сообщение об ошибке и отменить отправку формы
+        if (!isChecked) {
+            alert('Пожалуйста, выберите хотя бы одно значение ');
+            event.preventDefault();
+        }
+    }
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!--    <script type="text/javascript">-->
+<!--    $(document).ready(function(){-->
+<!--        $('#myForm').submit(function(e){-->
+<!--            var checkedBoxes = $(this).find("input[type='checkbox']:checked");-->
+<!--            if (!checkedBoxes.length) {-->
+<!--                alert('You did not check the checkboxes');-->
+<!--                e.preventDefault(); // предотвратить отправку формы-->
+<!--            }-->
+<!--        });-->
+<!--    });-->
+<!--    </script>-->
+    <script type="text/javascript">
+    $(document).ready(function(){
+        // Отключаем текстовое поле по умолчанию
+        $('#optimalInvestmentPeriod5').prop('readonly', true);
+
+        // Добавляем обработчик события change к чекбоксу "Other"
+        $('#checkboxOther').change(function() {
+            if ($(this).is(':checked')) {
+                // Если чекбокс отмечен, делаем текстовое поле доступным для ввода
+                $('#optimalInvestmentPeriod5').prop('readonly', false);
+            } else {
+                // Если чекбокс не отмечен, делаем текстовое поле недоступным для ввода
+                $('#optimalInvestmentPeriod5').val('').prop('readonly', true);
+            }
+        });
+    });
+    </script>
+
+<!--    light checkboxes red color if checked no one or checked "Other" and it has not any value -->
+    <script>
+        document.getElementById('myForm').addEventListener('submit', function(event) {
+            var checkboxes = document.querySelectorAll('#myForm input[type="checkbox"]');
+            var otherInput = document.getElementById('optimalInvestmentPeriod5');
+            var isChecked = Array.prototype.slice.call(checkboxes).some(x =>
+                    (x.checked && x.id !== 'checkboxOther') ||
+                    (x.id === 'checkboxOther' && otherInput.value !== '') ||
+                    (x.checked && x.id === 'checkboxOther' && otherInput.value !== '')
+                );
+                if (!isChecked) {
+                event.preventDefault();
+                checkboxes.forEach(function(checkbox) {
+                    checkbox.classList.add('unchecked');
+                });
+            } else {
+                checkboxes.forEach(function(checkbox) {
+                    checkbox.classList.remove('unchecked');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

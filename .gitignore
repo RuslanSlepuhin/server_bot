@@ -1,0 +1,18 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+./venv/
+.git/
+.idea/
+./other_operations/
+./messages/
+./excel/
+./__backup__/
+./logs/
+./participants/
+delete*.py
+*.session-journal
+*.xlsx
+main_start.py
+/settings/server/
+/settings/local/
