@@ -11,6 +11,8 @@ __pycache__/
 ./logs/
 ./participants/
 delete*.py
-
+./settings/config.ini
+./settings/config_keys.ini
 *.session-journal
 *.xlsx
+/__backup__/
