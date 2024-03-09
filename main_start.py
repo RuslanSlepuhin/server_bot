@@ -82,7 +82,7 @@ if __name__ == "__main__":
 
     # p1 = Process(target=start_endpoints, args=())
     p2 = Process(target=start_bot, args=())
-    # p3 = Process(target=start_bot, args=(True, settings.token_red))
+    p3 = Process(target=start_bot, args=(True, settings.token_red))
     # p4 = Process(target=start_admin_panel, args=())
     # p13 = Process(target=simpleatom_start, args=())
 
@@ -100,7 +100,7 @@ if __name__ == "__main__":
 
     # p1.start()
     p2.start()
-    # p3.start()
+    p3.start()
     # p4.start()
     # p6.start()
     # p13.start()
@@ -117,7 +117,7 @@ if __name__ == "__main__":
 
     # p1.join()
     p2.join()
-    # p3.join()
+    p3.join()
     # p4.join()
     # p13.start()
 
