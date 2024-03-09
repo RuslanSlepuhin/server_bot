@@ -227,7 +227,6 @@ class ShortsPoster:
 
         # professions = ", ".join(list(filter(self.profession, self.vacancy['profession'].split(", "))))
 
-
     async def build_aggregator_vacancy(self):
         subs_list = []
         for profession in self.subs_dict:
@@ -266,7 +265,6 @@ class ShortsPoster:
         else:
             self.vacancy_text = ''
             print('There is not vacancy_text 103')
-
 
     async def check_len_and_add_extra(self):
         extra_text_html = f"\n---- \n" \
@@ -676,8 +674,6 @@ class ShortsPoster:
                     pass
                 else:
                     print("MATCH")
-
-
 
     async def clear_unknown_tags(self):
         try:
