@@ -73,6 +73,11 @@ def simpleatom_start():
     process = subprocess.Popen(command, shell=True)
     process.communicate()
 
+def auth_start():
+    command = 'python _apps/itcoty_web/manage.py runserver'
+    process = subprocess.Popen(command, shell=True)
+    process.communicate()
+
 
 def mock_server_FCM():
     bs = BackServer()
@@ -85,6 +90,7 @@ if __name__ == "__main__":
     p3 = Process(target=start_bot, args=(True, settings.token_red))
     p4 = Process(target=start_admin_panel, args=())
     p13 = Process(target=simpleatom_start, args=())
+    p14 = Process(target=auth_start, args=())
 
     # p6 = Process(target=start_customer_bot_FCM, args=())
     # p7 = Process(target=start_horeca_bot_FCM, args=())
@@ -104,7 +110,7 @@ if __name__ == "__main__":
     p4.start()
     # p6.start()
     p13.start()
-
+    p14.start()
     # p7.start()
     # p8.start()
     p10.start()
@@ -119,8 +125,8 @@ if __name__ == "__main__":
     p2.join()
     p3.join()
     p4.join()
-    p13.start()
-
+    p13.join()
+    p14.join()
     # p6.join()
     # p7.join()
     # p8.join()

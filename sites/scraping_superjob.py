@@ -19,6 +19,7 @@ from patterns.data_pattern._data_pattern import cities_pattern, params
 from report.report_variables import report_file_path
 from helper_functions import helper_functions as helper
 
+
 class SuperJobGetInformation:
 
     def __init__(self, **kwargs):
@@ -45,7 +46,6 @@ class SuperJobGetInformation:
         self.count_message_in_one_channel = 1
         self.found_by_link = 0
         self.helper = helper
-
 
     async def get_content(self, db_tables=None):
         self.db_tables = db_tables
@@ -82,9 +82,11 @@ class SuperJobGetInformation:
             for self.page_number in range(1, till):
                 try:
                     if self.bot_dict:
-                        await self.bot.send_message(self.chat_id, f'https://www.superjob.ru/vacancy/search/?keywords={self.word}&remote_work_binary=0&geo%5Bc%5D%5B0%5D=1&noGeo=1&page={self.page_number}',
-                                              disable_web_page_preview=True)
-                    self.browser.get(f'https://www.superjob.ru/vacancy/search/?keywords={self.word}&remote_work_binary=0&geo%5Bc%5D%5B0%5D=1&noGeo=1&page={self.page_number}')
+                        await self.bot.send_message(self.chat_id,
+                                                    f'https://www.superjob.ru/vacancy/search/?keywords={self.word}&remote_work_binary=0&geo%5Bc%5D%5B0%5D=1&noGeo=1&page={self.page_number}',
+                                                    disable_web_page_preview=True)
+                    self.browser.get(
+                        f'https://www.superjob.ru/vacancy/search/?keywords={self.word}&remote_work_binary=0&geo%5Bc%5D%5B0%5D=1&noGeo=1&page={self.page_number}')
                     self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                     vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
                     if not vacancy_exists_on_page:
@@ -97,22 +99,23 @@ class SuperJobGetInformation:
     async def get_link_message(self, raw_content):
         soup = BeautifulSoup(raw_content, 'lxml')
 
-        # self.list_links = soup.find_all('div', class_='f-test-search-result-item')
-        self.list_links = self.browser.find_elements(By.XPATH, '//*[@class="_1c5Bu _1Yga1 _1QFf5 _2MAQA _1m76X _3UZoC _3zdq9 _1_71a"]')
+        self.list_links = soup.find_all('div', class_='f-test-search-result-item')
+
         if self.list_links:
             if self.bot_dict:
-                self.current_message = await self.bot.send_message(self.chat_id, f'superjob.ru:\nПо слову {self.word} найдено {len(self.list_links)} вакансий на странице {self.page_number}', disable_web_page_preview=True)
+                self.current_message = await self.bot.send_message(self.chat_id,
+                                                                   f'superjob.ru:\nПо слову {self.word} найдено {len(self.list_links)} вакансий на странице {self.page_number}',
+                                                                   disable_web_page_preview=True)
             # --------------------- LOOP -------------------------
             self.written_vacancies = 0
             self.rejected_vacancies = 0
             await self.get_content_from_link()
-            #----------------------- the statistics output ---------------------------
+            # ----------------------- the statistics output ---------------------------
             self.written_vacancies = 0
             self.rejected_vacancies = 0
             return True
         else:
             return False
-
 
     async def get_content_from_link(self):
         links = []
@@ -120,12 +123,8 @@ class SuperJobGetInformation:
         self.found_by_link = 0
         for link in self.list_links:
             found_vacancy = True
-            print(link)
             try:
                 vacancy_url = link.find('a').get('href')
-                pass
-
-                vacancy_url = link.find('span', class_='_2-qbl sKiKj _14OwU _3TrEr _1CDFX _3tGjQ _2q2UL _29ouE').find('a').get('href')
                 vacancy_url = f"{self.main_url}{vacancy_url}"
             except:
                 vacancy_url = link
@@ -148,13 +147,13 @@ class SuperJobGetInformation:
                 if found_vacancy:
                     vacancy = ''
                     try:
-                        vacancy = soup.find('h1', class_='_2-qbl _33fX5 wczMN _3TrEr _1CDFX _3tGjQ _29ouE').get_text()
+                        vacancy = soup.find("h1", class_="_1gB-h h9XuZ _2qyq0 _3t5Je _3TptJ _2C8nO _2L4SY").get_text()
                     except Exception as e:
                         pass
 
                     salary = ''
                     try:
-                        salary = soup.find('span', class_='_4Gt5t _3Kq5N').get_text()
+                        salary = soup.find('span', class_='_2eYAG _3TptJ _2C8nO _3B9u2').get_text()
                     except Exception as e:
                         pass
                     # get title --------------------------
@@ -165,7 +164,8 @@ class SuperJobGetInformation:
                     body_content = ''
                     try:
                         body = 'Описание вакансии:\n'
-                        body_content = soup.find('span', class_='_39I1Z _1G5lt _3EXZS _3pAka _3GChV _2GgYH').find('span')
+                        body_content = soup.find('span', class_='_39I1Z _10jsR _2C8nO _2KJeO _3B9u2 _3nGEP').find(
+                            'span')
                     except Exception as e:
                         pass
 
@@ -197,8 +197,7 @@ class SuperJobGetInformation:
                     # get tags --------------------------
                     tags = ''
                     try:
-                        content = soup.find('div', class_='_2Zt8G _2-ptM _14Gd3 -woq8')
-                        tags_list = content.find('div', class_='_1hmM6 oC346').find_all('span', role='button')
+                        tags_list = soup.find('div', class_='_2Qxci').find_all('span', role='button')
                         for i in tags_list:
                             tags += f'{i.get_text()}, '
                         tags = tags[0:-2]
@@ -208,7 +207,8 @@ class SuperJobGetInformation:
 
                     content = ''
                     try:
-                        content = soup.find('div', class_='_2zPWM _2s70W _2sfSN _1qivw _17ECX _1yHIx _1Qy3a _1GAZu')
+                        content = soup.find('div', class_='_17PZ- f-test-vacancy-base-info _2FhvV h9XuZ _1MEwQ _3t5Je '
+                                                          '_3Fd3- _3m_sI _34KJO _3sU4J')
                     except Exception as e:
                         pass
 
@@ -218,13 +218,13 @@ class SuperJobGetInformation:
                     experience = ''
                     if content:
                         try:
-                            salary = content.find('span', class_='_4Gt5t _3Kq5N').get_text()
+                            salary = content.find('span', class_='_2eYAG _3TptJ _2C8nO _3B9u2').get_text()
                             salary = self.find_parameters.salary_to_set_form(text=salary)
                             if salary[0]:
                                 salary = ", ".join(salary)
                         except:
                             pass
-                        experience_list = content.find_all('span', class_='_4maqB _3EXZS _3GChV')
+                        experience_list = content.find_all('span', class_='_1n5Yy _2C8nO _3B9u2')
                         for element in experience_list:
                             if 'пыт работы' in element.text or 'занятость' in element.text:
                                 experience += f"{element.text}, "
@@ -232,7 +232,7 @@ class SuperJobGetInformation:
                             job_type = experience[:-2]
 
                         try:
-                            city = content.find('span', class_='_4maqB _3EXZS _3GChV').get_text()
+                            city = content.find('span', class_='_1n5Yy _2C8nO _3B9u2').get_text()
                         except:
                             pass
 
@@ -257,16 +257,16 @@ class SuperJobGetInformation:
                     # get company --------------------------
                     company = ''
                     try:
-                        company = soup.find('div', class_='_2zPWM _1KDZn _2sfSN _7mW5l _17ECX _2refD _3QGKD tp1pf dEawn _1yHIx I2gCw').\
-                            find('span', class_='_1WrFk _3EXZS _3pAka _3GChV').get_text()
+                        company = soup.find('div',
+                                            class_='Fyyve _1MxfQ _2ZP2D').find('span', class_='_3TptJ _2C8nO _2KJeO '
+                                                                                              '_3B9u2').get_text()
                     except:
                         company = ''
-                    # print('company = ',company)
 
                     contacts = ''
 
                     try:
-                        date = soup.find_all('span', class_="_1G5lt _3EXZS ZZHii _3GChV")[1].get_text()
+                        date = soup.find_all('span', class_="_10jsR _2C8nO _1Yc2K _3B9u2")[1].get_text()
                     except:
                         date = ''
 
@@ -281,7 +281,6 @@ class SuperJobGetInformation:
                         relocation = 'релокация'
 
                     # ------------------------- search city ----------------------------
-                    city = ''
                     # for key in cities_pattern:
                     #     for item in cities_pattern[key]:
                     #         match = re.findall(rf"{item}", body)
@@ -301,7 +300,8 @@ class SuperJobGetInformation:
                             for i in match2:
                                 english_additional += f"{i} "
 
-                    if english and ('upper' in english_additional or 'b1' in english_additional or 'b2' in english_additional \
+                    if english and (
+                            'upper' in english_additional or 'b1' in english_additional or 'b2' in english_additional
                             or 'internediate' in english_additional or 'pre' in english_additional):
                         english = english_additional
                     elif not english and english_additional:
@@ -309,7 +309,7 @@ class SuperJobGetInformation:
 
                     self.db.write_to_db_companies([company])
 
-                    #-------------------- compose one writting for ione vacancy ----------------
+                    # -------------------- compose one writting for ione vacancy ----------------
 
                     results_dict = {
                         'chat_name': 'https://superjob.ru/',
@@ -322,11 +322,11 @@ class SuperJobGetInformation:
                         'english': english,
                         'relocation': relocation,
                         'job_type': job_type,
-                        'city':city,
-                        'salary':salary,
-                        'experience':'',
-                        'time_of_public':date,
-                        'contacts':contacts,
+                        'city': city,
+                        'salary': salary,
+                        'experience': '',
+                        'time_of_public': date,
+                        'contacts': contacts,
                         'session': self.current_session
                     }
 
@@ -351,7 +351,6 @@ class SuperJobGetInformation:
                     msg=self.current_message
                 )
 
-
     async def get_content_from_one_link(self, vacancy_url):
         try:
             self.browser = webdriver.Chrome(
@@ -362,7 +361,7 @@ class SuperJobGetInformation:
             self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         # -------------------- check what is current session --------------
         self.current_session = await self.helper_parser_site.get_name_session()
-        self.list_links= [vacancy_url]
+        self.list_links = [vacancy_url]
         await self.get_content_from_link()
         self.browser.quit()
         return self.response
@@ -432,7 +431,8 @@ class SuperJobGetInformation:
     def clean_company_name(self, text):
         text = re.sub('Прямой работодатель', '', text)
         text = re.sub(r'[(]{1} [a-zA-Z0-9\W\.]{1,30} [)]{1}', '', text)
-        text = re.sub(r'Аккаунт зарегистрирован с (публичной почты|email) \*@[a-z.]*[, не email компании!]{0,1}', '', text)
+        text = re.sub(r'Аккаунт зарегистрирован с (публичной почты|email) \*@[a-z.]*[, не email компании!]{0,1}', '',
+                      text)
         text = text.replace(f'\n', '')
         return text
 
@@ -444,4 +444,3 @@ class SuperJobGetInformation:
         companies = set(companies)
 
         self.db.write_to_db_companies(companies)
-

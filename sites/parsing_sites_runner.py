@@ -22,6 +22,7 @@ from sites.scraping_svyazi import SvyaziGetInformation
 from sites.scrapping_finder import FinderGetInformation
 from sites.scraping_ingamejob import IngameJobGetInformation
 from sites._scraping_remotejob_upgrade import RemoteJobGetInformation
+from sites.scraping_otta import OttaGetInformation
 from helper_functions import helper_functions as helper
 
 logs = Logs()
@@ -75,6 +76,7 @@ class SitesParser:
         # await SuperJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         # await RemoteJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         # await CareerSpaceGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
+        await OttaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
 
         print(' -----------------------FINAL -------------------------------')
 

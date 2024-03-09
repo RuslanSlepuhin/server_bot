@@ -1,5 +1,5 @@
+import asyncio
 import re
-import time
 from datetime import datetime
 import pandas as pd
 from selenium import webdriver
@@ -10,11 +10,13 @@ from bs4 import BeautifulSoup
 from db_operations.scraping_db import DataBaseOperations
 from sites.write_each_vacancy_to_db import HelperSite_Parser
 from settings.browser_settings import options, chrome_driver_path
-from utils.additional_variables.additional_variables import sites_search_words, parsing_report_path, admin_database, archive_database
+from utils.additional_variables.additional_variables import sites_search_words, parsing_report_path, admin_database, \
+    archive_database
 from helper_functions.helper_functions import edit_message, send_message, send_file_to_user
 from helper_functions.parser_find_add_parameters.parser_find_add_parameters import FinderAddParameters
 from report.report_variables import report_file_path
 from helper_functions import helper_functions as helper
+
 
 class RemoteJobGetInformation:
 
@@ -51,7 +53,7 @@ class RemoteJobGetInformation:
             await self.get_info()
         except Exception as ex:
             print(f"Error: {ex}")
-            if self.bot:
+            if self.bot_dict:
                 await self.bot.send_message(self.chat_id, f"Error: {ex}")
 
         if self.report and self.helper:
@@ -85,14 +87,14 @@ class RemoteJobGetInformation:
 
         self.browser.get(self.main_url)
         print(self.browser.page_source)
-        time.sleep(5)
+        await asyncio.sleep(2)
         search_button = self.browser.find_element(By.XPATH, "//*[@class='btn btn-success btn-toggle']")
         search_button.click()
-        time.sleep(5)
+        await asyncio.sleep(2)
         Last_day_button = self.browser.find_element(By.XPATH,
                                                     "/html/body/div[7]/div[1]/div[3]/div/div[1]/div/div/div[5]/button[1]")
         Last_day_button.click()
-        time.sleep(5)
+        await asyncio.sleep(2)
         active_page_number = int(self.browser.find_element(By.XPATH, "//*[@class='active']").text)
         all_pages = self.browser.find_element(By.XPATH, "//*[@class='pagination']").find_elements(By.XPATH, "li")
         for i in reversed(all_pages):
@@ -102,7 +104,7 @@ class RemoteJobGetInformation:
         current_url = self.browser.current_url
 
         vacancy_exists_on_page = True
-        while active_page_number < last_page-1 or vacancy_exists_on_page:
+        while active_page_number < last_page - 1 or vacancy_exists_on_page:
             vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
             print('go outside')
 
@@ -111,7 +113,7 @@ class RemoteJobGetInformation:
             all_pages = self.browser.find_element(By.XPATH, "//*[@class='pagination']").find_elements(By.XPATH, "li")
 
             for i in all_pages:
-                if i.text.isalnum() and int(i.text)>active_page_number:
+                if i.text.isalnum() and int(i.text) > active_page_number:
                     i.find_element(By.XPATH, "a").click()
                     current_url = self.browser.current_url
                     break
@@ -216,13 +218,15 @@ class RemoteJobGetInformation:
                             company = ''
 
                         try:
-                            salary = soup.find('div', class_='panel-heading').find('div', class_='col-md-4').find('b').text.strip()
+                            salary = soup.find('div', class_='panel-heading').find('div', class_='col-md-4').find(
+                                'b').text.strip()
                         except:
                             salary = ''
 
                         job_format = ''
                         try:
-                            experience = soup.find('div', class_='panel-heading').find_all('div', class_='col-md-4')[1].find('b').text
+                            experience = soup.find('div', class_='panel-heading').find_all('div', class_='col-md-4')[
+                                1].find('b').text
                         except:
                             experience = ''
 
@@ -255,7 +259,7 @@ class RemoteJobGetInformation:
                             'job_type': job_format,
                             'city': city,
                             'salary': salary,
-                            'experience': '',
+                            'experience': experience,
                             'time_of_public': date,
                             'contacts': contacts,
                             'session': self.current_session
@@ -292,7 +296,7 @@ class RemoteJobGetInformation:
             self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         # -------------------- check what is current session --------------
         self.current_session = await self.helper_parser_site.get_name_session()
-        self.list_links= [vacancy_url]
+        self.list_links = [vacancy_url]
         await self.get_content_from_link()
         self.browser.quit()
         return self.response
@@ -335,7 +339,6 @@ class RemoteJobGetInformation:
         companies = set(companies)
 
         self.db.write_to_db_companies(companies)
-
 
     async def output_logs(self, about_vacancy, vacancy, word=None, vacancy_url=None):
         additional_message = ''
@@ -381,4 +384,3 @@ class RemoteJobGetInformation:
         self.count_message_in_one_channel += 1
 
         # print('finish_output_logs')
-
