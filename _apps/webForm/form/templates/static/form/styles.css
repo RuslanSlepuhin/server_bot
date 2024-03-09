@@ -1,0 +1,229 @@
+/* Для больших экранов */
+@media screen and (min-width: 1200px) {
+    body {
+        font-family: Arial, sans-serif;
+        font-size: 20px;
+    }
+    .answer-text {
+        font-size: 20px;
+    }
+    form {
+        width: 66.66%; /* 2/3 экрана */
+        max-width: 800px; /* Ограничение максимальной ширины */
+        margin: auto;
+        background: white; /* Белый фон для формы */
+        padding: 20px;
+        border-radius: 5px;
+    }
+    .other_style {
+        font-family: Arial, sans-serif;
+        font-size: 20px;
+        width: 100%;
+        height: 30px;
+    }
+    input[type="checkbox"], input[type="radio"] {
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        transform: scale(1);
+        background-color: #fff;
+        border: 1px solid #ccc;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05);
+        cursor: pointer;
+        margin: 0;
+        margin-bottom: 5px;
+        position: relative;
+        flex-shrink: 0;
+    }
+    input[type="checkbox"]:before, input[type="radio"]:before {
+        content: '';
+        width: 1em;
+        height: 1em;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background-color: #00AA72;
+        transform: translate(-50%, -50%) scale(0);
+        transition: all 0.3s ease;
+    }
+
+    input[type="checkbox"]:checked:before, input[type="radio"]:checked:before {
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    input[type="checkbox"].unchecked {
+        border: 1px solid red;
+    }
+
+}
+
+/* Для средних экранов */
+@media screen and (max-width: 1199px) and (min-width: 768px) {
+    body {
+        font-family: Verdana, sans-serif;
+        font-size: 35px; /* Увеличиваем размер шрифта на 1.5 раза */
+    }
+    .answer-text {
+        font-size: 40px;
+    }
+    form {
+        width: 90%; /* 2/3 экрана */
+        max-width: 800px; /* Ограничение максимальной ширины */
+        margin: auto;
+        background: white; /* Белый фон для формы */
+        padding: 20px;
+        border-radius: 5px;
+    }
+    .other_style {
+        font-family: Arial, sans-serif;
+        font-size: 35px;
+        width: 100%;
+        height: 50px;
+    }
+    input[type="checkbox"], input[type="radio"] {
+        appearance: none;
+        width: 30px;
+        height: 30px;
+        transform: scale(1);
+        background-color: #fff;
+        border: 1px solid #ccc;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05);
+        cursor: pointer;
+        margin: 0;
+        position: relative;
+        flex-shrink: 0;
+    }
+    input[type="checkbox"]:before, input[type="radio"]:before {
+        content: '';
+        width: 20px;
+        height: 20px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background-color: #00AA72;
+        transform: translate(-50%, -50%) scale(0);
+        transition: all 0.3s ease;
+    }
+
+    input[type="checkbox"]:checked:before, input[type="radio"]:checked:before {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+/* Для маленьких экранов */
+@media screen and (max-width: 767px) {
+    body {
+        font-family: Courier New, monospace;
+        font-size: 30px; /* Увеличиваем размер шрифта на 1.5 раза */
+        }
+    .answer-text {
+        font-size: 40px;
+    }
+    form {
+        width: 66.66%; /* 2/3 экрана */
+        max-width: 800px; /* Ограничение максимальной ширины */
+        margin: auto;
+        background: white; /* Белый фон для формы */
+        padding: 20px;
+        border-radius: 5px;
+    }
+    .other_style {
+        font-family: Arial, sans-serif;
+        font-size: 1em;
+        width: 100%;
+        height: 50px;
+    }
+    input[type="checkbox"], input[type="radio"] {
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        transform: scale(1);
+        background-color: #fff;
+        border: 1px solid #ccc;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05);
+        cursor: pointer;
+        margin: 0;
+        position: relative;
+        flex-shrink: 0;
+    }
+    input[type="checkbox"]:before, input[type="radio"]:before {
+        content: '';
+        width: 1em;
+        height: 1em;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background-color: #00AA72;
+        transform: translate(-50%, -50%) scale(0);
+        transition: all 0.3s ease;
+    }
+
+    input[type="checkbox"]:checked:before, input[type="radio"]:checked:before {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+
+
+<!--        .center-form {-->
+<!--            display: flex;-->
+<!--            flex-direction: column;-->
+<!--            justify-content: center;-->
+<!--            align-items: center;-->
+<!--            height: 100vh;-->
+<!--            margin: 0;-->
+<!--            padding: 0;-->
+<!--            background: url('path_to_your_image') no-repeat center center fixed;-->
+<!--            background-size: #ffc0cb;-->
+<!--        }-->
+    .input-container {
+        position: relative;
+    }
+    .input-container input {
+        border: none;
+        outline: none;
+        background: transparent;
+        width: 100%;
+    }
+    .input-container::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        border-bottom: 1px solid black;
+    }
+<!--        .form-block {-->
+<!--            background-color: white;-->
+<!--            padding: 20px;-->
+<!--            margin: 20px 0;-->
+<!--            border-radius: 5px;-->
+<!--        }-->
+    .stylized-input {
+        font-size: 1em;
+        height: 100%;
+        maxlength: 100;
+    }
+    .big-button {
+        font-size: 1em; /* Увеличиваем размер шрифта */
+        padding: 10px 20px; /* Увеличиваем отступы */
+        border: 2px solid #00AA72;
+        background-color: #00AA72; /* Изменяем цвет фона */
+        color: white; /* Изменяем цвет текста */
+        cursor: pointer; /* Изменяем курсор при наведении */
+        transition: background-color 0.3s ease; /* Добавляем анимацию при наведении */
+    }
+
+    .big-button:hover {
+        background-color: #ff99b7; /* Изменяем цвет фона при наведении */
+    }
+
+
+
+    .required {
+        color: red;
+    }
+    .radio-point {
+        color: red;
+        width: 20px;
+        background-color: #7FFFD4;
+    }
