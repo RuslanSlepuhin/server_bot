@@ -13,6 +13,6 @@ __pycache__/
 delete*.py
 *.session-journal
 *.xlsx
-main_start.py
+#main_start.py
 #/settings/server/
 #/settings/local/
