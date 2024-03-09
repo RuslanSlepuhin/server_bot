@@ -95,6 +95,7 @@ if __name__ == "__main__":
     # p6 = Process(target=start_customer_bot_FCM, args=())
     # p7 = Process(target=start_horeca_bot_FCM, args=())
     # p8 = Process(target=start_endpoints_FCM, args=())
+
     p10 = Process(target=start_webForm_bot, args=())
 
     # p12 = Process(target=mock_server_FCM, args=())
@@ -113,6 +114,7 @@ if __name__ == "__main__":
     # p14.start()
     # p7.start()
     # p8.start()
+
     p10.start()
 
     # p12.start()
@@ -130,6 +132,7 @@ if __name__ == "__main__":
     # p6.join()
     # p7.join()
     # p8.join()
+
     p10.join()
 
     # p12.join()
