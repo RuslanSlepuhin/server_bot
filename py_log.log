@@ -1,0 +1,44 @@
+DEBUG:aiogram:Make request: "getMe" with data: "{}" and files "None"
+DEBUG:telethon.network.mtprotosender:Handling update UpdateShort
+DEBUG:telethon.network.mtprotosender:Receiving items from the network...
+DEBUG:telethon.network.mtprotosender:Handling update UpdateShort
+DEBUG:telethon.network.mtprotosender:Receiving items from the network...
+DEBUG:telethon.network.mtprotosender:Handling update UpdateShort
+DEBUG:telethon.network.mtprotosender:Receiving items from the network...
+DEBUG:aiogram:Response for getMe: [200] "'{"ok":true,"result":{"id":5587593882,"is_bot":true,"first_name":"inviter_bot","username":"inviter_scraper_bot","can_join_groups":true,"can_read_all_group_messages":false,"supports_inline_queries":false}}'"
+INFO:aiogram:Bot: inviter_bot [@inviter_scraper_bot]
+DEBUG:aiogram:Make request: "getWebhookInfo" with data: "{}" and files "None"
+DEBUG:aiogram:Response for getWebhookInfo: [200] "'{"ok":true,"result":{"url":"","has_custom_certificate":false,"pending_update_count":0}}'"
+DEBUG:aiogram:Make request: "deleteWebhook" with data: "{'drop_pending_updates': True}" and files "None"
+DEBUG:aiogram:Response for deleteWebhook: [200] "'{"ok":true,"result":true,"description":"Webhook is already deleted"}'"
+WARNING:aiogram:Updates were skipped successfully.
+INFO:aiogram.dispatcher.dispatcher:Start polling.
+DEBUG:aiogram:Make request: "getWebhookInfo" with data: "{}" and files "None"
+DEBUG:aiogram:Response for getWebhookInfo: [200] "'{"ok":true,"result":{"url":"","has_custom_certificate":false,"pending_update_count":0}}'"
+DEBUG:aiogram:Make request: "getUpdates" with data: "{'timeout': 20}" and files "None"
+DEBUG:telethon.network.mtprotosender:Handling update UpdateShort
+DEBUG:telethon.network.mtprotosender:Receiving items from the network...
+DEBUG:telethon.network.mtprotosender:Handling update UpdateShort
+DEBUG:telethon.network.mtprotosender:Receiving items from the network...
+DEBUG:aiogram:Response for getUpdates: [409] "'{"ok":false,"error_code":409,"description":"Conflict: terminated by other getUpdates request; make sure that only one bot instance is running"}'"
+ERROR:aiogram.dispatcher.dispatcher:Cause exception while getting updates.
+Traceback (most recent call last):
+  File "C:\Users\Ruslan\AppData\Local\Programs\Python\Python310\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 381, in start_polling
+    updates = await self.bot.get_updates(
+  File "C:\Users\Ruslan\AppData\Local\Programs\Python\Python310\lib\site-packages\aiogram\bot\bot.py", line 110, in get_updates
+    result = await self.request(api.Methods.GET_UPDATES, payload)
+  File "C:\Users\Ruslan\AppData\Local\Programs\Python\Python310\lib\site-packages\aiogram\bot\base.py", line 236, in request
+    return await api.make_request(await self.get_session(), self.server, self.__token, method, data, files,
+  File "C:\Users\Ruslan\AppData\Local\Programs\Python\Python310\lib\site-packages\aiogram\bot\api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "C:\Users\Ruslan\AppData\Local\Programs\Python\Python310\lib\site-packages\aiogram\bot\api.py", line 119, in check_result
+    exceptions.ConflictError.detect(description)
+  File "C:\Users\Ruslan\AppData\Local\Programs\Python\Python310\lib\site-packages\aiogram\utils\exceptions.py", line 140, in detect
+    raise err(cls.text or description)
+aiogram.utils.exceptions.TerminatedByOtherGetUpdates: Terminated by other getupdates request; make sure that only one bot instance is running
+DEBUG:telethon.network.mtprotosender:Handling update UpdateShort
+DEBUG:telethon.network.mtprotosender:Receiving items from the network...
+DEBUG:telethon.network.mtprotosender:Handling update UpdateShort
+DEBUG:telethon.network.mtprotosender:Receiving items from the network...
+INFO:aiogram.dispatcher.dispatcher:Stop polling...
+WARNING:aiogram:Goodbye!
