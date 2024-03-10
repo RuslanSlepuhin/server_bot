@@ -16,3 +16,4 @@ delete*.py
 #main_start.py
 #/settings/server/
 #/settings/local/
+/_apps/simpleatom/form.sqlite3
