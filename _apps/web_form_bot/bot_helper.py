@@ -65,7 +65,7 @@ class HelperBot:
         #     data.pop('submit')
 
         for key in data:
-            text += f"{variables.keys_as_questions[key]}\n- {data[key]}\n\n" if key in variables.keys_as_questions else f"{key}\n- {data[key]}\n\n"
+            text += f"{key}\n- {data[key]}\n\n" if type(data[key]) not in [tuple, list] else f"{key}{'\n- '.join(data[key])}\n\n"
         return text
 
 
