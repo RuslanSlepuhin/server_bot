@@ -63,9 +63,14 @@ class HelperBot:
         # if "submit" in data:
         #     text += f"Form: {data['submit']}\n\n"
         #     data.pop('submit')
-
+        backslash = "\\"
         for key in data:
-            text += f"{key}\n- {data[key]}\n\n" if type(data[key]) not in [tuple, list] else f"{key}{'\n- '.join(data[key])}\n\n"
+            if type(data[key]) not in [tuple, list]:
+                text += f"{key}\n- {data[key]}\n\n"
+            else:
+                data_key_str = "\n- ".join(data[key])
+                text += f"{key}{data_key_str}\n\n"
+            # text += f"{key}\n- {data[key]}\n\n" if type(data[key]) not in [tuple, list] else f"{key} {backslash}n- '.join(data[key])\n\n"
         return text
 
 
