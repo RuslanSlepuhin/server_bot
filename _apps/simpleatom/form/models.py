@@ -3,7 +3,7 @@ from django.db import models
 class FormAnswerModel(models.Model):
     data = models.JSONField(blank=True, null=True)
     email = models.EmailField(null=False, blank=False)
-    label = models.CharField(max_length=150, blank=True, null=True)
+    label = models.JSONField(blank=True, null=True)
 
     def __str__(self):
         return str(self.email)
