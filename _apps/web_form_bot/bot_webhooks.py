@@ -84,8 +84,8 @@ async def external_post(request):
     if data.get('form_data'):
         data = data['form_data']
     print(data)
-    if "name" not in data.keys():
-        data['name'] = "-"
+    # if "name" not in data.keys():
+    #     data['name'] = "-"
     text = await helper.text_object_from_form(data)
     for id in variables.admins_user_id:
         await bot.send_message(id, text)
