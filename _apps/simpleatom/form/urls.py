@@ -11,4 +11,6 @@ urlpatterns = [
 
     path('home/', home_page_view),
 
+    path('send/', SendBotView.as_view()),
+
 ]

@@ -1,3 +1,6 @@
+import json
+
+import requests
 from django.forms import model_to_dict
 from django.shortcuts import render
 
@@ -10,6 +13,18 @@ from .models import *
 
 def home_page_view(request):
     return render(request, 'home_oldform.html')
+
+class SendBotView(generics.CreateAPIView):
+    serializer_class = FormDataSerializer
+    queryset = FormAnswerModel.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        print(type(data))
+        url = variables.bot_domain + variables.external_api
+        response = requests.post(url, json.dumps(data))
+        print(variables.bot_url, response.status_code)
+        return Response({"bot_response": response.status_code})
 
 
 class FormDataView(generics.CreateAPIView, generics.UpdateAPIView, generics.ListAPIView):
