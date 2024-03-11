@@ -20,10 +20,9 @@ class SendBotView(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         data = request.data
-        print(type(data))
         url = variables.bot_domain + variables.external_api
         response = requests.post(url, json.dumps(data))
-        print(variables.bot_url, response.status_code)
+        print(url, response.status_code)
         return Response({"bot_response": response.status_code})
 
 
