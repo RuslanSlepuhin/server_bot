@@ -88,8 +88,11 @@ async def external_post(request):
     #     data['name'] = "-"
     text = await helper.text_object_from_form(data)
     for id in variables.admins_user_id:
-        await bot.send_message(id, text)
-        await asyncio.sleep(random.randrange(1, 4))
+        try:
+            await bot.send_message(id, text)
+            await asyncio.sleep(random.randrange(1, 4))
+        except Exception as ex:
+            print(ex, f'user: {id}')
     return web.Response(status=200, text="text was delivered")
 
 
