@@ -10,7 +10,7 @@ class FormAnswerModel(models.Model):
 
 class CustomFormModel(models.Model):
     form_name = models.CharField(max_length=100, blank=False, null=False)
-    message = models.CharField(max_length=100, blank=False, null=False)
+    message = models.CharField(max_length=1000, blank=False, null=False)
     questions = models.JSONField(blank=False, null=False)
 
     def __str__(self):
