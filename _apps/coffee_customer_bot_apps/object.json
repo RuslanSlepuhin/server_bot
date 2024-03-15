@@ -1,0 +1,99 @@
+{
+        "id": 1,
+        "product_details": {
+            "id": 2,
+            "sizes": [
+                {
+                    "id": 2,
+                    "size": "S",
+                    "quantity": 30,
+                    "url_firebase": null,
+                    "price": "3.00",
+                    "sizes": 2
+                }
+            ],
+            "product_photo": [
+                {
+                    "id": 2,
+                    "url_firebase": "https://dev.fcm.by/media/Малинки/Напитки/Эспрессо.jpg"
+                }
+            ],
+            "final_price": null,
+            "name": "Эспрессо",
+            "price": "0.00",
+            "price_in_words": null,
+            "price_bonus": null,
+            "available": true,
+            "discount_percentage": null,
+            "discount_savings": null,
+            "description": "Эспрессо (итал. Espresso) – это баланс запаха и вкуса: сладости, горчинки и лёгкой кислинки. Оттенки вкуса зависят от сортов кофейных зёрен, входящих в состав смеси, и степени обжарки.\n\nНаш эспрессо с богатым насыщенным шоколадным вкусом и карамельными сладкими нотами – сердце всех кофейных напитков Hotfix.",
+            "preset_modifiers": null,
+            "category": 1,
+            "sub_category": 1,
+            "cafe": 4
+        },
+        "variety": [
+            {
+                "id": 1,
+                "name": "Арабика",
+                "url_firebase": "https://fcm.by/Images/Coffee_beans/Arabica.png",
+                "price": "0.00",
+                "manufacturer": null,
+                "available": true,
+                "idm": 1,
+                "cafe": 4
+            }
+        ],
+        "dressing": [
+            {
+                "id": 1,
+                "name": "Взбитые сливки",
+                "url_firebase": "https://fcm.by/Images/Sprinkles/Whipped_cream1.png",
+                "price": "1.00",
+                "manufacturer": null,
+                "available": true,
+                "idm": 1,
+                "cafe": 4
+            }
+        ],
+        "syrups": [
+            {
+                "id": 2,
+                "name": "Ананас",
+                "url_firebase": "https://fcm.by/Images/Syropes/pineaple.png",
+                "price": "0.70",
+                "manufacturer": "Monin",
+                "available": true,
+                "idm": 2,
+                "cafe": 4
+            }
+        ],
+        "milk": [
+            {
+                "id": 1,
+                "name": "Миндальное",
+                "url_firebase": "https://fcm.by/Images/Milk/Almond_milk4.png",
+                "price": "0.70",
+                "manufacturer": null,
+                "available": true,
+                "idm": 1,
+                "cafe": 4
+            }
+        ],
+        "sugar": [
+            {
+                "id": 1,
+                "name": "Белый",
+                "url_firebase": "https://fcm.by/Images/Sugar/WhiteSugar4.png",
+                "price": "0.00",
+                "manufacturer": null,
+                "available": true,
+                "idm": 1,
+                "cafe": 4
+            }
+        ],
+        "strength": 3,
+        "own_cup": true,
+        "portions": 1,
+        "product": 2
+    }
