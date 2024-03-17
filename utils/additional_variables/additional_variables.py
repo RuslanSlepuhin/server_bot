@@ -345,3 +345,4 @@ fields_for_agregator_vacancy = ['vacancy', 'company', 'salary', 'job_type', 'cit
 sub_separator = "; "
 double_n_before_field = 'vacancy_url'
 
+logs_path = "./py_log.log"

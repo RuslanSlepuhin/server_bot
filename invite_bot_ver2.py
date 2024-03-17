@@ -341,6 +341,11 @@ class InviteBot():
             text = "Approved has been set" if completed_successfully else "Something wrong"
             await self.bot_aiogram.send_message(message.chat.id, text)
 
+        @self.dp.message_handler(commands=['logs'])
+        async def logs(message: types.Message):
+            await self.send_file_to_user(message, variable.logs_path)
+
+
         @self.dp.message_handler(commands=['developer_help'])
         async def get_courses_data(message: types.Message):
             await self.rollback_by_number_short_session(
