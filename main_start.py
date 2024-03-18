@@ -93,17 +93,17 @@ if __name__ == "__main__":
     # t_init.start()
     # t_init.join()
 
-    # p1 = Process(target=start_endpoints, args=())
-    # p2 = Process(target=start_bot, args=())
+    p1 = Process(target=start_endpoints, args=())
+    p2 = Process(target=start_bot, args=())
     p3 = Process(target=start_bot, args=(True, settings.token_red))
-    # p4 = Process(target=start_admin_panel, args=())
-    # p13 = Process(target=simpleatom_start, args=())
+    p4 = Process(target=start_admin_panel, args=())
+    p13 = Process(target=simpleatom_start, args=())
 
     # p14 = Process(target=auth_start, args=())
 
-    # p6 = Process(target=start_customer_bot_FCM, args=())
-    # p7 = Process(target=start_horeca_bot_FCM, args=())
-    # p8 = Process(target=start_endpoints_FCM, args=())
+    p6 = Process(target=start_customer_bot_FCM, args=())
+    p7 = Process(target=start_horeca_bot_FCM, args=())
+    p8 = Process(target=start_endpoints_FCM, args=())
 
     p10 = Process(target=start_webForm_bot, args=())
 
@@ -113,16 +113,16 @@ if __name__ == "__main__":
     # p11 = Process(target=form_app_start, args=())
     # p5 = Process(target=talking_bot_run, args=())
 
-    # p1.start()
-    # p2.start()
+    p1.start()
+    p2.start()
     p3.start()
-    # p4.start()
-    # p13.start()
+    p4.start()
+    p13.start()
 
-    # p6.start()
+    p6.start()
     # p14.start()
-    # p7.start()
-    # p8.start()
+    p7.start()
+    p8.start()
 
     p10.start()
 
@@ -132,15 +132,15 @@ if __name__ == "__main__":
     # p11.start()
     # p5.start()
 
-    # p1.join()
-    # p2.join()
+    p1.join()
+    p2.join()
     p3.join()
-    # p4.join()
-    # p13.join()
+    p4.join()
+    p13.join()
     # p14.join()
-    # p6.join()
-    # p7.join()
-    # p8.join()
+    p6.join()
+    p7.join()
+    p8.join()
 
     p10.join()
 
