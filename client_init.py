@@ -11,7 +11,7 @@ def client_init():
 
 def admin_panel_init():
     config = configparser.ConfigParser()
-    config.read("./_apps/admin_panel_tg_view/settings/config.ini")
+    config.read("./_apps/amin_panel_tg_view/settings/config.ini")
 
     api_id = config['Telegram_api']['api_id']
     api_hash = config['Telegram_api']['api_hash']
