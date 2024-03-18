@@ -25,5 +25,6 @@ def admin_panel_init():
 
 
 if __name__ == "__main__":
-    client_init()
+    # client_init()
+    admin_panel_init()
 
