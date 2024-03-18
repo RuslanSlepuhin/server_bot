@@ -1,3 +1,4 @@
+import asyncio
 import configparser
 import os
 import subprocess
@@ -13,6 +14,7 @@ from _apps.coffee_customer_bot_apps.coffee_horeca_bot.coffee_horeca_bot_NEW impo
 from _apps.coffee_customer_bot_apps.endpoints.endpoints import Endpoints
 from _apps.chat.bot_tg import ChatBot
 from _apps.coffee_customer_bot_apps.back_server_side.back_server_side import BackServer
+from telegram_chats.telegram_init import client_init
 
 config_FCM = configparser.ConfigParser()
 config_FCM.read('_apps/coffee_customer_bot_apps/settings/config.ini')
@@ -83,7 +85,11 @@ def mock_server_FCM():
     bs = BackServer()
     bs.main_back_server()
 
+def telegram_init_method():
+    asyncio.run(client_init())
+
 if __name__ == "__main__":
+    t_init = Process(target=telegram_init_method, args=())
 
     p1 = Process(target=start_endpoints, args=())
     p2 = Process(target=start_bot, args=())
@@ -105,7 +111,7 @@ if __name__ == "__main__":
     # p11 = Process(target=form_app_start, args=())
     # p5 = Process(target=talking_bot_run, args=())
 
-
+    t_init.start()
     p1.start()
     p2.start()
     p3.start()
@@ -125,6 +131,7 @@ if __name__ == "__main__":
     # p11.start()
     # p5.start()
 
+    t_init.join()
     p1.join()
     p2.join()
     p3.join()
