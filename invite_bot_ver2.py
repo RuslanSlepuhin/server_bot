@@ -4304,7 +4304,8 @@ class InviteBot():
 
         await self.bot_aiogram.send_message(message.chat.id, 'Please wait few minutes...')
         # await self.client.send_file(5884559465, path)
-        await self.client.send_file(int(message.from_user.id), path)
+        # await self.client.send_file(int(message.chat.id), path)
+        await self.send_file_to_user(message, path)
         await self.bot_aiogram.send_message(message.chat.id, 'Done! You can see this file in messages in private chats')
 
 
