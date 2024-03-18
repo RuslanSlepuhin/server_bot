@@ -52,12 +52,24 @@ class WriteToDbMessages():
         self.report = kwargs['report'] if 'report' in kwargs else None
         self.db = DataBaseOperations(report=self.report)
 
-    async def client_init(self):
+    async def client_init_red(self):
         if not self.client:
             config.read("./settings/config_keys.ini")
             username = config["Telegram_double"]["username"]
             api_id = config["Telegram_double"]["api_id"]
             api_hash = config["Telegram_double"]["api_hash"]
+            self.client = TelegramClient(username, int(api_id), api_hash)
+            await self.client.start()
+            print("connection done")
+            self.client.disconnect()
+            print("disconnect")
+
+    async def client_init_green(self):
+        if not self.client:
+            config.read("./settings/config_keys.ini")
+            username = config["Telegram"]["username"]
+            api_id = config["Telegram"]["api_id"]
+            api_hash = config["Telegram"]["api_hash"]
             self.client = TelegramClient(username, int(api_id), api_hash)
             await self.client.start()
             print("connection done")
