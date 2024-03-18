@@ -12,6 +12,7 @@ __pycache__/
 ./participants/
 delete*.py
 *.session-journal
+*.session
 *.xlsx
 #main_start.py
 #/settings/server/
