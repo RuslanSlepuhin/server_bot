@@ -4308,7 +4308,6 @@ class InviteBot():
         else:
             await self.bot_aiogram.send_message(message.chat.id, 'Error')
 
-
     async def show_progress(self, message, n, len):
         check = n * 100 // len
         if check > self.percent:
