@@ -4303,8 +4303,10 @@ class InviteBot():
 
     async def get_backup_db(self, path, message):
         await self.bot_aiogram.send_message(message.chat.id, 'Please wait few minutes...')
-        await self.send_file_to_user(message, path)
-        await self.bot_aiogram.send_message(message.chat.id, 'Done! You can see this file in messages in private chats')
+        if await self.send_file_to_user(message, path):
+            await self.bot_aiogram.send_message(message.chat.id, 'Done! You can see this file in messages in private chats')
+        else:
+            await self.bot_aiogram.send_message(message.chat.id, 'Error')
 
     async def show_progress(self, message, n, len):
         check = n * 100 // len
