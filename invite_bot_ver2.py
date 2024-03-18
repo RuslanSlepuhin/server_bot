@@ -21,7 +21,7 @@ from telethon.sync import TelegramClient
 from telethon.tl import functions
 from telethon.tl.functions.channels import GetParticipantsRequest
 from telethon.tl.functions.messages import GetHistoryRequest
-from telethon.tl.types import InputUser, InputChannel, ChannelParticipantsSearch, PeerChannel
+from telethon.tl.types import InputUser, InputChannel, ChannelParticipantsSearch, PeerChannel, PeerUser
 from db_operations.scraping_db import DataBaseOperations
 from helper_functions.cities_and_countries.cities_parser import CitiesAndCountries
 from sites.scraping_hhkz import HHKzGetInformation
@@ -4291,7 +4291,9 @@ class InviteBot():
                         print(e)
             except:
                 print('telethon')
-                await self.client.send_file(int(message.chat.id), file, caption=caption)
+                entity = await self.client.get_entity(PeerUser(message.chat.id))
+
+                await self.client.send_file(entity, file, caption=caption)
 
     async def get_backup_db(self, path, message):
         # import zipfile
