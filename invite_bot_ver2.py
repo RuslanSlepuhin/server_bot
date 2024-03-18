@@ -4281,51 +4281,30 @@ class InviteBot():
         self.quantity_entered_to_shorts += 1
 
     async def send_file_to_user(self, message, path, caption='Please take it', send_to_developer=False):
-        with open(path, 'rb') as file:
-            try:
+        try:
+            with open(path, 'rb') as file:
                 await self.bot_aiogram.send_document(message.chat.id, file, caption=caption)
                 if send_to_developer and message.chat.id != variable.developer_chat_id:
                     try:
                         await self.bot_aiogram.send_document(int(variable.developer_chat_id), file, caption=caption)
                     except Exception as e:
                         print(e)
-            except:
-                print('telethon')
-                entity = await self.client.get_entity(PeerUser(message.chat.id))
+        except Exception as ex:
+            try:
+                print(ex)
+                print('telethon - message.chat.id')
+                file = await self.client.upload_file(path)
+                await self.client.send_file(message.chat.id, file)
+            except Exception as ex:
+                print(ex)
+                return False
+        return True
 
-                await self.client.send_file(entity, file, caption=caption)
 
     async def get_backup_db(self, path, message):
-        # import zipfile
-        # zip_file_name = 'backup_from_server_backup.zip'
-        # jungle_zip = zipfile.ZipFile(f'./db_backup/{zip_file_name}', 'w')
-        # jungle_zip.write(path, compress_type=zipfile.ZIP_DEFLATED)
-        # jungle_zip.close()
-        # with open(f'./db_backup/{zip_file_name}', 'rb') as file:
-        #     await self.bot_aiogram.send_document(variable.developer_chat_id, file)
-        # print('done')
-
         await self.bot_aiogram.send_message(message.chat.id, 'Please wait few minutes...')
-        # await self.client.send_file(5884559465, path)
-        # await self.client.send_file(int(message.chat.id), path)
         await self.send_file_to_user(message, path)
         await self.bot_aiogram.send_message(message.chat.id, 'Done! You can see this file in messages in private chats')
-
-
-        # await self.client.send_file(5884559465, path)
-        #
-        # file_path = path
-        # file_name = 'backup_from_server.backup'
-        # chat_id = 5884559465
-        # bot_name = 'demo_inviter_bot'
-        # msg = await self.client.send_file(
-        #     chat_id,
-        #     bot=str(bot_name),
-        #     file=file_path,
-        #     file_name=str(file_name),
-        #     use_cache=False,
-        #     part_size_kb=512,
-        # )
 
     async def show_progress(self, message, n, len):
         check = n * 100 // len
