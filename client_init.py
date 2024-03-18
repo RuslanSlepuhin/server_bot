@@ -18,7 +18,7 @@ def admin_panel_init():
     username = config['Telegram_api']['username']
 
     client = TelegramClient(username, int(api_id), api_hash)
-    asyncio.run(client.start())
+    client.start()
     print("connection done")
     client.disconnect()
     print("disconnect")
