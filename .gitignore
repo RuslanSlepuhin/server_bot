@@ -15,8 +15,10 @@ delete*.py
 *.session
 *.xlsx
 #main_start.py
-#/settings/server/
-#/settings/local/
+/settings/server/
+/settings/local/
+#/settings/config*.ini
 /_apps/simpleatom/form.sqlite3
 /main_start.py
-#/db_backup/
+/db_backup/
+#/_apps/amin_panel_tg_view/settings/
