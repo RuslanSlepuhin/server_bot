@@ -4294,7 +4294,8 @@ class InviteBot():
                 print(ex)
                 print('telethon - message.chat.id')
                 file = await self.client.upload_file(path)
-                await self.client.send_file(message.chat.id, file)
+                peer_user = await self.client.get_entity(PeerUser(message.chat.id))
+                await self.client.send_file(peer_user, file)
             except Exception as ex:
                 print(ex)
                 return False
