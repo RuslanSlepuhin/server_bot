@@ -4290,7 +4290,8 @@ class InviteBot():
                     except Exception as e:
                         print(e)
             except:
-                await self.client.send_file(int(variable.developer_chat_id), file, caption=caption)
+                print('telethon')
+                await self.client.send_file(int(message.chat.id), file, caption=caption)
 
     async def get_backup_db(self, path, message):
         # import zipfile
