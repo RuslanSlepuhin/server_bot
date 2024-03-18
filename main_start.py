@@ -112,6 +112,7 @@ if __name__ == "__main__":
     # p5 = Process(target=talking_bot_run, args=())
 
     t_init.start()
+    t_init.join()
     p1.start()
     p2.start()
     p3.start()
