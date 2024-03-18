@@ -155,6 +155,7 @@ class InviteBot():
         self.profession = None
         self.sub = None
         self.new_start = True
+        self.logs = logs
         logging.basicConfig(level=logging.DEBUG, filename="py_log.log",filemode="w")
 
         if token_in:
@@ -284,13 +285,13 @@ class InviteBot():
 
         @self.dp.message_handler(commands=['start'])
         async def send_welcome(message: types.Message):
-
+            global logs
             self.chat_id = message.chat.id
             print("user_id: ", message.from_user.id)
             print('chat_id: ', self.chat_id)
             self.user_id = message.from_user.id
 
-            logs.write_log(f'\n------------------ start --------------------')
+            self.logs.write_log(f'\n------------------ start --------------------')
 
             # -------- make a parse keyboard for admin ---------------
 
@@ -322,6 +323,12 @@ class InviteBot():
                 text_list = [variable.help_text]
             for text in text_list:
                 await self.bot_aiogram.send_message(message.chat.id, text)
+
+        @self.dp.message_handler(commands=['reduce_till_date'])
+        async def reduce_till_date(message: types.Message):
+            await Form_reduce.date.set()
+            await self.bot_aiogram.send_message(message.chat.id,
+                                                "Type the date from which to leave the vacancies (FORMAT: YYYY-MM-DD)")
 
         @self.dp.message_handler(commands=['vacancies_title'])
         async def vacancies_title(message: types.Message):
@@ -1662,12 +1669,12 @@ class InviteBot():
 
             # global phone_number
 
-            logs.write_log(f"invite_bot_2: Form.phone number")
+            self.logs.write_log(f"invite_bot_2: Form.phone number")
 
             async with state.proxy() as data:
                 data['phone_number'] = message.text
 
-                logs.write_log(f"invite_bot_2: phone number: {data['phone_number']}")
+                self.logs.write_log(f"invite_bot_2: phone number: {data['phone_number']}")
 
                 await self.bot_aiogram.send_message(
                     message.chat.id,
@@ -1691,7 +1698,7 @@ class InviteBot():
         # code
         async def get_code(message):
 
-            logs.write_log(f"invite_bot_2: function get_code")
+            self.logs.write_log(f"invite_bot_2: function get_code")
 
             await Form.code.set()
             await self.bot_aiogram.send_message(message.chat.id, 'Введите код в формате 12345XXXXX6789, где ХХХХХ - цифры телеграм кода (отмена* /cancel)')
@@ -1701,13 +1708,13 @@ class InviteBot():
 
             # global client, hash_phone, phone_number
 
-            logs.write_log(f"invite_bot_2: Form.code")
+            self.logs.write_log(f"invite_bot_2: Form.code")
 
             async with state.proxy() as data:
                 data['code'] = message.text
                 self.code = data['code'][5:10]
 
-                logs.write_log(f"invite_bot_2: Form.code: {data['code']}")
+                self.logs.write_log(f"invite_bot_2: Form.code: {data['code']}")
 
                 # ask to get password (always)
                 if not self.password:
@@ -1723,12 +1730,12 @@ class InviteBot():
         # password
         @self.dp.message_handler(state=Form.password)
         async def process_api_hash(message: types.Message, state: FSMContext):
-            logs.write_log('invite_bot_2: Form.password')
+            self.logs.write_log('invite_bot_2: Form.password')
 
             async with state.proxy() as data:
                 data['password'] = message.text
             self.password = data['password']
-            logs.write_log(f"invite_bot_2: Form.password: {data['password']}")
+            self.logs.write_log(f"invite_bot_2: Form.password: {data['password']}")
             # self.db.add_password_to_user(id=self.current_customer[0], password=self.password)
 
             await state.finish()
@@ -2219,7 +2226,7 @@ class InviteBot():
                     if message.text == 'Get participants':
 
                         if message.from_user.id in self.white_admin_list:
-                            logs.write_log(f"invite_bot_2: content_types: Get participants")
+                            self.logs.write_log(f"invite_bot_2: content_types: Get participants")
 
                             await self.bot_aiogram.send_message(
                                 message.chat.id,
@@ -2253,7 +2260,7 @@ class InviteBot():
 
                 if message.text == 'Digest':
 
-                    logs.write_log(f"invite_bot_2: content_types: Digest")
+                    self.logs.write_log(f"invite_bot_2: content_types: Digest")
 
                     self.markup = InlineKeyboardMarkup(row_width=1)
                     but_show = InlineKeyboardButton('UNSORTED VACANCIES (new vacancies)',
@@ -2290,7 +2297,7 @@ class InviteBot():
 
                 if message.text == 'Subscr.statistics':
 
-                    logs.write_log(f"invite_bot_2: content_types: Subscr.statistics")
+                    self.logs.write_log(f"invite_bot_2: content_types: Subscr.statistics")
 
                     await get_subscribers_statistic(message)
                     # await send_excel(message)
@@ -2320,7 +2327,7 @@ class InviteBot():
 
         async def get_separate_time(time_in):
 
-            logs.write_log(f"invite_bot_2: function: get_separate_time")
+            self.logs.write_log(f"invite_bot_2: function: get_separate_time")
 
             start_time = {}
             start_time['year'] = time_in.strftime('%Y')
@@ -2336,7 +2343,7 @@ class InviteBot():
 
             # global all_participant, file_name
 
-            logs.write_log(f"invite_bot_2: function: content_type['document']")
+            self.logs.write_log(f"invite_bot_2: function: content_type['document']")
 
             if self.client.is_connected():
 
@@ -2389,7 +2396,7 @@ class InviteBot():
                 await self.bot_aiogram.send_message(message.chat.id, 'Для авторизации нажмите /start')
 
         async def invite_users(message, channel):
-            logs.write_log(f"invite_bot_2: invite_users: if marker")
+            self.logs.write_log(f"invite_bot_2: invite_users: if marker")
             msg = None
             channel_short_name = f"@{channel.split('/')[-1]}"
             # channel = message.text
@@ -2620,7 +2627,7 @@ class InviteBot():
                 await self.send_file_to_user(message, 'inviter_log.txt')
 
         async def invite_set_users(message, channel):
-            logs.write_log(f"invite_bot_2: invite_set_users")
+            self.logs.write_log(f"invite_bot_2: invite_set_users")
             msg = None
             channel_short_name = f"@{channel.split('/')[-1]}"
 
@@ -2663,7 +2670,7 @@ class InviteBot():
 
         async def check_customer(message, id_customer):
 
-            logs.write_log(f"invite_bot_2: unction: check_customer")
+            self.logs.write_log(f"invite_bot_2: unction: check_customer")
 
             files = os.listdir('./')
             sessions = filter(lambda x: x.endswith('.session'), files)
@@ -2690,7 +2697,7 @@ class InviteBot():
 
         async def get_subscribers_statistic(message):
 
-            logs.write_log(f"invite_bot_2: function: get_subscribers_statistic")
+            self.logs.write_log(f"invite_bot_2: function: get_subscribers_statistic")
 
             id_user_list = []
             access_hash_list = []
@@ -5250,7 +5257,7 @@ class InviteBot():
         last_admin_channel_id = None
         await self.bot_aiogram.send_message(channel, 'test')
         await asyncio.sleep(1)
-        logs.write_log(f"scraping_telethon2: function: get_last_id_agregator")
+        self.logs.write_log(f"scraping_telethon2: function: get_last_id_agregator")
 
         if channel != config['My_channels']['admin_channel']:
             limit_msg = 1
@@ -5289,7 +5296,7 @@ class InviteBot():
         # channel = PeerChannel(peer.id)
         if not limit_msg:
             limit_msg = 3000
-        logs.write_log(f"scraping_telethon2: function: dump_all_messages")
+        self.logs.write_log(f"scraping_telethon2: function: dump_all_messages")
 
         print('dump')
         self.count_message_in_one_channel = 1
