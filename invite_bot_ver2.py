@@ -4286,7 +4286,7 @@ class InviteBot():
                 await self.bot_aiogram.send_document(message.chat.id, file, caption=caption)
                 if send_to_developer and message.chat.id != variable.developer_chat_id:
                     try:
-                        await self.bot_aiogram.send_document(int(variable.developer_chat_id), file, caption=caption)
+                        await self.bot_aiogram.send_document(message.chat.id, file, caption=caption)
                     except Exception as e:
                         print(e)
         except Exception as ex:
