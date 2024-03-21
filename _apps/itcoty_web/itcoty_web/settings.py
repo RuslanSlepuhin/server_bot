@@ -18,12 +18,15 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+config = configparser.ConfigParser()
+config.read("./../../settings/config.ini")
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-2v1)sou*)kh^5r7_k@pi%26v(=v=owgjc@z0fy%rb$l*w=2d=y"
+SECRET_KEY = config["DRF_app"]["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -91,9 +94,6 @@ WSGI_APPLICATION = "itcoty_web.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-config = configparser.ConfigParser()
-config.read("./../../settings/config.ini")
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -165,12 +165,23 @@ ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
 
 GOOGLE_REDIRECT_URL = "http://127.0.0.1:8000/"
+SOCIALACCOUNT_PROVIDERS = {
+"google": {
+    "APP": {
+        "client_id": config["DRF_app"]["GOOGLE_CLIENT_ID"],
+        "secret": config["DRF_app"]["GOOGLE_SECRET_KEY"],
+    },
+    "SCOPE": [
+        "profile",
+        "email",
+    ],
+    "AUTH_PARAMS": {
+        "access_type": "offline",
+    }
+}}
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-
-# EMAIL_HOST = os.environ.get('EMAIL_HOST')
-# EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-# EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
-# EMAIL_PORT = os.environ.get('EMAIL_PORT')
-# EMAIL_USE_TLS = True
+EMAIL_HOST = config["SMTP_server"]["EMAIL_HOST"]
+EMAIL_HOST_USER = config["SMTP_server"]["EMAIL_HOST_USER"]
+EMAIL_HOST_PASSWORD = config["SMTP_server"]["EMAIL_HOST_PASSWORD"]
+EMAIL_PORT = config["SMTP_server"]["EMAIL_PORT"]
+EMAIL_USE_TLS = True
