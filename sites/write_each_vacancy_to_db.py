@@ -1,6 +1,6 @@
 from datetime import datetime
 from re import match
-from sites_additional_utils.ask_gemini import ask_gemini
+from sites.sites_additional_utils.ask_gemini import ask_gemini
 from db_operations.scraping_db import DataBaseOperations
 from filters.filter_jan_2023.filter_jan_2023 import VacancyFilter
 from helper_functions.parser_find_add_parameters.parser_find_add_parameters import FinderAddParameters
