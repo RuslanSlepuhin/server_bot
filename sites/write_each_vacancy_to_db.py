@@ -20,30 +20,6 @@ class HelperSite_Parser:
         self.profession = {}
 
     async def write_each_vacancy(self, results_dict):
-        gemini_prompt = results_dict['title'] + results_dict['body']
-        check_vacancy_not_exists = True
-
-        for question in ["Is vacancy?", "Is IT?", ]:
-            answer = ask_gemini(question, gemini_prompt)
-            if match(r"^[Дд]а", answer):
-                continue
-            elif match(r"^[Hн]ет", answer):
-                check_vacancy_not_exists = False
-                break
-            elif answer == "":
-                continue
-
-        # if not results_dict['level']:
-        #     results_dict['level'] = ask_gemini("What level?", gemini_prompt)
-        if not results_dict['contacts']:
-            results_dict['contacts'] = ask_gemini("What contacts?", gemini_prompt)
-        if not results_dict['city']:
-            results_dict['city'] = ask_gemini("What city?", gemini_prompt)
-        if not results_dict['salary']:
-            results_dict['salary'] = ask_gemini("What salary?", gemini_prompt)
-        if not results_dict['experience']:
-            results_dict['experience'] = ask_gemini("What experience?", gemini_prompt)
-
         self.results_dict = results_dict
         response = {}
         response_from_db = {}
@@ -55,6 +31,8 @@ class HelperSite_Parser:
                 body=self.results_dict['body'],
             )
 
+        check_vacancy_not_exists = True
+
         # search this vacancy in database
         if 'vacancy_url' in self.results_dict and self.results_dict['vacancy_url']:
             check_vacancy_not_exists = self.db.check_exists_message_by_link_or_url(
@@ -62,8 +40,33 @@ class HelperSite_Parser:
                 table_list=tables
             )
 
-        # get profession's parameters
+        # check weather this is a vacancy and, if so, weather it relates to IT using Gemini
+        gemini_prompt = results_dict['title'] + results_dict['body']
+        for question in ["Is vacancy?", "Is IT?", ]:
+            answer = ask_gemini(question, gemini_prompt)
+            if match(r"^[Hн]ет", answer):
+                check_vacancy_not_exists = False
+                break
+            elif match(r"^[Hн]е ", answer):
+                check_vacancy_not_exists = False
+                break
+            if match(r"^[Дд]а", answer):
+                continue
+            elif answer == "":
+                continue
+
+        # fill in the fields if they are empty using the Gemini neural network
         if check_vacancy_not_exists:
+            if not results_dict['contacts']:
+                self.results_dict['contacts'] = ask_gemini("What contacts?", gemini_prompt)
+            if not results_dict['city']:
+                self.results_dict['city'] = ask_gemini("What city?", gemini_prompt)
+            if not results_dict['salary']:
+                self.results_dict['salary'] = ask_gemini("What salary?", gemini_prompt)
+            if not results_dict['experience']:
+                self.results_dict['experience'] = ask_gemini("What experience?", gemini_prompt)
+
+        # get profession's parameters
             self.profession = self.filter.sort_profession(
                 title=self.results_dict['title'],
                 body=self.results_dict['body'],
