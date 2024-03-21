@@ -14,7 +14,7 @@ delete*.py
 *.session-journal
 *.session
 *.xlsx
-#main_start.py
+./main_start.py
 /settings/server/
 /settings/local/
 #/settings/config*.ini
