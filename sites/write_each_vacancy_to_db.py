@@ -33,8 +33,8 @@ class HelperSite_Parser:
             elif answer == "":
                 continue
 
-        if not results_dict['level']:
-            results_dict['level'] = ask_gemini("What level?", gemini_prompt)
+        # if not results_dict['level']:
+        #     results_dict['level'] = ask_gemini("What level?", gemini_prompt)
         if not results_dict['contacts']:
             results_dict['contacts'] = ask_gemini("What contacts?", gemini_prompt)
         if not results_dict['city']:
