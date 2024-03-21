@@ -101,9 +101,9 @@ if __name__ == "__main__":
 
     # p14 = Process(target=auth_start, args=())
 
-    p6 = Process(target=start_customer_bot_FCM, args=())
-    p7 = Process(target=start_horeca_bot_FCM, args=())
-    p8 = Process(target=start_endpoints_FCM, args=())
+    # p6 = Process(target=start_customer_bot_FCM, args=())
+    # p7 = Process(target=start_horeca_bot_FCM, args=())
+    # p8 = Process(target=start_endpoints_FCM, args=())
 
     p10 = Process(target=start_webForm_bot, args=())
 
@@ -119,10 +119,10 @@ if __name__ == "__main__":
     p4.start()
     p13.start()
 
-    p6.start()
+    # p6.start()
     # p14.start()
-    p7.start()
-    p8.start()
+    # p7.start()
+    # p8.start()
 
     p10.start()
 
@@ -138,9 +138,9 @@ if __name__ == "__main__":
     p4.join()
     p13.join()
     # p14.join()
-    p6.join()
-    p7.join()
-    p8.join()
+    # p6.join()
+    # p7.join()
+    # p8.join()
 
     p10.join()
 
