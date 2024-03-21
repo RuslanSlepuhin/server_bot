@@ -165,20 +165,6 @@ ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
 
 GOOGLE_REDIRECT_URL = "http://127.0.0.1:8000/"
-SOCIALACCOUNT_PROVIDERS = {
-"google": {
-    "APP": {
-        "client_id": config["DRF_app"]["GOOGLE_CLIENT_ID"],
-        "secret": config["DRF_app"]["GOOGLE_SECRET_KEY"],
-    },
-    "SCOPE": [
-        "profile",
-        "email",
-    ],
-    "AUTH_PARAMS": {
-        "access_type": "offline",
-    }
-}}
 
 EMAIL_HOST = config["SMTP_server"]["EMAIL_HOST"]
 EMAIL_HOST_USER = config["SMTP_server"]["EMAIL_HOST_USER"]
