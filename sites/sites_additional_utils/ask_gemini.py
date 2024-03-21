@@ -53,6 +53,7 @@ def ask_gemini(question, text):
     }
     url = "http://194.163.44.157/gemini_request"
     data = {"request": f"{questions.get(question)}"}
+    print(data)
     response = requests.post(url, json=data)
     answer = response.json()
     return answer["answer"]
