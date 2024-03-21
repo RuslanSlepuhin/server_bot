@@ -44,11 +44,14 @@ class HelperSite_Parser:
         gemini_prompt = results_dict['title'] + results_dict['body']
         for question in ["Is vacancy?", "Is IT?", ]:
             answer = ask_gemini(question, gemini_prompt)
-            if match(r"^[Дд]а", answer):
-                continue
-            elif match(r"^[Hн]ет", answer):
+            if match(r"^[Hн]ет", answer):
                 check_vacancy_not_exists = False
                 break
+            elif match(r"^[Hн]е ", answer):
+                check_vacancy_not_exists = False
+                break
+            if match(r"^[Дд]а", answer):
+                continue
             elif answer == "":
                 continue
 
