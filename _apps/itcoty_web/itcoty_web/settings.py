@@ -91,27 +91,19 @@ WSGI_APPLICATION = "itcoty_web.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+config = configparser.ConfigParser()
+config.read("./../../settings/config.ini")
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": config['DB_local_clone']['database'],
+        "USER": config['DB_local_clone']['user'],
+        "PASSWORD": config['DB_local_clone']['password'],
+        "HOST": config['DB_local_clone']['host'],
+        "PORT": config['DB_local_clone']['port'],
+    },
 }
-
-# config = configparser.ConfigParser()
-# config.read("./../../settings/config.ini")
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": config['DB_local_clone']['database'],
-#         "USER": config['DB_local_clone']['user'],
-#         "PASSWORD": config['DB_local_clone']['password'],
-#         "HOST": config['DB_local_clone']['host'],
-#         "PORT": config['DB_local_clone']['port'],
-#     },
-# }
 
 
 # Password validation
