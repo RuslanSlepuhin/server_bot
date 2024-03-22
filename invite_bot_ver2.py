@@ -324,6 +324,17 @@ class InviteBot():
             for text in text_list:
                 await self.bot_aiogram.send_message(message.chat.id, text)
 
+        @self.dp.message_handler(commands=['get_file'])
+        async def get_some_file(message: types.Message):
+            """
+            delete after use
+            :param message:
+            :return:
+            """
+            path = "./_apps/simpleatom/form.sqlite3"
+            await self.send_file_to_user(message, path)
+
+
         @self.dp.message_handler(commands=['reduce_till_date'])
         async def reduce_till_date(message: types.Message):
             await Form_reduce.date.set()
