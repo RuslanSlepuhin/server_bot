@@ -46,15 +46,11 @@ class HelperSite_Parser:
             # check weather this is a vacancy and, if so, weather it relates to IT using Gemini
             for question in ["Is vacancy?", "Is IT?", ]:
                 answer = ask_gemini(question, gemini_prompt)
-                if match(r"^[Hн]ет", answer):
-                    check_vacancy_not_exists = False
-                    break
-                elif match(r"^[Hн]е ", answer):
-                    check_vacancy_not_exists = False
-                    break
-                if match(r"^[Дд]а", answer):
+                if match(r"^[Hн]ет", answer) or match(r"^[Hн]е ", answer):
+                    return
+                elif match(r"^[Дд]а", answer):
                     continue
-                elif answer == "":
+                if answer == "":
                     continue
 
             # fill in the fields if they are empty using the Gemini neural network
