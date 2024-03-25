@@ -32,7 +32,7 @@ def admin_panel_init():
 
 
 if __name__ == "__main__":
-    # client_init_red()
-    # client_init_green()
+    client_init_red()
+    client_init_green()
     admin_panel_init()
 
