@@ -16,6 +16,7 @@ def client_init_green():
     asyncio.run(client_class.client_init_green())
 
 def admin_panel_init():
+    print('admin panel')
     config = configparser.ConfigParser()
     config.read("./_apps/amin_panel_tg_view/settings/config.ini")
 
