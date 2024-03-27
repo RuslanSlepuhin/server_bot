@@ -40,24 +40,23 @@ class HelperSite_Parser:
                 table_list=tables
             )
 
+        # check weather this is a vacancy and, if so, weather it relates to IT using Gemini
+        gemini_prompt = results_dict['title'] + results_dict['body']
+        for question in ["Is vacancy?", "Is IT?", ]:
+            answer = ask_gemini(question, gemini_prompt)
+            if match(r"^[Hн]ет", answer):
+                check_vacancy_not_exists = False
+                break
+            elif match(r"^[Hн]е ", answer):
+                check_vacancy_not_exists = False
+                break
+            if match(r"^[Дд]а", answer):
+                continue
+            elif answer == "":
+                continue
+
+        # fill in the fields if they are empty using the Gemini neural network
         if check_vacancy_not_exists:
-            gemini_prompt = results_dict['title'] + results_dict['body']
-
-            # check weather this is a vacancy and, if so, weather it relates to IT using Gemini
-            for question in ["Is vacancy?", "Is IT?", ]:
-                answer = ask_gemini(question, gemini_prompt)
-                if match(r"^[Hн]ет", answer):
-                    check_vacancy_not_exists = False
-                    break
-                elif match(r"^[Hн]е ", answer):
-                    check_vacancy_not_exists = False
-                    break
-                if match(r"^[Дд]а", answer):
-                    continue
-                elif answer == "":
-                    continue
-
-            # fill in the fields if they are empty using the Gemini neural network
             if not results_dict['contacts']:
                 self.results_dict['contacts'] = ask_gemini("What contacts?", gemini_prompt)
             if not results_dict['city']:
@@ -67,7 +66,7 @@ class HelperSite_Parser:
             if not results_dict['experience']:
                 self.results_dict['experience'] = ask_gemini("What experience?", gemini_prompt)
 
-            # get profession's parameters
+        # get profession's parameters
             self.profession = self.filter.sort_profession(
                 title=self.results_dict['title'],
                 body=self.results_dict['body'],
