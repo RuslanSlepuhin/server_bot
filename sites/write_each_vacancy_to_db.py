@@ -47,7 +47,7 @@ class HelperSite_Parser:
             for question in ["Is vacancy?", "Is IT?", ]:
                 answer = ask_gemini(question, gemini_prompt)
                 if match(r"^[Hн]ет", answer) or match(r"^[Hн]е ", answer):
-                    return False
+                    return
                 elif match(r"^[Дд]а", answer):
                     continue
                 if answer == "":
