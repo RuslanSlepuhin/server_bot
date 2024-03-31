@@ -1,5 +1,5 @@
 from datetime import datetime
-from re import match
+from re import search as re_search
 from sites.sites_additional_utils.ask_gemini import ask_gemini
 from db_operations.scraping_db import DataBaseOperations
 from filters.filter_jan_2023.filter_jan_2023 import VacancyFilter
@@ -44,10 +44,10 @@ class HelperSite_Parser:
         gemini_prompt = results_dict['title'] + results_dict['body']
         for question in ["Is vacancy?", "Is IT?", ]:
             answer = ask_gemini(question, gemini_prompt)
-            if match(r"^[Нн]ет", answer) or match(r"^[Нн]е ", answer):
+            if re_search(r"[Нн]е ", answer):
                 check_vacancy_not_exists = False
                 break
-            if match(r"^[Дд]а", answer):
+            if re_search(r"[Дд]а", answer):
                 continue
             elif answer == "":
                 continue
