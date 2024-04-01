@@ -17,6 +17,23 @@ from helper_functions.parser_find_add_parameters.parser_find_add_parameters impo
 from helper_functions import helper_functions as helper
 from report.report_variables import report_file_path
 
+
+def format_body_text(self, body_content: BeautifulSoup) -> str:
+    """ Makes the vacancy body text more readable """
+    body_text = body_content.get_text(separator="<>")
+    body_text = (body_text
+                 .replace("<> <> <> <>", "\n")
+                 .replace("<> <> <>", "\n")
+                 .replace("<> <>", "\n")
+                 .replace("<>", "")
+                 .replace("!", "! ")
+                 .replace(".•", ".\n•")
+                 .replace(";•", ".\n•")
+                 .replace(".", ". ")
+                 )
+    return body_text
+
+
 class HHGetInformation:
 
     def __init__(self, **kwargs):
@@ -183,8 +200,8 @@ class HHGetInformation:
 
                     body = ''
                     try:
-                        body = soup.find('div', class_='vacancy-section').get_text()
-                        body = body.replace('\n\n', '\n')
+                        body = soup.find('div', class_='vacancy-section')
+                        body = format_body_text(body)
                         body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
                     except Exception as e:
                         print(f"error body: {e}")
