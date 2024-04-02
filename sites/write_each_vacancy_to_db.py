@@ -44,7 +44,7 @@ class HelperSite_Parser:
         gemini_prompt = results_dict['title'] + results_dict['body']
         for question in ["Is vacancy?", "Is IT?", ]:
             answer = ask_gemini(question, gemini_prompt)
-            if search(r"[Нн]е ", answer):
+            if search(r"[Нн]е ", answer) or search(r"[Нн]ет", answer):
                 check_vacancy_not_exists = False
                 break
             if search(r"[Дд]а", answer):
