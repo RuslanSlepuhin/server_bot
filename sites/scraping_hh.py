@@ -7,6 +7,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
+
 from db_operations.scraping_db import DataBaseOperations
 from utils.additional_variables.additional_variables import vacancies_database
 from sites.write_each_vacancy_to_db import HelperSite_Parser
@@ -18,7 +19,7 @@ from helper_functions import helper_functions as helper
 from report.report_variables import report_file_path
 
 
-def format_body_text(self, body_content: BeautifulSoup) -> str:
+def format_body_text(body_content:BeautifulSoup) -> str:
     """ Makes the vacancy body text more readable """
     body_text = body_content.get_text(separator="<>")
     body_text = (body_text
@@ -428,7 +429,8 @@ class HHGetInformation:
         self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         await self.get_content_from_link()
 
-# loop = asyncio.new_event_loop()
-# loop.run_until_complete(HHGetInformation(bot_dict={}).get_content())
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(HHGetInformation(bot_dict={}).get_content())
 
 
