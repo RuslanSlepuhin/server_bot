@@ -3,7 +3,7 @@ from datetime import timedelta
 from _apps.individual_tg_bot.settings import APP_DEBUG, APP_HOST, APP_PORT
 from _apps.individual_tg_bot.text import once_per_day
 from flask import Flask, jsonify, request
-from service import db
+from _apps.individual_tg_bot.service import db
 
 app = Flask(__name__)
 
