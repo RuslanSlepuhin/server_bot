@@ -17,6 +17,8 @@ from helper_functions.parser_find_add_parameters.parser_find_add_parameters impo
 from helper_functions import helper_functions as helper
 from report.report_variables import report_file_path
 
+
+
 class HHGetInformation:
 
     def __init__(self, **kwargs):
@@ -184,7 +186,6 @@ class HHGetInformation:
                     body = ''
                     try:
                         body = soup.find('div', class_='vacancy-section').get_text()
-                        body = body.replace('\n\n', '\n')
                         body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
                     except Exception as e:
                         print(f"error body: {e}")
@@ -413,6 +414,5 @@ class HHGetInformation:
 
 # loop = asyncio.new_event_loop()
 # loop.run_until_complete(HHGetInformation(bot_dict={}).get_content())
-
 
 
