@@ -60,6 +60,20 @@ class HHGetInformation:
         self.links_in_past = []
         self.links_x_path = "//h3[@class='bloko-header-section-3']/span/span/a"
 
+    def format_body_text(self, body_content: BeautifulSoup) -> str:
+        """ Makes the vacancy body text more readable """
+        body_text = body_content.get_text(separator="<>")
+        body_text = (body_text
+                     .replace("<> <> <> <>", "\n")
+                     .replace("<> <> <>", "\n")
+                     .replace("<> <>", "\n")
+                     .replace("<>", "")
+                     .replace("!", "! ")
+                     .replace(".•", ".\n•")
+                     .replace(";•", ".\n•")
+                     .replace(".", ". "))
+        return body_text
+
     async def get_content(self, *args, **kwargs):
         self.words_pattern = kwargs['words_pattern']
         self.db_tables = kwargs['db_tables'] if kwargs.get('db_tables') else vacancies_database
@@ -186,7 +200,8 @@ class HHGetInformation:
 
                     body = ''
                     try:
-                        body = soup.find('div', class_='vacancy-section').get_text()
+                        body = soup.find('div', class_='vacancy-section')
+                        body = self.format_body_text(body)
                         body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
                     except Exception as e:
                         print(f"error body: {e}")
@@ -414,3 +429,6 @@ class HHGetInformation:
         await self.get_content_from_link()
 
 
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(HHGetInformation(bot_dict={}).get_content())
