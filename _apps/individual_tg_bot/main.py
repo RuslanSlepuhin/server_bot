@@ -33,15 +33,18 @@ async def digest_task():
 async def on_getting_task():
     await period_get_vacancy_on_getting_task(bot=bot)
 
+# def run():
+logging.basicConfig(level=logging.INFO)
 
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+loop = asyncio.get_event_loop()
+loop.run_until_complete(set_default_commands(bot))
+loop.run_until_complete(bot.delete_webhook(drop_pending_updates=True))
 
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(set_default_commands(bot))
-    loop.run_until_complete(bot.delete_webhook(drop_pending_updates=True))
+dp.filters_factory.bind(Command)
 
-    dp.filters_factory.bind(Command)
+scheduler.start()
+executor.start_polling(dp, skip_updates=True)
 
-    scheduler.start()
-    executor.start_polling(dp, skip_updates=True)
+
+# if __name__ == "__main__":
+#     run()
