@@ -5,11 +5,18 @@ from telethon import TelegramClient
 
 from telegram_chats.scraping_telegramchats2 import WriteToDbMessages
 
-def client_init():
+def client_init_red():
+    print('red')
     client_class = WriteToDbMessages()
-    asyncio.run(client_class.client_init())
+    asyncio.run(client_class.client_init_red())
+
+def client_init_green():
+    print('green')
+    client_class = WriteToDbMessages()
+    asyncio.run(client_class.client_init_green())
 
 def admin_panel_init():
+    print('admin panel')
     config = configparser.ConfigParser()
     config.read("./_apps/amin_panel_tg_view/settings/config.ini")
 
@@ -25,6 +32,7 @@ def admin_panel_init():
 
 
 if __name__ == "__main__":
-    # client_init()
-    admin_panel_init()
+    client_init_red()
+    # client_init_green()
+    # admin_panel_init()
 

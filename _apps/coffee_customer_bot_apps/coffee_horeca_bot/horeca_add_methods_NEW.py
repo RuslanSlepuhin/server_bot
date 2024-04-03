@@ -1,7 +1,6 @@
 import asyncio
 import json
 import random
-
 import requests
 from aiogram import types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, WebAppInfo, KeyboardButton
@@ -16,6 +15,11 @@ class HorecaBotMethods:
         # self.main_class.orders = await self.get_data_by_user_id(user_id=self.main_class.user_id)
         print(message.chat.id)
         self.main_class.orders = await self.get_data_by_user_id(user_id=message.chat.id)
+
+        with open('./_apps/coffee_customer_bot_apps/_mock_data/mock_data.json', 'r') as file:
+            data = json.load(file)
+        self.main_class.orders = data
+
         print(self.main_class.orders)
         if not self.main_class.orders:
             return await self.main_class.bot.send_message(message.chat.id, "You have not the active current orders")
@@ -33,7 +37,7 @@ class HorecaBotMethods:
         order_list = self.main_class.orders if not order_list else order_list
         for item in order_list:
             try:
-                orders_dict[item['order_id']] = item
+                orders_dict[item['order_number']] = item
             except:
                 pass
         return orders_dict
