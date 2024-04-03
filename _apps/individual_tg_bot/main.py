@@ -42,7 +42,7 @@ loop.run_until_complete(bot.delete_webhook(drop_pending_updates=True))
 
 dp.filters_factory.bind(Command)
 
-scheduler.start()
+# scheduler.start()
 executor.start_polling(dp, skip_updates=True)
 
 
