@@ -22,4 +22,4 @@ delete*.py
 /main_start.py
 /db_backup/
 #/_apps/amin_panel_tg_view/settings/
-./_apps/individual_tg_bot/.env
+./_apps/individual_tg_bot/config.ini
