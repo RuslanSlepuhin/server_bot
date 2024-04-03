@@ -1,10 +1,8 @@
 import datetime
 from datetime import timedelta
-
 from _apps.individual_tg_bot.settings import APP_DEBUG, APP_HOST, APP_PORT
 from _apps.individual_tg_bot.text import once_per_day
 from flask import Flask, jsonify, request
-
 from service import db
 
 app = Flask(__name__)
@@ -60,5 +58,5 @@ def get_user_digest():
         return jsonify(vacancies)
 
 
-if __name__ == "__main__":
-    app.run(host=APP_HOST, port=APP_PORT, debug=APP_DEBUG)
+# if __name__ == "__main__":
+app.run(host=APP_HOST, port=APP_PORT, debug=APP_DEBUG)

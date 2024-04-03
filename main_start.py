@@ -95,6 +95,9 @@ def telegram_init_method():
 def start_individ_bot():
     from _apps.individual_tg_bot import main
 
+def start_flask_endpoints_indiv_bot():
+    from _apps.individual_tg_bot import flask_endpoint
+
 if __name__ == "__main__":
     # t_init = Process(target=telegram_init_method, args=())
     # t_init.start()
@@ -115,6 +118,7 @@ if __name__ == "__main__":
     # auth django app
     # p7 = Process(target=auth_start, args=())
     p75 = Process(target=start_individ_bot, args=())
+    p76 = Process(target=start_flask_endpoints_indiv_bot, args=())
 
     # coffee project (horeca and customer bots with flask endpoints)
     p8 = Process(target=start_customer_bot_FCM, args=())
@@ -137,6 +141,7 @@ if __name__ == "__main__":
     p6.start()
     # p7.start()
     p75.start()
+    p76.start()
     # p8.start()
     # p9.start()
     # p10.start()
@@ -153,6 +158,7 @@ if __name__ == "__main__":
     p6.join()
     # p7.join()
     p75.join()
+    p76.join()
     # p8.join()
     # p9.join()
     # p10.join()
