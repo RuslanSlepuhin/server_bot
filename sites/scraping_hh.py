@@ -7,6 +7,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
+
 from db_operations.scraping_db import DataBaseOperations
 from utils.additional_variables.additional_variables import vacancies_database
 from sites.write_each_vacancy_to_db import HelperSite_Parser
@@ -411,8 +412,5 @@ class HHGetInformation:
         self.list_links = [url]
         self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         await self.get_content_from_link()
-
-# loop = asyncio.new_event_loop()
-# loop.run_until_complete(HHGetInformation(bot_dict={}).get_content())
 
 

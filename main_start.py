@@ -98,6 +98,7 @@ if __name__ == "__main__":
     p3 = Process(target=start_bot, args=(True, settings.token_red))
     p4 = Process(target=start_admin_panel, args=())
     p13 = Process(target=simpleatom_start, args=())
+    p10 = Process(target=start_webForm_bot, args=())
 
     # p14 = Process(target=auth_start, args=())
 
@@ -105,7 +106,6 @@ if __name__ == "__main__":
     # p7 = Process(target=start_horeca_bot_FCM, args=())
     # p8 = Process(target=start_endpoints_FCM, args=())
 
-    p10 = Process(target=start_webForm_bot, args=())
 
     # p12 = Process(target=mock_server_FCM, args=())
 
@@ -118,13 +118,13 @@ if __name__ == "__main__":
     p3.start()
     p4.start()
     p13.start()
+    p10.start()
 
     # p6.start()
     # p14.start()
     # p7.start()
     # p8.start()
 
-    p10.start()
 
     # p12.start()
 
@@ -137,12 +137,13 @@ if __name__ == "__main__":
     p3.join()
     p4.join()
     p13.join()
+    p10.join()
+
     # p14.join()
     # p6.join()
     # p7.join()
     # p8.join()
 
-    p10.join()
 
     # p12.join()
 
