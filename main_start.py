@@ -49,14 +49,17 @@ def start_admin_panel():
 
 # ---------- FCM -----------
 def start_customer_bot_FCM():
-    customer_bot.bot_handlers()
+    pass
+    # customer_bot.bot_handlers()
 
 def start_horeca_bot_FCM():
-    horeca_bot.bot_handlers()
+    pass
+    # horeca_bot.bot_handlers()
 
 def start_endpoints_FCM():
-    ep = Endpoints(horeca_bot, customer_bot)
-    ep.main_endpoints(customer_bot, horeca_bot)
+    pass
+    # ep = Endpoints(horeca_bot, customer_bot)
+    # ep.main_endpoints(customer_bot, horeca_bot)
 
 def start_chat():
     chat = ChatBot()
@@ -76,7 +79,8 @@ def simpleatom_start():
     process.communicate()
 
 def auth_start():
-    command = 'python _apps/itcoty_web/manage.py runserver'
+    # pass
+    command = 'python _apps/itcoty_web/manage.py runserver 9000'
     process = subprocess.Popen(command, shell=True)
     process.communicate()
 
@@ -88,66 +92,71 @@ def mock_server_FCM():
 def telegram_init_method():
     asyncio.run(client_init())
 
+def start_individ_bot():
+    from _apps.individual_tg_bot import main
+
 if __name__ == "__main__":
     # t_init = Process(target=telegram_init_method, args=())
     # t_init.start()
     # t_init.join()
 
+    # vacancies bot (red, green) and flask endpoints
     p1 = Process(target=start_endpoints, args=())
     p2 = Process(target=start_bot, args=())
     p3 = Process(target=start_bot, args=(True, settings.token_red))
+
+    # admin vacancies panel
     p4 = Process(target=start_admin_panel, args=())
-    p13 = Process(target=simpleatom_start, args=())
-    p10 = Process(target=start_webForm_bot, args=())
 
-    # p14 = Process(target=auth_start, args=())
+    # simpleatom project
+    p5 = Process(target=simpleatom_start, args=())
+    p6 = Process(target=start_webForm_bot, args=())
 
-    # p6 = Process(target=start_customer_bot_FCM, args=())
-    # p7 = Process(target=start_horeca_bot_FCM, args=())
-    # p8 = Process(target=start_endpoints_FCM, args=())
+    # auth django app
+    # p7 = Process(target=auth_start, args=())
+    p75 = Process(target=start_individ_bot(), args=())
 
+    # coffee project (horeca and customer bots with flask endpoints)
+    p8 = Process(target=start_customer_bot_FCM, args=())
+    p9 = Process(target=start_horeca_bot_FCM, args=())
+    p10 = Process(target=start_endpoints_FCM, args=())
+    # mock server
+    # p11 = Process(target=mock_server_FCM, args=())
 
-    # p12 = Process(target=mock_server_FCM, args=())
-
-    # p9 = Process(target=start_chat, args=())
-    # p11 = Process(target=form_app_start, args=())
-    # p5 = Process(target=talking_bot_run, args=())
+    # Not actual app
+    # p12 = Process(target=talking_bot_run, args=())
+    # p13 = Process(target=start_chat, args=())
+    # p14 = Process(target=form_app_start, args=())
 
     p1.start()
     p2.start()
     p3.start()
     p4.start()
-    p13.start()
-    p10.start()
-
-    # p6.start()
-    # p14.start()
+    p5.start()
+    p6.start()
     # p7.start()
+    p75.start()
     # p8.start()
-
-
-    # p12.start()
-
     # p9.start()
+    # p10.start()
     # p11.start()
-    # p5.start()
+    # p12.start()
+    # p13.start()
+    # p14.start()
 
     p1.join()
     p2.join()
     p3.join()
     p4.join()
-    p13.join()
-    p10.join()
-
-    # p14.join()
-    # p6.join()
+    p5.join()
+    p6.join()
     # p7.join()
+    p75.join()
     # p8.join()
-
-
-    # p12.join()
-
     # p9.join()
+    # p10.join()
     # p11.join()
-    # p5.join()
+    # p12.join()
+    # p13.join()
+    # p14.join()
 
