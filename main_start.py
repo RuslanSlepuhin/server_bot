@@ -114,7 +114,7 @@ if __name__ == "__main__":
 
     # auth django app
     # p7 = Process(target=auth_start, args=())
-    p75 = Process(target=start_individ_bot(), args=())
+    # p75 = Process(target=start_individ_bot(), args=())
 
     # coffee project (horeca and customer bots with flask endpoints)
     p8 = Process(target=start_customer_bot_FCM, args=())
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     p5.start()
     p6.start()
     # p7.start()
-    p75.start()
+    # p75.start()
     # p8.start()
     # p9.start()
     # p10.start()
