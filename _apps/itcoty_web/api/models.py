@@ -225,6 +225,7 @@ class Vacancy(models.Model):
     lead = models.BooleanField(blank=True, null=True)
     director = models.BooleanField(blank=True, null=True)
     internship = models.BooleanField(blank=True, null=True)
+    responded = ArrayField(models.IntegerField(), blank=True, null=True)
 
     class Meta:
         db_table = "vacancies"
