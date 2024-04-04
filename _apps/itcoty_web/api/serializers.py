@@ -129,6 +129,6 @@ class VacanciesSerializer(serializers.ModelSerializer):
             "salary",
             "created_at",
             "level",
-            "salary_from_usd_month",
-            "salary_to_usd_month",
+            "salary_from",
+            "salary_to",
         )
