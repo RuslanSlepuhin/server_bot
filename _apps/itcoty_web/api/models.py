@@ -60,10 +60,12 @@ class Source(models.Model):
         SITE = "site"
         TGBOT = "tgbot"
 
-    name = models.CharField(max_length=150,blank=True, null=True)
+    name = models.CharField(max_length=150, blank=True, null=True)
     tgchannel_id = models.IntegerField(blank=True, null=True)
     url = models.EmailField(max_length=150, blank=True, null=True)
-    sourcetype = models.CharField(blank=True, null=True, choices=Types.choices, max_length=15)
+    sourcetype = models.CharField(
+        blank=True, null=True, choices=Types.choices, max_length=15
+    )
     istarget = models.BooleanField(blank=True, null=True)
 
     class Meta:
@@ -94,7 +96,9 @@ class Company(models.Model):
     addresses = models.CharField(max_length=2048, blank=True, null=True)
     founded = models.DateField(blank=True, null=True)
     showdate = models.BooleanField(blank=True, null=True)
-    type = models.CharField(max_length=50, choices=CompanyTypes.choices, blank=True, null=True)
+    type = models.CharField(
+        max_length=50, choices=CompanyTypes.choices, blank=True, null=True
+    )
     voted_users = ArrayField(models.IntegerField(), blank=True, null=True)
     reviewed_users = ArrayField(models.IntegerField(), blank=True, null=True)
     mark = models.IntegerField(blank=True, null=True)
@@ -160,24 +164,38 @@ class Vacancy(models.Model):
         DAY = "day"
         WEEK = "week"
 
-    source_id = models.ForeignKey(Source, blank=True, null=True, on_delete=models.SET_NULL)
+    source_id = models.ForeignKey(
+        Source, blank=True, null=True, on_delete=models.SET_NULL
+    )
     title = models.CharField(max_length=512, blank=True, null=True)
     body = models.CharField(max_length=10240, blank=True, null=True)
-    profession = models.CharField(choices=Directions.choices, blank=True, null=True, max_length=20)
+    profession = models.CharField(
+        choices=Directions.choices, blank=True, null=True, max_length=20
+    )
     vacancy = models.CharField(max_length=512, blank=True, null=True)
     vacancy_url = models.URLField(max_length=128, blank=True, null=True)
     company = models.CharField(max_length=128, blank=True, null=True)
-    company_id = models.ForeignKey(Company, on_delete=models.SET_NULL, blank=True, null=True)
+    company_id = models.ForeignKey(
+        Company, on_delete=models.SET_NULL, blank=True, null=True
+    )
     english = models.CharField(max_length=16, blank=True, null=True)
-    job_type = models.CharField(choices=JobType.choices, blank=True, null=True, max_length=20)
+    job_type = models.CharField(
+        choices=JobType.choices, blank=True, null=True, max_length=20
+    )
     country = models.CharField(max_length=32, blank=True, null=True)
     city = models.CharField(max_length=32, blank=True, null=True)
     salary = models.CharField(max_length=64, blank=True, null=True)
     salary_from = models.IntegerField(blank=True, null=True)
     salary_to = models.IntegerField(blank=True, null=True)
-    salary_currency = models.CharField(choices=Currencies.choices, blank=True, null=True, max_length=4)
-    currency_id = models.ForeignKey(Currency, on_delete=models.SET_NULL, blank=True, null=True)
-    salary_period = models.CharField(choices=SalaryPeriod.choices, blank=True, null=True, max_length=10)
+    salary_currency = models.CharField(
+        choices=Currencies.choices, blank=True, null=True, max_length=4
+    )
+    currency_id = models.ForeignKey(
+        Currency, on_delete=models.SET_NULL, blank=True, null=True
+    )
+    salary_period = models.CharField(
+        choices=SalaryPeriod.choices, blank=True, null=True, max_length=10
+    )
     experience = models.CharField(max_length=32, blank=True, null=True)
     contacts = models.CharField(max_length=64, blank=True, null=True)
     time_of_public = models.DateTimeField(blank=True, null=True)
