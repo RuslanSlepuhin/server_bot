@@ -1,11 +1,8 @@
 from allauth.account import app_settings
 from allauth.account.adapter import get_adapter
 from allauth.account.forms import default_token_generator
-from allauth.account.utils import (
-    filter_users_by_email,
-    user_pk_to_url_str,
-    user_username,
-)
+from allauth.account.utils import (filter_users_by_email, user_pk_to_url_str,
+                                   user_username)
 from allauth.utils import build_absolute_uri
 from dj_rest_auth.forms import AllAuthPasswordResetForm
 from django.contrib.sites.shortcuts import get_current_site
