@@ -39,6 +39,5 @@ class VacanciesAdmin(admin.ModelAdmin):
         "salary",
         "time_of_public",
         "created_at",
-        "agregator_link",
     )
     list_display_links = ("id", "title")
