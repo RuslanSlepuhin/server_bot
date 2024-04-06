@@ -1,4 +1,4 @@
-from _apps.simpleatom._debug import debug
+from _debug import debug
 
 actual_ngrok_tunnel = "https://1000-178-122-196-59.ngrok-free.app"
 common_field_name = 'data'
