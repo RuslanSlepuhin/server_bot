@@ -104,12 +104,12 @@ if __name__ == "__main__":
     # t_init.join()
 
     # vacancies bot (red, green) and flask endpoints
-    # p1 = Process(target=start_endpoints, args=())
-    # p2 = Process(target=start_bot, args=())
-    # p3 = Process(target=start_bot, args=(True, settings.token_red))
+    p1 = Process(target=start_endpoints, args=())
+    p2 = Process(target=start_bot, args=())
+    p3 = Process(target=start_bot, args=(True, settings.token_red))
 
     # admin vacancies panel
-    # p4 = Process(target=start_admin_panel, args=())
+    p4 = Process(target=start_admin_panel, args=())
 
     # simpleatom project
     p5 = Process(target=simpleatom_start, args=())
@@ -133,10 +133,10 @@ if __name__ == "__main__":
     # p14 = Process(target=form_app_start, args=())
 
 
-    # p1.start()
-    # p2.start()
-    # p3.start()
-    # p4.start()
+    p1.start()
+    p2.start()
+    p3.start()
+    p4.start()
     p5.start()
     p6.start()
     # p7.start()
@@ -150,10 +150,10 @@ if __name__ == "__main__":
     # p13.start()
     # p14.start()
 
-    # p1.join()
-    # p2.join()
-    # p3.join()
-    # p4.join()
+    p1.join()
+    p2.join()
+    p3.join()
+    p4.join()
     p5.join()
     p6.join()
     # p7.join()
