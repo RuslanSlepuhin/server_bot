@@ -1,8 +1,13 @@
 from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 
-from .views import (AllVacanciesView, GoogleLoginView, ThreeVacanciesView,
-                    UserRedirectView, VacanciesViewSet)
+from .views import (
+    AllVacanciesView,
+    GoogleLoginView,
+    ThreeVacanciesView,
+    UserRedirectView,
+    VacanciesViewSet,
+)
 
 router = SimpleRouter()
 router.register("vacancies", VacanciesViewSet, basename="vacancy")
