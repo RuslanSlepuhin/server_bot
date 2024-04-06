@@ -105,10 +105,14 @@ WSGI_APPLICATION = "itcoty_web.wsgi.application"
 #     },
 # }
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': "itcoty.sqlite3",
-    }
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": config["DB_local_clone"]["database"],
+        "USER": config["DB_local_clone"]["user"],
+        "PASSWORD": config["DB_local_clone"]["password"],
+        "HOST": config["DB_local_clone"]["host"],
+        "PORT": config["DB_local_clone"]["port"],
+    },
 }
 
 
@@ -174,8 +178,8 @@ GOOGLE_REDIRECT_URL = "http://127.0.0.1:8000/"
 
 # EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = os.environ.get('EMAIL_HOST')
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
-EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_HOST = os.environ.get("EMAIL_HOST")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD")
+EMAIL_PORT = os.environ.get("EMAIL_PORT")
 EMAIL_USE_TLS = True
