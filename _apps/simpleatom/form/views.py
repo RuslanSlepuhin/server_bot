@@ -19,6 +19,7 @@ class SendBotView(generics.CreateAPIView):
     queryset = FormAnswerModel.objects.all()
 
     def post(self, request, *args, **kwargs):
+        print(request.data)
         data = request.data
         url = variables.bot_domain + variables.external_api
         response = requests.post(url, json.dumps(data))
