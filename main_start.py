@@ -113,7 +113,7 @@ if __name__ == "__main__":
 
     # simpleatom project
     p5 = Process(target=simpleatom_start, args=())
-    # p6 = Process(target=start_webForm_bot, args=())
+    p6 = Process(target=start_webForm_bot, args=())
 
     # auth django app
     # p7 = Process(target=auth_start, args=())
@@ -138,7 +138,7 @@ if __name__ == "__main__":
     # p3.start()
     # p4.start()
     p5.start()
-    # p6.start()
+    p6.start()
     # p7.start()
     # p75.start()
     # p76.start()
@@ -155,7 +155,7 @@ if __name__ == "__main__":
     # p3.join()
     # p4.join()
     p5.join()
-    # p6.join()
+    p6.join()
     # p7.join()
     # p75.join()
     # p76.join()
