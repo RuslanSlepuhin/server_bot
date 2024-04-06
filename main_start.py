@@ -104,26 +104,26 @@ if __name__ == "__main__":
     # t_init.join()
 
     # vacancies bot (red, green) and flask endpoints
-    p1 = Process(target=start_endpoints, args=())
-    p2 = Process(target=start_bot, args=())
-    p3 = Process(target=start_bot, args=(True, settings.token_red))
+    # p1 = Process(target=start_endpoints, args=())
+    # p2 = Process(target=start_bot, args=())
+    # p3 = Process(target=start_bot, args=(True, settings.token_red))
 
     # admin vacancies panel
-    p4 = Process(target=start_admin_panel, args=())
+    # p4 = Process(target=start_admin_panel, args=())
 
     # simpleatom project
     p5 = Process(target=simpleatom_start, args=())
-    p6 = Process(target=start_webForm_bot, args=())
+    # p6 = Process(target=start_webForm_bot, args=())
 
     # auth django app
     # p7 = Process(target=auth_start, args=())
-    p75 = Process(target=start_individ_bot, args=())
-    p76 = Process(target=start_flask_endpoints_indiv_bot, args=())
+    # p75 = Process(target=start_individ_bot, args=())
+    # p76 = Process(target=start_flask_endpoints_indiv_bot, args=())
 
     # coffee project (horeca and customer bots with flask endpoints)
-    p8 = Process(target=start_customer_bot_FCM, args=())
-    p9 = Process(target=start_horeca_bot_FCM, args=())
-    p10 = Process(target=start_endpoints_FCM, args=())
+    # p8 = Process(target=start_customer_bot_FCM, args=())
+    # p9 = Process(target=start_horeca_bot_FCM, args=())
+    # p10 = Process(target=start_endpoints_FCM, args=())
     # mock server
     # p11 = Process(target=mock_server_FCM, args=())
 
@@ -133,15 +133,15 @@ if __name__ == "__main__":
     # p14 = Process(target=form_app_start, args=())
 
 
-    p1.start()
-    p2.start()
-    p3.start()
-    p4.start()
+    # p1.start()
+    # p2.start()
+    # p3.start()
+    # p4.start()
     p5.start()
-    p6.start()
+    # p6.start()
     # p7.start()
-    p75.start()
-    p76.start()
+    # p75.start()
+    # p76.start()
     # p8.start()
     # p9.start()
     # p10.start()
@@ -150,15 +150,15 @@ if __name__ == "__main__":
     # p13.start()
     # p14.start()
 
-    p1.join()
-    p2.join()
-    p3.join()
-    p4.join()
+    # p1.join()
+    # p2.join()
+    # p3.join()
+    # p4.join()
     p5.join()
-    p6.join()
+    # p6.join()
     # p7.join()
-    p75.join()
-    p76.join()
+    # p75.join()
+    # p76.join()
     # p8.join()
     # p9.join()
     # p10.join()

@@ -1,11 +1,18 @@
 import asyncio
+import configparser
 import random
+import re
+from _debug import debug
 from _apps.web_form_bot import variables
 from aiogram import Bot, Dispatcher, types
 from aiohttp import web
 from _apps.web_form_bot.bot_helper import HelperBot
 
-TOKEN_API = "6784209473:AAESK6fiESV_ijnf22gwFKBGwiNG9-dalkc"
+config = configparser.ConfigParser()
+config.read(variables.config_path)
+config_chapter = "WEB_FORM_BOT" if not debug else "WEB_FORM_BOT_TEST"
+TOKEN_API = config[config_chapter]['token']
+print(config[config_chapter]['bot_name'])
 bot = Bot(token=TOKEN_API)
 Bot.set_current(bot)
 dp = Dispatcher(bot)
@@ -84,10 +91,12 @@ async def external_post(request):
     if data.get('form_data'):
         data = data['form_data']
     print(data)
-    # if "name" not in data.keys():
-    #     data['name'] = "-"
     text = await helper.text_object_from_form(data)
-    for id in variables.admins_user_id:
+
+    # separate the recipients set by form name. If name is test message will send only developers group
+    recipients = variables.test_admins_user_id if await helper.matching(data['form_data']['name'], variables.test_name_pattern) else variables.admins_user_id
+
+    for id in recipients:
         try:
             await bot.send_message(id, text)
             await asyncio.sleep(random.randrange(1, 4))

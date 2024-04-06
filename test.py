@@ -1,16 +1,17 @@
 import asyncio
 
-from db_operations.scraping_db import DataBaseOperations
+from sites.scraping_hh import HHGetInformation
 
-db = DataBaseOperations()
-param = "WHERE profession=\"backend\""
-
-async def get():
-    response = await db.get_all_from_db_async(
-        table_name='admin_last_session',
-        param=param,
-        field='id'
-    )
-    print(response)
-
-asyncio.run(get())
+hh = HHGetInformation(main_class=None)
+asyncio.run(hh.get_content(words_pattern=['junior']))
+# param = "WHERE profession=\"backend\""
+#
+# async def get():
+#     response = await db.get_all_from_db_async(
+#         table_name='admin_last_session',
+#         param=param,
+#         field='id'
+#     )
+#     print(response)
+#
+# asyncio.run(get())

@@ -23,3 +23,11 @@ delete*.py
 /db_backup/
 #/_apps/amin_panel_tg_view/settings/
 ./_apps/individual_tg_bot/config.ini
+./_apps/web_form_bot/settings/config.ini
+/_apps/web_form_bot/settings/config.ini
+/settings/config_keys.ini
+/settings/database_settings.py
+/_apps/individual_tg_bot/config.ini
+/settings/firefox_driver/
+/_apps/itcoty_web/config.ini
+/Try.py
