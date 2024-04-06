@@ -1,13 +1,18 @@
 import asyncio
+import configparser
 import random
 import re
-
+from _debug import debug
 from _apps.web_form_bot import variables
 from aiogram import Bot, Dispatcher, types
 from aiohttp import web
 from _apps.web_form_bot.bot_helper import HelperBot
 
-TOKEN_API = "6784209473:AAESK6fiESV_ijnf22gwFKBGwiNG9-dalkc"
+config = configparser.ConfigParser()
+config.read(variables.config_path)
+config_chapter = "WEB_FORM_BOT" if not debug else "WEB_FORM_BOT_TEST"
+TOKEN_API = config[config_chapter]['token']
+print(config[config_chapter]['bot_name'])
 bot = Bot(token=TOKEN_API)
 Bot.set_current(bot)
 dp = Dispatcher(bot)
