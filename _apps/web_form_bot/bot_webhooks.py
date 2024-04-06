@@ -95,8 +95,8 @@ async def external_post(request):
     text = await helper.text_object_from_form(data)
 
     # separate the recipients set by form name. If name is test message will send only developers group
-    name = data[common_field_name]['name'] if data[common_field_name].get('name') else data[common_field_name]['Name']
-    recipients = variables.test_admins_user_id if await helper.matching(data[common_field_name][name], variables.test_name_pattern) else variables.admins_user_id
+    # name = data[common_field_name]['name'] if data[common_field_name].get('name') else data[common_field_name]['Name']
+    recipients = variables.test_admins_user_id if await helper.matching(data["Name"], variables.test_name_pattern) else variables.admins_user_id
 
     for id in recipients:
         try:
