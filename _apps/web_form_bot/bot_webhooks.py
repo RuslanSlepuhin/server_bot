@@ -1,7 +1,7 @@
 import asyncio
 import configparser
 import random
-import re
+from _apps.simpleatom.form.variables.variables import common_field_name
 from _debug import debug
 from _apps.web_form_bot import variables
 from aiogram import Bot, Dispatcher, types
@@ -88,13 +88,15 @@ async def handle_webhook(request):
 
 async def external_post(request):
     data = await request.json()
+    print("DDDataa!!", data)
     if data.get('form_data'):
         data = data['form_data']
     print(data)
     text = await helper.text_object_from_form(data)
 
     # separate the recipients set by form name. If name is test message will send only developers group
-    recipients = variables.test_admins_user_id if await helper.matching(data['form_data']['name'], variables.test_name_pattern) else variables.admins_user_id
+    name = data[common_field_name]['name'] if data[common_field_name].get('name') else data[common_field_name]['Name']
+    recipients = variables.test_admins_user_id if await helper.matching(data[common_field_name][name], variables.test_name_pattern) else variables.admins_user_id
 
     for id in recipients:
         try:
