@@ -4,7 +4,7 @@ import utils.additional_variables.additional_variables
 from db_operations.scraping_db import DataBaseOperations
 from logs.logs import Logs
 from sites.scraping_careerjet import СareerjetGetInformation
-# from sites._scraping_careerspace import CareerSpaceGetInformation
+from sites._scraping_careerspace import CareerSpaceGetInformation
 from sites.scraping_designer import DesignerGetInformation
 from sites.scraping_dev import DevGetInformation
 from sites.scraping_epam_anywhere import EpamGetInformation
@@ -19,6 +19,7 @@ from sites.scraping_remotehub import RemotehubGetInformation
 from sites._scraping_remotejob import RemoteJobGetInformation
 from sites._scraping_superjob import SuperJobGetInformation
 from sites.scraping_svyazi import SvyaziGetInformation
+from sites.scraping_gorodrabot import GorodRabotGetInformation
 from sites.scrapping_finder import FinderGetInformation
 from sites.scraping_ingamejob import IngameJobGetInformation
 from sites._scraping_remotejob_upgrade import RemoteJobGetInformation
@@ -37,7 +38,7 @@ parser_sites = {'nn.hh.ru': HHGetInformation, 'spb.hh.ru': HHGetInformation, 'hh
                 'superjob.ru': SuperJobGetInformation, 'career.habr.com': HabrGetInformation,
                 'u.habr.com': HabrGetInformation,'finder.vc': FinderGetInformation, 'geekjob.ru' : GeekGetInformation,
                 'gkjb.ru': GeekGetInformation, 'designer.ru': DesignerGetInformation,
-                'www.vseti.app': SvyaziGetInformation, 'ru.ingamejob.com': IngameJobGetInformation}
+                'www.vseti.app': SvyaziGetInformation, 'ru.ingamejob.com': IngameJobGetInformation, 'rabota.by': GorodRabotGetInformation}
 
 
 class SitesParser:
@@ -63,19 +64,23 @@ class SitesParser:
         await EpamGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
         await DevGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
         await СareerjetGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
-        # await DesignerGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        # await HabrGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await FinderGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
-        # await IngameJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        # await PracaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        # await RemocateGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
-        # await RemotehubGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        # await RabotaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        # await SvyaziGetInformation(bot_dict=bot_dict, report=self.report).get_content()
 
-        # await SuperJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        # await RemoteJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        # await CareerSpaceGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
+        await GorodRabotGetInformation(bot_dict=bot_dict, db=self.db, helper=self.helper).get_content()
+        await CareerSpaceGetInformation(bot_dict=bot_dict, report=self.report, db=self.db,
+                                        helper=self.helper).get_content()
+        await DesignerGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await FindJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await IngameJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await RabotaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await PracaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await HabrGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await DesignerGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await RemotehubGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await RemoteJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await SuperJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await SvyaziGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+
         await OttaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
 
         print(' -----------------------FINAL -------------------------------')
