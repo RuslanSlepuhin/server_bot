@@ -31,3 +31,4 @@ delete*.py
 /settings/firefox_driver/
 /_apps/itcoty_web/config.ini
 /Try.py
+/_debug.py
