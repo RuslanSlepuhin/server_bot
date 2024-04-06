@@ -19,6 +19,7 @@ from sites.scraping_remotehub import RemotehubGetInformation
 from sites._scraping_remotejob import RemoteJobGetInformation
 from sites._scraping_superjob import SuperJobGetInformation
 from sites.scraping_svyazi import SvyaziGetInformation
+from sites.scraping_wellfound import WellFoundGetInformation
 from sites.scrapping_finder import FinderGetInformation
 from sites.scraping_ingamejob import IngameJobGetInformation
 from sites._scraping_remotejob_upgrade import RemoteJobGetInformation
@@ -77,6 +78,7 @@ class SitesParser:
         # await RemoteJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         # await CareerSpaceGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
         await OttaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await WellFoundGetInformation(bot_dict=bot_dict, report=self.report).get_content()
 
         print(' -----------------------FINAL -------------------------------')
 
