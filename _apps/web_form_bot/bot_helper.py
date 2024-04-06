@@ -1,4 +1,6 @@
 import json
+import re
+
 import pandas as pd
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from _apps.web_form_bot import variables
@@ -73,6 +75,10 @@ class HelperBot:
                 text += f"{key}{data_key_str}\n\n"
             # text += f"{key}\n- {data[key]}\n\n" if type(data[key]) not in [tuple, list] else f"{key} {backslash}n- '.join(data[key])\n\n"
         return text
+
+    async def matching(self, text, pattern):
+        match = re.findall(pattern, text)
+        return True if match else False
 
 
 
