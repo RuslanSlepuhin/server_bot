@@ -1,3 +1,4 @@
+import asyncio
 import re
 from datetime import datetime, timedelta
 import pandas as pd
@@ -369,3 +370,8 @@ class IngameJobGetInformation(HHGetInformation):
         self.current_session = await self.helper_parser_site.get_name_session()
         self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         await self.get_content_from_link()
+
+
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(IngameJobGetInformation.get_content())

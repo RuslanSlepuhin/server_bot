@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime, timedelta
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -332,3 +333,7 @@ class FindJobGetInformation:
 # loop = asyncio.new_event_loop()
 # loop.run_until_complete(FindJobGetInformation().get_content())
 # loop.run_until_complete(FindJobGetInformation().get_content())
+
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(FindJobGetInformation.get_content())

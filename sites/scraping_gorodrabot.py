@@ -1,4 +1,5 @@
 import re
+import asyncio
 from datetime import datetime
 import pandas as pd
 from selenium import webdriver
@@ -413,3 +414,9 @@ class GorodRabotGetInformation:
         except:
             pass
         self.browser.quit()
+
+
+
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(GorodRabotGetInformation.get_content())

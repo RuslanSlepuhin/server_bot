@@ -1,3 +1,4 @@
+import asyncio
 import re
 from datetime import datetime
 import pandas as pd
@@ -463,3 +464,7 @@ class HabrGetInformation:
         return structure_list
 
 
+
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(HabrGetInformation.get_content())

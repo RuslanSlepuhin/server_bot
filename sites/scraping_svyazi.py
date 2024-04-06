@@ -366,3 +366,8 @@ class SvyaziGetInformation:
 
         # print(f"\n{self.count_message_in_one_channel} from_channel remote-job.ru search {word}")
         self.count_message_in_one_channel += 1
+
+
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(SvyaziGetInformation().get_content())

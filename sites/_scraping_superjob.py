@@ -1,3 +1,4 @@
+import asyncio
 import re
 from datetime import datetime, timedelta
 import pandas as pd
@@ -447,3 +448,7 @@ class SuperJobGetInformation:
 
         self.db.write_to_db_companies(companies)
 
+
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(SuperJobGetInformation.get_content())

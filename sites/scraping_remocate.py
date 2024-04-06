@@ -501,3 +501,8 @@ class RemocateGetInformation:
                 )
 
         self.count_message_in_one_channel += 1
+
+
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(RemocateGetInformation().get_content())

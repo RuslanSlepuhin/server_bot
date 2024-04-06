@@ -1,3 +1,4 @@
+import asyncio
 import re
 from datetime import datetime
 import pandas as pd
@@ -542,3 +543,9 @@ class RabotaGetInformation:
 
         # print(f"\n{self.count_message_in_one_channel} from_channel remote-job.ru search {self.word}")
         self.count_message_in_one_channel += 1
+
+
+
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(RabotaGetInformation().get_content())

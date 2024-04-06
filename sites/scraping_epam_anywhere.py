@@ -123,3 +123,8 @@ class EpamGetInformation(HHGetInformation):
                       text)
         text = text.replace(f'\n', '')
         return text
+
+
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(EpamGetInformation.get_content())

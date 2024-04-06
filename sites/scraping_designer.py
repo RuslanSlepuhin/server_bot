@@ -1,5 +1,6 @@
 import re
 import time
+import asyncio
 from datetime import datetime, timedelta
 import pandas as pd
 from selenium import webdriver
@@ -435,3 +436,8 @@ class DesignerGetInformation:
                 )
 
         self.count_message_in_one_channel += 1
+
+
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(DesignerGetInformation.get_content())

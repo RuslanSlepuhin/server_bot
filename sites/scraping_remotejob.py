@@ -1,3 +1,4 @@
+import asyncio
 import re
 from datetime import datetime
 import pandas as pd
@@ -365,3 +366,7 @@ class RemoteJobGetInformation:
 
         # print('finish_output_logs')
 
+
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(RemoteJobGetInformation().get_content())

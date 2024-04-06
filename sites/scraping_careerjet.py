@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 from sites.scraping_hh import HHGetInformation
+import asyncio
 
 class СareerjetGetInformation(HHGetInformation):
 
@@ -128,3 +129,8 @@ class СareerjetGetInformation(HHGetInformation):
             print('date: ', date)
             pass
         return time_of_public
+
+
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(СareerjetGetInformation().get_content())

@@ -314,3 +314,9 @@ class OttaGetInformation:
                 self.current_message = await send_message(
                     bot=self.bot, chat_id=self.chat_id, text=new_text
                 )
+
+
+
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(OttaGetInformation.get_content())

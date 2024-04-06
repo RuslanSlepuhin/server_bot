@@ -1,3 +1,4 @@
+import asyncio
 from selenium.webdriver.common.by import By
 import pandas as pd
 from sites._scraping_careerspace import CareerSpaceGetInformation
@@ -85,4 +86,7 @@ class Courses(CareerSpaceGetInformation):
 
 
 
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(Courses.get_content())
 

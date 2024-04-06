@@ -1,3 +1,4 @@
+import asyncio
 import re
 from datetime import datetime, timedelta
 from selenium.webdriver.common.by import By
@@ -83,3 +84,7 @@ class FinderGetInformation(HHGetInformation):
         return date
 
 
+
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(FinderGetInformation().get_content())

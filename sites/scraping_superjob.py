@@ -1,4 +1,5 @@
 import re
+import asyncio
 from datetime import datetime, timedelta
 import pandas as pd
 from selenium import webdriver
@@ -444,3 +445,8 @@ class SuperJobGetInformation:
         companies = set(companies)
 
         self.db.write_to_db_companies(companies)
+
+
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(SuperJobGetInformation().get_content())
