@@ -30,3 +30,4 @@ delete*.py
 /_apps/individual_tg_bot/config.ini
 /settings/firefox_driver/
 /_apps/itcoty_web/config.ini
+/Try.py
