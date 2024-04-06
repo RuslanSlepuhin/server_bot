@@ -1,5 +1,6 @@
 from _debug import debug
-admins_user_id = [466267908, 5884559465, 758905227, 156815785, 498109732, 840293048]
+# admins_user_id = [466267908, 5884559465, 758905227, 156815785, 498109732, 840293048]
+admins_user_id = [5884559465, 466267908, 758905227] # Руслан, Макс, Александр
 test_admins_user_id = [5884559465, 466267908, 758905227] # Руслан, Макс, Александр
 test_name_pattern = "[Tt][Ee][Ss][tT]"
 config_path = "./_apps/web_form_bot/settings/config.ini"
