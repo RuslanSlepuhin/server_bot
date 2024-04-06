@@ -19,6 +19,7 @@ class SendBotView(generics.CreateAPIView):
     queryset = FormAnswerModel.objects.all()
 
     def post(self, request, *args, **kwargs):
+        print(request.data)
         data = request.data
         url = variables.bot_domain + variables.external_api
         response = requests.post(url, json.dumps(data))
@@ -32,16 +33,12 @@ class FormDataView(generics.CreateAPIView, generics.UpdateAPIView, generics.List
     queryset = FormAnswerModel.objects.all()
 
     def post(self, request, *args, **kwargs):
-        print("POST")
         updated_data = self.update_data(request_data=request.data)
         return self.create(updated_data, *args, **kwargs)
 
     def create(self, updated_data, *args, **kwargs):
-        print("CREATE")
         serializer = self.get_serializer(data=updated_data)
-        print("CREATE2")
         serializer.is_valid(raise_exception=True)
-        print("CREATE3")
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
