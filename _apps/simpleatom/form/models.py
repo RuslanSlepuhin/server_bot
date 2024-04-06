@@ -1,9 +1,11 @@
 from django.db import models
+from django.utils import timezone
 
 class FormAnswerModel(models.Model):
-    data = models.JSONField(blank=True, null=True)
+    data = models.JSONField()
     email = models.CharField(max_length=100, null=True, blank=True)
     label = models.JSONField(blank=True, null=True)
+    date_time = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return str(self.email)
