@@ -62,7 +62,7 @@ class BackServer:
 
 
         # verification code
-        @app.route(variables.verification_endpoint, methods=["POST"])
+        @app.route(variables.send_enterkey_endpoint, methods=["POST"])
         def check_verification_code():
             code = '5212'
             if request.json['enter_key'] and request.json['enter_key'] == code:
