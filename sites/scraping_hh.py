@@ -37,7 +37,7 @@ def format_body_text(body_content:BeautifulSoup) -> str:
                  .replace("\u202f", " ")
                  .replace("\u20bd", "р")
                  )
-    body_text = re.sub("[\n]{3,}", "", body_text)
+    body_text = re.sub("[\n]{3,}", "\n\n", body_text)
     return body_text
 
 class HHGetInformation:
