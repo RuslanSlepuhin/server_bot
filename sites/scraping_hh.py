@@ -161,11 +161,10 @@ class HHGetInformation:
             all_links = []
             for link_x_path in self.links_x_path:
                 try:
-                    all_links = WebDriverWait(self.browser, 5).until(
+                    all_links = WebDriverWait(self.browser, 10).until(
                         ec.presence_of_all_elements_located((By.XPATH, link_x_path)))
                 except Exception as ex:
-                    pass
-                # all_links = self.browser.find_elements(By.XPATH, link_x_path)
+                    print(ex)
                 if all_links:
                     print("XPATH: ", link_x_path)
                     break

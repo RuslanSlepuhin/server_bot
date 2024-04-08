@@ -17,7 +17,7 @@ class EpamGetInformation(HHGetInformation):
         await super().get_content(*args, **kwargs)
 
     async def get_link_message(self, raw_content):
-        self.links_x_path = "//div[@class='AccordionSection_title__kMJBz JobCard_accordionTitle__D1KeP']/a"
+        self.links_x_path = ["//div[@class='AccordionSection_title__kMJBz JobCard_accordionTitle__D1KeP']/a"]
         return await super().get_link_message(raw_content)
 
     async def get_vacancy_data(self, vacancy_url, return_raw_dictionary):

@@ -15,7 +15,7 @@ class FinderGetInformation(HHGetInformation):
         await super().get_content(*args, **kwargs)
 
     async def get_link_message(self, raw_content):
-        self.links_x_path = "//div[@class='vacancy-card__header']/a[1]"
+        self.links_x_path = ["//div[@class='vacancy-card__header']/a[1]"]
         return await super().get_link_message(raw_content)
 
     async def get_vacancy_data(self, vacancy_url, return_raw_dictionary):
