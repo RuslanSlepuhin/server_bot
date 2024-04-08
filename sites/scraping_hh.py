@@ -3,8 +3,11 @@ import re
 from datetime import datetime
 import pandas as pd
 from selenium import webdriver
+from selenium.common import TimeoutException
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 
@@ -133,7 +136,25 @@ class HHGetInformation:
                                         disable_web_page_preview=True)
 
     async def get_link_message(self, raw_content):
-        links = self.browser.find_elements(By.XPATH, self.links_x_path)
+
+        def get_links() -> list:
+            """
+            Retrieves the list of all the links in found vacancies webpage.
+            Waits until all the items in the list have been found.
+            """
+            all_links = WebDriverWait(self.browser, 60).until(
+                ec.presence_of_all_elements_located((By.XPATH, self.links_x_path)))
+            return all_links
+
+        links = []
+        for _ in range(2):
+            try:
+                links = get_links()
+            except TimeoutException:
+                continue
+            else:
+                break
+
         for link in links:
             self.list_links.append(link.get_attribute('href'))
         if self.list_links:
