@@ -8,6 +8,7 @@ customer_add_username_to_database_endpoint = "https://test.ru"
 # impossible_to_cancel_order_endpoints = "/impossible_to_cancel_order"
 # user_verification_endpoint = "/verification"
 is_user_active_endpoint = "/is_user_active"
+is_horeca_active_endpoint = "/is_horeca_active"
 provide_message_to_user_endpoint = "/provide_message_to_user"
 provide_message_to_horeca_endpoint = "/provide_message_to_horeca"
 
@@ -29,7 +30,7 @@ server_status_from_customer = "/client/status_from_user/" # take the POST from c
 server_status_from_horeca = "/client/status_from_horeca/" # take the POST from horeca to send to customer
 # GET# -> take json from customer with verification code and user_id
 # POST -> {"user_id": user_id:int , "verification_code": verification_code:str}
-verification_endpoint = "/client/enter_key_from_user/"
+send_enterkey_endpoint = "/client/enter_key_from_user/"
 user_info = "/client/user_info" # GET
 request_exists_user_id = "/user-id-exists/"
 

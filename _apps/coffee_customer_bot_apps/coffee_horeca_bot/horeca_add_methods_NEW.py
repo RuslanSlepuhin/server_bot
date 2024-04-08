@@ -5,6 +5,7 @@ import requests
 from aiogram import types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, WebAppInfo, KeyboardButton
 from _apps.coffee_customer_bot_apps.variables import variables
+from _debug import debug
 
 class HorecaBotMethods:
 
@@ -13,14 +14,14 @@ class HorecaBotMethods:
 
     async def start(self, message):
         # self.main_class.orders = await self.get_data_by_user_id(user_id=self.main_class.user_id)
+        # utm_bot = message.text.split(' ')[1] if message.text else None
         print(message.chat.id)
         self.main_class.orders = await self.get_data_by_user_id(user_id=message.chat.id)
 
-        with open('./_apps/coffee_customer_bot_apps/_mock_data/mock_data.json', 'r') as file:
-            data = json.load(file)
-        self.main_class.orders = data
+        # with open('./_apps/coffee_customer_bot_apps/_mock_data/mock_data.json', 'r') as file:
+        #     data = json.load(file)
+        # self.main_class.orders = data
 
-        print(self.main_class.orders)
         if not self.main_class.orders:
             return await self.main_class.bot.send_message(message.chat.id, "You have not the active current orders")
         self.main_class.orders_dict = await self.data_by_user_to_dict_by_order_id()
@@ -37,8 +38,9 @@ class HorecaBotMethods:
         order_list = self.main_class.orders if not order_list else order_list
         for item in order_list:
             try:
-                orders_dict[item['order_number']] = item
-            except:
+                orders_dict[item['order_id']] = item
+            except Exception as ex:
+                print(ex)
                 pass
         return orders_dict
 
@@ -51,6 +53,8 @@ class HorecaBotMethods:
         message = kwargs['message'] if 'message' in kwargs else self.main_class.message_dict
         orders = kwargs['orders'] if 'orders' in kwargs else self.main_class.orders
         order_counter = 0
+        if debug:
+            orders = orders[:5]
         for order in orders:
             if order['status'] in variables.BARISTA_STATUS_CHOICES:
                 order_counter +=1
@@ -61,7 +65,7 @@ class HorecaBotMethods:
                 await self.custom_send_edit_message(message=message, text=await self.compose_short_text_from_order(order), buttons=buttons, order_id=order['order_id'])
                 await asyncio.sleep(random.randrange(1, 3))
             else:
-                print("status is not for sending", order['status'])
+                print("status is not for sending", order['order_indicator'])
         if not order_counter:
             await self.main_class.bot.send_message(message.chat.id, "You have no paid orders")
 
@@ -101,11 +105,24 @@ class HorecaBotMethods:
         text += f"Описание: "
         if type(order['order_description']) is list:
             for item in order['order_description']:
-                text += f"{item}\n"
+                if type(item) != dict:
+                    text += f"{item}\n"
+                elif item.items():
+                    for key, value in item.items():
+                        if item[key]:
+                            text += f"{key}: {item[key]}\n"
+                    # text += "\n".join(f"{k}: {v}" for k, v in item.items())
+                else:
+                    pass
         else:
             text += f"{order['order_description']}"
-        text += f"Кафе: {order['horeca_name']}\n" if 'horeca_name' in order else "\n"
-        text += f"Статус: {order['status']}"
+
+        text_cafe = f"Кафе: {order['horeca_name']}\n" if 'horeca_name' in order else "\n"
+        text_status = f"Статус: {order['status']}"
+
+        if len(text + text_cafe + text_status) > 4096:
+            text = text[:4096 - len(text_cafe + text_status) - 4]
+            text = f"{text}...\n{text_cafe}{text_status}"
         return text
 
     async def compose_short_text_from_order(self, order) -> [str]:
@@ -213,7 +230,7 @@ class HorecaBotMethods:
         order = self.main_class.orders_dict[kwargs['order_id']]
         url = variables.server_domain + variables.server_status_from_horeca + f"{kwargs['order_id']}/"
         print(url)
-        response = requests.put(url, json=order)
+        response = requests.put(url, json={'status': order['status']})
         pass
 
     async def confirm_action_keyboard(self, prefix):
@@ -259,3 +276,19 @@ class HorecaBotMethods:
         keyboard.add(button, button2)  # добавляем кнопки в клавиатуру
 
         return keyboard  # возвращаем клавиатуру
+
+    async def send_enter_key(self, enter_key:dict) -> bool:
+        response = requests.post(url=variables.server_domain+variables.send_enterkey_endpoint, json=enter_key)
+        print(response.json())
+        return True if 400 > response.status_code >= 200 else False
+
+    async def check_available_bot(self, telegram_user_id):
+        msg = None
+        try:
+            msg = await self.main_class.bot.send_message(int(telegram_user_id), text="Проверка бота")
+        except Exception as ex:
+            print(ex)
+            return {"bot_is_available": False}
+        await self.main_class.bot.delete_message(telegram_user_id, msg.message_id)
+        return {"bot_is_available": True}
+

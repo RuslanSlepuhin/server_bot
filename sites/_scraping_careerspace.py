@@ -66,13 +66,7 @@ class CareerSpaceGetInformation:
                 options=options
             )
         except:
-            try:
-                self.browser = webdriver.Chrome(
-                    executable_path=chrome_driver_path,
-                    options=options
-                )
-            except:
-                self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+            self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
         self.current_session = await self.helper_parser_site.get_name_session() if self.db else None
 
