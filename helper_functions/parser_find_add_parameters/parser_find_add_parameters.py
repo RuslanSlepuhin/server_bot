@@ -38,9 +38,13 @@ class FinderAddParameters:
             case "BY": currency_dict =  parser_find_data.by_dict
 
         # search numbers
-        print('-'*10)
-        print('add_parameters: self.text: ', self.text)
-        self.clean_text_special_symbols()
+        print('-'*20)
+        # print('add_parameters: self.text: ', self.text)
+        try:
+            self.clean_text_special_symbols()
+        except Exception as ex:
+            print(ex)
+            pass
         match = re.findall(r"[0-9,.]+[\s]?[0-9]+[\s]?[0-9]{0,4}", self.text)
         self.salary_list = [number.replace(' ', '').replace(',', '').replace('.', '') for number in match]
         if 'тыс' in self.text:
