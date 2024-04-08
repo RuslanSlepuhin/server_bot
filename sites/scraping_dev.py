@@ -18,7 +18,7 @@ class DevGetInformation(HHGetInformation):
 
 
     async def get_link_message(self, raw_content):
-        self.links_x_path = "//*[@class='vacancies-list-item__position']/a"
+        self.links_x_path = ["//*[@class='vacancies-list-item__position']/a"]
         await super().get_link_message(raw_content)
 
 
