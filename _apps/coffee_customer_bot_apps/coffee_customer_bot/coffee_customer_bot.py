@@ -35,7 +35,7 @@ class CustomerBot:
                 data['code'] = message.text
                 self.user_data['enter_key'] = message.text
             await state.finish()
-            url = variables.server_domain + variables.verification_endpoint
+            url = variables.server_domain + variables.send_enterkey_endpoint
             response = requests.post(url, json=self.user_data)
             print(response.status_code)
             # await self.bot_methods.start_dialog_with_user(message)
@@ -148,3 +148,5 @@ class CustomerBot:
     async def bot_name(self):
         bot_name = await self.bot.get_me()
         print("BOT_NAME", bot_name)
+
+

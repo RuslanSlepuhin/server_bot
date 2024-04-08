@@ -73,7 +73,7 @@ class HorecaBot:
         # await self.bot.send_message(user_id, str(data['status']))
         pass
 
-    async def check_subscriber(self, user_id):
+    async def check_horeca_subscriber(self, user_id):
         try:
             msg = await self.bot.send_message(int(user_id), "Вы можете отслеживать Ваш заказ в этом боте")
             await msg.delete()

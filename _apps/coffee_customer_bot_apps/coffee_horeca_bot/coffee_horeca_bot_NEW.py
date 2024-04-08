@@ -27,10 +27,10 @@ class HorecaBot:
 
         @self.dp.message_handler(commands=['start'])
         async def start(message: types.Message):
-            # keyboard = await self.methods.webAppKeyboard()
-            # await self.bot.send_message(message.chat.id, text='text', reply_markup=keyboard)
+            enter_key = message.text.split("/start", 1)[1]
+            if enter_key:
+                response = await self.methods.send_enter_key({"enter_key": enter_key.strip(), "telegram_user_id": message.chat.id})
             self.user_id = message.chat.id
-            # self.user_id = 5884559465
             await self.bot.send_message(message.chat.id, f"Your id is {message.chat.id}")
             await self.methods.start(message)
 
@@ -80,4 +80,7 @@ class HorecaBot:
 
 
         executor.start_polling(self.dp, skip_updates=True)
+
+    async def check_subscriber_horeca(self, telegram_user_id):
+        return await self.methods.check_available_bot(telegram_user_id)
 
