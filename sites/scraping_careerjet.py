@@ -12,7 +12,7 @@ class СareerjetGetInformation(HHGetInformation):
         await super().get_content(*args, **kwargs)
 
     async def get_link_message(self, raw_content):
-        self.links_x_path = "//*[@class='job clicky']/header/h2/a"
+        self.links_x_path = ["//*[@class='job clicky']/header/h2/a"]
         await super().get_link_message(raw_content)
 
     async def get_content_from_link(self, return_raw_dictionary=False):
