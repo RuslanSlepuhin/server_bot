@@ -23,8 +23,16 @@ class Endpoints:
         @app.route(variables.is_user_active_endpoint, methods=['GET'])
         async def is_user_active():
             telegram_user_id = request.args.get('telegram_user_id')
-            response = self.customer_bot.check_subscriber(telegram_user_id)
-            return jsonify({"response": True}) if response else ({"response": False})
+            horeca_user_id = request.args.get('horeca_user_id')
+
+            if telegram_user_id:
+                response = await self.customer_bot.check_subscriber(telegram_user_id)
+                return jsonify({"response": True}) if response else ({"response": False})
+
+            if horeca_user_id:
+                response = await self.horeca_bot.check_subscriber_horeca(horeca_user_id)
+                return jsonify(response) if response else ({"response": False})
+
 
         # check subscribe
         @app.route(f"{variables.get_subscribe_status}", methods=['GET'])
