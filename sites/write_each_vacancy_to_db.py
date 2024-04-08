@@ -64,7 +64,9 @@ class HelperSite_Parser:
                 self.results_dict['experience'] = ask_gemini("What experience?", gemini_prompt)
 
         # get profession's parameters
-            self.profession = self.filter.sort_profession(
+
+            try:
+                self.profession = self.filter.sort_profession(
                 title=self.results_dict['title'],
                 body=self.results_dict['body'],
                 get_params=False,
@@ -73,6 +75,9 @@ class HelperSite_Parser:
                 check_contacts=False,
                 vacancy_dict=self.results_dict
             )
+            except Exception as ex:
+                print(ex)
+                pass
 
             self.profession = self.profession['profession']
 
@@ -80,17 +85,31 @@ class HelperSite_Parser:
                 self.report.parsing_report(ma=self.profession['tag'], mex=self.profession['anti_tag'])
 
             # fill all fields
-            await self.fill_all_fields()
+            try:
+                await self.fill_all_fields()
+            except Exception as ex:
+                print(ex)
+                pass
 
             if self.profession['profession']:
                 self.results_dict['approved'] = 'approves by filter'
-                response_from_db = self.db.push_to_admin_table(
+                try:
+                    response_from_db = self.db.push_to_admin_table(
                     results_dict=self.results_dict,
                     profession=self.profession,
                     check_or_exists=True
-                )
+                    )
+                except Exception as ex:
+                    print(ex)
+                    pass
+
                 if self.report:
-                    self.report.parsing_report(approved=self.results_dict['approved'])
+                    try:
+                        self.report.parsing_report(approved=self.results_dict['approved'])
+                    except Exception as ex:
+                        print(ex)
+                        pass
+
                 if not response_from_db:
                     return False
                 response['vacancy'] = 'found in db by title-body' if response_from_db['has_been_found'] else 'written to db'
@@ -102,11 +121,17 @@ class HelperSite_Parser:
                     table_name=reject_table,
                     fields=vacancy_table
                 )
-                self.db.push_to_db_common(
+
+                try:
+                    self.db.push_to_db_common(
                     table_name=reject_table,
                     fields_values_dict=self.results_dict,
                     notification=True
-                )
+                    )
+                except Exception as ex:
+                    print(ex)
+                    pass
+
                 if self.report:
                     self.report.parsing_report(approved=self.results_dict['approved'])
 

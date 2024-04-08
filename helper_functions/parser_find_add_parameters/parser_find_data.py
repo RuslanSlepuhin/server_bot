@@ -1,5 +1,6 @@
 special_symbols = {
     '\xa0': ' ',
+    '\u202f': ' ',
 }
 
 currency_dict = {
