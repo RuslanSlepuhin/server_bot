@@ -1745,14 +1745,19 @@ class DataBaseOperations:
         else:
             query = self.compose_query(vacancy_dict=fields_values_dict, table_name=table_name)
         if notification:
-            print(query)
+            pass
+            # print(query)
         cur = self.con.cursor()
         with self.con:
             try:
                 cur.execute(query)
                 if report and self.report:
-                    self.report.parsing_report(profession=fields_values_dict['profession'])
-                    self.report.parsing_report(has_been_added_to_db=True)
+                    try:
+                        self.report.parsing_report(profession=fields_values_dict['profession'])
+                        self.report.parsing_report(has_been_added_to_db=True)
+                    except Exception as ex:
+                        print("ДЕЛО В ОТЧЕТАХ", ex)
+                        pass
                 if notification:
                     # print('Done')
                     print(f'+++++++++++++ It has been added to DB {table_name}\n')

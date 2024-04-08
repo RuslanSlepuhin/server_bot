@@ -15,6 +15,7 @@ from _apps.coffee_customer_bot_apps.endpoints.endpoints import Endpoints
 from _apps.chat.bot_tg import ChatBot
 from _apps.coffee_customer_bot_apps.back_server_side.back_server_side import BackServer
 from telegram_chats.telegram_init import client_init
+from _debug import debug
 
 config_FCM = configparser.ConfigParser()
 config_FCM.read('_apps/coffee_customer_bot_apps/settings/config.ini')
