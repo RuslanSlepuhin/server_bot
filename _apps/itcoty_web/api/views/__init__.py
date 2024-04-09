@@ -1,4 +1,5 @@
 from .google_auth import GoogleLoginView, UserRedirectView
+from .profile import ProfileViewSet
 from .vacancies import AllVacanciesView, ThreeVacanciesView, VacanciesViewSet
 
 __all__ = [
@@ -7,4 +8,5 @@ __all__ = [
     "AllVacanciesView",
     "VacanciesViewSet",
     "ThreeVacanciesView",
+    "ProfileViewSet",
 ]

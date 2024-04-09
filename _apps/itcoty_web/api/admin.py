@@ -6,6 +6,7 @@ from .models import AdminVacancy, User, Vacancy
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "email",
         "username",
         "first_name",
