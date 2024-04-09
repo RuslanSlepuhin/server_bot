@@ -1,16 +1,12 @@
 from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 
-from .views import (
-    AllVacanciesView,
-    GoogleLoginView,
-    ThreeVacanciesView,
-    UserRedirectView,
-    VacanciesViewSet,
-)
+from .views import (AllVacanciesView, GoogleLoginView, ProfileViewSet,
+                    ThreeVacanciesView, UserRedirectView, VacanciesViewSet)
 
 router = SimpleRouter()
 router.register("vacancies", VacanciesViewSet, basename="vacancy")
+router.register("profile", ProfileViewSet, basename="profile")
 
 urlpatterns = [
     path("", include("dj_rest_auth.urls")),
