@@ -65,7 +65,7 @@ path_log_check_profession = "./excel/send_log_txt.txt"
 report_file_not_actual_vacancy = "./excel/not_actual_vacancies.txt"
 shorts_copy_path = "./excel/copy_shorts.txt"
 
-sites_search_words = ['junior', 'стажер', 'designer', 'ui', 'стажировка', 'product manager', 'project manager', 'python', 'php']
+sites_search_words = ['designer', 'junior', 'стажер', 'ui', 'стажировка', 'product manager', 'project manager', 'python', 'php']
 
 table_list_for_checking_message_in_db = ['admin_last_session', 'archive', 'reject']
 
