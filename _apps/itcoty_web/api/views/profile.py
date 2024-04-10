@@ -2,6 +2,7 @@ from django.db.models import QuerySet
 from rest_framework import mixins, permissions, viewsets
 
 from api.models import User
+from api.permissions import IsUserProfileOrReadOnly
 from api.serializers import ProfileSerializer
 
 
@@ -12,7 +13,7 @@ class ProfileViewSet(
     A viewset that provides `retrieve`, `update` actions
     """
 
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsUserProfileOrReadOnly]
     serializer_class = ProfileSerializer
     http_method_names = ["get", "put"]
 
