@@ -2,8 +2,10 @@ from dj_rest_auth.serializers import PasswordResetSerializer
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils.translation import gettext_lazy as _
+from django_countries.serializer_fields import CountryField
 from rest_framework import serializers
 
+from .classes import ProfileCountries
 from .forms import CustomAllAuthPasswordResetForm
 from .models import AdminVacancy, Vacancy
 
@@ -136,6 +138,8 @@ class VacanciesSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     http_method_names = ["get", "put"]
+    email = serializers.EmailField(read_only=True)
+    country = CountryField(countries=ProfileCountries())
 
     class Meta:
         model = User

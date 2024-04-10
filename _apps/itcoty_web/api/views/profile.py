@@ -2,8 +2,8 @@ from django.db.models import QuerySet
 from rest_framework import mixins, permissions, viewsets
 
 from api.models import User
-from api.serializers import ProfileSerializer
 from api.permissions import IsUserProfileOrReadOnly
+from api.serializers import ProfileSerializer
 
 
 class ProfileViewSet(
