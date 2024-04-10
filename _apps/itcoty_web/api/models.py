@@ -401,3 +401,52 @@ class AdminVacancy(models.Model):
 
     def __str__(self):
         return f"{self.title} in {self.company}"
+
+
+class Quizz(models.Model):
+    vacancy = models.ForeignKey(
+        Vacancy, on_delete=models.SET_NULL, blank=True, null=True
+    )
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    questions = models.JSONField(blank=True, null=True)
+
+
+class Follower(models.Model):
+    source = models.ForeignKey(Source, on_delete=models.SET_NULL, blank=True, null=True)
+    stat_date = models.DateField(blank=True, null=True)
+    followers_total = models.IntegerField(blank=True, null=True)
+
+
+class Certificate(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    image = models.ImageField(blank=True, null=True)
+    company = models.CharField(max_length=200, blank=True, null=True)
+    date = models.DateField(blank=True, null=True)
+    added = models.BooleanField(blank=True, null=True)
+
+
+class Filter(models.Model):
+    vacancy = models.ForeignKey(
+        Vacancy, on_delete=models.SET_NULL, blank=True, null=True
+    )
+    approved_admin = models.BooleanField(blank=True, null=True)
+    approved_gemini = models.JSONField(blank=True, null=True)
+    approved_filter = models.BooleanField(blank=True, null=True)
+    sent_to_agregator = models.IntegerField(blank=True, null=True)
+    full_tags = models.CharField(max_length=200, blank=True, null=True)
+    full_antitags = models.CharField(max_length=200, blank=True, null=True)
+
+
+class Review(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    company = models.ForeignKey(
+        Company, on_delete=models.SET_NULL, blank=True, null=True
+    )
+    review_date = models.DateTimeField(auto_now_add=True)
+    review_text = models.CharField(max_length=1024, blank=True, null=True)
+
+
+class Recruiter(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    companies_id = ArrayField(models.IntegerField(), blank=True, null=True)
+    vacancies_id = ArrayField(models.IntegerField(), blank=True, null=True)
