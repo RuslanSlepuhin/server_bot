@@ -32,8 +32,9 @@ class VacanciesViewSet(
     def get_queryset(self) -> QuerySet:
         date_start = date.today() - timedelta(days=20)
         queryset = (
-            Vacancy.objects.filter(created_at__gt=date_start).order_by("-id")
-            # .distinct("id", "body") use in postgres only
+            Vacancy.objects.filter(created_at__gt=date_start)
+            .order_by("-id")
+            .distinct("id", "body")
         )
         return queryset
 
