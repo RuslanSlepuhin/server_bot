@@ -54,8 +54,6 @@ class HelperSite_Parser:
 
         # fill in the fields if they are empty using the Gemini neural network
         if check_vacancy_not_exists:
-            if not results_dict['contacts']:
-                self.results_dict['contacts'] = ask_gemini("What contacts?", gemini_prompt)
             if not results_dict['city']:
                 self.results_dict['city'] = ask_gemini("What city?", gemini_prompt)
             if not results_dict['salary']:
