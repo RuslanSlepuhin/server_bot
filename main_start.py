@@ -133,7 +133,7 @@ if __name__ == "__main__":
     # p13 = Process(target=start_chat, args=())
     # p14 = Process(target=form_app_start, args=())
 
-
+    p15 = Process(target=start_individ_bot)
     p1.start()
     p2.start()
     p3.start()
@@ -150,6 +150,7 @@ if __name__ == "__main__":
     # p12.start()
     # p13.start()
     # p14.start()
+    p15.start()
 
     p1.join()
     p2.join()
@@ -167,4 +168,5 @@ if __name__ == "__main__":
     # p12.join()
     # p13.join()
     # p14.join()
+    p15.join()
 

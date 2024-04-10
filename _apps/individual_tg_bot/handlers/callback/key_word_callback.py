@@ -1,10 +1,8 @@
 from _apps.individual_tg_bot import text
 from _apps.individual_tg_bot.service import show_summary
-from _apps.individual_tg_bot.settings import APP_HOST, APP_PORT
 from aiogram.dispatcher import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from urllib.parse import quote
-
 
 
 async def key_word_handler(
@@ -15,7 +13,7 @@ async def key_word_handler(
 
     await state.update_data(keyword=message.text)
     data = await state.get_data()
-    base_url = f"http://{APP_HOST}:{APP_PORT}/user_requests_vacancies"
+    base_url = f"https://4dev.itcoty.ru/user_requests_vacancies"
     link = (
         base_url
         + "?"

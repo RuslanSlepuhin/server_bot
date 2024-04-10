@@ -5,9 +5,12 @@ import asyncpg
 import psycopg2
 from psycopg2.extras import DictCursor
 
+from db_operations.scraping_db import DataBaseOperations
 
-class AsyncPGDatabase:
-    def __init__(self, url):
+
+class AsyncPGDatabase(DataBaseOperations):
+    def __init__(self, url, **kwargs):
+        super().__init__(**kwargs)
         self.database_url = url
         self.connection = None
         self.connection_sync = None

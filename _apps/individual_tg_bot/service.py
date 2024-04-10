@@ -3,12 +3,12 @@ from typing import Dict
 
 from _apps.individual_tg_bot import text
 from _apps.individual_tg_bot.db import AsyncPGDatabase
-from _apps.individual_tg_bot.settings import APP_HOST, APP_PORT, DB_URL
 from _apps.individual_tg_bot.text import suit_vacancies
 from aiogram import Bot
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
+from settings.os_getenv import db_url
 
-db = AsyncPGDatabase(DB_URL)
+db = AsyncPGDatabase(db_url)
 
 
 async def show_summary(message: Message, data: Dict) -> None:
@@ -59,7 +59,7 @@ async def period_get_vacancy_per_day_task(bot: Bot):
     """Периодическая задача на формирование дайджеста"""
     result = await db.get_user_request(selected_notification=text.per_day_notification)
     for rq in result:
-        base_url = f"http://{APP_HOST}:{APP_PORT}/user_digest"
+        base_url = f"https://4dev.itcoty.ru/user_digest"
         link = (
             base_url + "?" + "&".join([f"{key}={value}" for key, value in rq.items()])
         )
