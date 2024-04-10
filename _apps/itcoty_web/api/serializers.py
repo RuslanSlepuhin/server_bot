@@ -2,8 +2,10 @@ from dj_rest_auth.serializers import PasswordResetSerializer
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils.translation import gettext_lazy as _
+from django_countries.serializer_fields import CountryField
 from rest_framework import serializers
 
+from .classes import ProfileCountries
 from .forms import CustomAllAuthPasswordResetForm
 from .models import AdminVacancy, Vacancy
 
@@ -131,4 +133,66 @@ class VacanciesSerializer(serializers.ModelSerializer):
             "level",
             "salary_from",
             "salary_to",
+        )
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    http_method_names = ["get", "put"]
+    email = serializers.EmailField(read_only=True)
+    country = CountryField(countries=ProfileCountries())
+
+    class Meta:
+        model = User
+        fields = (
+            "email",
+            "first_name",
+            "last_name",
+            "surname",
+            "gender",
+            "birth",
+            "country",
+            "city",
+            "citizen",
+            "education",
+            "experience",
+            "networks",
+            "languages",
+            "relocation",
+            "relocation_prefer",
+            "phonenumber",
+            "cv",
+            "portfolio",
+            "salary",
+            "currency",
+            "period",
+            "taxes",
+            "jobtitle",
+            "jobformat",
+            "jobtype",
+            "hardskills",
+            "softskills",
+            "volunteer",
+            "visibility",
+            "hidefor",
+            "role",
+            "qualification",
+            "photo",
+            "banner",
+            "about",
+            "viewed",
+            "favorites",
+            "responded",
+            "directvision",
+            "subscriber",
+            "telegram_id",
+            "profession",
+            "specialization",
+            "sub",
+            "pr_languages",
+            "skills",
+            "tools",
+            "job_format",
+            "tg1_subscriber",
+            "tg2_subscriber",
+            "tgbot_user",
         )

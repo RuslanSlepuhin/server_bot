@@ -1,7 +1,7 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
-from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.db import models
 
 
 class CustomUserManager(BaseUserManager):
@@ -34,44 +34,6 @@ class CustomUserManager(BaseUserManager):
             raise ValueError("Superuser must have is_superuser=True.")
 
         return self._create_user(email, password, **extra_fields)
-
-
-class User(AbstractUser):
-    email = models.EmailField(unique=True, blank=False, null=False)
-
-    objects = CustomUserManager()
-
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS: list[str] = []
-
-
-class CurrentSession(models.Model):
-    id = models.IntegerField(primary_key=True)
-    session = models.CharField(max_length=15, unique=True)
-
-    class Meta:
-        managed = False
-        db_table = "current_session"
-
-
-class Source(models.Model):
-    class Types(models.TextChoices):
-        TGCHANNEL = "tgchannel"
-        SITE = "site"
-        TGBOT = "tgbot"
-
-    name = models.CharField(max_length=150, blank=True, null=True)
-    tgchannel_id = models.IntegerField(blank=True, null=True)
-    url = models.EmailField(max_length=150, blank=True, null=True)
-    sourcetype = models.CharField(
-        blank=True, null=True, choices=Types.choices, max_length=15
-    )
-    istarget = models.BooleanField(blank=True, null=True)
-
-    class Meta:
-        db_table = "sources"
-        verbose_name = "Source"
-        verbose_name_plural = "Sources"
 
 
 class Company(models.Model):
@@ -110,6 +72,163 @@ class Company(models.Model):
         verbose_name_plural = "Companies"
 
 
+class User(AbstractUser):
+    class JobFormat(models.TextChoices):
+        REMOTE = "удалённая"
+        OFFICE = "офис"
+        HYBRID = "гибкий график"
+
+    class Directions(models.TextChoices):
+        DEVELOPING = "developing"
+        ANALYTICS = "analytics"
+        SUPPORT = "support"
+        RECRUITING = "recruiting"
+        TESTING = "testing"
+        DESIGN = "design"
+        MANAGEMENT = "management"
+        SECURITY = "security"
+        CONTENT = "content"
+        MARKETING = "marketing"
+
+    class Qualification(models.TextChoices):
+        TRAINEE = "trainee"
+        JUNIOR = "junior"
+        MIDDLE = "middle"
+        SENIOR = "senior"
+        LEAD = "lead"
+        DIRECTOR = "director"
+
+    class Role(models.TextChoices):
+        APPLICANT = "соискатель"
+        EMPLOYER = "работодатель"
+        MENTOR = "ментор"
+
+    class SalaryPeriod(models.TextChoices):
+        HOUR = "час"
+        DAY = "день"
+        MONTH = "месяц"
+        YEAR = "год"
+
+    class Currencies(models.TextChoices):
+        USD = "USD"
+        EUR = "EUR"
+        RUB = "RUB"
+        BYN = "BYN"
+        KZT = "KZT"
+        PLN = "PLN"
+        UAH = "UAH"
+
+    class Gender(models.TextChoices):
+        MALE = "мужской"
+        FEMALE = "женский"
+        OTHER = "другой"
+
+    email = models.EmailField(unique=True, blank=False, null=False)
+    surname = models.CharField(max_length=32, blank=True, null=True)
+    gender = models.CharField(
+        max_length=16, blank=True, null=True, choices=Gender.choices
+    )
+    birth = models.DateField(blank=True, null=True)
+    country = models.CharField(max_length=32, blank=True, null=True)
+    city = models.CharField(max_length=32, blank=True, null=True)
+    citizen = models.CharField(max_length=32, blank=True, null=True)
+    education = models.JSONField(blank=True, null=True)
+    experience = models.JSONField(blank=True, null=True)
+    networks = models.JSONField(blank=True, null=True)
+    languages = models.JSONField(blank=True, null=True)
+    relocation = models.BooleanField(blank=True, null=True)
+    relocation_prefer = models.CharField(max_length=32, blank=True, null=True)
+    phonenumber = models.CharField(max_length=32, blank=True, null=True)
+    cv = models.URLField(blank=True, null=True)
+    portfolio = models.URLField(blank=True, null=True)
+    salary = models.IntegerField(blank=True, null=True)
+    currency = models.CharField(
+        max_length=4, blank=True, null=True, choices=Currencies.choices
+    )
+    period = models.CharField(
+        max_length=16, blank=True, null=True, choices=SalaryPeriod.choices
+    )
+    taxes = models.BooleanField(blank=True, null=True)
+    jobtitle = models.CharField(max_length=64, blank=True, null=True)
+    jobformat = ArrayField(models.CharField(max_length=32), blank=True, null=True)
+    jobtype = ArrayField(models.CharField(max_length=32), blank=True, null=True)
+    hardskills = ArrayField(models.CharField(max_length=256), blank=True, null=True)
+    softskills = ArrayField(models.CharField(max_length=256), blank=True, null=True)
+    volunteer = models.CharField(max_length=2048, blank=True, null=True)
+    visibility = models.BooleanField(blank=True, null=True)
+    hidefor = ArrayField(models.CharField(max_length=128), blank=True, null=True)
+    role = models.CharField(max_length=32, blank=True, null=True, choices=Role.choices)
+    qualification = ArrayField(
+        models.CharField(max_length=128, choices=Qualification.choices),
+        blank=True,
+        null=True,
+    )
+    photo = models.ImageField(blank=True, null=True)
+    banner = models.ImageField(blank=True, null=True)
+    about = models.CharField(max_length=2048, blank=True, null=True)
+    viewed = ArrayField(models.IntegerField(), blank=True, null=True)
+    favorites = ArrayField(models.IntegerField(), blank=True, null=True)
+    responded = models.JSONField(blank=True, null=True)
+    directvision = models.BooleanField(blank=True, null=True)
+    subscriber = ArrayField(models.IntegerField(), blank=True, null=True)
+    telegram_id = models.IntegerField(blank=True, null=True)
+    profession = models.CharField(
+        choices=Directions.choices, blank=True, null=True, max_length=20
+    )
+    specialization = models.CharField(max_length=32, blank=True, null=True)
+    sub = models.CharField(max_length=32, blank=True, null=True)
+    pr_languages = ArrayField(models.CharField(max_length=64), blank=True, null=True)
+    skills = ArrayField(models.CharField(max_length=256), blank=True, null=True)
+    tools = ArrayField(models.CharField(max_length=256), blank=True, null=True)
+    job_format = models.CharField(
+        max_length=32, blank=True, null=True, choices=JobFormat.choices
+    )
+    tg1_subscriber = models.BooleanField(blank=True, null=True)
+    tg2_subscriber = models.BooleanField(blank=True, null=True)
+    tgbot_user = models.BooleanField(blank=True, null=True)
+    company_id = models.ForeignKey(
+        Company, blank=True, null=True, on_delete=models.SET_NULL
+    )
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS: list[str] = []
+
+    class Meta:
+        verbose_name = "User"
+        verbose_name_plural = "Users"
+
+
+class CurrentSession(models.Model):
+    id = models.IntegerField(primary_key=True)
+    session = models.CharField(max_length=15, unique=True)
+
+    class Meta:
+        managed = False
+        db_table = "current_session"
+
+
+class Source(models.Model):
+    class Types(models.TextChoices):
+        TGCHANNEL = "tgchannel"
+        SITE = "site"
+        TGBOT = "tgbot"
+
+    name = models.CharField(max_length=150, blank=True, null=True)
+    tgchannel_id = models.IntegerField(blank=True, null=True)
+    url = models.EmailField(max_length=150, blank=True, null=True)
+    sourcetype = models.CharField(
+        blank=True, null=True, choices=Types.choices, max_length=15
+    )
+    istarget = models.BooleanField(blank=True, null=True)
+
+    class Meta:
+        db_table = "sources"
+        verbose_name = "Source"
+        verbose_name_plural = "Sources"
+
+
 class Currency(models.Model):
     class Currencies(models.TextChoices):
         USD = "USD"
@@ -130,7 +249,7 @@ class Vacancy(models.Model):
         DEVELOPING = "developing"
         ANALYTICS = "analytics"
         SUPPORT = "support"
-        RECRUTING = "recruting"
+        RECRUITING = "recruiting"
         TESTING = "testing"
         DESIGN = "design"
         MANAGEMENT = "management"
@@ -282,3 +401,52 @@ class AdminVacancy(models.Model):
 
     def __str__(self):
         return f"{self.title} in {self.company}"
+
+
+class Quizz(models.Model):
+    vacancy = models.ForeignKey(
+        Vacancy, on_delete=models.SET_NULL, blank=True, null=True
+    )
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    questions = models.JSONField(blank=True, null=True)
+
+
+class Follower(models.Model):
+    source = models.ForeignKey(Source, on_delete=models.SET_NULL, blank=True, null=True)
+    stat_date = models.DateField(blank=True, null=True)
+    followers_total = models.IntegerField(blank=True, null=True)
+
+
+class Certificate(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    image = models.ImageField(blank=True, null=True)
+    company = models.CharField(max_length=200, blank=True, null=True)
+    date = models.DateField(blank=True, null=True)
+    added = models.BooleanField(blank=True, null=True)
+
+
+class Filter(models.Model):
+    vacancy = models.ForeignKey(
+        Vacancy, on_delete=models.SET_NULL, blank=True, null=True
+    )
+    approved_admin = models.BooleanField(blank=True, null=True)
+    approved_gemini = models.JSONField(blank=True, null=True)
+    approved_filter = models.BooleanField(blank=True, null=True)
+    sent_to_agregator = models.IntegerField(blank=True, null=True)
+    full_tags = models.CharField(max_length=200, blank=True, null=True)
+    full_antitags = models.CharField(max_length=200, blank=True, null=True)
+
+
+class Review(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    company = models.ForeignKey(
+        Company, on_delete=models.SET_NULL, blank=True, null=True
+    )
+    review_date = models.DateTimeField(auto_now_add=True)
+    review_text = models.CharField(max_length=1024, blank=True, null=True)
+
+
+class Recruiter(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    companies_id = ArrayField(models.IntegerField(), blank=True, null=True)
+    vacancies_id = ArrayField(models.IntegerField(), blank=True, null=True)
