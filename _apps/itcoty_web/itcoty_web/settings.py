@@ -104,6 +104,8 @@ WSGI_APPLICATION = "itcoty_web.wsgi.application"
 #         "PORT": config['DB_local_clone']['port'],
 #     },
 # }
+config = configparser.ConfigParser()
+config.read("./../../settings/config.ini")
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
