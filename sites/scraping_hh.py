@@ -74,7 +74,7 @@ class HHGetInformation:
         self.debug = False
         self.additional = (f"/search/vacancy?"
                            f"search_field=name&"       # Искать совпадениев названии вакансии
-                           f"enable_snippets=true&"    # с ревью вакансий в поисковой выдаче
+                           f"enable_snippets=false&"   # без ревью вакансий в поисковой выдаче
                            f"ored_clusters=true&"      # 
                            f"search_period=3&"         # за последние 3 дня
                            f"text=**word&"             # по ключевому слову
