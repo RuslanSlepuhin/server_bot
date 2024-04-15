@@ -26,7 +26,7 @@ fields_admin_temporary = "id_admin_channel, id_admin_last_session_table, sended_
 additional_elements = {'admin_last_session', 'archive'}
 
 valid_professions = ['junior', 'backend', 'frontend', 'qa', 'devops', 'designer', 'game', 'mobile', 'product', 'pm', 'analyst',
-                     'marketing', 'sales_manager', 'hr']
+                      'sales_manager', 'hr', 'marketing']
 valid_professions_extended = []
 valid_professions_extended.extend(valid_professions)
 valid_professions_extended.extend(['fullstack'])
