@@ -18,6 +18,8 @@ if not debug:
     api_id_double = config_keys['Telegram_double']['api_id']
     api_hash_double = config_keys['Telegram_double']['api_hash']
     username_double = config_keys['Telegram_double']['username']
+    individual_tg_bot = config_keys['Individual_tg_bot']['token']
+    db_url = config_keys['DB_local_clone']['DB_URL']
 else:
     api_id = config_keys['Telegram_TEST']['api_id']
     api_hash = config_keys['Telegram_TEST']['api_hash']
@@ -28,4 +30,6 @@ else:
     api_id_double = config_keys['Telegram_double_TEST']['api_id']
     api_hash_double = config_keys['Telegram_double_TEST']['api_hash']
     username_double = config_keys['Telegram_double_TEST']['username']
+    individual_tg_bot = config_keys['Individual_tg_bot']['token']
+    db_url = config_keys['DB_local_clone']['DB_URL']
 
