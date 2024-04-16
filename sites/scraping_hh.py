@@ -73,12 +73,14 @@ class HHGetInformation:
         self.base_url = "https://hh.ru"
         self.debug = False
         self.additional = (f"/search/vacancy?"
-                           f"search_field=name&"       # Искать совпадениев названии вакансии
-                           f"enable_snippets=true&"    # с ревью вакансий в поисковой выдаче
-                           f"ored_clusters=true&"      # 
-                           f"search_period=3&"         # за последние 3 дня
-                           f"text=**word&"             # по ключевому слову
-                           f"page=**page"              # номер страницы
+                           f"search_field=name&"          # Искать совпадениев названии вакансии
+                           f"enable_snippets=true&"       # с ревью вакансий в поисковой выдаче
+                           f"area=0&"                     # по всем регионам
+                           f"ored_clusters=true&"         # 
+                           f"search_period=3&"            # за последние 3 дня
+                           f"order_by=publication_time&"  # сортировать по убыванию даты публикации ?
+                           f"text=**word&"                # по ключевому слову
+                           f"page=**page"                 # номер страницы
                            )
         self.main_class = kwargs['main_class']
         self.source_title_name = "https://hh.ru"
