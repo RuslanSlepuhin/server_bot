@@ -185,7 +185,7 @@ class VacancyFilter:
                     if result['result']:
                         self.profession['sub'][prof].append(result['result'])
 
-    def check_parameter(self, pattern, vacancy, key, low=False, mex=True, only_one_profession_sub=False, check_only_mex=False):
+    def check_parameter(self, pattern, vacancy, key, low=False, mex=False, only_one_profession_sub=False, check_only_mex=False):
         result = 0
         tags = ''
         anti_tags = ''
