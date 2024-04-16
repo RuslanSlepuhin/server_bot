@@ -59,14 +59,14 @@ class SitesParser:
         bot_dict = {'bot': self.bot, 'chat_id': self.chat_id}
 
         await HHGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
-        # await HHKzGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
-        # await GeekGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        # await EpamGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
-        # await DevGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
-        # await СareerjetGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
+        await HHKzGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
+        await GeekGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await EpamGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
+        await DevGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
+        await СareerjetGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
         # await DesignerGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         # await HabrGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        # await FinderGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
+        await FinderGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
         # await IngameJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         # await PracaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         # await RemocateGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
@@ -77,8 +77,8 @@ class SitesParser:
         # await SuperJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         # await RemoteJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         # await CareerSpaceGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
-        # await OttaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        # await WellFoundGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await OttaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await WellFoundGetInformation(bot_dict=bot_dict, report=self.report).get_content()
 
         print(' -----------------------FINAL -------------------------------')
 
