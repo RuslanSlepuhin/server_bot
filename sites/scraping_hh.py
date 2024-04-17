@@ -95,7 +95,7 @@ class HHGetInformation:
         try:
             await self.get_info()
         except Exception as ex:
-            print(f"Error: {ex}")
+            print(f"get_content -> Error: {ex}")
             if self.bot:
                 await self.bot.send_message(self.chat_id, f"Error: {ex}")
 
@@ -108,7 +108,7 @@ class HHGetInformation:
                     path=self.report.keys.report_file_path['parsing'],
                 )
             except Exception as ex:
-                print(f"Error: {ex}")
+                print(f"get_content(2) -> Error: {ex}")
                 if self.bot:
                     await self.bot.send_message(self.chat_id, f"Error: {ex}")
         self.browser.quit()
@@ -166,9 +166,9 @@ class HHGetInformation:
                     all_links = WebDriverWait(self.browser, 10).until(
                         ec.presence_of_all_elements_located((By.XPATH, link_x_path)))
                 except Exception as ex:
-                    print(ex)
+                    print("get_links -> ", ex)
                 if all_links:
-                    print("XPATH: ", link_x_path)
+                    print("get_links -> XPATH: ", link_x_path)
                     break
             return all_links
 
@@ -206,7 +206,7 @@ class HHGetInformation:
                 vacancy_url = link.get('href')
             except:
                 vacancy_url = link
-            print('url', vacancy_url)
+            print('get_content_from_link -> url', vacancy_url)
             # pre-checking by link
             check_vacancy_not_exists = self.db.check_exists_message_by_link_or_url(
                 vacancy_url=vacancy_url,
@@ -217,7 +217,7 @@ class HHGetInformation:
                 try:
                     await self.get_vacancy_data(vacancy_url, return_raw_dictionary)
                 except Exception as ex:
-                    print(ex)
+                    print("get_content_from_link (2) -> ", ex)
                     pass
             else:
                 self.found_by_link += 1
@@ -240,7 +240,7 @@ class HHGetInformation:
                     vacancy = self.browser.find_elements(By.XPATH, "//div[@class='vacancy-title']")[0]
                     vacancy = vacancy.text.split("\n")[0]
                 except Exception as e:
-                    print(f"error vacancy: {e}")
+                    print(f"get_vacancy_data-> error vacancy: {e}")
 
                 if vacancy:
                     company_link = ""
@@ -248,7 +248,7 @@ class HHGetInformation:
                     try:
                         title = vacancy
                     except Exception as e:
-                        print(f"error title: {e}")
+                        print(f"get_vacancy_data-> error title: {e}")
 
                     body = ''
                     try:
@@ -256,7 +256,7 @@ class HHGetInformation:
                         body = format_body_text(body)
                         body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
                     except Exception as e:
-                        print(f"error body: {e}")
+                        print(f"get_vacancy_data-> error body: {e}")
 
                     if body:
                         tags = ''
@@ -266,7 +266,7 @@ class HHGetInformation:
                                 tags += f'{i.get_text()}, '
                             tags = tags[0:-2]
                         except Exception as e:
-                            print(f"error tags: {e}")
+                            print(f"get_vacancy_data-> error tags: {e}")
 
                         english = ''
                         if re.findall(r'[Аа]нглийский', tags) or re.findall(r'[Ee]nglish', tags):
@@ -278,19 +278,19 @@ class HHGetInformation:
                             if company:
                                 self.db.write_to_db_companies([company])
                         except Exception as e:
-                            print(f"error company: {e}")
+                            print(f"get_vacancy_data-> error company: {e}")
                             company = ''
 
                         try:
                             salary = soup.find('div', attrs={'data-qa': 'vacancy-salary'}).get_text()
                         except Exception as e:
-                            print(f"error salary: {e}")
+                            print(f"get_vacancy_data-> error salary: {e}")
                             salary = ''
 
                         try:
                             experience = soup.find('p', class_='vacancy-description-list-item').find('span').get_text()
                         except Exception as e:
-                            print(f"error experience: {e}")
+                            print(f"get_vacancy_data-> error experience: {e}")
                             experience = ''
 
                         raw_content_2 = soup.findAll('p', class_='vacancy-description-list-item')
@@ -308,7 +308,7 @@ class HHGetInformation:
                                 counter += 1
                             job_type = re.sub(r'\<[a-zA-Z\s\.\-\'"=!\<_\/]+\>', " ", job_type)
                         except Exception as ex:
-                            print(ex)
+                            print("get_vacancy_data (2) -> ", ex)
                             pass
 
                         contacts = ''
@@ -316,7 +316,7 @@ class HHGetInformation:
                         try:
                             date = soup.find('p', class_="vacancy-creation-time-redesigned").get_text()
                         except Exception as e:
-                            print(f"error date: {e}")
+                            print(f"get_vacancy_data -> error date: {e}")
                             date = ''
                         if date:
                             try:
@@ -324,7 +324,7 @@ class HHGetInformation:
                                 date = date[0]
                                 date = self.normalize_date(date)
                             except Exception as ex:
-                                print(ex)
+                                print("get_vacancy_data (3) -> ", ex)
                                 pass
 
                         # ------------------------- search relocation ----------------------------
@@ -347,7 +347,7 @@ class HHGetInformation:
                             title, body, vacancy, vacancy_url, company, company_link, english, relocation, job_type,
                             city, salary, experience, date, contacts, return_raw_dictionary, vacancy=vacancy)
                         except Exception as ex:
-                            print(ex)
+                            print("get_vacancy_data (2) -> ", ex)
                             pass
                     else:
                         self.response = {}
@@ -377,10 +377,10 @@ class HHGetInformation:
                 try:
                     response = await self.helper_parser_site.write_each_vacancy(results_dict)
                 except Exception as ex:
-                    print(ex)
+                    print("collect_result_dict (1)", ex)
                     pass
                 try:
-                    print('sort profession (33)')
+                    print('collect_result_dict -> sort profession (33)')
                     await self.output_logs(
                         about_vacancy=response,
                         vacancy=kwargs['vacancy'],
@@ -389,7 +389,7 @@ class HHGetInformation:
                     # return response
                     self.response = response
                 except Exception as ex:
-                    print(ex)
+                    print("collect_result_dict (2) -> ", ex)
                     pass
             else:
                 self.response = results_dict
