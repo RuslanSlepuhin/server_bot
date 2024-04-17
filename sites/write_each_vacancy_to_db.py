@@ -74,7 +74,7 @@ class HelperSite_Parser:
                 vacancy_dict=self.results_dict
             )
             except Exception as ex:
-                print(ex)
+                print("write_each_vacancy (1) - > ", ex)
                 pass
 
             self.profession = self.profession['profession']
@@ -86,7 +86,7 @@ class HelperSite_Parser:
             try:
                 await self.fill_all_fields()
             except Exception as ex:
-                print(ex)
+                print("write_each_vacancy (2) - > ", ex)
                 pass
 
             if self.profession['profession']:
@@ -98,14 +98,14 @@ class HelperSite_Parser:
                     check_or_exists=True
                     )
                 except Exception as ex:
-                    print(ex)
+                    print("write_each_vacancy (3) - > ", ex)
                     pass
 
                 if self.report:
                     try:
                         self.report.parsing_report(approved=self.results_dict['approved'])
                     except Exception as ex:
-                        print(ex)
+                        print("write_each_vacancy (3) - > ", ex)
                         pass
 
                 if not response_from_db:
@@ -127,7 +127,7 @@ class HelperSite_Parser:
                     notification=True
                     )
                 except Exception as ex:
-                    print(ex)
+                    print("write_each_vacancy (4) - > ", ex)
                     pass
 
                 if self.report:
