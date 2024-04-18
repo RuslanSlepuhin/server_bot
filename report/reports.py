@@ -1,6 +1,10 @@
+from datetime import datetime
+
 import pandas as pd
 from db_operations.scraping_db import DataBaseOperations
 from report import report_variables
+from utils.additional_variables.additional_variables import path_report_links_file
+
 
 class Reports:
     report_file_path = report_variables.report_file_path
@@ -77,3 +81,13 @@ class Reports:
         except Exception as e:
             print(f"Something is wrong of reports.py: {str(e)}\nThis is mean I can't add to the report excel ")
             return False
+
+    async def collect_parser_links(self, text):
+        with open(path_report_links_file, "a", encoding="UTF-8") as file:
+            file.write(f"{text}\n")
+
+    async def reset_collect_parser_links(self):
+        with open(path_report_links_file, "w", encoding="UTF-8") as file:
+            file.write(f'{datetime.now().strftime("%d-%m-%y %H-%M")}')
+
+

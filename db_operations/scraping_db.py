@@ -225,9 +225,12 @@ class DataBaseOperations:
             query = f"""SELECT {field} FROM {table_name} {param} {order}"""
         else:
             query = f"""SELECT {field} FROM {table_name} {param} """
-        while self.db_is_busy:
+
+        iteration = 0
+        while self.db_is_busy and iteration < 10:
             time.sleep(0.1)
             print('time.sleep 0.1')
+            iteration += 1
         else:
             try:
                 self.db_is_busy = True

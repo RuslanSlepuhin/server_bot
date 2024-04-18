@@ -91,6 +91,7 @@ class HHGetInformation:
         self.links_x_path = ["//h2[@class='bloko-header-section-2']/span/a", "//h3[@class='bloko-header-section-3']/span/span/a"]
 
     async def get_content(self, *args, **kwargs):
+        await self.report.reset_collect_parser_links()
         self.words_pattern = kwargs['words_pattern']
         self.db_tables = kwargs['db_tables'] if kwargs.get('db_tables') else vacancies_database
         try:
@@ -100,7 +101,7 @@ class HHGetInformation:
             if self.bot:
                 await self.bot.send_message(self.chat_id, f"Error: {ex}")
 
-        if self.report and self.helper:
+        if self.report and self.helper and self.bot and self.chat_id:
             try:
                 await self.report.add_to_excel()
                 await self.helper.send_file_to_user(
@@ -121,7 +122,12 @@ class HHGetInformation:
                 options=options
             )
         except:
-            self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+            # Получаем путь к драйверу Chrome
+            try:
+                self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+            except Exception as ex:
+                print(ex)
+            pass
 
     async def get_info(self, how_much_pages=6, separator="+"):
         separator = separator if not self.searching_text_separator else self.searching_text_separator
@@ -135,7 +141,7 @@ class HHGetInformation:
             for self.page_number in range(0, how_much_pages - 1):
                 url = f'{self.base_url}{self.additional.replace("**word", self.word).replace("**page", str(self.page_number))}'
                 updated_url = url.replace("search_period=3&", "search_period=3&industry=7&")
-                if self.debug:
+                if self.debug and self.main_class:
                     await self.main_class.bot.send_message(self.chat_id, f"Url: {url}",
                                                          disable_web_page_preview=True)
                 if not self.page_number:
@@ -203,6 +209,7 @@ class HHGetInformation:
     async def get_content_from_link(self, return_raw_dictionary=False):
         self.found_by_link = 0
         for link in self.list_links:
+            await self.report.collect_parser_links(link)
             try:
                 vacancy_url = link.get('href')
             except:
