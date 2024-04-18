@@ -6,5 +6,6 @@ class HhLinks(HHGetInformation):
         self.found_by_link = 0
         for link in self.list_links:
             await self.report.collect_parser_links(link)
+        pass
 
 
