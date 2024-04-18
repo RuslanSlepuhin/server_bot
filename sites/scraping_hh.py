@@ -77,7 +77,7 @@ class HHGetInformation:
                            f"enable_snippets=false&"      # без ревью вакансий в поисковой выдаче
                            f"area=0&"                     # по всем регионам
                            f"ored_clusters=true&"         # 
-                           f"search_period=1&"            # за последние 3 дня
+                           f"search_period=3&"            # за последние 3 дня
                            f"items_on_page=100&"          # количество вакансий на странице
                            f"text=**word&"                # по ключевому слову
                            f"order_by=publication_time&"  # сортировать по убыванию даты публикации ?
