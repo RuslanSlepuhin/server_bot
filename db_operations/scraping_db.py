@@ -1408,7 +1408,8 @@ class DataBaseOperations:
         if not table_list:
             table_list = table_list_for_checking_message_in_db
         if vacancy_url:
-            param += f"vacancy_url LIKE '%{vacancy_url}%'"
+            cut_url = vacancy_url.replace("https://", "")
+            param += f"vacancy_url LIKE '%{cut_url}%'"
         elif body or title:
             if title:
                 param += f"title='{self.clear_title_or_body(title)}'"

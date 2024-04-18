@@ -74,12 +74,13 @@ class HHGetInformation:
         self.debug = False
         self.additional = (f"/search/vacancy?"
                            f"search_field=name&"          # Искать совпадениев названии вакансии
-                           f"enable_snippets=true&"       # с ревью вакансий в поисковой выдаче
+                           f"enable_snippets=false&"      # без ревью вакансий в поисковой выдаче
                            f"area=0&"                     # по всем регионам
                            f"ored_clusters=true&"         # 
                            f"search_period=3&"            # за последние 3 дня
-                           f"order_by=publication_time&"  # сортировать по убыванию даты публикации ?
+                           f"items_on_page=100&"          # количество вакансий на странице
                            f"text=**word&"                # по ключевому слову
+                           f"order_by=publication_time&"  # сортировать по убыванию даты публикации ?
                            f"page=**page"                 # номер страницы
                            )
         self.main_class = kwargs['main_class']
@@ -122,7 +123,7 @@ class HHGetInformation:
         except:
             self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-    async def get_info(self, how_much_pages=4, separator="+"):
+    async def get_info(self, how_much_pages=6, separator="+"):
         separator = separator if not self.searching_text_separator else self.searching_text_separator
         await self.get_browser()
 
