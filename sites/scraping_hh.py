@@ -123,7 +123,7 @@ class HHGetInformation:
         except:
             self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-    async def get_info(self, how_much_pages=4, separator="+"):
+    async def get_info(self, how_much_pages=6, separator="+"):
         separator = separator if not self.searching_text_separator else self.searching_text_separator
         await self.get_browser()
 
