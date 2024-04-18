@@ -1,8 +1,10 @@
 import asyncio
 
-from sites.scraping_hh import HHGetInformation
+from report.reports import Reports
 
-hh = HHGetInformation(main_class=None)
+from sites.hh_get_report_links import HhLinks
+
+hh = HhLinks(main_class=None, bot_dict=None, report=Reports())
 asyncio.run(hh.get_content(words_pattern=['junior']))
 # param = "WHERE profession=\"backend\""
 #
