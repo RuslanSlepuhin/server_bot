@@ -21,7 +21,12 @@ class AllVacanciesView(generics.ListAPIView):
 
 
 class VacanciesViewSet(
-    mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
 ):
     serializer_class = VacanciesSerializer
     permission_classes = [permissions.AllowAny]
