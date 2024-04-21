@@ -72,17 +72,22 @@ class HHGetInformation:
         self.searching_text_separator = None
         self.base_url = "https://hh.ru"
         self.debug = False
-        self.additional = (f"/search/vacancy?"
-                           f"search_field=name&"          # Искать совпадениев названии вакансии
-                           f"enable_snippets=false&"      # без ревью вакансий в поисковой выдаче
-                           f"area=0&"                     # по всем регионам
-                           f"ored_clusters=true&"         # 
-                           f"search_period=3&"            # за последние 3 дня
-                           f"items_on_page=100&"          # количество вакансий на странице
-                           f"text=**word&"                # по ключевому слову
-                           f"order_by=publication_time&"  # сортировать по убыванию даты публикации ?
-                           f"page=**page"                 # номер страницы
-                           )
+        self.additional = (
+                f"/search/vacancy?"
+                f"L_save_area=true&" 
+                f"text=**word&"
+                f"industry=7&"
+                f"experience=doesNotMatter&"
+                f"order_by=publication_time&"
+                f"search_period=1&"
+                f"items_on_page=100&"
+                f"hhtmFrom=vacancy_search_filter"
+        )
+        self.pages_listing = self.additional.replace(
+            "hhtmFrom=vacancy_search_filter",
+            "page=**page"
+        )
+
         self.main_class = kwargs['main_class']
         self.source_title_name = "https://hh.ru"
         self.source_short_name = "HH"
@@ -139,18 +144,19 @@ class HHGetInformation:
 
             # not remote
             for self.page_number in range(0, how_much_pages - 1):
-                url = f'{self.base_url}{self.additional.replace("**word", self.word).replace("**page", str(self.page_number))}'
-                updated_url = url.replace("search_period=3&", "search_period=3&industry=7&")
+                url = f'{self.base_url}{self.additional.replace("**word", self.word)}'
+                page_url = f'{self.base_url}{self.pages_listing.replace("**word", self.word).replace("**page", str(self.page_number))}'
+
                 if self.debug and self.main_class:
                     await self.main_class.bot.send_message(self.chat_id, f"Url: {url}",
                                                          disable_web_page_preview=True)
-                if not self.page_number:
+                if self.page_number == 0:
                     self.browser.get(url)
                     await asyncio.sleep(2)
-                    self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                self.browser.get(updated_url)
-                await asyncio.sleep(2)
-                self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+                elif self.page_number > 0:
+                    self.browser.get(page_url)
+                    await asyncio.sleep(2)
 
                 vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
                 if not vacancy_exists_on_page:
@@ -188,6 +194,7 @@ class HHGetInformation:
             else:
                 break
 
+        self.list_links = []
         for link in links:
             self.list_links.append(link.get_attribute('href'))
         if self.list_links:
