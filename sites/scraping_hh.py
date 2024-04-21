@@ -72,17 +72,22 @@ class HHGetInformation:
         self.searching_text_separator = None
         self.base_url = "https://hh.ru"
         self.debug = False
-        self.additional = (f"/search/vacancy?"
-                           f"search_field=name&"          # Искать совпадениев названии вакансии
-                           f"enable_snippets=false&"      # без ревью вакансий в поисковой выдаче
-                           f"area=0&"                     # по всем регионам
-                           f"ored_clusters=true&"         # 
-                           f"search_period=3&"            # за последние 3 дня
-                           f"items_on_page=100&"          # количество вакансий на странице
-                           f"text=**word&"                # по ключевому слову
-                           f"order_by=publication_time&"  # сортировать по убыванию даты публикации ?
-                           f"page=**page"                 # номер страницы
-                           )
+        self.additional = (
+                f"/search/vacancy?"
+                f"L_save_area=true&" 
+                f"text=**word&"
+                f"industry=7&"
+                f"experience=doesNotMatter&"
+                f"order_by=publication_time&"
+                f"search_period=1&"
+                f"items_on_page=100&"
+                f"hhtmFrom=vacancy_search_filter"
+        )
+        self.pages_listing = self.additional.replace(
+            "hhtmFrom=vacancy_search_filter",
+            "page=**page"
+        )
+
         self.main_class = kwargs['main_class']
         self.source_title_name = "https://hh.ru"
         self.source_short_name = "HH"
