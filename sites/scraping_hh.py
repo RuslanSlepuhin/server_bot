@@ -144,18 +144,19 @@ class HHGetInformation:
 
             # not remote
             for self.page_number in range(0, how_much_pages - 1):
-                url = f'{self.base_url}{self.additional.replace("**word", self.word).replace("**page", str(self.page_number))}'
-                updated_url = url.replace("search_period=3&", "search_period=3&industry=7&")
+                url = f'{self.base_url}{self.additional.replace("**word", self.word)}'
+                page_url = f'{self.base_url}{self.pages_listing.replace("**word", self.word).replace("**page", str(self.page_number))}'
+
                 if self.debug and self.main_class:
                     await self.main_class.bot.send_message(self.chat_id, f"Url: {url}",
                                                          disable_web_page_preview=True)
-                if not self.page_number:
+                if self.page_number == 0:
                     self.browser.get(url)
                     await asyncio.sleep(2)
-                    self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                self.browser.get(updated_url)
-                await asyncio.sleep(2)
-                self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+                elif self.page_number > 0:
+                    self.browser.get(page_url)
+                    await asyncio.sleep(2)
 
                 vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
                 if not vacancy_exists_on_page:
@@ -193,6 +194,7 @@ class HHGetInformation:
             else:
                 break
 
+        self.list_links = []
         for link in links:
             self.list_links.append(link.get_attribute('href'))
         if self.list_links:
