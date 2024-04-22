@@ -19,7 +19,6 @@ delete*.py
 /settings/local/
 #/settings/config*.ini
 /_apps/simpleatom/form.sqlite3
-/main_start.py
 /db_backup/
 #/_apps/amin_panel_tg_view/settings/
 ./_apps/individual_tg_bot/config.ini
