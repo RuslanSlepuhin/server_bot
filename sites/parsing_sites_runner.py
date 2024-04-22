@@ -68,7 +68,7 @@ class SitesParser:
         # await HabrGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await FinderGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
         # await IngameJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        await PracaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await PracaGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
         # await RemocateGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
         # await RemotehubGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         # await RabotaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
