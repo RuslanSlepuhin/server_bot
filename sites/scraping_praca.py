@@ -26,7 +26,7 @@ from report.report_variables import report_file_path
 from helper_functions import helper_functions as helper
 
 
-class PracaGetInformation:
+class PracaGetInformation():
 
     def __init__(self, **kwargs):
 
