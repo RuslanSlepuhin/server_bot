@@ -13,7 +13,7 @@ from sites.scraping_hh import HHGetInformation
 class PracaGetInformation(HHGetInformation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.base_url = "https://praca.by"
+        self.base_url = "https://praca.by/"
         self.source_title_name = "https://praca.by"
         self.source_short_name = "PRACA"
         self.search_words = ["Разработчик", "Дизайнер", "Аналитик", "Рекрутер"]
