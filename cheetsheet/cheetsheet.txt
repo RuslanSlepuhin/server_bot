@@ -18,3 +18,5 @@ setupcon
 git stash
 
 chmod 777 chromedriver
+
+scp /root/itcoty_bot/server_bot/excel/txt/links.txt root@87.249.53.232:D:\download
