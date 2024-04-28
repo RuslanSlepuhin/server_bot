@@ -9,9 +9,28 @@ class EpamGetInformation(HHGetInformation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.base_url = "https://anywhere.epam.com/en/jobs"
-        self.additional = "?page=**page&search=**word"
+        self.additional = "?page=**page&sort_by=newest"
         self.source_title_name = "https://anywhere.epam.com/en/jobs"
         self.source_short_name = 'EPAM'
+
+    async def get_info(self, how_much_pages=10, separator="+"):
+        await self.get_browser()
+
+        for self.page_number in range(0, how_much_pages):
+            url = f'{self.base_url}{self.additional.replace("**page", str(self.page_number))}'
+            if self.debug:
+                await self.main_class.bot.send_message(self.chat_id, f"Url: {url}",
+                                                       disable_web_page_preview=True)
+            self.browser.get(url)
+            await asyncio.sleep(2)
+
+            vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
+            if not vacancy_exists_on_page:
+                break
+
+        if self.bot_dict:
+            await self.bot.send_message(self.chat_id, f'{self.source_title_name} parsing: Done!',
+                                        disable_web_page_preview=True)
 
     async def get_content(self, *args, **kwargs):
         await super().get_content(*args, **kwargs)
@@ -60,7 +79,7 @@ class EpamGetInformation(HHGetInformation):
             try:
                 body_list = self.browser.find_elements(By.XPATH, stack_and_city_x_path)
                 for i in body_list:
-                    if body_list.index(i)<len(body_list)-1:
+                    if body_list.index(i) < len(body_list)-1:
                         body_stack += f"{i.text} "
                     else:
                         city = i.text
