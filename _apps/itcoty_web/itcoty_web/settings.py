@@ -106,6 +106,7 @@ WSGI_APPLICATION = "itcoty_web.wsgi.application"
 # }
 config = configparser.ConfigParser()
 config.read("./../../settings/config.ini")
+# config.read("./settings/config.ini")
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
