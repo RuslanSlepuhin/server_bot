@@ -841,6 +841,7 @@ class DataBaseOperations:
 
         print('new post')
         new_post = self.compose_query(vacancy_dict=results_dict, table_name=table_name)
+        duplicate_post = self.compose_query(vacancy_dict=results_dict, table_name="vacancy_stock")
 
         if not self.con:
             self.connect_db()
@@ -850,6 +851,7 @@ class DataBaseOperations:
             try:
                 print('cur execute')
                 cur.execute(new_post)
+                cur.execute(duplicate_post)
                 print(f'+++++++++++++ The vacancy has been added to DB {table_name}\n')
                 if self.report:
                     self.report.parsing_report(profession=results_dict['profession'])
