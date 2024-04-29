@@ -105,8 +105,9 @@ WSGI_APPLICATION = "itcoty_web.wsgi.application"
 #     },
 # }
 config = configparser.ConfigParser()
-config.read("./../../settings/config.ini")
-# config.read("./settings/config.ini")
+config_path = f"{BASE_DIR.parent.parent}/settings/config.ini"
+config.read(config_path)
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -115,6 +116,12 @@ DATABASES = {
         "PASSWORD": config["DB_local_clone"]["password"],
         "HOST": config["DB_local_clone"]["host"],
         "PORT": config["DB_local_clone"]["port"],
+        # "ENGINE": "django.db.backends.postgresql",
+        # "NAME": "postgres",
+        # "USER": "postgres",
+        # "PASSWORD": "00000",
+        # "HOST": "87.249.53.232",
+        # "PORT": "5432"
     },
 }
 
