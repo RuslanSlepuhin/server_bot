@@ -266,7 +266,17 @@ class HHGetInformation:
 
                     body = ''
                     try:
-                        body = soup.find('div', class_='vacancy-section')
+                        body = soup.find(
+                            'div',
+                            class_='g-user-content',
+                            attrs={"data-qa": "vacancy-description"}
+                        )
+                        if not body:
+                            body = soup.find(
+                                'div',
+                                class_='vacancy-branded-user-content',
+                                attrs={"data-qa": "vacancy-description"}
+                            )
                         body = format_body_text(body)
                         body = re.sub(r'\<[A-Za-z\/=\"\-\>\s\._\<]{1,}\>', " ", body)
                     except Exception as e:
