@@ -62,7 +62,7 @@ class VacanciesViewSetOLD(VacanciesViewSet):
     permission_classes = [permissions.AllowAny]
     filterset_class = VacancyFilterOLD
     queryset = Vacancies.objects.all()
-    filter_backends = [filters.DjangoFilterBackend]
+    # filter_backends = [filters.DjangoFilterBackend]
     pagination_class = LimitOffsetPagination
 
     def get_model(self):
