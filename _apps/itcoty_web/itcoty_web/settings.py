@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
-    "api",
+    # "api",
     "rest_framework",
     "rest_framework.authtoken",
     "dj_rest_auth",
@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
     "dj_rest_auth.registration",
     "rest_framework_simplejwt",
+    "api",
 ]
 
 MIDDLEWARE = [
