@@ -52,17 +52,9 @@ class HelperSite_Parser:
             elif answer == "":
                 continue
 
-        # fill in the fields if they are empty using the Gemini neural network
         if check_vacancy_not_exists:
-            if not results_dict['city']:
-                self.results_dict['city'] = ask_gemini("What city?", gemini_prompt)
-            if not results_dict['salary']:
-                self.results_dict['salary'] = ask_gemini("What salary?", gemini_prompt)
-            if not results_dict['experience']:
-                self.results_dict['experience'] = ask_gemini("What experience?", gemini_prompt)
 
-        # get profession's parameters
-
+            # get profession's parameters
             try:
                 self.profession = self.filter.sort_profession(
                 title=self.results_dict['title'],
