@@ -1939,7 +1939,7 @@ class InviteBot():
                     )
                     pass
                 except Exception as e:
-                    print('error:', e)
+                    print('error 958 invite_bot:', e)
                     pass
                 #
                 # await self.manual_admin_shorts
@@ -2020,7 +2020,7 @@ class InviteBot():
                     )
                     pass
                 except Exception as e:
-                    print('error:', e)
+                    print('error 957 invite_bot:', e)
                     pass
                 # await self.push_shorts_attempt_to_make_multi_function(
                 #     message=callback.message,
@@ -2187,7 +2187,7 @@ class InviteBot():
                         )
                         pass
                     except Exception as e:
-                        print('error:', e)
+                        print('error 956 invite_bot:', e)
                         pass
 
                 if message.text == '🦖 Search by link' or 'Search by link' in message.text:
@@ -5239,7 +5239,7 @@ class InviteBot():
                             self.last_id_message_agregator += 1
                             await asyncio.sleep(random.randrange(3, 4))
                         except Exception as error_2:
-                            print("error_2: ", error_2)
+                            print("error_2 962 invite_bot: ", error_2)
                     else:
                         await self.bot_aiogram.send_message(message.chat.id, f"It has a problem to send to aregator (5202):\n{str(e)}")
                         print(f'send_message:\n{send_message}')
@@ -5981,7 +5981,7 @@ class InviteBot():
                         )
                         pass
                     except Exception as e:
-                        print('error:', e)
+                        print('error 961 invite_bot:', e)
                         pass
                 today = datetime.now()
                 tomorrow = today + timedelta(days=1)
@@ -6197,7 +6197,7 @@ class InviteBot():
                         last_admin_channel_id += 1
                     except Exception as e:
                         if 'Flood control exceeded' in str(e):
-                            print(f'ERROR {e},\n PLEASE WAIT')
+                            print(f'ERROR 960 invite_bot {e},\n PLEASE WAIT')
                             match = re.findall(r"[0-9]{1,4} seconds", e.args[0])
                             if match:
                                 seconds = match[0].split(' ')[0]
@@ -6847,7 +6847,7 @@ class InviteBot():
             )
             pass
         except Exception as e:
-            print('error:', e)
+            print('error 959 invite_bot:', e)
             pass
         if self.client.is_connected:
             self.client.disconnect()
