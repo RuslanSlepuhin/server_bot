@@ -52,7 +52,9 @@ class HelperSite_Parser:
             elif answer == "":
                 continue
 
-        # get profession's parameters
+        if check_vacancy_not_exists:
+
+            # get profession's parameters
             try:
                 self.profession = self.filter.sort_profession(
                 title=self.results_dict['title'],
