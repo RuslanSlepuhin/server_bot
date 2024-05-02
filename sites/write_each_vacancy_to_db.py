@@ -40,19 +40,17 @@ class HelperSite_Parser:
                 table_list=tables
             )
 
-        # fill in the fields if they are empty using the Gemini neural network
-        if check_vacancy_not_exists:
-            # check weather this is a vacancy and, if so, weather it relates to IT using Gemini
-            gemini_prompt = results_dict['title'] + results_dict['body']
-            for question in ["Is IT?"]:
-                answer = ask_gemini(question, gemini_prompt)
-                if search(r"[Нн]е ", answer) or search(r"[Нн]ет", answer):
-                    check_vacancy_not_exists = False
-                    break
-                if search(r"[Дд]а", answer):
-                    continue
-                elif answer == "":
-                    continue
+        # check weather this is a vacancy and, if so, weather it relates to IT using Gemini
+        gemini_prompt = results_dict['title'] + results_dict['body']
+        for question in ["Is IT?"]:
+            answer = ask_gemini(question, gemini_prompt)
+            if search(r"[Нн]е ", answer) or search(r"[Нн]ет", answer):
+                check_vacancy_not_exists = False
+                break
+            if search(r"[Дд]а", answer):
+                continue
+            elif answer == "":
+                continue
 
         # get profession's parameters
             try:
