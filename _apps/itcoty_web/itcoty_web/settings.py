@@ -34,8 +34,7 @@ AUTH_USER_MODEL = "api.User"
 
 SITE_ID = 1
 
-CSRF_TRUSTED_ORIGINS = ['4dev.itcoty.ru']
-CSRF_FAILURE_VIEW = 'api.views.csrf_failure'
+CSRF_TRUSTED_ORIGINS = ['https://4dev.itcoty.ru']
 
 
 # Application definition
