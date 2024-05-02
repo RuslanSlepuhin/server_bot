@@ -164,7 +164,7 @@ class VacanciesSerializer(serializers.ModelSerializer):
 
 class VacanciesSerializerOLD(serializers.ModelSerializer):
     class Meta:
-        model = Vacancy
+        model = Vacancies
         fields = "__all__"
 
 class ProfileSerializer(serializers.ModelSerializer):
