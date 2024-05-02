@@ -54,20 +54,22 @@ def start_customer_bot_FCM():
     # customer_bot.bot_handlers()
 
 def start_horeca_bot_FCM():
-    # pass
-    horeca_bot.bot_handlers()
+    pass
+    # horeca_bot.bot_handlers()
 
 def start_endpoints_FCM():
-    # pass
-    ep = Endpoints(horeca_bot, customer_bot)
-    ep.main_endpoints(customer_bot, horeca_bot)
+    pass
+    # ep = Endpoints(horeca_bot, customer_bot)
+    # ep.main_endpoints(customer_bot, horeca_bot)
 
 def start_chat():
     chat = ChatBot()
     chat.bot_handlers()
+    # pass
 
 def start_webForm_bot():
     bot_init()
+    # pass
 
 def form_app_start():
     command = 'python _apps/webForm/manage.py runserver'
@@ -94,10 +96,12 @@ def telegram_init_method():
     asyncio.run(client_init())
 
 def start_individ_bot():
-    from _apps.individual_tg_bot import main
+    # from _apps.individual_tg_bot import main
+    pass
 
 def start_flask_endpoints_indiv_bot():
-    from _apps.individual_tg_bot import flask_endpoint
+    # from _apps.individual_tg_bot import flask_endpoint
+    pass
 
 if __name__ == "__main__":
     # t_init = Process(target=telegram_init_method, args=())
@@ -117,12 +121,12 @@ if __name__ == "__main__":
     p6 = Process(target=start_webForm_bot, args=())
 
     # auth django app
-    # p7 = Process(target=auth_start, args=())
+    p7 = Process(target=auth_start, args=())
     p75 = Process(target=start_individ_bot, args=())
-    # p76 = Process(target=start_flask_endpoints_indiv_bot, args=())
+    p76 = Process(target=start_flask_endpoints_indiv_bot, args=())
 
     # coffee project (horeca and customer bots with flask endpoints)
-    p8 = Process(target=start_customer_bot_FCM, args=())
+    # p8 = Process(target=start_customer_bot_FCM, args=())
     p9 = Process(target=start_horeca_bot_FCM, args=())
     p10 = Process(target=start_endpoints_FCM, args=())
     # mock server
@@ -140,10 +144,10 @@ if __name__ == "__main__":
     p4.start()
     p5.start()
     p6.start()
-    # p7.start()
+    p7.start()
     p75.start()
-    # p76.start()
-    p8.start()
+    p76.start()
+    # p8.start()
     p9.start()
     p10.start()
     # p11.start()
@@ -157,10 +161,10 @@ if __name__ == "__main__":
     p4.join()
     p5.join()
     p6.join()
-    # p7.join()
+    p7.join()
     p75.join()
-    # p76.join()
-    p8.join()
+    p76.join()
+    # p8.join()
     p9.join()
     p10.join()
     # p11.join()
