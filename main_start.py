@@ -53,14 +53,14 @@ def start_customer_bot_FCM():
     pass
     # customer_bot.bot_handlers()
 
-def start_horeca_bot_FCM():
-    pass
-    # horeca_bot.bot_handlers()
+# def start_horeca_bot_FCM():
+#     pass
+    horeca_bot.bot_handlers()
 
 def start_endpoints_FCM():
-    pass
-    # ep = Endpoints(horeca_bot, customer_bot)
-    # ep.main_endpoints(customer_bot, horeca_bot)
+    # pass
+    ep = Endpoints(horeca_bot, customer_bot)
+    ep.main_endpoints(customer_bot, horeca_bot)
 
 def start_chat():
     chat = ChatBot()
