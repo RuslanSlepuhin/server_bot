@@ -200,7 +200,7 @@ class RemocateGetInformation:
     async def get_info(self):
         try:
             self.browser = webdriver.Chrome(
-                # executable_path=chrome_driver_path,
+                executable_path=chrome_driver_path,
                 options=options
             )
         except:
@@ -445,7 +445,7 @@ class RemocateGetInformation:
     async def get_content_from_one_link(self, vacancy_url):
         try:
             self.browser = webdriver.Chrome(
-                # executable_path=chrome_driver_path,
+                executable_path=chrome_driver_path,
                 options=options
             )
         except:
