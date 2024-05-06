@@ -114,8 +114,16 @@ def convert_date_to_timestamp(date_string):
     keywords = {"today": timedelta(days=0), "yesterday": timedelta(days=1), "ago": None}
 
     days_match = re.search(r"(\d+)\s+days", date_string)
+    month_match = re.search(r"(\d+)\s+month", date_string)
+    year_match = re.search(r"(\d+)\s+year", date_string)
     if days_match:
         days_ago = int(days_match.group(1))
+        timedelta_obj = timedelta(days=days_ago)
+    elif month_match:
+        days_ago = int(month_match.group(1))*30
+        timedelta_obj = timedelta(days=days_ago)
+    elif year_match:
+        days_ago = int(year_match.group(1))*365
         timedelta_obj = timedelta(days=days_ago)
     else:
         timedelta_obj = timedelta()
@@ -126,8 +134,8 @@ def convert_date_to_timestamp(date_string):
                 timedelta_obj += delta
             break
 
-    timestamp = int((datetime.now() - timedelta_obj).timestamp())
-    return timestamp
+    timestamp = ((datetime.now() - timedelta_obj))
+    return timestamp.replace(second=0, microsecond=0)
 
 
 class RemocateGetInformation:
@@ -192,7 +200,8 @@ class RemocateGetInformation:
     async def get_info(self):
         try:
             self.browser = webdriver.Chrome(
-                executable_path=chrome_driver_path, options=options
+                # executable_path=chrome_driver_path,
+                options=options
             )
         except:
             self.browser = webdriver.Chrome(
@@ -400,8 +409,8 @@ class RemocateGetInformation:
                         "english": english,
                         "relocation": relocation,
                         "job_type": job_type,
-                        "city": city,
-                        "salary": salary,
+                        "city": "",
+                        "salary": salary[:299],
                         "experience": experience,
                         "contacts": "",
                         "time_of_public": date,
@@ -436,7 +445,8 @@ class RemocateGetInformation:
     async def get_content_from_one_link(self, vacancy_url):
         try:
             self.browser = webdriver.Chrome(
-                executable_path=chrome_driver_path, options=options
+                # executable_path=chrome_driver_path,
+                options=options
             )
         except:
             self.browser = webdriver.Chrome(
