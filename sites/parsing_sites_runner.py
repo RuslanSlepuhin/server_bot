@@ -12,6 +12,7 @@ from sites.scraping_geekjob import GeekGetInformation
 from sites.scraping_habr import HabrGetInformation
 from sites.scraping_hh import HHGetInformation
 from sites.scraping_hhkz import HHKzGetInformation
+from sites.scraping_hh_it import HHITGetInformation
 from sites.scraping_praca import PracaGetInformation
 from sites.scraping_rabota import RabotaGetInformation
 from sites.scraping_remocate import RemocateGetInformation
@@ -38,7 +39,7 @@ parser_sites = {'nn.hh.ru': HHGetInformation, 'spb.hh.ru': HHGetInformation, 'hh
                 'superjob.ru': SuperJobGetInformation, 'career.habr.com': HabrGetInformation,
                 'u.habr.com': HabrGetInformation,'finder.vc': FinderGetInformation, 'geekjob.ru' : GeekGetInformation,
                 'gkjb.ru': GeekGetInformation, 'designer.ru': DesignerGetInformation,
-                'www.vseti.app': SvyaziGetInformation, 'ru.ingamejob.com': IngameJobGetInformation}
+                'www.vseti.app': SvyaziGetInformation, 'ru.ingamejob.com': IngameJobGetInformation, 'ithh.ru': HHITGetInformation}
 
 
 class SitesParser:
@@ -65,11 +66,12 @@ class SitesParser:
         await DevGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
         await СareerjetGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
         # await DesignerGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        # await HabrGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await HabrGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await FinderGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
         # await IngameJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await PracaGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
-        # await RemocateGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
+        await RemocateGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
+        await HHITGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
         # await RemotehubGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         # await RabotaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         # await SvyaziGetInformation(bot_dict=bot_dict, report=self.report).get_content()
