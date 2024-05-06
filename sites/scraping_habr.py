@@ -77,8 +77,8 @@ class HabrGetInformation:
         # -------------------- check what is current session --------------
         self.current_session = await self.helper_parser_site.get_name_session()
 
-        till = 13
-        for self.page_number in range(1, till):
+        till = 35
+        for self.page_number in range(0, till):
             try:
                 if self.bot_dict:
                     await self.bot.send_message(self.chat_id, f'https://career.habr.com/vacancies?page={self.page_number}&sort=date&type=all',
