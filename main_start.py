@@ -53,7 +53,7 @@ def start_customer_bot_FCM():
     pass
     # customer_bot.bot_handlers()
 
-# def start_horeca_bot_FCM():
+def start_horeca_bot_FCM():
 #     pass
     horeca_bot.bot_handlers()
 
