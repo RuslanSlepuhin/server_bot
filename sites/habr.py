@@ -42,6 +42,7 @@ class HabrGetInformation:
         self.count_message_in_one_channel = 1
         self.found_by_link = 0
         self.helper = helper
+        self.bot = None
 
     async def get_content(self, db_tables=None):
         self.db_tables = db_tables
@@ -69,7 +70,7 @@ class HabrGetInformation:
     async def get_info(self):
         try:
             self.browser = webdriver.Chrome(
-                executable_path=chrome_driver_path,
+                # executable_path=chrome_driver_path,
                 options=options
             )
         except:
@@ -77,8 +78,8 @@ class HabrGetInformation:
         # -------------------- check what is current session --------------
         self.current_session = await self.helper_parser_site.get_name_session()
 
-        till = 13
-        for self.page_number in range(1, till):
+        till = 35
+        for self.page_number in range(0, till):
             try:
                 if self.bot_dict:
                     await self.bot.send_message(self.chat_id, f'https://career.habr.com/vacancies?page={self.page_number}&sort=date&type=all',
@@ -461,5 +462,4 @@ class HabrGetInformation:
                     text = text[index_p + 2:]
 
         return structure_list
-
 
