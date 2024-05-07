@@ -679,6 +679,7 @@ class InviteBot():
                 cut_name = chat_name[0]
                 cut_name = (cut_name
                             .replace("https://", "")
+                            .replace("en/jobs", "")
                             .replace("/ru", "")
                             .replace("/", "")
                             .replace("www.", "")
