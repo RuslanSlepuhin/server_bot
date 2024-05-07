@@ -670,6 +670,22 @@ class InviteBot():
             except Exception as e:
                 await self.bot_aiogram.send_message(message.chat.id, str(e))
 
+        @self.dp.message_handler(commands=['count_today_vacancies'])
+        async def get_vacancies_number(message: types.Message):
+            found_vacancies = self.db.get_today_vacancies_number()
+            today = datetime.now()
+            message_text = f"Найдено вакансий {today.strftime('%D')}:\n"
+            for chat_name, vacancies_number in found_vacancies.items():
+                cut_name = chat_name[0]
+                cut_name = (cut_name
+                            .replace("https://", "")
+                            .replace("/ru", "")
+                            .replace("/", "")
+                            .replace("www.", "")
+                            )
+                message_text += f"✅ {cut_name}   {vacancies_number} \n"
+            await self.bot_aiogram.send_message(message.chat.id, message_text)
+
         @self.dp.message_handler(commands=['get_and_write_level'])
         async def get_from_admin_command(message: types.Message):
             await get_and_write_level(message)
