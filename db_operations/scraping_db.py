@@ -1850,4 +1850,5 @@ class DataBaseOperations:
                        )
         vacancies_chat_names = cursor.fetchall()
         chats_and_numbers = Counter(vacancies_chat_names)
+        chats_and_numbers.update({"Σ": len(vacancies_chat_names)})
         return chats_and_numbers
