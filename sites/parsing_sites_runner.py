@@ -77,7 +77,7 @@ class SitesParser:
         # await SvyaziGetInformation(bot_dict=bot_dict, report=self.report).get_content()
 
         # await SuperJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        # await RemoteJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await RemoteJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         # await CareerSpaceGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
         await OttaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
         await WellFoundGetInformation(bot_dict=bot_dict, report=self.report).get_content()
