@@ -75,27 +75,29 @@ logs.write_log(f'\n------------------ restart --------------------')
 
 class InviteBot():
 
-    def __init__(self, token_in=None, double=False, telethon_username=None, telethon_client=None):
-        if not telethon_client:
-            username = telethon_username if telethon_username else settings.username
-            if double:
-                self.client = TelegramClient(username_double, int(api_id_double), api_hash_double)
+    def __init__(self, token_in=None, double=False, telethon_username=None, telethon_client=None, **kwargs):
+        if not kwargs.get('telethon_client_disable') or not kwargs['telethon_client_disable']:
+            if not telethon_client:
+                username = telethon_username if telethon_username else settings.username
+                if double:
+                    self.client = TelegramClient(username_double, int(api_id_double), api_hash_double)
+                else:
+                    self.client = TelegramClient(username, int(api_id), api_hash)
+                try:
+                    if not self.client.is_connected():
+                        # c = asyncio.get_event_loop()
+                        # c.run_until_complete(self.client.start())
+                        self.client.start()
+                except Exception as e:
+                    print(e)
+                    self.client.connect()
             else:
-                self.client = TelegramClient(username, int(api_id), api_hash)
-            try:
+                self.client = telethon_client
                 if not self.client.is_connected():
-                    # c = asyncio.get_event_loop()
-                    # c.run_until_complete(self.client.start())
-                    self.client.start()
-            except Exception as e:
-                print(e)
-                self.client.connect()
+                    loop = asyncio.get_event_loop()
+                    loop.create_task(self.client.connect())
         else:
-            self.client = telethon_client
-            if not self.client.is_connected():
-                loop = asyncio.get_event_loop()
-                loop.create_task(self.client.connect())
-            pass
+            self.client = None
         self.chat_id = None
         self.start_time_listen_channels = datetime.now()
         self.start_time_scraping_channels = None
@@ -185,6 +187,8 @@ class InviteBot():
             print(e)
 
     def main_invitebot(self):
+        loop = asyncio.get_event_loop()
+        print(f"https://t.me/{loop.run_until_complete(self.bot_aiogram.get_me())['username']}")
 
         async def connect_with_client(message, id_user):
 
@@ -4266,8 +4270,13 @@ class InviteBot():
                                               report=self.report)
             await self.digest_parser.main_start()
 
+        async def on_startup(dp):
+            from _apps.main_bot.menu import set_default_commands
+            await set_default_commands(dp.bot)
+
+
         # start_polling(self.dp)
-        executor.start_polling(self.dp, skip_updates=True)
+        executor.start_polling(self.dp, skip_updates=True, on_startup=on_startup)
 
     async def delete_used_vacancy_from_admin_temporary(self, vacancy, id_admin_last_session_table):
         # ------------------- cleaning the areas for the used vacancy  -------------------
