@@ -187,8 +187,8 @@ class InviteBot():
             print(e)
 
     def main_invitebot(self):
-        loop = asyncio.get_event_loop()
-        print(f"https://t.me/{loop.run_until_complete(self.bot_aiogram.get_me())['username']}")
+
+        self.print_bot_name()
 
         async def connect_with_client(message, id_user):
 
@@ -6939,6 +6939,10 @@ class InviteBot():
                 path=variable.path_log_check_profession,
                 caption="take the profession logs"
             )
+
+    def print_bot_name(self):
+        loop = asyncio.get_event_loop()
+        print(f"https://t.me/{loop.run_until_complete(self.bot_aiogram.get_me())['username']}")
 
 
 def run(double=False, token_in=None):
