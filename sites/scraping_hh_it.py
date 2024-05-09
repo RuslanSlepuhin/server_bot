@@ -31,7 +31,7 @@ class HHITGetInformation(HHGetInformation):
         await self.get_browser()
 
         self.words_pattern = [self.words_pattern] if type(self.words_pattern) is str else self.words_pattern
-
+        self.word = "ИТ. Программист, разработчик"
         for self.page_number in range(0, how_much_pages):
             url = f'{self.base_url}{self.additional}'
             page_url = f'{self.base_url}{self.pages_listing.replace("**page", str(self.page_number))}'
