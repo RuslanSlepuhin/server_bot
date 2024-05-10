@@ -1,0 +1,19 @@
+{% extends "account/email/base_message.txt" %}
+{% load account %}
+{% load i18n %}
+
+{% block content %}{% autoescape off %}{% user_display user as user_display %}{% blocktrans with site_name=current_site.name site_domain=current_site.domain %}
+Уважаемый пользователь,
+
+Благодарим Вас за регистрацию на сайте ITCOTY.
+
+Ваш логин: {{ user_display }}
+
+Теперь Вы можете войти в Личный кабинет, используя свой логин и пароль, чтобы начать пользоваться услугами сервиса. Для Вас также доступен Ваш Личный кабинет и отслеживание вашего статуса поиска работы.
+
+Чтобы активировать Ваш Личный кабинет, пожалуйста, пройдите по ссылке ниже:
+
+https://{{ site_name }}/registration/account-confirm-email/{{ key }}/
+
+{% endblocktrans %}{% endautoescape %}{% endblock content %}
+
