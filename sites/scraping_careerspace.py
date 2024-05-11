@@ -92,7 +92,11 @@ class CareerSpaceGetInformation:
         except:
             pass
         if self.bot_dict:
-            await self.bot.send_message(self.chat_id, 'careerspace.app parsing: Done!', disable_web_page_preview=True)
+            await self.bot.send_message(
+                self.chat_id,
+                'careerspace.app parsing: Done!',
+                disable_web_page_preview=True
+            )
 
     async def get_link_message(self, raw_content):
         soup = BeautifulSoup(raw_content, 'lxml')
@@ -101,8 +105,11 @@ class CareerSpaceGetInformation:
 
         if self.list_links:
             if self.bot_dict:
-                self.current_message = await self.bot.send_message(self.chat_id,
-                    f'careerspace.app:\nНайдено {len(self.list_links)} вакансий', disable_web_page_preview=True)
+                self.current_message = await self.bot.send_message(
+                    self.chat_id,
+                    f'careerspace.app:\nНайдено {len(self.list_links)} вакансий',
+                    disable_web_page_preview=True
+                )
             # --------------------- LOOP -------------------------
             self.written_vacancies = 0
             self.rejected_vacancies = 0
