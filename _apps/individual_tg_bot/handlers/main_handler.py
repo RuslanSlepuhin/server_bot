@@ -15,7 +15,11 @@ from _apps.individual_tg_bot.handlers.callback.direction_callback import (
     direction_sales_callback,
     direction_support_callback,
 )
-from _apps.individual_tg_bot.handlers.callback.key_word_callback import key_word_handler
+from _apps.individual_tg_bot.handlers.callback.key_word_callback import (
+    key_word_handler_text,
+    key_word_handler_skip,
+    key_word_handler,
+)
 from _apps.individual_tg_bot.handlers.callback.level_callback import (
     level_callback_handler,
 )
@@ -24,7 +28,7 @@ from _apps.individual_tg_bot.handlers.callback.location_callback import (
 )
 from _apps.individual_tg_bot.handlers.callback.menu_callback import (
     get_notification_callback,
-    get_restart_callback,
+    # get_restart_callback,
     get_vacancy_filter,
 )
 from _apps.individual_tg_bot.handlers.callback.new_request_callback import (
@@ -37,6 +41,7 @@ from _apps.individual_tg_bot.handlers.callback.notification_callback import (
     confirm_change_user_notification,
     get_on_getting_notification,
     get_per_day_notification,
+    notification_callback_handler,
 )
 from _apps.individual_tg_bot.handlers.callback.specialization_callback.analyst_specialization import (
     analyst_specialization_callback,
@@ -80,6 +85,12 @@ from _apps.individual_tg_bot.handlers.callback.specialization_callback.sales_spe
 from _apps.individual_tg_bot.handlers.callback.specialization_callback.support_specialization import (
     support_specialization_callback,
 )
+from _apps.individual_tg_bot.handlers.callback.user_requests_callback import (
+    filter_history_callback,
+    process_request_callback,
+    delete_user_filter,
+    change_user_filter,
+)
 from _apps.individual_tg_bot.handlers.callback.work_format_callback import (
     work_format_callback_handler,
 )
@@ -92,6 +103,9 @@ from _apps.individual_tg_bot.handlers.command_router import (
 from _apps.individual_tg_bot.keyboards.inline.level_button import level_button_dict
 from _apps.individual_tg_bot.keyboards.inline.location_button import (
     location_button_dict,
+)
+from _apps.individual_tg_bot.keyboards.inline.notifications import (
+    notification_dict_user,
 )
 from _apps.individual_tg_bot.keyboards.inline.specializations.buttons import (
     buttons_analyst,
@@ -126,6 +140,7 @@ class Handlers:
         self.register_notification_handlers()
         self.reset_request_handler()
         self.register_menu_callback()
+        self.register_filter_callback()
 
     def register_message_handlers(self):
         """Регистрация message handlers"""
@@ -150,7 +165,11 @@ class Handlers:
             get_on_getting_notification, text=text.on_getting_notification
         )
         self.dp.register_callback_query_handler(
-            cancel_change_user_notification, text=text.cancel_change_notification
+            cancel_change_user_notification,
+            text=[text.cancel_change_notification, text.back_to_menu],
+        )
+        self.dp.register_callback_query_handler(
+            notification_callback_handler, text=notification_dict_user
         )
 
     def register_menu_callback(self):
@@ -161,7 +180,22 @@ class Handlers:
         self.dp.register_callback_query_handler(
             get_notification_callback, text=text.notification
         )
-        self.dp.register_callback_query_handler(get_restart_callback, text=text.restart)
+
+    # self.dp.register_callback_query_handler(get_restart_callback, text=text.restart)
+
+    def register_filter_callback(self):
+        self.dp.register_callback_query_handler(
+            filter_history_callback, text=text.filter_history
+        )
+        self.dp.register_callback_query_handler(
+            process_request_callback, lambda c: c.data.startswith("request_")
+        )
+        self.dp.register_callback_query_handler(
+            delete_user_filter, lambda c: c.data.startswith(f"{text.delete}")
+        )
+        self.dp.register_callback_query_handler(
+            change_user_filter, lambda c: c.data.startswith(f"{text.change}")
+        )
 
     def register_direction_handlers(self):
         """Регистрация callback  direction handlers"""
@@ -268,9 +302,16 @@ class Handlers:
         self.dp.register_callback_query_handler(
             work_format_callback_handler, text=work_format_dict
         )
+        # self.dp.register_callback_query_handler(change_color_callback,text='change_color' )
 
     def register_keyword_handler(self):
         """Регистрация callback  keyword_ handlers"""
+        self.dp.register_callback_query_handler(
+            key_word_handler_skip, text=text.skip_add_info
+        )
+        self.dp.register_callback_query_handler(
+            key_word_handler_text, text=text.add_info_text
+        )
         self.dp.register_message_handler(key_word_handler, state="*")
 
     def reset_request_handler(self):
