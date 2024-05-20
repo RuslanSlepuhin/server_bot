@@ -1,17 +1,20 @@
 import asyncio
 import os
+
+from aiohttp import web
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from _apps.coffee_customer_bot_apps.variables import variables
 
 class Endpoints:
 
-    def __init__(self, horeca_bot, customer_bot):
+    def __init__(self, horeca_bot=None, customer_bot=None):
+
         self.db_request = None
         self.horeca_bot = horeca_bot
         self.customer_bot = customer_bot
 
-    def main_endpoints(self, customer_bot, horeca_bot):
+    def main_endpoints(self):
         app = Flask(__name__)
         CORS(app)
 
@@ -33,7 +36,6 @@ class Endpoints:
                 response = await self.horeca_bot.check_subscriber_horeca(horeca_user_id)
                 return jsonify(response) if response else ({"response": False})
 
-
         # check subscribe
         @app.route(f"{variables.get_subscribe_status}", methods=['GET'])
         def get_subscribe_status(*args, **kwargs):
@@ -53,7 +55,7 @@ class Endpoints:
             data = request.json
             # asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
             print('AFTER')
-            await customer_bot.customer_custom_send_message(data=data)
+            await self.customer_bot.customer_custom_send_message(data=data)
             print("BEFORE")
             return jsonify({"response": data})
 
@@ -62,12 +64,20 @@ class Endpoints:
         async def provide_message_to_horeca():
             data = request.json
             asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-            await horeca_bot.horeca_send_message(data=data)
+            await self.horeca_bot.horeca_send_message(data=data)
             return jsonify({"response": data})
+
+        # customer made a new order. Provide it to barista
+        @app.route(variables.new_order_endpoint, methods=['POST'])
+        async def new_order():
+            data = request.get_json()
+            response = await self.horeca_bot.new_order(order=data)
+            return jsonify(response)
 
         app.run(host='127.0.0.1', port=int(os.environ.get('PORT', 5000)))
 
+
 if __name__ == '__main__':
     e = Endpoints(None, None)
-    e.main_endpoints(None, None)
+    e.main_endpoints()
 
