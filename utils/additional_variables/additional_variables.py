@@ -346,3 +346,4 @@ sub_separator = "; "
 double_n_before_field = 'vacancy_url'
 
 logs_path = "./py_log.log"
+path_report_links_file = "./excel/txt/links.txt"

@@ -1,6 +1,6 @@
 import django_filters
 
-from .models import Vacancy
+from .models import Vacancy, Vacancies
 
 
 class VacancyFilter(django_filters.FilterSet):
@@ -8,4 +8,9 @@ class VacancyFilter(django_filters.FilterSet):
 
     class Meta:
         model = Vacancy
+        fields = ["start_id"]
+
+class VacancyFilterOLD(VacancyFilter):
+    class Meta:
+        model = Vacancies
         fields = ["start_id"]

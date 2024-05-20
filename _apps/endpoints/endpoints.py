@@ -28,6 +28,7 @@ import requests
 from invite_bot_ver2 import InviteBot, start_hardpushing
 from _apps.endpoints.predictive_method import Predictive
 from _apps.endpoints.client_init import ClientTelethon
+
 from _apps.individual_tg_bot.service import db as individual_tg_bot_db
 
 db=DataBaseOperations()
@@ -107,6 +108,7 @@ class Endpoints:
                     interval=interval,
                 )
                 return jsonify(vacancies)
+
         @app.route("/get-by-id", methods=['POST'])
         async def get_by_id():
             key = 'id'

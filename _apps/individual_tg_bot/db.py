@@ -1,6 +1,6 @@
 import asyncio
 import logging
-
+from db_operations.scraping_db import DataBaseOperations
 import asyncpg
 import psycopg2
 from psycopg2.extras import DictCursor
