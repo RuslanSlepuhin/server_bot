@@ -388,7 +388,7 @@ class InviteBot():
 
         @self.dp.message_handler(commands=['get'])
         async def silent_get_news(message: types.Message):
-            await get_news(silent=True)
+            await get_news(message, silent=True)
 
         @self.dp.message_handler(commands=['post_to_telegraph'])
         async def post_to_teleraph_func(message: types.Message):
@@ -405,7 +405,7 @@ class InviteBot():
 
         @self.dp.message_handler(commands=['silent_get_news'])
         async def silent_get_news(message: types.Message):
-            await get_news(silent=True)
+            await get_news(message, silent=True)
 
         @self.dp.message_handler(commands=['update_salary_field_usd'])
         async def update_salary_field_usd(message: types.Message):
@@ -946,8 +946,6 @@ class InviteBot():
         @self.dp.message_handler(commands=['get_news'])
         async def get_news_command(message: types.Message):
             self.parser_task = asyncio.create_task(get_news(message))
-
-            # await get_news(message)
 
         @self.dp.message_handler(commands=['schedule'])
         async def schedule_command(message: types.Message):
