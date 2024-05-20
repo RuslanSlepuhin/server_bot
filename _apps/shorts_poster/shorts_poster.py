@@ -185,10 +185,21 @@ class ShortsPoster:
                 message=self.message,
                 channel=self.config['My_channels']['agregator_channel']
             )
+            vacancy_counter = 0
             for vacancy in self.history_messages:
-                self.vacancy = self.history_messages[vacancy]
+                vacancy_counter += 1
+                print(f"vacancy {vacancy_counter}")
+                try:
+                    self.vacancy = self.history_messages[vacancy]
+                except Exception as ex:
+                    print(f"short_poster 0:", ex)
                 # взять каждый саб, сделать его ключом, проверить есть ли этот ключ в итоговом словаре и вписать туда с ключом
-                subs = self.vacancy['sub'].split(self.variable.sub_separator)
+                try:
+                    subs = self.vacancy['sub'].split(self.variable.sub_separator)
+                except Exception as ex:
+                    print("short_poster 1:", ex)
+                    subs = []
+
 
                 found_subs = False
 
@@ -196,7 +207,10 @@ class ShortsPoster:
                 self.subs_dict = {}
                 removed_subs = []
                 for sub in subs:
-                    sub_split = sub.split(": ")
+                    try:
+                        sub_split = sub.split(": ")
+                    except Exception as ex:
+                        print("short_poster 2:", ex)
 
                     if self.profession == 'junior':
                         if sub_split[0] != 'junior':
@@ -266,6 +280,7 @@ class ShortsPoster:
         else:
             self.vacancy_text = ''
             print('There is not vacancy_text 103')
+        pass
 
 
     async def check_len_and_add_extra(self):

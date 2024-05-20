@@ -9,6 +9,7 @@ from utils.additional_variables.additional_variables import table_list_for_check
     short_session_database, vacancy_table, additional_elements, vacancies_database
 import psycopg2
 from datetime import datetime
+from collections import Counter
 from logs.logs import Logs
 from helper_functions import helper_functions as helper
 from patterns._export_pattern import export_pattern
@@ -225,9 +226,12 @@ class DataBaseOperations:
             query = f"""SELECT {field} FROM {table_name} {param} {order}"""
         else:
             query = f"""SELECT {field} FROM {table_name} {param} """
-        while self.db_is_busy:
+
+        iteration = 0
+        while self.db_is_busy and iteration < 10:
             time.sleep(0.1)
             print('time.sleep 0.1')
+            iteration += 1
         else:
             try:
                 self.db_is_busy = True
@@ -838,6 +842,7 @@ class DataBaseOperations:
 
         print('new post')
         new_post = self.compose_query(vacancy_dict=results_dict, table_name=table_name)
+        duplicate_post = self.compose_query(vacancy_dict=results_dict, table_name="vacancy_stock")
 
         if not self.con:
             self.connect_db()
@@ -847,6 +852,7 @@ class DataBaseOperations:
             try:
                 print('cur execute')
                 cur.execute(new_post)
+                cur.execute(duplicate_post)
                 print(f'+++++++++++++ The vacancy has been added to DB {table_name}\n')
                 if self.report:
                     self.report.parsing_report(profession=results_dict['profession'])
@@ -1408,7 +1414,8 @@ class DataBaseOperations:
         if not table_list:
             table_list = table_list_for_checking_message_in_db
         if vacancy_url:
-            param += f"vacancy_url LIKE '%{vacancy_url}%'"
+            cut_url = vacancy_url.replace("https://spb.hh.ru/", "").replace("https://hh.kz/", "")
+            param += f"vacancy_url LIKE '%{cut_url}%'"
         elif body or title:
             if title:
                 param += f"title='{self.clear_title_or_body(title)}'"
@@ -1829,3 +1836,19 @@ class DataBaseOperations:
         if update:
             return f"UPDATE {table_name} SET ({keys_str}) = ({values_str}) WHERE id={vacancy_dict['id']}"
         return f"INSERT INTO {table_name} ({keys_str}) VALUES ({values_str})"
+
+    def get_today_vacancies_number(self) -> dict:
+        """
+        Gets all the vacancies numbers for today and counts them.
+        Returns the names of the chats and the number of vacancies for these chats.
+        """
+        cursor = self.con.cursor()
+        today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        cursor.execute(f"SELECT chat_name "
+                       f"FROM postgres.public.vacancy_stock "
+                       f"WHERE created_at >= '{today}'"
+                       )
+        vacancies_chat_names = cursor.fetchall()
+        chats_and_numbers = Counter(vacancies_chat_names)
+        chats_and_numbers.update({"Σ": len(vacancies_chat_names)})
+        return chats_and_numbers

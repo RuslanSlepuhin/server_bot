@@ -23,7 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "9wcz3t5=0pg)*w2*js@z(q33eeqcsj@)9iv2ty=@uich*g$ui%" #os.environ.get("SECRET_KEY")
+SECRET_KEY = (
+    "9wcz3t5=0pg)*w2*js@z(q33eeqcsj@)9iv2ty=@uich*g$ui%"  # os.environ.get("SECRET_KEY")
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -33,6 +35,8 @@ ALLOWED_HOSTS = []
 AUTH_USER_MODEL = "api.User"
 
 SITE_ID = 1
+
+CSRF_TRUSTED_ORIGINS = ["https://4dev.itcoty.ru"]
 
 
 # Application definition
@@ -104,6 +108,10 @@ WSGI_APPLICATION = "itcoty_web.wsgi.application"
 #         "PORT": config['DB_local_clone']['port'],
 #     },
 # }
+config = configparser.ConfigParser()
+config_path = f"{BASE_DIR.parent.parent}/settings/config.ini"
+config.read(config_path)
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -112,6 +120,12 @@ DATABASES = {
         "PASSWORD": config["DB_local_clone"]["password"],
         "HOST": config["DB_local_clone"]["host"],
         "PORT": config["DB_local_clone"]["port"],
+        # "ENGINE": "django.db.backends.postgresql",
+        # "NAME": "postgres",
+        # "USER": "postgres",
+        # "PASSWORD": "00000",
+        # "HOST": "localhost",
+        # "PORT": "22"
     },
 }
 
@@ -158,7 +172,11 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": ("dj_rest_auth.jwt_auth.JWTAuthentication",)
+    "DEFAULT_AUTHENTICATION_CLASSES": ("dj_rest_auth.jwt_auth.JWTAuthentication",),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 1000,
+    "PAGE_SIZE_QUERY_PARAM": "page_size",
+    "MAX_PAGE_SIZE": 10000,
 }
 REST_AUTH = {
     "USE_JWT": True,
@@ -180,6 +198,9 @@ GOOGLE_REDIRECT_URL = "http://127.0.0.1:8000/"
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 EMAIL_PORT = os.environ.get("EMAIL_PORT")
-EMAIL_USE_TLS = True
+EMAIL_USE_SSL = True
+
+SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = "notification@itcoty.ru"

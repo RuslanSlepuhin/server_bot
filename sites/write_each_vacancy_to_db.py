@@ -42,7 +42,7 @@ class HelperSite_Parser:
 
         # check weather this is a vacancy and, if so, weather it relates to IT using Gemini
         gemini_prompt = results_dict['title'] + results_dict['body']
-        for question in ["Is vacancy?", ]:
+        for question in ["Is IT?"]:
             answer = ask_gemini(question, gemini_prompt)
             if search(r"[Нн]е ", answer) or search(r"[Нн]ет", answer):
                 check_vacancy_not_exists = False
@@ -52,19 +52,9 @@ class HelperSite_Parser:
             elif answer == "":
                 continue
 
-        # fill in the fields if they are empty using the Gemini neural network
         if check_vacancy_not_exists:
-            if not results_dict['contacts']:
-                self.results_dict['contacts'] = ask_gemini("What contacts?", gemini_prompt)
-            if not results_dict['city']:
-                self.results_dict['city'] = ask_gemini("What city?", gemini_prompt)
-            if not results_dict['salary']:
-                self.results_dict['salary'] = ask_gemini("What salary?", gemini_prompt)
-            if not results_dict['experience']:
-                self.results_dict['experience'] = ask_gemini("What experience?", gemini_prompt)
 
-        # get profession's parameters
-
+            # get profession's parameters
             try:
                 self.profession = self.filter.sort_profession(
                 title=self.results_dict['title'],
@@ -76,7 +66,7 @@ class HelperSite_Parser:
                 vacancy_dict=self.results_dict
             )
             except Exception as ex:
-                print(ex)
+                print("write_each_vacancy (1) - > ", ex)
                 pass
 
             self.profession = self.profession['profession']
@@ -88,7 +78,7 @@ class HelperSite_Parser:
             try:
                 await self.fill_all_fields()
             except Exception as ex:
-                print(ex)
+                print("write_each_vacancy (2) - > ", ex)
                 pass
 
             if self.profession['profession']:
@@ -100,14 +90,14 @@ class HelperSite_Parser:
                     check_or_exists=True
                     )
                 except Exception as ex:
-                    print(ex)
+                    print("write_each_vacancy (3) - > ", ex)
                     pass
 
                 if self.report:
                     try:
                         self.report.parsing_report(approved=self.results_dict['approved'])
                     except Exception as ex:
-                        print(ex)
+                        print("write_each_vacancy (3) - > ", ex)
                         pass
 
                 if not response_from_db:
@@ -129,7 +119,7 @@ class HelperSite_Parser:
                     notification=True
                     )
                 except Exception as ex:
-                    print(ex)
+                    print("write_each_vacancy (4) - > ", ex)
                     pass
 
                 if self.report:
