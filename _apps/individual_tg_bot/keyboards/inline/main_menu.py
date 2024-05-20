@@ -14,9 +14,14 @@ def get_inline_menu():
         InlineKeyboardButton(text=text.notification, callback_data=text.notification)
     )
     inline_keyboard.add(
-        InlineKeyboardButton(text=text.user_profile, url="https://itcoty.ru/")
+        InlineKeyboardButton(
+            text=text.filter_history, callback_data=text.filter_history
+        )
     )
     inline_keyboard.add(
-        InlineKeyboardButton(text=text.restart, callback_data=text.restart)
+        InlineKeyboardButton(text=text.user_profile, url="https://itcoty.ru/")
     )
+    # inline_keyboard.add(
+    #     InlineKeyboardButton(text=text.restart, callback_data=text.restart)
+    # )
     return inline_keyboard

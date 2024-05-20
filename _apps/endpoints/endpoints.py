@@ -8,8 +8,10 @@ from multiprocessing import Process
 import time
 import psycopg2
 from aiogram.types import Message, Chat
-from flask import Flask
+from flask import Flask, jsonify
 import random
+import datetime
+from _apps.individual_tg_bot.text import once_per_day
 from db_operations.scraping_db import DataBaseOperations
 from utils.additional_variables.additional_variables import admin_database, admin_table_fields, preview_fields_for_web
 from helper_functions.helper_functions import to_dict_from_admin_response
@@ -26,9 +28,7 @@ import requests
 from invite_bot_ver2 import InviteBot, start_hardpushing
 from _apps.endpoints.predictive_method import Predictive
 from _apps.endpoints.client_init import ClientTelethon
-from flask import Flask, jsonify
-import datetime
-from _apps.individual_tg_bot.text import once_per_day
+
 from _apps.individual_tg_bot.service import db as individual_tg_bot_db
 
 db=DataBaseOperations()
