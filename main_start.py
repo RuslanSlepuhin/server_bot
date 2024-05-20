@@ -10,7 +10,7 @@ from _apps.endpoints import endpoints
 from multiprocessing import Process, Pool
 import settings.os_getenv as settings
 from _apps.coffee_customer_bot_apps.coffee_customer_bot.coffee_customer_bot import CustomerBot
-from _apps.coffee_customer_bot_apps.coffee_horeca_bot.coffee_horeca_bot_NEW import HorecaBot
+# from _apps.coffee_customer_bot_apps.coffee_horeca_bot.coffee_horeca_bot_NEW import HorecaBot
 from _apps.coffee_customer_bot_apps.endpoints.endpoints import Endpoints
 from _apps.chat.bot_tg import ChatBot
 from _apps.coffee_customer_bot_apps.back_server_side.back_server_side import BackServer
@@ -22,7 +22,7 @@ config_FCM.read('_apps/coffee_customer_bot_apps/settings/config.ini')
 
 customer_token = config_FCM['Bot']['customer_token']
 horeca_token = config_FCM['Bot']['horeca_token']
-horeca_bot = HorecaBot(horeca_token)
+# horeca_bot = HorecaBot(horeca_token)
 customer_bot = CustomerBot(customer_token)
 
 num_processes = os.cpu_count()
