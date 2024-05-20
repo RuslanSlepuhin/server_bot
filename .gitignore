@@ -34,3 +34,4 @@ delete*.py
 /test*.py
 /_apps/itcoty_web/api/migrations/
 /*.log
+/_apps/coffee_customer_bot_apps/settings/config.ini
