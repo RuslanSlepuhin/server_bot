@@ -8,7 +8,7 @@ async def direction_design_callback(query: CallbackQuery, state: FSMContext) -> 
     """Обработка callback design"""
     await state.update_data(selected_direction=query.data)
     await query.message.answer(
-        text=f"{text.specialization} {text.design}",
+        text=f"{text.specialization} {text.design}\n{text.multiple_choice}",
         reply_markup=kb.design_button(),
     )
 
@@ -17,7 +17,7 @@ async def direction_backend_callback(query: CallbackQuery, state: FSMContext) ->
     """Обработка callback backend"""
     await state.update_data(selected_direction=query.data)
     await query.message.answer(
-        text=f"{text.specialization} {text.backend}",
+        text=f"{text.specialization} {text.backend}\n{text.multiple_choice}",
         reply_markup=kb.backend_button(),
     )
 
@@ -26,7 +26,7 @@ async def direction_analyst_callback(query: CallbackQuery, state: FSMContext) ->
     """Обработка callback analyst"""
     await state.update_data(selected_direction=query.data)
     await query.message.answer(
-        text=f"{text.specialization} {text.analyst}",
+        text=f"{text.specialization} {text.analyst}\n{text.multiple_choice}",
         reply_markup=kb.analyst_button(),
     )
 
@@ -35,7 +35,7 @@ async def direction_mobile_callback(query: CallbackQuery, state: FSMContext) -> 
     """Обработка callback mobile"""
     await state.update_data(selected_direction=query.data)
     await query.message.answer(
-        text=f"{text.specialization} {text.mobile}",
+        text=f"{text.specialization} {text.mobile}\n{text.multiple_choice}",
         reply_markup=kb.mobile_button(),
     )
 
@@ -44,7 +44,7 @@ async def direction_marketing_callback(query: CallbackQuery, state: FSMContext) 
     """Обработка callback marketing"""
     await state.update_data(selected_direction=query.data)
     await query.message.answer(
-        text=f"{text.specialization} {text.marketing}",
+        text=f"{text.specialization} {text.marketing}\n{text.multiple_choice}",
         reply_markup=kb.marketing_button(),
     )
 
@@ -55,7 +55,7 @@ async def direction_product_project_manager_callback(
     """Обработка callback product_project_manager"""
     await state.update_data(selected_direction=query.data)
     await query.message.answer(
-        text=f"{text.specialization} {text.product_project_manager}",
+        text=f"{text.specialization} {text.product_project_manager}\n{text.multiple_choice}",
         reply_markup=kb.product_project_manager_button(),
     )
 
@@ -64,7 +64,7 @@ async def direction_sales_callback(query: CallbackQuery, state: FSMContext) -> N
     """Обработка callback sales"""
     await state.update_data(selected_direction=query.data)
     await query.message.answer(
-        text=f"{text.specialization} {text.sales}",
+        text=f"{text.specialization} {text.sales}\n{text.multiple_choice}",
         reply_markup=kb.sales_button(),
     )
 
@@ -73,7 +73,7 @@ async def direction_dev_ops_callback(query: CallbackQuery, state: FSMContext) ->
     """Обработка callback dev_ops"""
     await state.update_data(selected_direction=query.data)
     await query.message.answer(
-        text=f"{text.specialization} {text.dev_ops}",
+        text=f"{text.specialization} {text.dev_ops}\n{text.multiple_choice}",
         reply_markup=kb.dev_ops_button(),
     )
 
@@ -82,7 +82,7 @@ async def direction_frontend_callback(query: CallbackQuery, state: FSMContext) -
     """Обработка callback frontend"""
     await state.update_data(selected_direction=query.data)
     await query.message.answer(
-        text=f"{text.specialization} {text.frontend}",
+        text=f"{text.specialization} {text.frontend}\n{text.multiple_choice}",
         reply_markup=kb.frontend_button(),
     )
 
@@ -91,7 +91,7 @@ async def direction_support_callback(query: CallbackQuery, state: FSMContext) ->
     """Обработка callback support"""
     await state.update_data(selected_direction=query.data)
     await query.message.answer(
-        text=f"{text.specialization} {text.support}",
+        text=f"{text.specialization} {text.support}\n{text.multiple_choice}",
         reply_markup=kb.support_button(),
     )
 
@@ -100,7 +100,7 @@ async def direction_fullstack_callback(query: CallbackQuery, state: FSMContext) 
     """Обработка callback fullstack"""
     await state.update_data(selected_direction=query.data)
     await query.message.answer(
-        text=f"{text.specialization} {text.fullstack}",
+        text=f"{text.specialization} {text.fullstack}\n{text.multiple_choice}",
         reply_markup=kb.fullstack_button(),
     )
 
@@ -109,7 +109,7 @@ async def direction_hr_callback(query: CallbackQuery, state: FSMContext) -> None
     """Обработка callback hr"""
     await state.update_data(selected_direction=query.data)
     await query.message.answer(
-        text=f"{text.specialization} {text.hr}",
+        text=f"{text.specialization} {text.hr}\n{text.multiple_choice}",
         reply_markup=kb.hr_button(),
     )
 
@@ -118,7 +118,7 @@ async def direction_game_dev_callback(query: CallbackQuery, state: FSMContext) -
     """Обработка callback game_dev"""
     await state.update_data(selected_direction=query.data)
     await query.message.answer(
-        text=f"{text.specialization} {text.game_dev}",
+        text=f"{text.specialization} {text.game_dev}\n{text.multiple_choice}",
         reply_markup=kb.game_dev_button(),
     )
 
@@ -127,6 +127,6 @@ async def direction_qa_callback(query: CallbackQuery, state: FSMContext) -> None
     """Обработка callback qa"""
     await state.update_data(selected_direction=query.data)
     await query.message.answer(
-        text=f"{text.specialization} {text.qa}",
+        text=f"{text.specialization} {text.qa}\n{text.multiple_choice}",
         reply_markup=kb.qa_button(),
     )
