@@ -9,13 +9,13 @@ from _apps.coffee_customer_bot_apps.coffee_horeca_bot.webhook import WebHoock
 from _debug import debug
 
 config = configparser.ConfigParser()
-config.read("./_apps./coffee_customer_bot_apps/settings/config.ini")
+config.read("./_apps./coffee_customer_bot_apps/settings/config.ini") if __name__ != '__main__' else config.read("./../settings/config.ini")
 
 token = config['Bot']['horeca_token']
 bot = Bot(token=token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
-ngrok_payload = "415a-178-127-171-19"
+ngrok_payload = "1bfd-178-127-171-19"
 WEBHOOK_URL = f"https://{ngrok_payload}.ngrok-free.app" if debug else "https://4dev.itcoty.ru"
 WEBHOOK_PATH = '/horeca/wh'
 NEW_ORDER_PATH = new_order_endpoint
@@ -118,4 +118,8 @@ class HorecaBot:
 
         web.run_app(app, host='0.0.0.0', port=4000)
         # executor.start_polling(self.dp, skip_updates=True)
+
+if __name__ == "__main__":
+    b = HorecaBot()
+    b.bot_handlers()
 
