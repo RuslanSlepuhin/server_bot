@@ -137,7 +137,6 @@ if __name__ == "__main__":
     # p13 = Process(target=start_chat, args=())
     # p14 = Process(target=form_app_start, args=())
 
-
     p1.start()
     p2.start()
     p3.start()
