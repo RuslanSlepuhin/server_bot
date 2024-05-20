@@ -128,7 +128,7 @@ if __name__ == "__main__":
     # coffee project (horeca and customer bots with flask endpoints)
     # p8 = Process(target=start_customer_bot_FCM, args=())
     p9 = Process(target=start_horeca_bot_FCM, args=())
-    p10 = Process(target=start_endpoints_FCM, args=())
+    # p10 = Process(target=start_endpoints_FCM, args=())
     # mock server
     # p11 = Process(target=mock_server_FCM, args=())
 
@@ -149,7 +149,7 @@ if __name__ == "__main__":
     p76.start()
     # p8.start()
     p9.start()
-    p10.start()
+    # p10.start()
     # p11.start()
     # p12.start()
     # p13.start()
@@ -166,7 +166,7 @@ if __name__ == "__main__":
     p76.join()
     # p8.join()
     p9.join()
-    p10.join()
+    # p10.join()
     # p11.join()
     # p12.join()
     # p13.join()
