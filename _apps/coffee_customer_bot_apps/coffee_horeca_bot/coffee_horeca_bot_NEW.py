@@ -10,7 +10,7 @@ from _debug import debug
 
 config = configparser.ConfigParser()
 
-path = ".\_apps\coffee_customer_bot_apps\settings\config.ini"
+path = ".\..\settings\config.ini"
 print(path)
 config.read(path)
 token = config['Bot']['horeca_token']
@@ -28,9 +28,6 @@ class HorecaBot:
     Bot.set_current(bot)
 
     def __init__(self, token=None, bot=None):
-        config = configparser.ConfigParser()
-        path = ".\_apps\coffee_customer_bot_apps\settings\config.ini"
-        config.read(path)
         self.__token = token if token else config['Bot']['horeca_token']
         self.bot = Bot(token=self.__token) if not bot else bot
         self.dp = Dispatcher(self.bot, storage=MemoryStorage())
