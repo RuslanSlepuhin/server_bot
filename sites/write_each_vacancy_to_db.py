@@ -186,7 +186,7 @@ class HelperSite_Parser:
         # city and country refactoring
         if self.results_dict['city']:
             city_country = await self.find_parameters.find_city_country(text=self.results_dict['city'])
-            print(f"city_country: {self.results_dict['city']} -> {city_country}")
+            # print(f"city_country: {self.results_dict['city']} -> {city_country}")
             if city_country:
                 self.results_dict['city'] = city_country
             else:

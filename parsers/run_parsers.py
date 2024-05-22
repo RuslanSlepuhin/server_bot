@@ -22,24 +22,26 @@ report = Reports()
 
 
 def run_hh():
-    hh = HHGetInformation(report=report)
-    asyncio.run(hh.get_content(words_pattern=valid_professions))
+    # hh = HHGetInformation(report=report)
+    # asyncio.run(hh.get_content(words_pattern=valid_professions))
+    pass
 
 
 async def run_others():
-    # await HHKzGetInformation(report=report).get_content(words_pattern=valid_professions)
-    await GeekGetInformation(report=report).get_content()
-    await EpamGetInformation(report=report).get_content(words_pattern=valid_professions)
-    await DevGetInformation(report=report).get_content(words_pattern=valid_professions)
-    await СareerjetGetInformation(report=report).get_content(words_pattern=valid_professions)
-    await HabrGetInformation(report=report).get_content()
-    await FinderGetInformation(report=report).get_content(words_pattern=valid_professions)
-    await PracaGetInformation(report=report).get_content(words_pattern=valid_professions)
-    await RemocateGetInformation(report=report).get_content()
-    await HHITGetInformation(report=report).get_content(words_pattern=valid_professions)
-    await RemoteJobGetInformation(report=report).get_content()
-    await OttaGetInformation(report=report).get_content()
-    await WellFoundGetInformation(report=report).get_content()
+    while True:
+        # await HHKzGetInformation(report=report).get_content(words_pattern=valid_professions)
+        await GeekGetInformation(report=report).get_content()
+        await EpamGetInformation(report=report).get_content(words_pattern=valid_professions)
+        await DevGetInformation(report=report).get_content(words_pattern=valid_professions)
+        await СareerjetGetInformation(report=report).get_content(words_pattern=valid_professions)
+        await HabrGetInformation(report=report).get_content()
+        await FinderGetInformation(report=report).get_content(words_pattern=valid_professions)
+        await PracaGetInformation(report=report).get_content(words_pattern=valid_professions)
+        await RemocateGetInformation(report=report).get_content()
+        await HHITGetInformation(report=report).get_content(words_pattern=valid_professions)
+        await RemoteJobGetInformation(report=report).get_content()
+        await OttaGetInformation(report=report).get_content()
+        await WellFoundGetInformation(report=report).get_content()
 
 
 def run_asyncio_tasks():
