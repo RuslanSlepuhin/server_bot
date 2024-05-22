@@ -129,31 +129,31 @@ def start_parser_automatically():
     from parsers.run_parsers import common_run_parsers
     common_run_parsers()
 
-def start_hh_parser():
-    asyncio.run(HHGetInformation(report=report).get_content(words_pattern=valid_professions))
-
-def start_other_parsers():
-    asyncio.run(all_parsers())
-
-async def all_parsers():
-    # await HHKzGetInformation(report=report).get_content(words_pattern=valid_professions)
-    await GeekGetInformation(report=report).get_content()
-    await EpamGetInformation(report=report).get_content(words_pattern=valid_professions)
-    await DevGetInformation(report=report).get_content(words_pattern=valid_professions)
-    await СareerjetGetInformation(report=report).get_content(words_pattern=valid_professions)
-    await HabrGetInformation(report=report).get_content()
-    await FinderGetInformation(report=report).get_content(words_pattern=valid_professions)
-    await PracaGetInformation(report=report).get_content(words_pattern=valid_professions)
-    await RemocateGetInformation(report=report).get_content()
-    await HHITGetInformation(report=report).get_content(words_pattern=valid_professions)
-    await RemoteJobGetInformation(report=report).get_content()
-    await OttaGetInformation(report=report).get_content()
-    await WellFoundGetInformation(report=report).get_content()
-
-def set_cpu_affinity(process, cpus):
-    p = psutil.Process(process.pid)
-    p.cpu_affinity(cpus)
-
+# def start_hh_parser():
+#     asyncio.run(HHGetInformation(report=report).get_content(words_pattern=valid_professions))
+#
+# def start_other_parsers():
+#     asyncio.run(all_parsers())
+#
+# async def all_parsers():
+#     # await HHKzGetInformation(report=report).get_content(words_pattern=valid_professions)
+#     await GeekGetInformation(report=report).get_content()
+#     await EpamGetInformation(report=report).get_content(words_pattern=valid_professions)
+#     await DevGetInformation(report=report).get_content(words_pattern=valid_professions)
+#     await СareerjetGetInformation(report=report).get_content(words_pattern=valid_professions)
+#     await HabrGetInformation(report=report).get_content()
+#     await FinderGetInformation(report=report).get_content(words_pattern=valid_professions)
+#     await PracaGetInformation(report=report).get_content(words_pattern=valid_professions)
+#     await RemocateGetInformation(report=report).get_content()
+#     await HHITGetInformation(report=report).get_content(words_pattern=valid_professions)
+#     await RemoteJobGetInformation(report=report).get_content()
+#     await OttaGetInformation(report=report).get_content()
+#     await WellFoundGetInformation(report=report).get_content()
+#
+# def set_cpu_affinity(process, cpus):
+#     p = psutil.Process(process.pid)
+#     p.cpu_affinity(cpus)
+#
 
 if __name__ == "__main__":
     # vacancies bot (red, green) and flask endpoints
@@ -200,7 +200,7 @@ if __name__ == "__main__":
     p75.start()
     p76.start()
     p77.start()
-    set_cpu_affinity(p77, [0])
+    # set_cpu_affinity(p77, [0])
 
     # p78.start()
     # p79.start()
