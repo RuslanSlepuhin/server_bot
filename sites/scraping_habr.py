@@ -34,9 +34,8 @@ class HabrGetInformation:
         self.msg = None
         self.written_vacancies = 0
         self.rejected_vacancies = 0
-        if self.bot_dict:
-            self.bot = self.bot_dict['bot']
-            self.chat_id = self.bot_dict['chat_id']
+        self.bot = self.bot_dict['bot'] if self.bot_dict else None
+        self.chat_id = self.bot_dict['chat_id'] if self.bot_dict else None
         self.browser = None
         self.url_main = 'https://career.habr.com'
         self.count_message_in_one_channel = 1
