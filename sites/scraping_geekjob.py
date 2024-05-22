@@ -32,9 +32,8 @@ class GeekGetInformation:
         self.msg = None
         self.written_vacancies = 0
         self.rejected_vacancies = 0
-        if self.bot_dict:
-            self.bot = self.bot_dict['bot']
-            self.chat_id = self.bot_dict['chat_id']
+        self.bot = self.bot_dict['bot'] if self.bot_dict else None
+        self.chat_id = self.bot_dict['chat_id'] if self.bot_dict else None
         self.browser = None
         self.main_url = 'https://geekjob.ru'
         self.count_message_in_one_channel = 1
@@ -120,6 +119,8 @@ class GeekGetInformation:
                 vacancy_url = self.main_url + vacancy_url
             except:
                 vacancy_url = link
+
+            print(link)
 
             # pre-checking by link
             check_vacancy_not_exists = self.db.check_exists_message_by_link_or_url(
