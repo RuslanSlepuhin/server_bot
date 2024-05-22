@@ -3301,32 +3301,35 @@ class InviteBot():
 
         async def get_news(message, silent=False):
 
-            if await self.change_parser_status(message):
+            # if await self.change_parser_status(message):
                 # ----------------- make the current session and write it in DB ----------------------
-                self.current_session = datetime.now().strftime("%Y%m%d%H%M%S")
-                self.db.write_current_session(self.current_session)
-                await self.bot_aiogram.send_message(message.chat.id, f'Session is {self.current_session}')
-                await asyncio.sleep(1)
-                self.start_time_scraping_channels = datetime.now()
-                print('time_start = ', self.start_time_scraping_channels)
+            self.current_session = datetime.now().strftime("%Y%m%d%H%M%S")
+            self.db.write_current_session(self.current_session)
+            await self.bot_aiogram.send_message(message.chat.id, f'Session is {self.current_session}')
+            await asyncio.sleep(1)
+            self.start_time_scraping_channels = datetime.now()
+            print('time_start = ', self.start_time_scraping_channels)
 
-                bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
-                # await main(report=self.report, client=self.client, bot_dict=bot_dict)
-                # await self.report.add_to_excel(report_type='parsing')
-                sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
-                await sites_parser.call_sites()
-                # digest_parser = DigestParser(client=self.client, bot_dict=bot_dict, report=self.report)
-                # try:
-                #     await digest_parser.main_start()
-                # except Exception as e:
-                #     await self.bot_aiogram.send_message(Message.chat.id, f"DIGEST error: {e}")
-                await self.bot_aiogram.send_message(message.chat.id, "Digest parsing has been done")
+            bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
+            # await main(report=self.report, client=self.client, bot_dict=bot_dict)
+            # await self.report.add_to_excel(report_type='parsing')
+            sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
 
-                await self.change_parser_status(message, before_parsing=False)
+            task = asyncio.create_task(sites_parser.common_run_parsers())
+            await task
 
-            else:
-                await self.bot_aiogram.send_message(message.chat.id,
-                                                    "Sorry, parser at work. Request a stop from developers")
+            # digest_parser = DigestParser(client=self.client, bot_dict=bot_dict, report=self.report)
+            # try:
+            #     await digest_parser.main_start()
+            # except Exception as e:
+            #     await self.bot_aiogram.send_message(Message.chat.id, f"DIGEST error: {e}")
+            await self.bot_aiogram.send_message(message.chat.id, "Digest parsing has been done")
+
+            # await self.change_parser_status(message, before_parsing=False)
+
+            # else:
+            #     await self.bot_aiogram.send_message(message.chat.id,
+            #                                         "Sorry, parser at work. Request a stop from developers")
 
         async def debug_function():
             response = self.db.get_all_from_db(
