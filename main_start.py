@@ -3,7 +3,7 @@ import configparser
 import os
 import subprocess
 from _apps.amin_panel_tg_view.views.bot.bot_view import BotView
-from _apps.coffee_customer_bot_apps.coffee_horeca_bot.coffee_horeca_bot_NEW import HorecaBot
+# from _apps.coffee_customer_bot_apps.coffee_horeca_bot.coffee_horeca_bot_NEW import HorecaBot
 from _apps.talking_bot.mvp_connect_talking_bot import talking_bot_run
 from _apps.web_form_bot.bot_webhooks import bot_init
 from invite_bot_ver2 import run as run_parser_bot
