@@ -3,6 +3,7 @@ import configparser
 import os
 import subprocess
 from _apps.amin_panel_tg_view.views.bot.bot_view import BotView
+from _apps.coffee_customer_bot_apps.coffee_horeca_bot.coffee_horeca_bot_NEW import HorecaBot
 from _apps.talking_bot.mvp_connect_talking_bot import talking_bot_run
 from _apps.web_form_bot.bot_webhooks import bot_init
 from invite_bot_ver2 import run as run_parser_bot
@@ -22,7 +23,7 @@ config_FCM.read('_apps/coffee_customer_bot_apps/settings/config.ini')
 
 customer_token = config_FCM['Bot']['customer_token']
 horeca_token = config_FCM['Bot']['horeca_token']
-# horeca_bot = HorecaBot(horeca_token)
+# horeca_bot = HorecaBot()
 customer_bot = CustomerBot(customer_token)
 
 num_processes = os.cpu_count()
@@ -54,8 +55,8 @@ def start_customer_bot_FCM():
     # customer_bot.bot_handlers()
 
 def start_horeca_bot_FCM():
-    pass
     # horeca_bot.bot_handlers()
+    pass
 
 def start_endpoints_FCM():
     pass
