@@ -345,5 +345,5 @@ class HorecaBotMethods:
 
     async def notification(self, message: types.Message):
         not_message = await self.main_class.bot.send_message(message.chat.id, "Обновлено успешно")
-        await asyncio.sleep(2)
+        await asyncio.sleep(0,5)
         await not_message.delete()
