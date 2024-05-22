@@ -16,7 +16,8 @@ class WebHoock:
 
     async def get_new_order(self, request):
         data = await request.json()
-        await self.main.new_order(order=data)
+        for object in data:
+            await self.main.methods.new_order(order=object)
         return web.Response()
 
     async def provide_message_from_customer(self, request):
