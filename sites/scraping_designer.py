@@ -38,12 +38,16 @@ class DesignerGetInformation:
         if self.bot_dict:
             self.bot = self.bot_dict['bot']
             self.chat_id = self.bot_dict['chat_id']
+        else:
+            self.bot = None
+            self.chat_id = None
         self.browser = None
         self.main_url = 'https://designer.ru'
         self.count_message_in_one_channel = 1
         self.found_by_link = 0
         self.response = None
         self.helper = helper
+        self.browser = kwargs['browser'] if kwargs.get('browser') else None
 
     async def get_content(self, db_tables=None):
         self.db_tables = db_tables
@@ -54,7 +58,7 @@ class DesignerGetInformation:
             if self.bot:
                 await self.bot.send_message(self.chat_id, f"Error: {ex}")
 
-        if self.report and self.helper:
+        if self.report and self.helper and self.chat_id:
             try:
                 await self.report.add_to_excel()
                 await self.helper.send_file_to_user(
@@ -70,13 +74,14 @@ class DesignerGetInformation:
 
     async def get_info(self):
         # -------------------- check what is current session --------------
-        try:
-            self.browser = webdriver.Chrome(
-                executable_path=chrome_driver_path,
-                options=options
-            )
-        except:
-            self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        if not self.browser:
+            try:
+                self.browser = webdriver.Chrome(
+                    executable_path=chrome_driver_path,
+                    options=options
+                )
+            except:
+                self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
         self.current_session = await self.helper_parser_site.get_name_session()
         if self.bot_dict:

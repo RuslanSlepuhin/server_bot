@@ -10,7 +10,6 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
-
 from db_operations.scraping_db import DataBaseOperations
 from utils.additional_variables.additional_variables import vacancies_database
 from sites.write_each_vacancy_to_db import HelperSite_Parser
@@ -88,12 +87,14 @@ class HHGetInformation:
             "page=**page"
         )
 
-        self.main_class = kwargs['main_class']
+        self.main_class = kwargs['main_class'] if kwargs.get('main_class') else None
         self.source_title_name = "https://hh.ru"
         self.source_short_name = "HH"
 
         self.links_in_past = []
         self.links_x_path = ["//h2[@class='bloko-header-section-2']/span/a", "//h3[@class='bloko-header-section-3']/span/span/a"]
+        self.browser = kwargs['browser'] if kwargs.get('browser') else None
+        pass
 
     async def get_content(self, *args, **kwargs):
         await self.report.reset_collect_parser_links()
@@ -136,7 +137,8 @@ class HHGetInformation:
 
     async def get_info(self, how_much_pages=6, separator="+"):
         separator = separator if not self.searching_text_separator else self.searching_text_separator
-        await self.get_browser()
+        if not self.browser:
+            await self.get_browser()
 
         self.words_pattern = [self.words_pattern] if type(self.words_pattern) is str else self.words_pattern
         for word in self.words_pattern:
