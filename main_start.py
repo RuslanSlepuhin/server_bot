@@ -104,6 +104,10 @@ def start_flask_endpoints_indiv_bot():
     # from _apps.individual_tg_bot import flask_endpoint
     pass
 
+def start_parser_automatically():
+    from parsers.run_parsers import common_run_parsers
+    common_run_parsers()
+
 if __name__ == "__main__":
     # t_init = Process(target=telegram_init_method, args=())
     # t_init.start()
@@ -125,6 +129,7 @@ if __name__ == "__main__":
     p7 = Process(target=auth_start, args=())
     p75 = Process(target=start_individ_bot, args=())
     p76 = Process(target=start_flask_endpoints_indiv_bot, args=())
+    p77 = Process(target=start_parser_automatically, args=())
 
     # coffee project (horeca and customer bots with flask endpoints)
     # p8 = Process(target=start_customer_bot_FCM, args=())
@@ -147,6 +152,7 @@ if __name__ == "__main__":
     p7.start()
     p75.start()
     p76.start()
+    p77.start()
     # p8.start()
     # p9.start()
     # p10.start()
@@ -164,6 +170,7 @@ if __name__ == "__main__":
     p7.join()
     p75.join()
     p76.join()
+    p77.join()
     # p8.join()
     # p9.join()
     # p10.join()
