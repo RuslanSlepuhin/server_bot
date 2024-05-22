@@ -199,7 +199,7 @@ if __name__ == "__main__":
     p7.start()
     p75.start()
     p76.start()
-    p77.start()
+    # p77.start()
     # set_cpu_affinity(p77, [0])
 
     # p78.start()
@@ -224,7 +224,7 @@ if __name__ == "__main__":
     p7.join()
     p75.join()
     p76.join()
-    p77.join()
+    # p77.join()
     # p78.join()
     # p79.join()
 
