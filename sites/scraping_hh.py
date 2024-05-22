@@ -132,7 +132,7 @@ class HHGetInformation:
             try:
                 self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
             except Exception as ex:
-                print(ex)
+                print("get_browser", ex)
             pass
 
     async def get_info(self, how_much_pages=6, separator="+"):
@@ -183,7 +183,7 @@ class HHGetInformation:
                 except Exception as ex:
                     print("get_links -> ", ex)
                 if all_links:
-                    print("get_links -> XPATH: ", link_x_path)
+                    # print("get_links -> XPATH: ", link_x_path)
                     break
             return all_links
 
@@ -406,7 +406,7 @@ class HHGetInformation:
                     print("collect_result_dict (1)", ex)
                     pass
                 try:
-                    print('collect_result_dict -> sort profession (33)')
+                    # print('collect_result_dict -> sort profession (33)')
                     await self.output_logs(
                         about_vacancy=response,
                         vacancy=kwargs['vacancy'],
