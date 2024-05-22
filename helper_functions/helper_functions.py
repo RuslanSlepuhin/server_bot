@@ -828,6 +828,7 @@ async def statistics_from_db(db_class, table=admin_database, fields=admin_table_
     last_session = await get_last_session_number(db_class)
 
     statistics_dict = {}
+    summ_dict = {}
     for profession in valid_professions:
         params = f"WHERE profession LIKE '%{profession}%'" if profession !='ba' else f"profession='{profession}' "
         params += f"AND session='{last_session}'"
@@ -839,6 +840,11 @@ async def statistics_from_db(db_class, table=admin_database, fields=admin_table_
         )
         statistics_dict[profession] = str(last_session_vacancies[0][0])
 
+        if not summ_dict.get('last_session'):
+            summ_dict['last_session'] = last_session_vacancies[0][0]
+        else:
+            summ_dict['last_session'] += last_session_vacancies[0][0]
+
     for profession in valid_professions:
         params = f"WHERE profession LIKE '%{profession}%'" if profession !='ba' else f"profession='{profession}' "
         all_vacancies = db_class.get_all_from_db(
@@ -849,22 +855,34 @@ async def statistics_from_db(db_class, table=admin_database, fields=admin_table_
         )
         statistics_dict[profession] += f"/{str(all_vacancies[0][0])}"
 
+        if not summ_dict.get('all_vacancies'):
+            summ_dict['all_vacancies'] = all_vacancies[0][0]
+        else:
+            summ_dict['all_vacancies'] += all_vacancies[0][0]
+
     for profession in valid_professions:
         params = f"WHERE profession LIKE '%{profession}%' " if profession !='ba' else f"profession='{profession}' "
         params += "AND approved NOT LIKE '%admin%'"
-        all_vacancies = db_class.get_all_from_db(
+        not_approved = db_class.get_all_from_db(
             field="COUNT(*)",
             without_sort=True,
             table_name=table,
             param=params,
         )
-        statistics_dict[profession] += f"/{str(all_vacancies[0][0])}"
+        statistics_dict[profession] += f"/{str(not_approved[0][0])}"
+
+        if not summ_dict.get('not_approved'):
+            summ_dict['not_approved'] = not_approved[0][0]
+        else:
+            summ_dict['not_approved'] += not_approved[0][0]
 
 
     output_text = "Statistics:\nby last session/all vacancies/not approved:\n\n"
     for key in statistics_dict:
         output_text += f"{key}: {statistics_dict[key]}\n"
-    # output_text += [f"{key}: {statistics_dict[key]}" for key in statistics_dict]
+    output_text += "\n----\nTotal: "
+    summ_dict = list(summ_dict.values())
+    output_text += "/".join([str(i) for i in summ_dict])
     return output_text
 
 
