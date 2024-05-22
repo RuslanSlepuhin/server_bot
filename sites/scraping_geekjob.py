@@ -45,7 +45,7 @@ class GeekGetInformation:
         try:
             await self.get_info()
         except Exception as ex:
-            print(f"Error: {ex}")
+            print(f"{self.main_url}: Error: {ex}")
             if self.bot:
                 await self.bot.send_message(self.chat_id, f"Error: {ex}")
 
@@ -58,7 +58,7 @@ class GeekGetInformation:
                     path=self.report.keys.report_file_path['parsing'],
                 )
             except Exception as ex:
-                print(f"Error: {ex}")
+                print(f"{self.main_url}: Error: {ex}")
                 if self.bot:
                     await self.bot.send_message(self.chat_id, f"Error: {ex}")
         self.browser.quit()
@@ -120,7 +120,7 @@ class GeekGetInformation:
             except:
                 vacancy_url = link
 
-            print(f"\n{vacancy_url}\n")
+            print(f"{self.main_url}: \n{vacancy_url}\n")
 
             # pre-checking by link
             check_vacancy_not_exists = self.db.check_exists_message_by_link_or_url(
@@ -134,7 +134,7 @@ class GeekGetInformation:
                     soup = BeautifulSoup(self.browser.page_source, 'lxml')
                 except Exception as ex:
                     found_vacancy = False
-                    print(f"error in browser.get {ex}")
+                    print(f"{self.main_url}: error in browser.get {ex}")
 
                 if found_vacancy:
                     # get vacancy ------------------------
@@ -278,7 +278,7 @@ class GeekGetInformation:
                         self.response = response
             else:
                 self.found_by_link += 1
-                print("vacancy link exists")
+                print(f"{self.main_url}: vacancy link exists")
 
         if self.found_by_link > 0:
             self.count_message_in_one_channel += self.found_by_link
