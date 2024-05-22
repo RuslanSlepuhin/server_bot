@@ -329,7 +329,7 @@ class HorecaBotMethods:
             return response
 
         except Exception as ex:
-            print(ex)
+            print('new_order', ex)
             return {'response': f'Bot error: {str(ex)}'}
 
     async def get_all_orders_id(self) -> list:
