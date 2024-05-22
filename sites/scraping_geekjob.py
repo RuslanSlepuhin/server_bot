@@ -120,7 +120,7 @@ class GeekGetInformation:
             except:
                 vacancy_url = link
 
-            print(link)
+            print(f"\n{vacancy_url}\n")
 
             # pre-checking by link
             check_vacancy_not_exists = self.db.check_exists_message_by_link_or_url(
