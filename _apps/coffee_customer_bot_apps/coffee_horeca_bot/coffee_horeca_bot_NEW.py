@@ -9,7 +9,7 @@ from _apps.coffee_customer_bot_apps.coffee_horeca_bot.webhook import WebHoock
 from _debug import debug
 
 config = configparser.ConfigParser()
-config.read("./_apps./coffee_customer_bot_apps/settings/config.ini")
+config.read("./_apps/coffee_customer_bot_apps/settings/config.ini") if not debug else config.read("./../settings.config.ini")
 
 token = config['Bot']['horeca_token']
 bot = Bot(token=token)
