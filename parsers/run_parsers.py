@@ -22,9 +22,9 @@ report = Reports()
 
 
 def run_hh():
-    # hh = HHGetInformation(report=report)
-    # asyncio.run(hh.get_content(words_pattern=valid_professions))
-    pass
+    hh = HHGetInformation(report=report)
+    asyncio.run(hh.get_content(words_pattern=valid_professions))
+    # pass
 
 
 async def run_others():
