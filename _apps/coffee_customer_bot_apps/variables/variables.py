@@ -193,3 +193,4 @@ mock_object = [
         "horeca_name": "Vasilki"
     },
 ]
+

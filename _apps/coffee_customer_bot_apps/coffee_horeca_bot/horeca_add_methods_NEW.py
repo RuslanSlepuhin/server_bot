@@ -3,9 +3,10 @@ import json
 import random
 import requests
 from aiogram import types
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, WebAppInfo, KeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, WebAppInfo, KeyboardButton, \
+    callback_query
 from aiogram.utils.exceptions import MessageNotModified
-
+from _apps.coffee_customer_bot_apps.database import sqlite_management as db
 from _apps.coffee_customer_bot_apps.variables import variables
 from _debug import debug
 
@@ -36,7 +37,7 @@ class HorecaBotMethods:
             try:
                 orders_dict[item['order_id']] = item
             except Exception as ex:
-                print(ex)
+                print(f"data_by_user_to_dict_by_order_id: {ex}")
                 pass
         return orders_dict
 
@@ -64,10 +65,10 @@ class HorecaBotMethods:
                     buttons = variables.between_short_inline_buttons
                 text = await self.compose_short_text_from_order(order)
                 await self.custom_send_edit_message(chat_id=chat_id, text=text, buttons=buttons, order_id=order['order_id'])
-                pass
                 await asyncio.sleep(random.randrange(1, 3))
             else:
                 print("status is not for sending", order['order_indicator'])
+        await self.notification(message=message)
         if not order_counter:
             await self.main_class.bot.send_message(chat_id, "You have no paid orders")
 
@@ -103,12 +104,16 @@ class HorecaBotMethods:
         else:
             try:
                 message_id=kwargs['message'].message_id if kwargs.get('message') else self.main_class.message_dict[kwargs['order_id']].message_id
-                self.main_class.message_dict[kwargs['order_id']] = await self.main_class.bot.edit_message_text(chat_id=chat_id, message_id=message_id, text=kwargs['text'], reply_markup=markup)
+                current_message = self.main_class.message_dict[kwargs['order_id']]
+                if current_message.text != kwargs['text'] or current_message.reply_markup != markup or current_message.chat.id != chat_id:
+                    self.main_class.message_dict[kwargs['order_id']] = await self.main_class.bot.edit_message_text(chat_id=chat_id, message_id=message_id, text=kwargs['text'], reply_markup=markup)
             except MessageNotModified as ex:
-                print(ex)
-            except Exception as ex:
-                print(ex)
+                print(f"horeca_add_methods_NEW: custom_send_edit_message: MessageNotModified -> {ex}")
                 await self.main_class.message_dict[kwargs['order_id']].edit_text(text=kwargs['text'], reply_markup=markup)
+            except Exception as ex:
+                print(f"horeca_add_methods_NEW: custom_send_edit_message: Exception -> {ex}")
+                pass
+                # await self.main_class.message_dict[kwargs['order_id']].edit_text(text=kwargs['text'], reply_markup=markup)
 
 
     async def compose_full_text_from_order(self, order) -> str:
@@ -298,7 +303,7 @@ class HorecaBotMethods:
         try:
             msg = await self.main_class.bot.send_message(int(telegram_user_id), text="Проверка бота")
         except Exception as ex:
-            print(ex)
+            print(f"send_enter_key: {ex}")
             return {"bot_is_available": False}
         await self.main_class.bot.delete_message(telegram_user_id, msg.message_id)
         return {"bot_is_available": True}
@@ -338,3 +343,7 @@ class HorecaBotMethods:
             orders_ids_list.append(element['order_id'])
         return orders_ids_list
 
+    async def notification(self, message: types.Message):
+        not_message = await self.main_class.bot.send_message(message.chat.id, "Обновлено успешно")
+        await asyncio.sleep(0,5)
+        await not_message.delete()
