@@ -118,8 +118,8 @@ def telegram_init_method():
     asyncio.run(client_init())
 
 def start_individ_bot():
-    # from _apps.individual_tg_bot import main
-    pass
+    from _apps.individual_tg_bot import main
+    # pass
 
 def start_flask_endpoints_indiv_bot():
     # from _apps.individual_tg_bot import flask_endpoint
