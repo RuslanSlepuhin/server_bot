@@ -194,3 +194,4 @@ mock_object = [
     },
 ]
 
+updating_message = "Обновляем заказы"
