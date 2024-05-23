@@ -343,7 +343,14 @@ class HorecaBotMethods:
             orders_ids_list.append(element['order_id'])
         return orders_ids_list
 
-    async def notification(self, message: types.Message):
+    async def notification(self, message: types.Message) -> None:
         not_message = await self.main_class.bot.send_message(message.chat.id, "Обновлено успешно")
         await asyncio.sleep(0,5)
         await not_message.delete()
+
+    async def set_vars(self, message) -> None:
+        self.main_class.message_dict[message.chat.id] = {} if message.chat.id not in self.main_class.message_dict else self.main_class.message_dict[message.chat.id]
+        self.main_class.orders[message.chat.id] = [] if message.chat.id not in self.main_class.orders else self.main_class.orders[message.chat.id]
+        self.main_class.orders_dict[message.chat.id] = {} if message.chat.id not in self.main_class.orders_dict else self.main_class.orders_dict[message.chat.id]
+        self.main_class.callbacks[message.chat.id] = [] if message.chat.id not in self.main_class.callbacks else self.main_class.callbacks[message.chat.id]
+        self.main_class.confirm_message[message.chat.id] = {} if message.chat.id not in self.main_class.confirm_message else self.main_class.confirm_message[message.chat.id]
