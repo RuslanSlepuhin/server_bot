@@ -10,14 +10,14 @@ from _debug import debug
 
 config = configparser.ConfigParser()
 
-path = ".\..\settings\config.ini"
+path = "./_apps/coffee_customer_bot_apps/settings/config.ini"
 print(path)
 config.read(path)
 token = config['Bot']['horeca_token']
 bot = Bot(token=token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
-ngrok_payload = "24f4-178-127-171-19"
+ngrok_payload = "3a27-178-127-171-19"
 WEBHOOK_URL = f"https://{ngrok_payload}.ngrok-free.app" if debug else "https://4dev.itcoty.ru"
 WEBHOOK_PATH = '/horeca/wh'
 NEW_ORDER_PATH = new_order_endpoint
@@ -25,13 +25,13 @@ MESSAGE_FROM_CUSTOMER = provide_message_to_horeca_endpoint
 IS_HORECA_ACTIVE = is_horeca_active_endpoint
 
 class HorecaBot:
-    Bot.set_current(bot)
 
     def __init__(self, token=None, bot=None):
         self.__token = token if token else config['Bot']['horeca_token']
         self.bot = Bot(token=self.__token) if not bot else bot
         self.dp = Dispatcher(self.bot, storage=MemoryStorage())
-        self.user_id = None
+        Bot.set_current(self.bot)
+        self.user_id = None #None
         self.user_data = {}
         self.methods = HorecaBotMethods(self)
         self.webhook_methods = WebHoock(self)
@@ -41,6 +41,12 @@ class HorecaBot:
         self.orders_dict = {}
         self.callbacks = []
         self.confirm_message = {}
+
+        # self.message_dict = {}
+        # self.orders = {} #[]
+        # self.orders_dict = {}
+        # self.callbacks = {} #[]
+        # self.confirm_message = {}
 
     async def on_startup(self, app):
         await self.bot.set_webhook(WEBHOOK_URL + WEBHOOK_PATH)
@@ -67,13 +73,17 @@ class HorecaBot:
 
         @self.dp.message_handler(commands=['start'])
         async def start(message: types.Message):
-            # await self.bot.delete_message(message.chat.id, message.message_id)
 
+            # await self.methods.set_vars(message)
+
+            # if "/start" in message.text:
+            #     await self.bot.delete_message(message.chat.id, message.message_id)
+            #     pass
             enter_key = message.text.split("/start", 1)[1]
             if enter_key:
                 response = await self.methods.send_enter_key({"enter_key": enter_key.strip(), "telegram_user_id": message.chat.id})
 
-            start_message = await self.bot.send_message(message.chat.id, str(message.chat.id) + " Обновляем заказы", reply_markup=types.ReplyKeyboardRemove())
+            start_message = await self.bot.send_message(message.chat.id, str(message.chat.id) + f" {variables.updating_message}", reply_markup=types.ReplyKeyboardRemove())
             self.user_id = message.chat.id
             await self.methods.start(message)
             await start_message.delete()

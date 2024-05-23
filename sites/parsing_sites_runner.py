@@ -59,7 +59,7 @@ class SitesParser:
     async def call_sites(self):
         while True:
             # await HHGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
-            await HHKzGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
+            # await HHKzGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
             await GeekGetInformation(bot_dict=self.bot_dict, report=self.report).get_content()
             await EpamGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
             await DevGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
