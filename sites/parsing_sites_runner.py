@@ -57,8 +57,8 @@ class SitesParser:
         self.bot_dict = {'bot': self.bot, 'chat_id': self.chat_id}
 
     async def call_sites(self):
-        # await HHGetInformation(main_class=self, bot_dict=bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
-        # await HHKzGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
+        await HHGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
+        await HHKzGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
         await GeekGetInformation(bot_dict=self.bot_dict, report=self.report).get_content()
         await EpamGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
         await DevGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
