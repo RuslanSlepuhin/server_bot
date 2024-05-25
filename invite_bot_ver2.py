@@ -3315,7 +3315,7 @@ class InviteBot():
             # await self.report.add_to_excel(report_type='parsing')
             sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
 
-            task = asyncio.create_task(sites_parser.call_sites())
+            task = asyncio.create_task(sites_parser.common_run_parsers())
             await task
 
             # digest_parser = DigestParser(client=self.client, bot_dict=bot_dict, report=self.report)
