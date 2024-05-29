@@ -34,3 +34,4 @@ delete*.py
 /test.py
 /_apps/itcoty_web/api/migrations/
 /*.log
+/__backup__/
