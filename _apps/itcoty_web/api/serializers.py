@@ -7,7 +7,7 @@ from rest_framework import serializers
 
 from .classes import ProfileCountries
 from .forms import CustomAllAuthPasswordResetForm
-from .models import AdminVacancy, Vacancy
+from .models import AdminVacancy, Vacancy, Vacancies
 
 try:
     from allauth.account import app_settings as allauth_account_settings
@@ -162,6 +162,10 @@ class VacanciesSerializer(serializers.ModelSerializer):
             "internship",
         )
 
+class VacanciesSerializerOLD(serializers.ModelSerializer):
+    class Meta:
+        model = Vacancies
+        fields = "__all__"
 
 class ProfileSerializer(serializers.ModelSerializer):
     http_method_names = ["get", "put"]

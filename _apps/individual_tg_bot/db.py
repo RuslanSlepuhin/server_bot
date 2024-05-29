@@ -5,6 +5,8 @@ import asyncpg
 import psycopg2
 from psycopg2.extras import DictCursor
 
+from db_operations.scraping_db import DataBaseOperations
+
 
 class AsyncPGDatabase(DataBaseOperations):
     def __init__(self, url, **kwargs):
@@ -61,10 +63,17 @@ class AsyncPGDatabase(DataBaseOperations):
                     location VARCHAR(500),
                     work_format VARCHAR(500),
                     keywords VARCHAR(500),
-                    selected_notification VARCHAR(500)
+                    selected_notification VARCHAR(500),
+                    created_at TIMESTAMP DEFAULT NOW()
                 ) """
             )
-            self.logger.info("Table created")
+            await self.connection.execute(
+                """
+                CREATE INDEX IF NOT EXISTS idx_user_requests_user_id_created_at
+                ON user_requests(user_id, created_at)
+                """
+            )
+            self.logger.info("Table and index created successfully")
         except asyncpg.PostgresError as e:
             self.logger.error(f"Error creating table: {e}")
 
@@ -113,10 +122,7 @@ class AsyncPGDatabase(DataBaseOperations):
 
         try:
             cursor = self.connection_sync.cursor(cursor_factory=DictCursor)
-            query = """
-                            SELECT * FROM vacancies
-                            WHERE 
-                                """
+            query = """SELECT * FROM vacancies WHERE """
 
             level_conditions = " OR ".join(["level iLIKE %s" for _ in level.split()])
 
@@ -168,15 +174,36 @@ class AsyncPGDatabase(DataBaseOperations):
         except asyncpg.PostgresError as e:
             self.logger.error(f"Error inserting data: {e}")
 
-    async def delete_user_request(self, user_id):
+    async def delete_user_request(self, user_id=None, record_id=None):
         if not self.connection:
             await self.connect()
 
         try:
-            await self.connection.execute(
-                "DELETE FROM user_requests WHERE user_id = $1", user_id
-            )
-            self.logger.info("Data deleted successfully")
+            if user_id is not None:
+                await self.connection.execute(
+                    """
+                    DELETE FROM user_requests
+                    WHERE id = (
+                        SELECT id
+                        FROM user_requests
+                        WHERE user_id = $1
+                        ORDER BY created_at
+                        LIMIT 1
+                    )
+                    """,
+                    user_id,
+                )
+                self.logger.info("Data deleted successfully")
+            elif record_id is not None:
+                await self.connection.execute(
+                    """
+                    DELETE FROM user_requests
+                    WHERE id = $1
+                    """,
+                    record_id,
+                )
+                self.logger.info("Data deleted successfully")
+
         except asyncpg.PostgresError as e:
             self.logger.error(f"Error deleting data: {e}")
 
@@ -193,7 +220,7 @@ class AsyncPGDatabase(DataBaseOperations):
                         get_user, selected_notification
                     )
                 elif user_id is not None:
-                    get_user = "SELECT * FROM user_requests WHERE user_id = $1 LIMIT 1;"
+                    get_user = "SELECT * FROM user_requests WHERE user_id = $1 LIMIT 3;"
                     result_user_requests = await self.connection.fetch(
                         get_user, user_id
                     )
@@ -219,10 +246,7 @@ class AsyncPGDatabase(DataBaseOperations):
             self.connect_sync()
         try:
             cursor = self.connection_sync.cursor(cursor_factory=DictCursor)
-            query = """
-                                        SELECT * FROM vacancies
-                                        WHERE 
-                                            """
+            query = """ SELECT * FROM vacancies WHERE """
 
             level_conditions = " OR ".join(["level iLIKE %s" for _ in level.split()])
 
@@ -280,3 +304,15 @@ class AsyncPGDatabase(DataBaseOperations):
             self.logger.info("Data updated successfully")
         except asyncpg.PostgresError as e:
             self.logger.error(f"Error updating data: {e}")
+
+    async def get_user_filter(self, record_id: int):
+        if not self.connection:
+            await self.connect()
+        try:
+            async with self.lock:
+                if record_id is not None:
+                    get_user = "SELECT * FROM user_requests WHERE id = $1 ;"
+                    result_user_request = await self.connection.fetchrow(get_user, record_id)
+                    return dict(result_user_request) if result_user_request else None
+        except asyncpg.PostgresError as e:
+            self.logger.error(f"Error inserting data: {e}")

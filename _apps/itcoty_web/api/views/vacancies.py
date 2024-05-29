@@ -8,13 +8,13 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from ..filters import VacancyFilter
+from ..filters import VacancyFilter, VacancyFilterOLD
 from ..helpers import add_numeration_to_response
-from ..models import AdminVacancy, Vacancy
-from ..serializers import AllVacanciesSerializer, VacanciesSerializer
+from ..models import AdminVacancy, Vacancy, Vacancies
+from ..serializers import AllVacanciesSerializer, VacanciesSerializer, VacanciesSerializerOLD
 
 
-class AllVacanciesView(generics.ListAPIView):
+class AllVacanciesView(generics.ListAPIView, generics.CreateAPIView):
     queryset = AdminVacancy.objects.all()
     serializer_class = AllVacanciesSerializer
     permission_classes = [permissions.AllowAny]
@@ -34,10 +34,13 @@ class VacanciesViewSet(
     filterset_class = VacancyFilter
     pagination_class = LimitOffsetPagination
 
+    def get_model(self):
+        return Vacancy
+
     def get_queryset(self) -> QuerySet:
         date_start = date.today() - timedelta(days=20)
         queryset = (
-            Vacancy.objects.filter(created_at__gt=date_start)
+            self.get_model().objects.filter(created_at__gt=date_start)
             .order_by("-id")
             .distinct("id", "body")
         )
@@ -53,6 +56,17 @@ class VacanciesViewSet(
         new_response = {"vacancies": add_numeration_to_response(data)}
 
         return Response(new_response)
+
+class VacanciesViewSetOLD(VacanciesViewSet):
+    serializer_class = VacanciesSerializerOLD
+    permission_classes = [permissions.AllowAny]
+    filterset_class = VacancyFilterOLD
+    queryset = Vacancies.objects.all()
+    # filter_backends = [filters.DjangoFilterBackend]
+    pagination_class = LimitOffsetPagination
+
+    def get_model(self):
+        return Vacancies
 
 
 class ThreeVacanciesView(generics.GenericAPIView):
