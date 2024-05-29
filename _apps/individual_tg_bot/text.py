@@ -1,22 +1,29 @@
-greet = "Привет, {name},  я ITCoty бот который поможет вам найти работу в IT. Нажмите 'Фильтр вакансий' и выберете желаемые параметры для подбора."
+greet = "Привет, {name},  я ITCoty бот который поможет вам найти работу в IT. Нажмите 'Фильтр вакансий' и выберите желаемые параметры для подбора."
 menu = "Меню фильтра вакансий"
+menu_user = "Для прохождения нового запроса/изменения настроек текущего перейдите в главное меню(команда /menu)"
 info = "Я ITCoty бот который поможет вам найти работу в IT,\nДля прохождения опроса команда /start \n Для вывода меню фильтра вакансий команда /menu."
-repeat = "Попробуем ещё раз, нажмите 'Фильтр вакансий' и выберете желаемые параметры для подбора."
+repeat = "Попробуем ещё раз, нажмите 'Фильтр вакансий' и выберите желаемые параметры для подбора."
 
 
 get_vacancy = "Поиск вакансий по базе"
-
+multiple_choice = "Допускается множественный выбор"
 # Уведомления о вакансиях
 get_notification = "Необходимо выбрать подходящую периодичность"
 
 per_day_notification = "Дайджест за день"
+per_day_notification_user = "Дайджест "
 on_getting_notification = "По поступлению вакансий"
+on_getting_notification_user = "По поступлению "
 cancel_notification = "Отменить получение уведомлений"
-chosen_notification = "Выбранная периодичность: {notification}\nХотите изменить?"
+chosen_notification = (
+    "Для запроса: {request}\nВыбранная периодичность: {notification}\nХотите изменить?"
+)
+chosen_user_notification = "Выбранная периодичность: "
 confirm_change_notification = "Да, изменить уведомления"
 cancel_change_notification = "Нет, вернуться в меню"
 success_change_notification = "Уведомления успешно изменены!"
 make_vacancy_filter = "Для изменение периодичности необходимо заполнить фильтр вакансий"
+
 # Подходящие вакансии
 suit_vacancies = "Подходящая новая вакансии: \n"
 # Повтор запроса
@@ -32,7 +39,7 @@ create_table = """CREATE TABLE tg_bot ( user_id bigint ,name varchar(255), email
 # Фильтр вакансий
 direction = "Необходимо выбрать IT направление"
 chosen_direction = "Выбранное направление: "
-specialization = "Выберите специализацию для направления"
+specialization = "Выберите специализацию для направления: "
 chosen_specialization = "Выбранные специализации:"
 
 level = "Необходимо выбрать уровень владения"
@@ -44,7 +51,13 @@ chosen_location = "Выбранная локация:"
 work_format = "Формат работы"
 chosen_format = "Выбранный формат работы:"
 
-add_info = "Ключевое слово:"
+add_info = "Ключевые слова:"
+add_info_additional = (
+    "Укажите определенный фреймворк, библиотеку или иную доп. информацию о вакансии"
+)
+skip_add_info = "Пропустить"
+add_info_text = "Ответить текстом"
+chosen_keyword = "Введённое ключевое слово: "
 
 # Доп. кнопки
 skip_continue = "Пропустить"
@@ -52,11 +65,12 @@ accept = "Сохранить и перейти к уровню"
 accept_level = "Сохранить и перейти к локации"
 accept_location = "Перейти к формату работы"
 accept_format = "Перейти к доп. информации"
+
 choose_button = "Выбранная кнопка"
 thanks_text = "Спасибо за ответы!"
 # Главное меню
 vacancy_filter = "Фильтр вакансий"
-start_survey = "Пройти опрос"
+filter_history = "Просмотр моих запросов"
 notification = "Периодичность уведомлений"
 user_profile = "Профиль на сайте"
 restart = "Прекращение выдачи"
@@ -148,10 +162,17 @@ tech_lead = "Lead"
 remote = "remote"
 office = "office"
 hybrid = "flexible"
-any_format = "fulltime"
+fulltime = "fulltime"
+all_format = "all formats"
 
 # Локации
 russia = "Россия"
 belarus = "Беларусь"
 europe = "Европа"
 other_location = "Другое"
+
+
+# Редактирование запросов от пользователя
+change = "Изменить"
+delete = "Удалить"
+back_to_menu = "Вернуться в меню"
