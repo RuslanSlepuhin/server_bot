@@ -8,9 +8,10 @@ customer_add_username_to_database_endpoint = "https://test.ru"
 # impossible_to_cancel_order_endpoints = "/impossible_to_cancel_order"
 # user_verification_endpoint = "/verification"
 is_user_active_endpoint = "/is_user_active"
-is_horeca_active_endpoint = "/is_horeca_active"
+is_horeca_active_endpoint = "/horeca/is_horeca_active"
 provide_message_to_user_endpoint = "/provide_message_to_user"
-provide_message_to_horeca_endpoint = "/provide_message_to_horeca"
+provide_message_to_horeca_endpoint = "/horeca/provide_message_to_horeca"
+new_order_endpoint = "/horeca/new_order"
 
 #--------------- server urls ---------------
 # server_status_from_customer = "/client/status_from_user/" # take the POST from customer to send to horeca
@@ -37,12 +38,11 @@ request_exists_user_id = "/user-id-exists/"
 get_user_info = "/client/user_info" # for customer bot > GET data by customer telegram id
 get_horeca_info = "/client/horeca_info" # for horeca bot -> GET data by horeca telegram id
 
-
 # -------------- common info --------------
 main_endpoint = "http://127.0.0.1:5000/is_user_active"
 
 # server_domain = "http://127.0.0.1:7000"
-# server_domain = "https://083d-46-53-248-34.ngrok-free.app"
+# server_domain = "https://7847-46-53-254-146.ngrok-free.app"
 server_domain = "https://dev.fcm.by" # tunnel
 customer_bot_domain = "http://127.0.0.1:5000"
 horeca_bot_domain = "http://127.0.0.1:5000"
@@ -193,3 +193,5 @@ mock_object = [
         "horeca_name": "Vasilki"
     },
 ]
+
+updating_message = "Обновляем заказы"
