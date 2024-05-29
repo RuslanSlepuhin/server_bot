@@ -34,5 +34,5 @@ delete*.py
 /test*.py
 /_apps/itcoty_web/api/migrations/
 /*.log
+/__backup__/
 /_apps/coffee_customer_bot_apps/settings/config.ini
-/_apps/coffee_customer_bot_apps/database/coffee_db.sqlite3
