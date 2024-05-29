@@ -17,7 +17,7 @@ token = config['Bot']['horeca_token']
 bot = Bot(token=token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
-ngrok_payload = "d45b-178-127-170-210"
+ngrok_payload = "f240-37-45-159-96"
 WEBHOOK_URL = f"https://{ngrok_payload}.ngrok-free.app" if debug else "https://4dev.itcoty.ru"
 WEBHOOK_PATH = '/horeca/wh'
 NEW_ORDER_PATH = new_order_endpoint
@@ -36,17 +36,19 @@ class HorecaBot:
         self.methods = HorecaBotMethods(self)
         self.webhook_methods = WebHoock(self)
 
-        self.message_dict = {}
-        self.orders = []
-        self.orders_dict = {}
-        self.callbacks = []
-        self.confirm_message = {}
-
         # self.message_dict = {}
-        # self.orders = {} #[]
+        # self.orders = []
         # self.orders_dict = {}
-        # self.callbacks = {} #[]
+        # self.callbacks = []
         # self.confirm_message = {}
+
+        self.notification = {}
+        self.message_dict = {}
+        self.orders = {} #[]
+        self.orders_dict = {}
+        self.callbacks = {} #[]
+        self.confirm_message = {}
+        self.start_message = {}
 
     async def on_startup(self, app):
         await self.bot.set_webhook(WEBHOOK_URL + WEBHOOK_PATH)
@@ -73,20 +75,16 @@ class HorecaBot:
 
         @self.dp.message_handler(commands=['start'])
         async def start(message: types.Message):
-
-            # await self.methods.set_vars(message)
-
-            # if "/start" in message.text:
-            #     await self.bot.delete_message(message.chat.id, message.message_id)
-            #     pass
             enter_key = message.text.split("/start", 1)[1]
             if enter_key:
                 response = await self.methods.send_enter_key({"enter_key": enter_key.strip(), "telegram_user_id": message.chat.id})
 
-            start_message = await self.bot.send_message(message.chat.id, str(message.chat.id) + f" {variables.updating_message}", reply_markup=types.ReplyKeyboardRemove())
+            await self.methods.set_vars(message=message)
+
+            self.start_message[message.chat.id] = await self.bot.send_message(message.chat.id, str(message.chat.id) + f" {variables.updating_message}", reply_markup=types.ReplyKeyboardRemove())
             self.user_id = message.chat.id
             await self.methods.start(message)
-            await start_message.delete()
+            await self.start_message[message.chat.id].delete()
 
         @self.dp.callback_query_handler()
         async def callbacks(callback: types.CallbackQuery):
@@ -127,10 +125,10 @@ class HorecaBot:
                             await self.methods.change_card_visual(message=self.confirm_message['message'], callback_data=self.confirm_message['callback_data'], close_order=True)
 
                     if data in variables.complete_statuses:
-                        await self.methods.complete_the_order()
+                        await self.methods.complete_the_order(message)
 
                 await self.bot.delete_message(message.chat.id, message.message_id)
-                await self.methods.reset_confirm_data()
+                await self.methods.reset_confirm_data(message)
 
         web.run_app(app, host='0.0.0.0', port=4000)
         # executor.start_polling(self.dp, skip_updates=True)

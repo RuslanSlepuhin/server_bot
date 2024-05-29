@@ -1,3 +1,5 @@
+import sys
+
 from aiogram import types
 from aiohttp import web
 
@@ -8,7 +10,11 @@ class WebHoock:
     async def webhook_handler(self, request):
         try:
             update = await request.json()
-            await self.main.dp.process_update(types.Update(**update))
+            try:
+                await self.main.dp.process_update(types.Update(**update))
+            except IndexError as e:
+                print(f"IndexError in process_update: {e} at line {sys.exc_info()[-1].tb_lineno}")
+                pass
         except Exception as e:
             print(f"Error handling request: {e}")
             return web.Response(status=500)
@@ -16,6 +22,7 @@ class WebHoock:
 
     async def get_new_order(self, request):
         data = await request.json()
+        data = [data] if type(data) not in [tuple, list, set] else data
         for object in data:
             await self.main.methods.new_order(order=object)
         return web.Response()
