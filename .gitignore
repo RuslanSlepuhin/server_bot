@@ -31,7 +31,7 @@ delete*.py
 /_apps/itcoty_web/config.ini
 /Try.py
 /_debug.py
-/test.py
+/test*.py
 /_apps/itcoty_web/api/migrations/
 /*.log
 /__backup__/
