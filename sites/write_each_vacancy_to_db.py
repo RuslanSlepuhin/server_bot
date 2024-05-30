@@ -1,6 +1,6 @@
 from datetime import datetime
-from re import search
-from sites.sites_additional_utils.ask_gemini import ask_gemini
+# from re import search
+# from sites.sites_additional_utils.ask_gemini import ask_gemini
 from db_operations.scraping_db import DataBaseOperations
 from filters.filter_jan_2023.filter_jan_2023 import VacancyFilter
 from helper_functions.parser_find_add_parameters.parser_find_add_parameters import FinderAddParameters
@@ -41,16 +41,16 @@ class HelperSite_Parser:
             )
 
         # check weather this is a vacancy and, if so, weather it relates to IT using Gemini
-        gemini_prompt = results_dict['title'] + results_dict['body']
-        for question in ["Is IT?"]:
-            answer = ask_gemini(question, gemini_prompt)
-            if search(r"[Нн]е ", answer) or search(r"[Нн]ет", answer):
-                check_vacancy_not_exists = False
-                break
-            if search(r"[Дд]а", answer):
-                continue
-            elif answer == "":
-                continue
+        # gemini_prompt = results_dict['title'] + results_dict['body']
+        # for question in ["Is IT?"]:
+        #     answer = ask_gemini(question, gemini_prompt)
+        #     if search(r"[Нн]е ", answer) or search(r"[Нн]ет", answer):
+        #         check_vacancy_not_exists = False
+        #         break
+        #     if search(r"[Дд]а", answer):
+        #         continue
+        #     elif answer == "":
+        #         continue
 
         if check_vacancy_not_exists:
 
