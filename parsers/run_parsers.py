@@ -28,7 +28,7 @@ def run_hh():
 
 
 async def run_others():
-    # await HHKzGetInformation(report=report).get_content(words_pattern=valid_professions)
+    await HHKzGetInformation(report=report).get_content(words_pattern=valid_professions)
     await GeekGetInformation(report=report).get_content()
     await EpamGetInformation(report=report).get_content(words_pattern=valid_professions)
     await DevGetInformation(report=report).get_content(words_pattern=valid_professions)
