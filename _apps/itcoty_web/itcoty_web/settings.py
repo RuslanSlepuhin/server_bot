@@ -208,6 +208,7 @@ SERVER_EMAIL = EMAIL_HOST_USER
 DEFAULT_FROM_EMAIL = "notification@itcoty.ru"
 
 CORS_ALLOWED_ORIGINS = [
+    "https://itcoty.ru",
     "https://4dev.itcoty.ru",
     "http://localhost:3000",
     "http://localhost:5000",
