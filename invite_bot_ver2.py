@@ -75,27 +75,29 @@ logs.write_log(f'\n------------------ restart --------------------')
 
 class InviteBot():
 
-    def __init__(self, token_in=None, double=False, telethon_username=None, telethon_client=None):
-        if not telethon_client:
-            username = telethon_username if telethon_username else settings.username
-            if double:
-                self.client = TelegramClient(username_double, int(api_id_double), api_hash_double)
+    def __init__(self, token_in=None, double=False, telethon_username=None, telethon_client=None, **kwargs):
+        if not kwargs.get('telethon_client_disable') or not kwargs['telethon_client_disable']:
+            if not telethon_client:
+                username = telethon_username if telethon_username else settings.username
+                if double:
+                    self.client = TelegramClient(username_double, int(api_id_double), api_hash_double)
+                else:
+                    self.client = TelegramClient(username, int(api_id), api_hash)
+                try:
+                    if not self.client.is_connected():
+                        # c = asyncio.get_event_loop()
+                        # c.run_until_complete(self.client.start())
+                        self.client.start()
+                except Exception as e:
+                    print(e)
+                    self.client.connect()
             else:
-                self.client = TelegramClient(username, int(api_id), api_hash)
-            try:
+                self.client = telethon_client
                 if not self.client.is_connected():
-                    # c = asyncio.get_event_loop()
-                    # c.run_until_complete(self.client.start())
-                    self.client.start()
-            except Exception as e:
-                print(e)
-                self.client.connect()
+                    loop = asyncio.get_event_loop()
+                    loop.create_task(self.client.connect())
         else:
-            self.client = telethon_client
-            if not self.client.is_connected():
-                loop = asyncio.get_event_loop()
-                loop.create_task(self.client.connect())
-            pass
+            self.client = None
         self.chat_id = None
         self.start_time_listen_channels = datetime.now()
         self.start_time_scraping_channels = None
@@ -185,6 +187,8 @@ class InviteBot():
             print(e)
 
     def main_invitebot(self):
+
+        self.print_bot_name()
 
         async def connect_with_client(message, id_user):
 
@@ -384,7 +388,7 @@ class InviteBot():
 
         @self.dp.message_handler(commands=['get'])
         async def silent_get_news(message: types.Message):
-            await get_news(silent=True)
+            await get_news(message, silent=True)
 
         @self.dp.message_handler(commands=['post_to_telegraph'])
         async def post_to_teleraph_func(message: types.Message):
@@ -401,7 +405,7 @@ class InviteBot():
 
         @self.dp.message_handler(commands=['silent_get_news'])
         async def silent_get_news(message: types.Message):
-            await get_news(silent=True)
+            await get_news(message, silent=True)
 
         @self.dp.message_handler(commands=['update_salary_field_usd'])
         async def update_salary_field_usd(message: types.Message):
@@ -670,6 +674,23 @@ class InviteBot():
             except Exception as e:
                 await self.bot_aiogram.send_message(message.chat.id, str(e))
 
+        @self.dp.message_handler(commands=['count_today_vacancies'])
+        async def get_vacancies_number(message: types.Message):
+            found_vacancies = self.db.get_today_vacancies_number()
+            today = datetime.now()
+            message_text = f"Найдено вакансий {today.strftime('%D')}:\n"
+            for chat_name, vacancies_number in found_vacancies.items():
+                cut_name = chat_name[0]
+                cut_name = (cut_name
+                            .replace("https://", "")
+                            .replace("en/jobs", "")
+                            .replace("/ru", "")
+                            .replace("/", "")
+                            .replace("www.", "")
+                            )
+                message_text += f"✅ {cut_name}   {vacancies_number} \n"
+            await self.bot_aiogram.send_message(message.chat.id, message_text)
+
         @self.dp.message_handler(commands=['get_and_write_level'])
         async def get_from_admin_command(message: types.Message):
             await get_and_write_level(message)
@@ -925,8 +946,6 @@ class InviteBot():
         @self.dp.message_handler(commands=['get_news'])
         async def get_news_command(message: types.Message):
             self.parser_task = asyncio.create_task(get_news(message))
-
-            # await get_news(message)
 
         @self.dp.message_handler(commands=['schedule'])
         async def schedule_command(message: types.Message):
@@ -1939,7 +1958,7 @@ class InviteBot():
                     )
                     pass
                 except Exception as e:
-                    print('error:', e)
+                    print('error 958 invite_bot:', e)
                     pass
                 #
                 # await self.manual_admin_shorts
@@ -2020,7 +2039,7 @@ class InviteBot():
                     )
                     pass
                 except Exception as e:
-                    print('error:', e)
+                    print('error 957 invite_bot:', e)
                     pass
                 # await self.push_shorts_attempt_to_make_multi_function(
                 #     message=callback.message,
@@ -2187,7 +2206,7 @@ class InviteBot():
                         )
                         pass
                     except Exception as e:
-                        print('error:', e)
+                        print('error 956 invite_bot:', e)
                         pass
 
                 if message.text == '🦖 Search by link' or 'Search by link' in message.text:
@@ -3282,32 +3301,35 @@ class InviteBot():
 
         async def get_news(message, silent=False):
 
-            if await self.change_parser_status(message):
+            # if await self.change_parser_status(message):
                 # ----------------- make the current session and write it in DB ----------------------
-                self.current_session = datetime.now().strftime("%Y%m%d%H%M%S")
-                self.db.write_current_session(self.current_session)
-                await self.bot_aiogram.send_message(message.chat.id, f'Session is {self.current_session}')
-                await asyncio.sleep(1)
-                self.start_time_scraping_channels = datetime.now()
-                print('time_start = ', self.start_time_scraping_channels)
+            self.current_session = datetime.now().strftime("%Y%m%d%H%M%S")
+            self.db.write_current_session(self.current_session)
+            await self.bot_aiogram.send_message(message.chat.id, f'Session is {self.current_session}')
+            await asyncio.sleep(1)
+            self.start_time_scraping_channels = datetime.now()
+            print('time_start = ', self.start_time_scraping_channels)
 
-                bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
-                # await main(report=self.report, client=self.client, bot_dict=bot_dict)
-                # await self.report.add_to_excel(report_type='parsing')
-                sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
-                await sites_parser.call_sites()
-                # digest_parser = DigestParser(client=self.client, bot_dict=bot_dict, report=self.report)
-                # try:
-                #     await digest_parser.main_start()
-                # except Exception as e:
-                #     await self.bot_aiogram.send_message(Message.chat.id, f"DIGEST error: {e}")
-                await self.bot_aiogram.send_message(message.chat.id, "Digest parsing has been done")
+            bot_dict = {'bot': self.bot_aiogram, 'chat_id': message.chat.id}
+            # await main(report=self.report, client=self.client, bot_dict=bot_dict)
+            # await self.report.add_to_excel(report_type='parsing')
+            sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
 
-                await self.change_parser_status(message, before_parsing=False)
+            task = asyncio.create_task(sites_parser.call_sites())
+            await task
 
-            else:
-                await self.bot_aiogram.send_message(message.chat.id,
-                                                    "Sorry, parser at work. Request a stop from developers")
+            # digest_parser = DigestParser(client=self.client, bot_dict=bot_dict, report=self.report)
+            # try:
+            #     await digest_parser.main_start()
+            # except Exception as e:
+            #     await self.bot_aiogram.send_message(Message.chat.id, f"DIGEST error: {e}")
+            await self.bot_aiogram.send_message(message.chat.id, "Digest parsing has been done")
+
+            # await self.change_parser_status(message, before_parsing=False)
+
+            # else:
+            #     await self.bot_aiogram.send_message(message.chat.id,
+            #                                         "Sorry, parser at work. Request a stop from developers")
 
         async def debug_function():
             response = self.db.get_all_from_db(
@@ -4266,8 +4288,13 @@ class InviteBot():
                                               report=self.report)
             await self.digest_parser.main_start()
 
+        async def on_startup(dp):
+            from _apps.main_bot.menu import set_default_commands
+            await set_default_commands(dp.bot)
+
+
         # start_polling(self.dp)
-        executor.start_polling(self.dp, skip_updates=True)
+        executor.start_polling(self.dp, skip_updates=True, on_startup=on_startup)
 
     async def delete_used_vacancy_from_admin_temporary(self, vacancy, id_admin_last_session_table):
         # ------------------- cleaning the areas for the used vacancy  -------------------
@@ -5239,7 +5266,7 @@ class InviteBot():
                             self.last_id_message_agregator += 1
                             await asyncio.sleep(random.randrange(3, 4))
                         except Exception as error_2:
-                            print("error_2: ", error_2)
+                            print("error_2 962 invite_bot: ", error_2)
                     else:
                         await self.bot_aiogram.send_message(message.chat.id, f"It has a problem to send to aregator (5202):\n{str(e)}")
                         print(f'send_message:\n{send_message}')
@@ -5981,7 +6008,7 @@ class InviteBot():
                         )
                         pass
                     except Exception as e:
-                        print('error:', e)
+                        print('error 961 invite_bot:', e)
                         pass
                 today = datetime.now()
                 tomorrow = today + timedelta(days=1)
@@ -6197,7 +6224,7 @@ class InviteBot():
                         last_admin_channel_id += 1
                     except Exception as e:
                         if 'Flood control exceeded' in str(e):
-                            print(f'ERROR {e},\n PLEASE WAIT')
+                            print(f'ERROR 960 invite_bot {e},\n PLEASE WAIT')
                             match = re.findall(r"[0-9]{1,4} seconds", e.args[0])
                             if match:
                                 seconds = match[0].split(' ')[0]
@@ -6847,7 +6874,7 @@ class InviteBot():
             )
             pass
         except Exception as e:
-            print('error:', e)
+            print('error 959 invite_bot:', e)
             pass
         if self.client.is_connected:
             self.client.disconnect()
@@ -6913,6 +6940,10 @@ class InviteBot():
                 path=variable.path_log_check_profession,
                 caption="take the profession logs"
             )
+
+    def print_bot_name(self):
+        loop = asyncio.get_event_loop()
+        print(f"https://t.me/{loop.run_until_complete(self.bot_aiogram.get_me())['username']}")
 
 
 def run(double=False, token_in=None):

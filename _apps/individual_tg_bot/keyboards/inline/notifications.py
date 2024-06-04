@@ -12,12 +12,26 @@ change_notification_dict = {
     text.cancel_change_notification: text.cancel_change_notification,
 }
 
+notification_dict_user = {
+    text.per_day_notification_user: text.per_day_notification_user,
+    text.on_getting_notification_user: text.on_getting_notification_user,
+}
+
 
 def notification_button():
     """Клавиатура для уведомлений"""
 
     inline_keyboard = InlineKeyboardMarkup(row_width=1)
     for button_text, button_callback in notification_dict.items():
+        inline_keyboard.add(
+            InlineKeyboardButton(text=button_text, callback_data=button_callback)
+        )
+    return inline_keyboard
+
+
+def notification_survey_button():
+    inline_keyboard = InlineKeyboardMarkup(row_width=1)
+    for button_text, button_callback in notification_dict_user.items():
         inline_keyboard.add(
             InlineKeyboardButton(text=button_text, callback_data=button_callback)
         )

@@ -5,7 +5,8 @@ work_format_dict = {
     text.remote: text.remote,
     text.office: text.office,
     text.hybrid: text.hybrid,
-    text.any_format: text.any_format,
+    text.fulltime: text.fulltime,
+    text.all_format: text.all_format,
     text.accept_format: text.accept_format,
 }
 

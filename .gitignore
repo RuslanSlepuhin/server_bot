@@ -19,7 +19,6 @@ delete*.py
 /settings/local/
 #/settings/config*.ini
 /_apps/simpleatom/form.sqlite3
-/main_start.py
 /db_backup/
 #/_apps/amin_panel_tg_view/settings/
 ./_apps/individual_tg_bot/config.ini
@@ -32,4 +31,8 @@ delete*.py
 /_apps/itcoty_web/config.ini
 /Try.py
 /_debug.py
+/test*.py
 /_apps/itcoty_web/api/migrations/
+/*.log
+/__backup__/
+/_apps/coffee_customer_bot_apps/settings/config.ini

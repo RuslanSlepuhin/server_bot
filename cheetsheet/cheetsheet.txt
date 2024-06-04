@@ -18,3 +18,8 @@ setupcon
 git stash
 
 chmod 777 chromedriver
+
+scp /root/itcoty_bot/server_bot/excel/txt/links.txt root@87.249.53.232:D:\download
+
+scp -i C:\Users\Ruslan\.ssh\id_rsa D:\Python\tgstat_parser\db_test.txt root@87.249.53.232:/root/itcoty_bot/server_bot/
+scp -i C:\Users\Ruslan\.ssh\id_rsa root@87.249.53.232:/root/itcoty_bot/server_bot/main_start.py C:\Users\Ruslan\Desktop

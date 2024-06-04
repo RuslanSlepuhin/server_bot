@@ -1,25 +1,26 @@
 import asyncio
+import textwrap
 
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.common.exceptions import WebDriverException
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
-
 from db_operations.scraping_db import DataBaseOperations
 from helper_functions import helper_functions as helper
 from helper_functions.helper_functions import edit_message, send_message
 from helper_functions.parser_find_add_parameters.parser_find_add_parameters import (
     FinderAddParameters,
 )
+from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
 from settings.browser_settings import options
-from sites.write_each_vacancy_to_db import HelperSite_Parser
 from utils.additional_variables.additional_variables import (
     admin_database,
     archive_database,
     sites_search_words,
 )
+from webdriver_manager.chrome import ChromeDriverManager
+
+from sites.write_each_vacancy_to_db import HelperSite_Parser
 
 
 class OttaGetInformation:
@@ -40,6 +41,7 @@ class OttaGetInformation:
         self.page = None
         self.page_number = 1
         self.current_message = None
+        self.current_session = None
         self.msg = None
         self.written_vacancies = 0
         self.rejected_vacancies = 0
@@ -122,7 +124,7 @@ class OttaGetInformation:
         while len(next_btn) > 0:
             vac_count += 1
 
-            await asyncio.sleep(1)
+            await asyncio.sleep(2)
 
             await self.get_content_from_link(self.browser.page_source)
 
@@ -134,6 +136,10 @@ class OttaGetInformation:
                 )
 
             next_btn[0].click()
+
+            if self.browser.current_url == "https://app.otta.com/jobs/batch-end":
+                break
+
             next_btn = self.browser.find_elements(By.CSS_SELECTOR, next_btn_sel)
 
         if self.bot_dict:
@@ -223,7 +229,11 @@ class OttaGetInformation:
                     requirements = soup.findAll(
                         "li", attrs={"data-testid": "job-requirement-bullet"}
                     )
-                    experience = "\n".join(req.text for req in requirements)
+                    experience = textwrap.shorten(
+                        "\n".join(req.text for req in requirements),
+                        width=690,
+                        placeholder="...",
+                    )
                 except Exception as e:
                     print(f"error experience: {e}")
 
