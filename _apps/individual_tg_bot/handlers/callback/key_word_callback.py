@@ -1,10 +1,25 @@
 from _apps.individual_tg_bot import text
-from _apps.individual_tg_bot.service import show_summary
-# from _apps.individual_tg_bot.settings import APP_HOST, APP_PORT
-from aiogram.dispatcher import FSMContext
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
-from urllib.parse import quote
 
+from _apps.individual_tg_bot.keyboards.inline.notifications import (
+    notification_survey_button,
+)
+
+from aiogram.dispatcher import FSMContext
+from aiogram.types import (
+    Message,
+    CallbackQuery,
+    ReplyKeyboardRemove,
+)
+
+
+async def key_word_handler_text(
+    query: CallbackQuery,
+) -> None:
+    """Обработка кнопки ответить текстом"""
+    await query.message.answer(
+        text="Введите ключевые слова: ",
+        reply_markup=ReplyKeyboardRemove(),
+    )
 
 
 async def key_word_handler(
@@ -12,21 +27,23 @@ async def key_word_handler(
     state: FSMContext,
 ) -> None:
     """Обработка ключевого слова"""
-
     await state.update_data(keyword=message.text)
     data = await state.get_data()
-    # base_url = f"http://{APP_HOST}:{APP_PORT}/user_requests_vacancies"
-    base_url = f"https://4dev.itcoty.ru/user_requests_vacancies"
 
-    link = (
-        base_url
-        + "?"
-        + quote("&".join([f"{key}={value}" for key, value in data.items()]))
+    selected_key_word = data.get("keyword", set())
+    await message.answer(
+        text=f"{text.chosen_keyword} {selected_key_word}\n{text.get_notification}",
+        reply_markup=notification_survey_button(),
+
     )
-    keyboard = InlineKeyboardMarkup()
-    keyboard.add(InlineKeyboardButton("Перейти к вакансиям", url=link))
-    await message.answer(text=text.thanks_text, reply_markup=keyboard)
-    data["selected_notification"] = text.on_getting_notification
-    await show_summary(message=message, data=data)
+    return
 
-    await state.finish()
+
+async def key_word_handler_skip(query: CallbackQuery, state: FSMContext):
+    """Обработка кнопки Пропустить"""
+    await state.update_data(keyword="")
+    await query.message.answer(
+        text=f"{text.chosen_keyword}\n{text.get_notification}",
+        reply_markup=notification_survey_button(),
+    )
+    return

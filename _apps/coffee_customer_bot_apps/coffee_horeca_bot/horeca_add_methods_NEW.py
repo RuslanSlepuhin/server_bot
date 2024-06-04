@@ -22,7 +22,7 @@ class HorecaBotMethods:
 
         if not self.main_class.orders[message.chat.id]:
             return await self.main_class.bot.send_message(message.chat.id, "You have not the active current orders")
-        self.main_class.orders_dict[message.chat.id] = await self.data_by_user_to_dict_by_order_id(chat_id=message.chat.id)
+        self.main_class.orders_dict[message.chat.id] = await self.data_by_user_to_dict_by_order_id(message=message)
         await self.send_short_cards(message=message)
 
     async def get_data_by_user_id(self, user_id) -> list:
@@ -30,9 +30,10 @@ class HorecaBotMethods:
         response = requests.get(url)
         return response.json()
 
-    async def data_by_user_to_dict_by_order_id(self, chat_id, order_list:list=None) -> dict:
+    async def data_by_user_to_dict_by_order_id(self, order_list:list=None, **kwargs) -> dict:
+        chat_id = kwargs['chat_id'] if kwargs.get('chat_id') else kwargs['message'].chat.id
         orders_dict = {}
-        order_list = self.main_class.orders[chat_id][chat_id] if not order_list else order_list
+        order_list = self.main_class.orders[chat_id] if not order_list else order_list
         for item in order_list:
             try:
                 orders_dict[item['order_id']] = item
@@ -47,8 +48,9 @@ class HorecaBotMethods:
         :param kwargs: message: types.Message; order: dict (optional)
         :return:
         """
-        chat_id = kwargs['message'].chat.id if kwargs.get('chat_id') else kwargs['message'].chat.id
-        orders = kwargs['orders'] if kwargs.get('orders') else self.main_class.orders[chat_id]
+        chat_id = kwargs['chat_id'] if 'chat_id' in kwargs else kwargs['message'].chat.id
+        orders = kwargs['orders'] if 'orders' in kwargs else self.main_class.orders[chat_id]
+        
 
         order_counter = 0
         if debug:
@@ -77,8 +79,8 @@ class HorecaBotMethods:
         :param kwargs: message: types.Message; order: dict (optional)
         :return:
         """
-        message = kwargs['message'] if 'message' in kwargs else self.main_class.message
-        orders = kwargs['orders'] if 'orders' in kwargs else self.main_class.orders
+        message = kwargs['message']
+        orders = kwargs['orders'] if 'orders' in kwargs else self.main_class.orders[message.chat.id]
         for order in orders:
             buttons = variables.first_extended_inline_buttons if list(variables.BARISTA_STATUS_CHOICES.keys()).index(order['status']) == 0 else variables.between_extended_inline_buttons
             await self.custom_send_edit_message(message=message, text=await self.compose_full_text_from_order(order), buttons=buttons, order_id=order['order_id'])
@@ -94,9 +96,10 @@ class HorecaBotMethods:
         markup = await self.inline_markup(kwargs['buttons'], callback_prefix=kwargs['order_id'], addit_row=addit_row) if 'buttons' in kwargs else None
 
         if kwargs['order_id'] not in self.main_class.message_dict[chat_id]:
+            # self.main_class.message_dict[kwargs['order_id']] = await self.main_class.bot.send_message(chat_id, kwargs['text'], reply_markup=markup)
             print("chat_id", chat_id, type(chat_id))
             print("text", kwargs['text'], type(kwargs['text']))
-            print("markup", markup, type(markup))
+            # print("markup", str(markup), type(markup))
             text = kwargs['text']
             self.main_class.message_dict[chat_id][kwargs['order_id']] = await self.main_class.bot.send_message(chat_id=chat_id, text=text, reply_markup=markup)
         else:
@@ -111,7 +114,7 @@ class HorecaBotMethods:
             except Exception as ex:
                 print(f"horeca_add_methods_NEW: custom_send_edit_message: Exception -> {ex}")
                 pass
-
+                # await self.main_class.message_dict[chat_id][kwargs['order_id']].edit_text(text=kwargs['text'], reply_markup=markup)
 
     async def compose_full_text_from_order(self, order) -> str:
         text = f"Заказ №{order['order_id']}\n"
@@ -166,9 +169,17 @@ class HorecaBotMethods:
             close_order: bool (optional)
         :return:
         """
-        chat_id = kwargs['message'].chat.id
+
+        message = kwargs['message']
+        chat_id = message.chat.id
         order_id = kwargs['callback_data'].split("|")[0]
-        orders = self.main_class.orders_dict[chat_id] if self.main_class.orders_dict[chat_id] else await self.data_by_user_to_dict_by_order_id(chat_id=None, order_list=self.main_class.orders[chat_id])
+
+        if not self.main_class.orders:
+            await self.main_class.bot.send_message(message.chat.id, text='------------------')
+            await self.set_vars(message=message)
+            await self.start(message=message)
+
+        orders = self.main_class.orders_dict[chat_id] if self.main_class.orders_dict[chat_id] else await self.data_by_user_to_dict_by_order_id(message=message, order_list=self.main_class.orders[chat_id])
         kwargs['orders'] = orders
         kwargs['order_id'] = order_id
 
@@ -176,14 +187,14 @@ class HorecaBotMethods:
             await self.main_class.message_dict[chat_id][order_id].delete()
             self.main_class.message_dict[chat_id].pop(order_id)
             self.main_class.orders_dict[chat_id][order_id]['status'] = kwargs['status_value']
-            await self.send_status_from_horeca(order_id=order_id)
+            await self.send_status_from_horeca(message=message,order_id=order_id)
             self.main_class.orders_dict[chat_id].pop(order_id)
             return {'message': 'order was deleted'}
 
         if 'close_order' in kwargs and kwargs['close_order']:
             status = kwargs['status_value'] if 'status_value' in kwargs else kwargs['callback_data'].split("|")[1]
             self.main_class.orders_dict[chat_id][order_id]['status'] = status
-            return await self.send_status_from_horeca(order_id=order_id)
+            return await self.send_status_from_horeca(message=message,order_id=order_id)
 
         if 'next_status' in kwargs and type(kwargs['next_status']) is bool:
             status = self.main_class.orders_dict[chat_id][order_id]['status']
@@ -196,29 +207,21 @@ class HorecaBotMethods:
                     return await self.set_confirm_data(message=kwargs['message'], callback_data=f"{kwargs['callback_data'].split('|')[0]}|{status}")
                 else:
                     self.main_class.orders_dict[chat_id][order_id]['status'] = status
-                    await self.send_status_from_horeca(order_id=order_id)
-
-            # if status in variables.complete_statuses:
-            #     await self.set_confirm_data(message=kwargs['message'], callback_data=f"{kwargs['callback_data'].split('|')[0]}|{status}")
-            #     # confirm_keyboard = await self.confirm_action_keyboard(prefix=status)
-            #     # await self.main_class.bot.send_message(kwargs['message'].chat.id, 'confirm', reply_markup=confirm_keyboard)
-            #     # await self.complete_the_order(order_id)
-            #     return await self.send_updated_card(kwargs)
-
+                    await self.send_status_from_horeca(message=message,order_id=order_id)
 
         if 'previous_status' in kwargs and type(kwargs['previous_status']) is bool:
-            status = self.main_class.orders_dict[order_id]['status']
+            status = self.main_class.orders_dict[chat_id][order_id]['status']
             print(status)
             statuses = list(variables.BARISTA_STATUS_CHOICES.keys())
             index = statuses.index(status)
             if index > 0:
                 status = statuses[index - 1]
-                self.main_class.orders_dict[order_id]['status'] = status
-            await self.send_status_from_horeca(order_id=order_id)
+                self.main_class.orders_dict[chat_id][order_id]['status'] = status
+            await self.send_status_from_horeca(message=message,order_id=order_id)
 
         if 'status_value' in kwargs and type(kwargs['status_value']) is str:
-            self.main_class.orders_dict[order_id]['status'] = kwargs['status_value']
-            await self.send_status_from_horeca(order_id=order_id)
+            self.main_class.orders_dict[chat_id][order_id]['status'] = kwargs['status_value']
+            await self.send_status_from_horeca(message=message,order_id=order_id)
 
         return await self.send_updated_card(kwargs)
         # if 'small_size' in kwargs and type(kwargs['small_size']) is bool and not kwargs['small_size']:
@@ -234,14 +237,14 @@ class HorecaBotMethods:
             await self.send_short_cards(message=kwargs['message'], orders=[kwargs['orders'][kwargs['order_id']]])
         return {'message': 'order message was sent'}
 
-
     async def send_status_from_horeca(self, **kwargs) -> None:
         """
 
         :param kwargs: order_id: str; status: str (optional: custom)
         :return:
         """
-        order = self.main_class.orders_dict[kwargs['order_id']]
+        message = kwargs['message']
+        order = self.main_class.orders_dict[message.chat.id][kwargs['order_id']]
         url = variables.server_domain + variables.server_status_from_horeca + f"{kwargs['order_id']}/"
         print(url)
         response = requests.put(url, json={'status': order['status']})
@@ -265,22 +268,22 @@ class HorecaBotMethods:
                 text = 'confirm'
 
             keyboard = await self.confirm_action_keyboard(prefix=callback_data.split("|")[1])
-            self.main_class.confirm_message['message'] = await self.main_class.bot.send_message(message.chat.id, text, reply_markup=keyboard)
-            self.main_class.confirm_message['callback_data'] = callback_data
+            self.main_class.confirm_message[message.chat.id]['message'] = await self.main_class.bot.send_message(message.chat.id, text, reply_markup=keyboard)
+            self.main_class.confirm_message[message.chat.id]['callback_data'] = callback_data
         except Exception as ex:
             print('confirm_action_keyboard', ex)
             pass
 
-    async def reset_confirm_data(self) -> bool:
-        await self.main_class.confirm_message['message'].delete()
-        self.main_class.confirm_message = {}
+    async def reset_confirm_data(self, message) -> bool:
+        await self.main_class.confirm_message[message.chat.id]['message'].delete()
+        self.main_class.confirm_message[message.chat.id] = {}
         return True
 
-    async def complete_the_order(self, order_id=None) -> None:
-        order_id = self.main_class.confirm_message['callback_data'].split("|")[0] if not order_id else order_id
-        self.main_class.orders_dict.pop(order_id)
-        await self.main_class.message_dict[order_id].delete()
-        self.main_class.message_dict.pop(order_id)
+    async def complete_the_order(self, message, order_id=None) -> None:
+        order_id = self.main_class.confirm_message[message.chat.id]['callback_data'].split("|")[0] if not order_id else order_id
+        self.main_class.orders_dict[message.chat.id].pop(order_id)
+        await self.main_class.message_dict[message.chat.id][order_id].delete()
+        self.main_class.message_dict[message.chat.id].pop(order_id)
 
     async def webAppKeyboard(self) -> ReplyKeyboardMarkup:  # создание клавиатуры с webapp кнопкой
         keyboard = ReplyKeyboardMarkup(row_width=1)  # создаем клавиатуру
@@ -316,14 +319,17 @@ class HorecaBotMethods:
 
     async def new_order(self, order:dict) -> dict:
         try:
-            all = await self.get_all_orders_id()
-            if order['order_id'] not in await self.get_all_orders_id():
+            user_id = order['telegram_horeca_id']
+            await self.set_vars(chat_id=user_id)
+            print("NEW_OREDR")
+            all = await self.get_all_orders_id(chat_id=user_id)
+            if order['order_id'] not in await self.get_all_orders_id(chat_id=user_id):
                 orders = order if type(order) is list else [order]
-                self.main_class.orders.extend(orders)
+                self.main_class.orders[user_id] = self.main_class.orders[user_id] + orders
                 len_new_orders_list = len(orders)
 
-                orders_dict = await self.data_by_user_to_dict_by_order_id(order_list=orders)
-                self.main_class.orders_dict.update(orders_dict)
+                orders_dict = await self.data_by_user_to_dict_by_order_id(chat_id=user_id, order_list=orders)
+                self.main_class.orders_dict[user_id].update(orders_dict)
                 user_id = orders[0]['telegram_horeca_id']
                 await self.send_short_cards(chat_id=user_id, orders=orders[-len_new_orders_list:])
                 response = {'response': order}
@@ -335,9 +341,10 @@ class HorecaBotMethods:
             print('new_order', ex)
             return {'response': f'Bot error: {str(ex)}'}
 
-    async def get_all_orders_id(self) -> list:
+    async def get_all_orders_id(self, **kwargs) -> list:
+        chat_id = kwargs['chat_id'] if kwargs.get('chat_id') else kwargs['message'].chat.id
         orders_ids_list = []
-        for element in self.main_class.orders:
+        for element in self.main_class.orders[chat_id]:
             orders_ids_list.append(element['order_id'])
         return orders_ids_list
 
@@ -346,9 +353,12 @@ class HorecaBotMethods:
         await asyncio.sleep(0,5)
         await not_message.delete()
 
-    async def set_keys_to_self_vars(self, message):
-        self.main_class.message_dict[message.chat.id] = {} if not self.main_class.message_dict.get(message.chat.id) else self.main_class.message_dict[message.chat.id]
-        self.main_class.orders[message.chat.id] = [] if not self.main_class.orders.get(message.chat.id) else self.main_class.orders[message.chat.id]
-        self.main_class.orders_dict[message.chat.id] = {} if not self.main_class.orders_dict.get(message.chat.id) else self.main_class.orders_dict[message.chat.id]
-        self.main_class.callbacks[message.chat.id] = [] if not self.main_class.callbacks.get(message.chat.id) else self.main_class.callbacks[message.chat.id]
-        self.main_class.confirm_message[message.chat.id] = {} if not self.main_class.confirm_message.get(message.chat.id) else self.main_class.confirm_message[message.chat.id]
+    async def set_vars(self, **kwargs) -> None:
+        chat_id = kwargs['chat_id'] if kwargs.get('chat_id') else kwargs['message'].chat.id
+        self.main_class.message_dict[chat_id] = {} if chat_id not in self.main_class.message_dict else self.main_class.message_dict[chat_id]
+        self.main_class.orders[chat_id] = [] if chat_id not in self.main_class.orders else self.main_class.orders[chat_id]
+        self.main_class.orders_dict[chat_id] = {} if chat_id not in self.main_class.orders_dict else self.main_class.orders_dict[chat_id]
+        self.main_class.callbacks[chat_id] = [] if chat_id not in self.main_class.callbacks else self.main_class.callbacks[chat_id]
+        self.main_class.confirm_message[chat_id] = {} if chat_id not in self.main_class.confirm_message else self.main_class.confirm_message[chat_id]
+        self.main_class.start_message[chat_id] = {} if chat_id not in self.main_class.start_message else self.main_class.start_message[chat_id]
+

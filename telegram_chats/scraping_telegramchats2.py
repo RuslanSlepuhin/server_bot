@@ -59,10 +59,12 @@ class WriteToDbMessages():
             api_id = config["Telegram_double"]["api_id"]
             api_hash = config["Telegram_double"]["api_hash"]
             self.client = TelegramClient(username, int(api_id), api_hash)
-            await self.client.start()
-            print("connection done")
-            self.client.disconnect()
-            print("disconnect")
+
+            # await self.client.start()
+            # print("connection done")
+            # self.client.disconnect()
+            # print("disconnect")
+            return self.client
 
     async def client_init_green(self):
         if not self.client:

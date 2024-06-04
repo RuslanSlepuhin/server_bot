@@ -1,6 +1,6 @@
 from datetime import datetime
-from re import search
-from sites.sites_additional_utils.ask_gemini import ask_gemini
+# from re import search
+# from sites.sites_additional_utils.ask_gemini import ask_gemini
 from db_operations.scraping_db import DataBaseOperations
 from filters.filter_jan_2023.filter_jan_2023 import VacancyFilter
 from helper_functions.parser_find_add_parameters.parser_find_add_parameters import FinderAddParameters
@@ -41,28 +41,20 @@ class HelperSite_Parser:
             )
 
         # check weather this is a vacancy and, if so, weather it relates to IT using Gemini
-        gemini_prompt = results_dict['title'] + results_dict['body']
-        for question in ["Is IT?"]:
-            answer = ask_gemini(question, gemini_prompt)
-            if search(r"[Нн]е ", answer) or search(r"[Нн]ет", answer):
-                check_vacancy_not_exists = False
-                break
-            if search(r"[Дд]а", answer):
-                continue
-            elif answer == "":
-                continue
+        # gemini_prompt = results_dict['title'] + results_dict['body']
+        # for question in ["Is IT?"]:
+        #     answer = ask_gemini(question, gemini_prompt)
+        #     if search(r"[Нн]е ", answer) or search(r"[Нн]ет", answer):
+        #         check_vacancy_not_exists = False
+        #         break
+        #     if search(r"[Дд]а", answer):
+        #         continue
+        #     elif answer == "":
+        #         continue
 
-        # fill in the fields if they are empty using the Gemini neural network
         if check_vacancy_not_exists:
-            if not results_dict['city']:
-                self.results_dict['city'] = ask_gemini("What city?", gemini_prompt)
-            if not results_dict['salary']:
-                self.results_dict['salary'] = ask_gemini("What salary?", gemini_prompt)
-            if not results_dict['experience']:
-                self.results_dict['experience'] = ask_gemini("What experience?", gemini_prompt)
 
-        # get profession's parameters
-
+            # get profession's parameters
             try:
                 self.profession = self.filter.sort_profession(
                 title=self.results_dict['title'],
@@ -194,7 +186,7 @@ class HelperSite_Parser:
         # city and country refactoring
         if self.results_dict['city']:
             city_country = await self.find_parameters.find_city_country(text=self.results_dict['city'])
-            print(f"city_country: {self.results_dict['city']} -> {city_country}")
+            # print(f"city_country: {self.results_dict['city']} -> {city_country}")
             if city_country:
                 self.results_dict['city'] = city_country
             else:
