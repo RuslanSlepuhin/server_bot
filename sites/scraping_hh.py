@@ -19,6 +19,7 @@ from helper_functions.helper_functions import edit_message, send_message, send_f
 from helper_functions.parser_find_add_parameters.parser_find_add_parameters import FinderAddParameters
 from helper_functions import helper_functions as helper
 from report.report_variables import report_file_path
+from webdriver_manager.chrome import ChromeDriverManager
 
 
 def format_body_text(body_content:BeautifulSoup) -> str:
@@ -126,14 +127,17 @@ class HHGetInformation:
 
     async def get_browser(self) -> bool:
         try:
-            # from selenium.webdriver.chrome.service import Service
-            # service = Service(chrome_driver_path)
-            # service.start()
-            # self.browser = webdriver.Remote(service.service_url)
+            chrome_driver_path = ChromeDriverManager().install()
+            service = Service(executable_path=chrome_driver_path)
             self.browser = webdriver.Chrome(
-                executable_path=chrome_driver_path,
+                service=service,
                 options=options
             )
+
+            # self.browser = webdriver.Chrome(
+            #     executable_path=chrome_driver_path,
+            #     options=options
+            # )
         except Exception as ex:
             print("GET BROWSER: Can't get driver by path: ", ex)
             try:
