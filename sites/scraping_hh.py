@@ -131,10 +131,11 @@ class HHGetInformation:
                 options=options
             )
         except:
-            # Получаем путь к драйверу Chrome
+            print("GET BROWSER: Can't get driver by path")
             try:
                 self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
             except Exception as ex:
+                print("GET BROWSER: Can't get driver by install()")
                 print(f"{self.base_url}: get_browser:", ex)
                 return False
         return True
