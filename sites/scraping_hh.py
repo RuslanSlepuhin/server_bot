@@ -132,7 +132,7 @@ class HHGetInformation:
             try:
                 self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
             except Exception as ex:
-                print(f"{self.base_url}: get_browser", ex)
+                print(f"{self.base_url}: get_browser:", ex)
             pass
 
     async def get_info(self, how_much_pages=6, separator="+"):
