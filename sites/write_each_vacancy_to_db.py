@@ -4,9 +4,10 @@ from datetime import datetime
 from db_operations.scraping_db import DataBaseOperations
 from filters.filter_jan_2023.filter_jan_2023 import VacancyFilter
 from helper_functions.parser_find_add_parameters.parser_find_add_parameters import FinderAddParameters
+from sites.sites_additional_utils.ask_gemini import ask_gemini, ask_gemini_free_request
 from utils.additional_variables.additional_variables import vacancy_table, reject_table, \
     table_list_for_checking_message_in_db as tables, \
-    admin_database, archive_database, admin_table_fields
+    admin_database, archive_database, admin_table_fields, valid_professions
 from helper_functions.helper_functions import get_salary_usd_month, replace_NoneType, get_tags, \
     get_additional_values_fields, compose_simple_list_to_str, compose_to_str_from_list
 
@@ -54,6 +55,8 @@ class HelperSite_Parser:
 
         if check_vacancy_not_exists:
 
+            ai_profession = await self.get_ai_profession()
+
             # get profession's parameters
             try:
                 self.profession = self.filter.sort_profession(
@@ -63,13 +66,15 @@ class HelperSite_Parser:
                 check_vacancy=True,
                 check_vacancy_only_mex=True,
                 check_contacts=False,
-                vacancy_dict=self.results_dict
+                vacancy_dict=self.results_dict,
+                ai_profession=ai_profession if ai_profession else None
             )
             except Exception as ex:
                 print("write_each_vacancy (1) - > ", ex)
                 pass
 
             self.profession = self.profession['profession']
+
 
             if self.report:
                 self.report.parsing_report(ma=self.profession['tag'], mex=self.profession['anti_tag'])
@@ -82,7 +87,7 @@ class HelperSite_Parser:
                 pass
 
             if self.profession['profession']:
-                self.results_dict['approved'] = 'approves by filter'
+                self.results_dict['approved'] = 'approves by filter' if not ai_profession else 'approved by ai'
                 try:
                     response_from_db = self.db.push_to_admin_table(
                     results_dict=self.results_dict,
@@ -192,4 +197,12 @@ class HelperSite_Parser:
             else:
                 self.results_dict['city'] = ''
 
-
+    async def get_ai_profession(self):
+        act_prof = valid_professions.copy()
+        act_prof.pop(0)
+        request = f"Если это IT вакансия, то определи ее профессию из списка профессий: {', '.join(act_prof)}. Вакансия: {self.results_dict['title']}\n{self.results_dict['body']}. Ответ выдай одним словом (конкретной профессией из списка). Если это не IT вакансия или если ни одна профессия из списка не соответствует вакансии, то выдай ответ no_sort"
+        answer = ask_gemini_free_request(request).replace("\n", "").strip()
+        if answer and answer not in valid_professions:
+            return ""
+        else:
+            return answer

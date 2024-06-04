@@ -62,6 +62,16 @@ def ask_gemini(question, text):
     except json.decoder.JSONDecodeError:
         return ""
 
+def ask_gemini_free_request(request):
+    url = "http://194.163.44.157/gemini_request"
+    data = {"request": f"{request}"}
+    response = requests.post(url, json=data)
+    try:
+        answer = response.json()
+        return answer["answer"]
+    except json.decoder.JSONDecodeError:
+        return "error"
+
 
 if __name__ == "__main__":
     trial_question = "What salary?"

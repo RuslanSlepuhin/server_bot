@@ -126,14 +126,12 @@ class HHGetInformation:
         return True
 
     async def get_browser(self) -> bool:
+        options = webdriver.ChromeOptions()
+        # options.add_argument('--headless')
+        # options.add_argument('--no-sandbox')
+        # options.add_argument('--disable-dev-shm-usage')
         try:
-            options = webdriver.ChromeOptions()
-            options.add_argument('--headless')
-            options.add_argument('--no-sandbox')
-            options.add_argument('--disable-dev-shm-usage')
-
             chrome_driver_path = ChromeDriverManager().install()
-
             service = Service()
             service.executable_path = chrome_driver_path
 
@@ -141,11 +139,6 @@ class HHGetInformation:
                 service=service,
                 options=options
             )
-
-            # self.browser = webdriver.Chrome(
-            #     executable_path=chrome_driver_path,
-            #     options=options
-            # )
         except Exception as ex:
             print("GET BROWSER: Can't get driver by path: ", ex)
             try:
