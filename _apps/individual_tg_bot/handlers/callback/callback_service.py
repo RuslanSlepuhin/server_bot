@@ -35,11 +35,6 @@ async def user_digest(data: Dict) -> str:
     res_str = (
         f"Выбранное направление: {data.get('selected_direction', '')}\n"
         f"Выбранная специализация: {', '.join(data.get('selected_specializations', ''))}\n"
-        f"Выбранный уровень: {', '.join(data.get('selected_level', ''))}\n"
-        f"Выбранная локация: {', '.join(data.get('selected_location', ''))}\n"
-        f"Выбранный формат работы: {', '.join(data.get('selected_work_format', ''))}\n"
-        f"Ключевое слово: {data.get('keyword', '')}\n"
-        f"Периодичность уведомлений: {', '.join(data.get('selected_notification', ''))}\n"
     )
     return res_str
 
