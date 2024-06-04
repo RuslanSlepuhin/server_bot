@@ -96,12 +96,14 @@ class HHGetInformation:
         self.browser = kwargs['browser'] if kwargs.get('browser') else None
         pass
 
-    async def get_content(self, *args, **kwargs):
+    async def get_content(self, *args, **kwargs) -> bool:
         await self.report.reset_collect_parser_links()
         self.words_pattern = kwargs['words_pattern']
         self.db_tables = kwargs['db_tables'] if kwargs.get('db_tables') else vacancies_database
         try:
-            await self.get_info()
+            if not await self.get_info():
+                print("GET CONTENT: not get_info()")
+                return False
         except Exception as ex:
             print(f"{self.base_url}: get_content -> Error: {ex}")
             if self.bot:
@@ -120,8 +122,9 @@ class HHGetInformation:
                 if self.bot:
                     await self.bot.send_message(self.chat_id, f"Error: {ex}")
         self.browser.quit()
+        return True
 
-    async def get_browser(self):
+    async def get_browser(self) -> bool:
         try:
             self.browser = webdriver.Chrome(
                 executable_path=chrome_driver_path,
@@ -133,40 +136,46 @@ class HHGetInformation:
                 self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
             except Exception as ex:
                 print(f"{self.base_url}: get_browser:", ex)
-            pass
+                return False
+        return True
 
-    async def get_info(self, how_much_pages=6, separator="+"):
+    async def get_info(self, how_much_pages=6, separator="+") -> bool:
         separator = separator if not self.searching_text_separator else self.searching_text_separator
         if not self.browser:
-            await self.get_browser()
+            if await self.get_browser():
 
-        self.words_pattern = [self.words_pattern] if type(self.words_pattern) is str else self.words_pattern
-        for word in self.words_pattern:
-            self.word = separator.join(word.split(" "))
+                self.words_pattern = [self.words_pattern] if type(self.words_pattern) is str else self.words_pattern
+                for word in self.words_pattern:
+                    self.word = separator.join(word.split(" "))
 
-            # not remote
-            for self.page_number in range(0, how_much_pages - 1):
-                url = f'{self.base_url}{self.additional.replace("**word", self.word)}'
-                page_url = f'{self.base_url}{self.pages_listing.replace("**word", self.word).replace("**page", str(self.page_number))}'
+                    # not remote
+                    for self.page_number in range(0, how_much_pages - 1):
+                        url = f'{self.base_url}{self.additional.replace("**word", self.word)}'
+                        page_url = f'{self.base_url}{self.pages_listing.replace("**word", self.word).replace("**page", str(self.page_number))}'
 
-                if self.debug and self.main_class:
-                    await self.main_class.bot.send_message(self.chat_id, f"Url: {url}",
-                                                         disable_web_page_preview=True)
-                if self.page_number == 0:
-                    self.browser.get(url)
-                    await asyncio.sleep(2)
+                        if self.debug and self.main_class:
+                            await self.main_class.bot.send_message(self.chat_id, f"Url: {url}",
+                                                                 disable_web_page_preview=True)
+                        if self.page_number == 0:
+                            self.browser.get(url)
+                            await asyncio.sleep(2)
 
-                elif self.page_number > 0:
-                    self.browser.get(page_url)
-                    await asyncio.sleep(2)
+                        elif self.page_number > 0:
+                            self.browser.get(page_url)
+                            await asyncio.sleep(2)
 
-                vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
-                if not vacancy_exists_on_page:
-                    break
+                        vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
+                        if not vacancy_exists_on_page:
+                            break
 
-        if self.bot_dict:
-            await self.bot.send_message(self.chat_id, f'{self.source_title_name} parsing: Done!',
-                                        disable_web_page_preview=True)
+                if self.bot_dict:
+                    await self.bot.send_message(self.chat_id, f'{self.source_title_name} parsing: Done!',
+                                                disable_web_page_preview=True)
+            return True
+        else:
+            await self.bot.send_message(self.chat_id, "GET INFO: Can't get the driver")
+            print("GET INFO: Can't get the driver")
+            return False
 
     async def get_link_message(self, raw_content):
 
