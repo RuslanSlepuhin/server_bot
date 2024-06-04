@@ -127,8 +127,16 @@ class HHGetInformation:
 
     async def get_browser(self) -> bool:
         try:
+            options = webdriver.ChromeOptions()
+            options.add_argument('--headless')
+            options.add_argument('--no-sandbox')
+            options.add_argument('--disable-dev-shm-usage')
+
             chrome_driver_path = ChromeDriverManager().install()
-            service = Service(executable_path=chrome_driver_path)
+
+            service = Service()
+            service.executable_path = chrome_driver_path
+
             self.browser = webdriver.Chrome(
                 service=service,
                 options=options
