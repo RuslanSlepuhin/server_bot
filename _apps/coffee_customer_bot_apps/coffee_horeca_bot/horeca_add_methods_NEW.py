@@ -48,8 +48,9 @@ class HorecaBotMethods:
         :param kwargs: message: types.Message; order: dict (optional)
         :return:
         """
-        orders = kwargs['orders'] if 'orders' in kwargs else self.main_class.orders[kwargs['message'].chat.id]
         chat_id = kwargs['chat_id'] if 'chat_id' in kwargs else kwargs['message'].chat.id
+        orders = kwargs['orders'] if 'orders' in kwargs else self.main_class.orders[chat_id]
+        
 
         order_counter = 0
         if debug:
