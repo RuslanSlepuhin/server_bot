@@ -42,6 +42,11 @@ class VacancyFilter:
         check_level = True if 'check_level' not in kwargs else kwargs['check_level']
         only_one_profession_sub = True if 'only_one_profession_sub' not in kwargs else kwargs['only_one_profession_sub']
         low = False if 'low' not in kwargs else kwargs['low']
+        ai_profession = kwargs['ai_profession'] if kwargs.get('ai_profession') else None
+
+        if ai_profession == "no_sort":
+            self.profession['profession'] = ['no_sort']
+            return {'profession': self.profession, 'params': {}}
 
         self.profession['tag'] = ''
         self.profession['anti_tag'] = ''
@@ -105,7 +110,10 @@ class VacancyFilter:
             else:
                 search_profession_text = title
             pass
-            for item in self.valid_profession_list:
+
+            list_with_professions = self.valid_profession_list if not ai_profession or ai_profession == 'no_sort' else ['junior']
+
+            for item in list_with_professions:
                 result = self.search_profession(vacancy=search_profession_text, item=item, mex=True)
                 if result['result']:
                     self.profession['profession'].append(result['result'])
@@ -113,12 +121,15 @@ class VacancyFilter:
                     self.profession['anti_tag'] += result['anti_tags']
 
             if not self.profession['profession']:
-                for item in self.valid_profession_list:
+                for item in list_with_professions:
                     result = self.search_profession(vacancy=vacancy, item=item)
                     if result['result']:
                         self.profession['profession'].append(result['result'])
                         self.profession['tag'] += result['tags']
                         self.profession['anti_tag'] += result['anti_tags']
+
+            if len(list_with_professions) == 1 and 'junior' in list_with_professions:
+                self.profession['profession'].append(ai_profession)
 
             if 'fullstack' in self.profession['profession']:
                 self.transform_fullstack_to_back_and_front(text=vacancy)
@@ -129,6 +140,7 @@ class VacancyFilter:
             self.profession['profession'] = set(self.profession['profession'])
 
             # -------------- get subprofessions -------------------------
+
             if 'no_sort' not in self.profession['profession']:
                 self.get_sub_profession(text=vacancy)
             else:

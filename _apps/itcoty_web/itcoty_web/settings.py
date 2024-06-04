@@ -37,6 +37,8 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
 ]
 
+CORS_ALLOW_CREDENTIALS: True
+
 AUTH_USER_MODEL = "api.User"
 
 SITE_ID = 1
@@ -212,11 +214,3 @@ EMAIL_USE_SSL = True
 
 SERVER_EMAIL = EMAIL_HOST_USER
 DEFAULT_FROM_EMAIL = "notification@itcoty.ru"
-
-CORS_ALLOWED_ORIGINS = [
-    "https://itcoty.ru",
-    "https://4dev.itcoty.ru",
-    "http://localhost:3000",
-    "http://localhost:5000",
-    "http://localhost:8000",
-]
