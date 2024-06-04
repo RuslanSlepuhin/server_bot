@@ -19,10 +19,10 @@ async def get_vacancy_filter(query: CallbackQuery) -> None:
             request = {
                 text.chosen_direction: result.get("direction"),
                 text.chosen_specialization: result.get("specialization"),
-                text.chosen_level: result.get("level"),
-                text.chosen_location: result.get("location"),
-                text.chosen_format: result.get("work_format"),
-                text.add_info: result.get("keywords"),
+                # text.chosen_level: result.get("level"),
+                # text.chosen_location: result.get("location"),
+                # text.chosen_format: result.get("work_format"),
+                # text.add_info: result.get("keywords"),
             }
 
             user_request = text.user_current_request
