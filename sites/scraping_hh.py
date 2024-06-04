@@ -126,10 +126,14 @@ class HHGetInformation:
 
     async def get_browser(self) -> bool:
         try:
-            self.browser = webdriver.Chrome(
-                executable_path=chrome_driver_path,
-                options=options
-            )
+            from selenium.webdriver.chrome.service import Service
+            service = Service(chrome_driver_path)
+            service.start()
+            self.browser = webdriver.Remote(service.service_url)
+            # self.browser = webdriver.Chrome(
+            #     executable_path=chrome_driver_path,
+            #     options=options
+            # )
         except:
             print("GET BROWSER: Can't get driver by path")
             try:
