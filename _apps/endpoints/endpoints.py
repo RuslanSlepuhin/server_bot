@@ -389,7 +389,7 @@ class Endpoints:
             if not table:
                 table = variable.admin_database
             approve = True if approve and approve.lower() == 'true' else False
-            approve = "approved <> 'approves by admin'" if not approve else ''
+            approve = "approved = 'approves by filter'" if not approve else ''
 
             profession = f"profession LIKE '%{profession}%'" if profession else ''
 
