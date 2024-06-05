@@ -43,16 +43,16 @@ class HelperSite_Parser:
             )
 
         # check weather this is a vacancy and, if so, weather it relates to IT using Gemini
-        ai_prompt = results_dict['title'] + results_dict['body']
-        for question in ["Is IT?"]:
-            answer = ask_ai(question, ai_prompt)
-            if search(r"[Нн]е ", answer) or search(r"[Нн]ет", answer):
-                check_vacancy_not_exists = False
-                break
-            if search(r"[Дд]а", answer):
-                continue
-            elif answer == "":
-                continue
+        # ai_prompt = results_dict['title'] + results_dict['body']
+        # for question in ["Is IT?"]:
+        #     answer = ask_ai(question, ai_prompt)
+        #     if search(r"[Нн]е ", answer) or search(r"[Нн]ет", answer):
+        #         check_vacancy_not_exists = False
+        #         break
+        #     if search(r"[Дд]а", answer):
+        #         continue
+        #     elif answer == "":
+        #         continue
 
         if check_vacancy_not_exists:
 
