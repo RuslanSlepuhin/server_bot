@@ -31,10 +31,15 @@ SECRET_KEY = (
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'localhost:3000',
+    'localhost',
+    '127.0.0.1',
 ]
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
+    'http://localhost:8000',
+    'http://localhost:9000',
+    'https://4dev.itcoty.ru',
+    'https://itcoty.ru',
 ]
 
 CORS_ALLOW_CREDENTIALS: True
