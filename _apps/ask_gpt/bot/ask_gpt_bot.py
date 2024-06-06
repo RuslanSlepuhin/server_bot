@@ -18,9 +18,6 @@ bot = Bot(token=token)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 
-# botinfo = asyncio.run(bot.get_me())
-# print(f"https://t.me/{botinfo.username}")
-
 dialog = {}
 bot_mode = {}
 prompt_mode = {}
