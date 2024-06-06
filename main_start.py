@@ -19,31 +19,10 @@ from telegram_chats.telegram_init import client_init
 from _debug import debug
 
 from report.reports import Reports
-# from sites._scraping_remotejob import RemoteJobGetInformation
-# from sites.scraping_careerjet import СareerjetGetInformation
-# from sites.scraping_dev import DevGetInformation
-# from sites.scraping_epam_anywhere import EpamGetInformation
-# from sites.scraping_habr import HabrGetInformation
-# from sites.scraping_hh import HHGetInformation
-# from sites.scraping_hh_it import HHITGetInformation
-# from sites.scraping_hhkz import HHKzGetInformation
-# from sites.scraping_geekjob import GeekGetInformation
-# from sites.scraping_otta import OttaGetInformation
-# from sites.scraping_praca import PracaGetInformation
-# from sites.scraping_remocate import RemocateGetInformation
-# from sites.scraping_wellfound import WellFoundGetInformation
-# from sites.scrapping_finder import FinderGetInformation
-# from utils.additional_variables.additional_variables import valid_professions
-# import psutil
 
 report = Reports()
 config_FCM = configparser.ConfigParser()
 config_FCM.read('_apps/coffee_customer_bot_apps/settings/config.ini')
-
-# customer_token = config_FCM['Bot']['customer_token']
-# horeca_token = config_FCM['Bot']['horeca_token']
-# horeca_bot = HorecaBot()
-# customer_bot = CustomerBot(customer_token)
 
 num_processes = os.cpu_count()
 
@@ -127,31 +106,10 @@ def start_parser_automatically():
     from parsers.run_parsers import common_run_parsers
     common_run_parsers()
 
-# def start_hh_parser():
-#     asyncio.run(HHGetInformation(report=report).get_content(words_pattern=valid_professions))
-#
-# def start_other_parsers():
-#     asyncio.run(all_parsers())
-#
-# async def all_parsers():
-#     # await HHKzGetInformation(report=report).get_content(words_pattern=valid_professions)
-#     await GeekGetInformation(report=report).get_content()
-#     await EpamGetInformation(report=report).get_content(words_pattern=valid_professions)
-#     await DevGetInformation(report=report).get_content(words_pattern=valid_professions)
-#     await СareerjetGetInformation(report=report).get_content(words_pattern=valid_professions)
-#     await HabrGetInformation(report=report).get_content()
-#     await FinderGetInformation(report=report).get_content(words_pattern=valid_professions)
-#     await PracaGetInformation(report=report).get_content(words_pattern=valid_professions)
-#     await RemocateGetInformation(report=report).get_content()
-#     await HHITGetInformation(report=report).get_content(words_pattern=valid_professions)
-#     await RemoteJobGetInformation(report=report).get_content()
-#     await OttaGetInformation(report=report).get_content()
-#     await WellFoundGetInformation(report=report).get_content()
-#
-# def set_cpu_affinity(process, cpus):
-#     p = psutil.Process(process.pid)
-#     p.cpu_affinity(cpus)
-#
+def ask_gpt():
+    from _apps.ask_gpt.bot import ask_gpt_bot
+
+
 
 if __name__ == "__main__":
     # vacancies bot (red, green) and flask endpoints
@@ -170,6 +128,9 @@ if __name__ == "__main__":
     p7 = Process(target=auth_start, args=())
     p75 = Process(target=start_individ_bot, args=())
     p76 = Process(target=start_flask_endpoints_indiv_bot, args=())
+
+    # AIs
+    p77 = Process(target=ask_gpt, args=())
 
     # PARSERS
     # p77 = Process(target=start_parser_automatically, args=())
@@ -197,6 +158,7 @@ if __name__ == "__main__":
     p7.start()
     p75.start()
     p76.start()
+    p77.start()
     # p77.start()
     # set_cpu_affinity(p77, [0])
 
@@ -222,6 +184,7 @@ if __name__ == "__main__":
     p7.join()
     p75.join()
     p76.join()
+    p77.join()
     # p77.join()
     # p78.join()
     # p79.join()
