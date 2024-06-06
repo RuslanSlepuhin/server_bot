@@ -12,7 +12,7 @@ from _debug import debug
 
 config = configparser.ConfigParser()
 config.read("./_apps/ask_gpt/settings/config.ini")
-token = config['BOT']['token'] if not debug else config['BOT']['token_debug']
+token = config['BOT']['token'] #if not debug else config['BOT']['token_debug']
 
 bot = Bot(token=token)
 storage = MemoryStorage()
