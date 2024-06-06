@@ -37,3 +37,4 @@ delete*.py
 /__backup__/
 /_apps/coffee_customer_bot_apps/settings/config.ini
 /_apps/ask_gpt/gpt_connect/.env
+/_apps/ask_gpt/settings/_debug.py

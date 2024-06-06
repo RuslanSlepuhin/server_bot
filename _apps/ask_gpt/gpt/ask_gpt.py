@@ -7,13 +7,14 @@ def take_dialog():
         dialog.append(send_request(actual_dialog(dialog, 10)))
         print("\n" + dialog[-1] + "\n")
 
-def set_prompt():
-    prompt = "Imagine you are a highly skilled and experienced salesperson with 12 years in the industry. " \
-             "Your goal is to aggressively pursue sales opportunities, using assertive strategies to close deals, " \
-             "but always maintaining a polite and professional demeanor. You are known for your ability to identify " \
-             "potential customers' pain points quickly, offer tailored solutions, and overcome objections effectively. " \
-             "Your approach combines confidence, persistence, and respect for the customer's perspective."
-    return prompt
+def set_prompt(prompt_text=None):
+    if not prompt_text:
+        prompt_text = "Imagine you are a highly skilled and experienced salesperson with 12 years in the industry. " \
+                 "Your goal is to aggressively pursue sales opportunities, using assertive strategies to close deals, " \
+                 "but always maintaining a polite and professional demeanor. You are known for your ability to identify " \
+                 "potential customers' pain points quickly, offer tailored solutions, and overcome objections effectively. " \
+                 "Your approach combines confidence, persistence, and respect for the customer's perspective."
+    return prompt_text
 
 def send_request(dialog):
     response = requests.post(url="http://mixail132.pythonanywhere.com/askgpt", json={"question": "\n".join(dialog)})
@@ -24,8 +25,8 @@ def send_request_USA_server(dialog):
     return response.json()['answer']
 
 
-def actual_dialog(message, dialog, length, prompt:bool):
-    act_dialog = [set_prompt()] if prompt else []
+def actual_dialog(message, dialog, length, prompt:bool, prompt_text=""):
+    act_dialog = [set_prompt(prompt_text)] if prompt else []
     if length > 0:
         act_dialog = act_dialog + dialog[-length:]
     else:
