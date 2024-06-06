@@ -11,7 +11,7 @@ from _apps.ask_gpt.gpt import ask_gpt
 from _debug import debug
 
 config = configparser.ConfigParser()
-config.read("./settings/config.ini")
+config.read("._apps/ask_gpt/settings/config.ini")
 token = config['BOT']['token'] if not debug else config['BOT']['token_debug']
 
 bot = Bot(token=token)
