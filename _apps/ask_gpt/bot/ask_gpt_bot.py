@@ -11,15 +11,12 @@ from _apps.ask_gpt.gpt import ask_gpt
 from _debug import debug
 
 config = configparser.ConfigParser()
-config.read("._apps/ask_gpt/settings/config.ini")
+config.read("./_apps/ask_gpt/settings/config.ini")
 token = config['BOT']['token'] if not debug else config['BOT']['token_debug']
 
 bot = Bot(token=token)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
-
-# botinfo = asyncio.run(bot.get_me())
-# print(f"https://t.me/{botinfo.username}")
 
 dialog = {}
 bot_mode = {}
