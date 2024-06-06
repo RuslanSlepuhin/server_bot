@@ -108,6 +108,7 @@ def start_parser_automatically():
 
 def ask_gpt():
     from _apps.ask_gpt.bot import ask_gpt_bot
+    print("CHAT_GPT-4")
 
 
 
