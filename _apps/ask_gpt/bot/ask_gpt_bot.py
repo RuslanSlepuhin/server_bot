@@ -68,11 +68,7 @@ async def SetTokensNumber_f(message: types.Message, state: FSMContext):
 async def chat_gpt_set_prompt(message: types.Message):
     await set_config_variables(message)
     await bot.send_message(message.chat.id, 'Input tokens number')
-    await SetPrompt.prompt.set()
-
-@dp.message_handler(commands=[watch_prompt])
-async def watch_set_prompt(message: types.Message):
-    await bot.send_message(message.chat.id, f"Your PROMPT:\n{prompt_mode[message.chat.id]}") if prompt_mode.get(message.chat.id) and prompt_mode[message.chat.id] else await bot.send_message(message.chat.id, "You have any PROMPT")
+    await SetTokensNumber.tokens_state.set()
 # --------------------- END SET TOKENS NUMBER ----------------------------
 
 @dp.message_handler(commands=['start'])
