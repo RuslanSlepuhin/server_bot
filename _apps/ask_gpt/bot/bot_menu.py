@@ -13,6 +13,6 @@ async def set_default_commands(bot):
             types.BotCommand(command=chat_gpt_set_prompt, description="Установить PROMPT"),
             types.BotCommand(command=watch_prompt, description="Посмотреть установленный PROMPT"),
             types.BotCommand(command=tokens_number, description="Установить TOKENS"),
-            types.BotCommand(command=watch_tokens_number, description="Посмотреть количество TOKENS"),
+            types.BotCommand(command=watch_tokens_number, description="Посмотреть установленное количество TOKENS"),
         ]
     )
