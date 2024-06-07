@@ -58,7 +58,7 @@ async def SetTokensNumber_f(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['tokens_state'] = message.text
         if message.text.isdigit():
-            prompt_mode[message.chat.id] = data['tokens_state']
+            tokens[message.chat.id] = data['tokens_state']
         else:
             await bot.send_message(message.chat.id, text="Input numbers only")
     await state.finish()
