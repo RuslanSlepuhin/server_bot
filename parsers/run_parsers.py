@@ -17,6 +17,7 @@ from sites.scraping_praca import PracaGetInformation
 from sites.scraping_remocate import RemocateGetInformation
 from sites.scraping_wellfound import WellFoundGetInformation
 from sites.scrapping_finder import FinderGetInformation
+from hh_threadings import run_hh_threadings
 
 report = Reports()
 
@@ -48,14 +49,16 @@ def run_asyncio_tasks():
 
 
 def common_run_parsers():
-    thread_hh = threading.Thread(target=run_hh)
+    # thread_hh = threading.Thread(target=run_hh)
     thread_other = threading.Thread(target=run_asyncio_tasks)
 
-    thread_hh.start()
+    # thread_hh.start()
     thread_other.start()
 
-    thread_hh.join()
+    # thread_hh.join()
     thread_other.join()
+
+    run_hh_threadings()
 
 
 if __name__ == "__main__":
