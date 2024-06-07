@@ -6,7 +6,8 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.utils import executor
 from _apps.ask_gpt.bot.bot_menu import set_default_commands
 from _apps.ask_gpt.bot.variables import chat_gpt_sales_manager as sales_manager_mode, \
-    chat_gpt_without_history as without_history_mode, chat_gpt_set_prompt, watch_prompt, tokens_number
+    chat_gpt_without_history as without_history_mode, chat_gpt_set_prompt, watch_prompt, tokens_number, \
+    watch_tokens_number
 from _apps.ask_gpt.gpt import ask_gpt
 from _debug import debug
 
@@ -69,6 +70,10 @@ async def chat_gpt_set_prompt(message: types.Message):
     await set_config_variables(message)
     await bot.send_message(message.chat.id, 'Input tokens number')
     await SetTokensNumber.tokens_state.set()
+
+@dp.message_handler(commands=[watch_tokens_number])
+async def watch_set_prompt(message: types.Message):
+    await bot.send_message(message.chat.id, f"Your TOKENS is:\n{tokens[message.chat.id]}") if tokens.get(message.chat.id) and tokens[message.chat.id] else await bot.send_message(message.chat.id, "You have any PROMPT")
 # --------------------- END SET TOKENS NUMBER ----------------------------
 
 @dp.message_handler(commands=['start'])
