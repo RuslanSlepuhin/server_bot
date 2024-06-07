@@ -49,6 +49,8 @@ def run_asyncio_tasks():
 
 
 def common_run_parsers():
+    run_hh_threadings()
+
     # thread_hh = threading.Thread(target=run_hh)
     thread_other = threading.Thread(target=run_asyncio_tasks)
 
@@ -57,8 +59,6 @@ def common_run_parsers():
 
     # thread_hh.join()
     thread_other.join()
-
-    run_hh_threadings()
 
 
 if __name__ == "__main__":
