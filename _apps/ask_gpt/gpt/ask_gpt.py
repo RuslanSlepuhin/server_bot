@@ -20,8 +20,8 @@ def send_request(dialog):
     response = requests.post(url="http://mixail132.pythonanywhere.com/askgpt", json={"question": "\n".join(dialog)})
     return response.json()['answer']
 
-def send_request_USA_server(dialog):
-    response = requests.post(url="http://194.163.44.157/gpt_request", json={"request": "\n".join(dialog)})
+def send_request_USA_server(dialog, tokens=150):
+    response = requests.post(url="http://194.163.44.157/gpt_request", json={"request": "\n".join(dialog), "tokens": tokens})
     return response.json()['answer']
 
 

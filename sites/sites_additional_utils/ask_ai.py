@@ -5,8 +5,11 @@ import requests
 from sites.sites_additional_utils.question import compose_question
 
 
-def ask_ai(question, text):
-    question_ai = compose_question(question, text)
+def ask_ai(question, text=None):
+    if text:
+        question_ai = compose_question(question, text)
+    else:
+        question_ai = question
     url = "https://creativeai-68gw.onrender.com/chat"
     data = {'query': f'{question_ai}', 'model': 'llama-3-70b'}
     headers = {"Content-Type": "application/json"}
@@ -39,4 +42,5 @@ if __name__ == "__main__":
     Обратная связь: ты будешь получать обратную связь по всем выполненным задачам.
     """
 
-    ask_ai(trial_question, trial_text)
+    print(ask_ai(trial_question, trial_text))
+    print(ask_ai("What is the capital of the US?"))

@@ -6,7 +6,8 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.utils import executor
 from _apps.ask_gpt.bot.bot_menu import set_default_commands
 from _apps.ask_gpt.bot.variables import chat_gpt_sales_manager as sales_manager_mode, \
-    chat_gpt_without_history as without_history_mode, chat_gpt_set_prompt, watch_prompt
+    chat_gpt_without_history as without_history_mode, chat_gpt_set_prompt, watch_prompt, tokens_number, \
+    watch_tokens_number
 from _apps.ask_gpt.gpt import ask_gpt
 from _debug import debug
 
@@ -21,6 +22,9 @@ dp = Dispatcher(bot, storage=storage)
 dialog = {}
 bot_mode = {}
 prompt_mode = {}
+tokens = {}
+
+# --------------------- SET PROMPT ----------------------------
 
 class SetPrompt(StatesGroup):
     prompt = State()
@@ -43,7 +47,34 @@ async def chat_gpt_set_prompt(message: types.Message):
 @dp.message_handler(commands=[watch_prompt])
 async def watch_set_prompt(message: types.Message):
     await bot.send_message(message.chat.id, f"Your PROMPT:\n{prompt_mode[message.chat.id]}") if prompt_mode.get(message.chat.id) and prompt_mode[message.chat.id] else await bot.send_message(message.chat.id, "You have any PROMPT")
+# --------------------- END SET PROMPT ----------------------------
 
+# --------------------- SET TOKENS NUMBER ----------------------------
+class SetTokensNumber(StatesGroup):
+    tokens_state = State()
+
+@dp.message_handler(state=SetTokensNumber.tokens_state)
+async def SetTokensNumber_f(message: types.Message, state: FSMContext):
+    await set_config_variables(message)
+    async with state.proxy() as data:
+        data['tokens_state'] = message.text
+        if message.text.isdigit():
+            tokens[message.chat.id] = int(data['tokens_state'])
+        else:
+            await bot.send_message(message.chat.id, text="Input numbers only")
+    await state.finish()
+    await bot.send_message(message.chat.id, "👉 tokens number has been set")
+
+@dp.message_handler(commands=[tokens_number])
+async def chat_gpt_set_prompt(message: types.Message):
+    await set_config_variables(message)
+    await bot.send_message(message.chat.id, 'Input tokens number')
+    await SetTokensNumber.tokens_state.set()
+
+@dp.message_handler(commands=[watch_tokens_number])
+async def watch_set_prompt(message: types.Message):
+    await bot.send_message(message.chat.id, f"Your TOKENS is:\n{tokens[message.chat.id]}") if tokens.get(message.chat.id) and tokens[message.chat.id] else await bot.send_message(message.chat.id, "You have any PROMPT")
+# --------------------- END SET TOKENS NUMBER ----------------------------
 
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
@@ -67,7 +98,7 @@ async def get_text(message: types.Message):
         actual_dialogue = ask_gpt.actual_dialog(message, dialog[message.chat.id], length=0, prompt=False)
     else:
         actual_dialogue = ask_gpt.actual_dialog(message, dialog[message.chat.id], length=10, prompt=True, prompt_text=prompt_mode[message.chat.id])
-    dialog[message.chat.id].append(ask_gpt.send_request_USA_server(actual_dialogue))
+    dialog[message.chat.id].append(ask_gpt.send_request_USA_server(actual_dialogue, tokens[message.chat.id]))
     await bot.send_message(message.chat.id, dialog[message.chat.id][-1], parse_mode='html')
 
 async def set_config_variables(message):
@@ -80,6 +111,8 @@ async def set_config_variables(message):
         dialog[message.chat.id] = []
     if not prompt_mode.get(message.chat.id):
         prompt_mode[message.chat.id] = ""
+    if not tokens.get(message.chat.id):
+        tokens[message.chat.id] = 150
 
 async def without_history_mode_func(message):
     bot_mode[message.chat.id] = {
