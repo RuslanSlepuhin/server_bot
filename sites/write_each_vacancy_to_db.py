@@ -202,7 +202,7 @@ class HelperSite_Parser:
         act_prof = valid_professions.copy()
         act_prof.pop(0)
         request = f"Если это IT вакансия, то определи ее профессию из списка профессий: {', '.join(act_prof)}. Вакансия: {self.results_dict['title']}\n{self.results_dict['body']}. Ответ выдай одним словом (конкретной профессией из списка). Если это не IT вакансия или если ни одна профессия из списка не соответствует вакансии, то выдай ответ no_sort"
-        answer = ask_gemini_free_request(request).replace("\n", "").strip()
+        answer = ask_ai(request).replace("\n", "").strip()
         if answer and answer not in valid_professions:
             return ""
         else:
