@@ -13,7 +13,7 @@ def ask_ai(question, text=None):
     url = "https://creativeai-68gw.onrender.com/chat"
     data = {'query': f'{question_ai}', 'model': 'llama-3-70b'}
     headers = {"Content-Type": "application/json"}
-    response = requests.post(url, headers=headers, json=data)
+    response = requests.post(url, headers=headers, json=data, timeout=10)
     byte_response = response.content
     events = byte_response.split(b'\r\n\r\n')
     answers = []
