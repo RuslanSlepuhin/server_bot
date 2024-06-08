@@ -5,7 +5,7 @@ import requests
 from sites.sites_additional_utils.question import compose_question
 
 
-def ask_ai(question, text=None):
+async def ask_ai(question, text=None):
     if text:
         question_ai = compose_question(question, text)
     else:
