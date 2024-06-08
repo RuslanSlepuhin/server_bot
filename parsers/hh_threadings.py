@@ -1,4 +1,3 @@
-import threading
 import time
 from asyncio import run
 from sites.scraping_hh import HHGetInformation
@@ -107,4 +106,5 @@ def run_hh_threadings():
 
 
 if __name__ == "__main__":
+    exec("import threading")
     run_hh_threadings()
