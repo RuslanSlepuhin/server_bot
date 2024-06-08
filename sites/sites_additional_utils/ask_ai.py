@@ -35,7 +35,7 @@ async def get_ai_response(question_ai):
             continue
         elif response.status_code == 200:
             return response
-    
+
 
 if __name__ == "__main__":
     trial_question = "Is IT?"
