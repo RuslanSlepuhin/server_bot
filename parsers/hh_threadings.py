@@ -68,7 +68,7 @@ def run_hh_marketing():
     run(marketing_scraper.get_content(words_pattern=['marketing']))
 
 
-def run_hh_sales():
+def run_hh_sales_manager():
     sales_scraper = HHGetInformation(report=report)
     run(sales_scraper.get_content(words_pattern=['sales manager']))
 
@@ -78,63 +78,19 @@ def run_hh_hr():
 
 
 def run_hh_threadings():
-    thread_junior = threading.Thread(target=run_hh_junior)
-    thread_backend = threading.Thread(target=run_hh_backend)
-    thread_frontend = threading.Thread(target=run_hh_frontend)
-    thread_qa = threading.Thread(target=run_hh_qa)
-    thread_devops = threading.Thread(target=run_hh_devops)
-    thread_designer = threading.Thread(target=run_hh_designer)
-    thread_game = threading.Thread(target=run_hh_game)
-    thread_mobile = threading.Thread(target=run_hh_mobile)
-    thread_product = threading.Thread(target=run_hh_product)
-    thread_pm = threading.Thread(target=run_hh_pm)
-    thread_analyst = threading.Thread(target=run_hh_analyst)
-    thread_marketing = threading.Thread(target=run_hh_marketing)
-    thread_sales = threading.Thread(target=run_hh_sales)
-    thread_hr = threading.Thread(target=run_hh_hr)
+    items = [
+        'junior', 'backend', 'frontend', 'qa', 'devops', 'designer', 'game',
+        'mobile', 'product', 'pm', 'analyst', 'marketing', 'sales_manager', 'hr'
+    ]
+    for item in items:
+        exec(f"thread_{item} = threading.Thread(target=run_hh_{item})")
 
-    thread_junior.start()
-    time.sleep(3)
-    thread_backend.start()
-    time.sleep(3)
-    thread_frontend.start()
-    time.sleep(3)
-    thread_qa.start()
-    time.sleep(3)
-    thread_devops.start()
-    time.sleep(3)
-    thread_designer.start()
-    time.sleep(3)
-    thread_game.start()
-    time.sleep(3)
-    thread_mobile.start()
-    time.sleep(3)
-    thread_product.start()
-    time.sleep(3)
-    thread_pm.start()
-    time.sleep(3)
-    thread_analyst.start()
-    time.sleep(3)
-    thread_marketing.start()
-    time.sleep(3)
-    thread_sales.start()
-    time.sleep(3)
-    thread_hr.start()
+    for item in items:
+        exec(f"thread_{item}.start()")
+        time.sleep(3)
 
-    thread_junior.join()
-    thread_backend.join()
-    thread_frontend.join()
-    thread_qa.join()
-    thread_devops.join()
-    thread_designer.join()
-    thread_game.join()
-    thread_mobile.join()
-    thread_product.join()
-    thread_pm.join()
-    thread_analyst.join()
-    thread_marketing.join()
-    thread_sales.join()
-    thread_hr.join()
+    for item in items:
+        exec(f"thread_{item}.join()")
 
 
 if __name__ == "__main__":
