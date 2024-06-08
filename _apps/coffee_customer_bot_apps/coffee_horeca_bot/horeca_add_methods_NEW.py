@@ -9,6 +9,7 @@ from aiogram.utils.exceptions import MessageNotModified
 from _apps.coffee_customer_bot_apps.database import sqlite_management as db
 from _apps.coffee_customer_bot_apps.variables import variables
 from _debug import debug
+from _apps.coffee_customer_bot_apps.database import db_short_methods as db
 
 class HorecaBotMethods:
 
@@ -17,13 +18,16 @@ class HorecaBotMethods:
 
     async def start(self, message) -> bool:
         # utm_bot = message.text.split(' ')[1] if message.text else None
-        print(message.chat.id)
-        self.main_class.orders[message.chat.id] = await self.get_data_by_user_id(user_id=message.chat.id)
 
+
+        self.main_class.orders[message.chat.id] = await self.get_data_by_user_id(user_id=message.chat.id)
         if not self.main_class.orders[message.chat.id]:
-            return await self.main_class.bot.send_message(message.chat.id, "You have not the active current orders")
+            self.main_class.service_messages[message.chat.id].append(await self.main_class.bot.send_message(message.chat.id, "You have not the active current orders"))
+            return False
         self.main_class.orders_dict[message.chat.id] = await self.data_by_user_to_dict_by_order_id(message=message)
         await self.send_short_cards(message=message)
+        await self.delete_messages(message=message)
+        return True
 
     async def get_data_by_user_id(self, user_id) -> list:
         url = variables.server_domain + variables.get_horeca_info + f"?telegram_horeca_id={user_id}&active=true"
@@ -65,13 +69,14 @@ class HorecaBotMethods:
                 else:
                     buttons = variables.between_short_inline_buttons
                 text = await self.compose_short_text_from_order(order)
-                await self.custom_send_edit_message(chat_id=chat_id, text=text, buttons=buttons, order_id=order['order_id'])
-                await asyncio.sleep(random.randrange(1, 3))
+                if not self.main_class.message_dict[chat_id].get(order['order_id']) or self.main_class.message_dict[chat_id][order['order_id']].text != text:
+                    pass
+                    await self.custom_send_edit_message(chat_id=chat_id, text=text, buttons=buttons, order_id=order['order_id'])
+                    await asyncio.sleep(random.randrange(1, 3))
             else:
                 print("status is not for sending", order['order_indicator'])
-        # await self.notification(message=message)
         if not order_counter:
-            await self.main_class.bot.send_message(chat_id, "You have no paid orders")
+            self.main_class.service_messages[chat_id].append(await self.main_class.bot.send_message(chat_id, "You have no paid orders"))
 
     async def send_full_cards(self, **kwargs) -> None:
         """
@@ -175,7 +180,7 @@ class HorecaBotMethods:
         order_id = kwargs['callback_data'].split("|")[0]
 
         if not self.main_class.orders:
-            await self.main_class.bot.send_message(message.chat.id, text='------------------')
+            self.main_class.message_dict[chat_id].append(await self.main_class.bot.send_message(message.chat.id, text='------------------'))
             await self.set_vars(message=message)
             await self.start(message=message)
 
@@ -361,4 +366,15 @@ class HorecaBotMethods:
         self.main_class.callbacks[chat_id] = [] if chat_id not in self.main_class.callbacks else self.main_class.callbacks[chat_id]
         self.main_class.confirm_message[chat_id] = {} if chat_id not in self.main_class.confirm_message else self.main_class.confirm_message[chat_id]
         self.main_class.start_message[chat_id] = {} if chat_id not in self.main_class.start_message else self.main_class.start_message[chat_id]
+        self.main_class.service_messages[chat_id] = [] if chat_id not in self.main_class.service_messages else self.main_class.service_messages[chat_id]
+
+    async def delete_messages(self, **kwargs):
+        chat_id = kwargs['chat_id'] if kwargs.get('chat_id') else kwargs['message'].chat.id
+        for i in range(0, len(self.main_class.service_messages[chat_id])):
+            try:
+                await self.main_class.service_messages[chat_id][i].delete()
+            except Exception as ex:
+                print(ex)
+                pass
+        self.main_class.service_messages[chat_id] = []
 
