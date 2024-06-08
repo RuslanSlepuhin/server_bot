@@ -1,5 +1,6 @@
 import json.decoder
 import json
+import time
 
 import requests
 from sites.sites_additional_utils.question import compose_question
@@ -27,9 +28,14 @@ async def get_ai_response(question_ai):
     url = "https://creativeai-68gw.onrender.com/chat"
     data = {'query': f'{question_ai}', 'model': 'llama-3-70b'}
     headers = {"Content-Type": "application/json"}
-    response = requests.post(url, headers=headers, json=data)
-    return response
-
+    for _ in range(3):
+        response = requests.post(url, headers=headers, json=data)
+        if response.status_code == 429:
+            time.sleep(2)
+            continue
+        elif response.status_code == 200:
+            return response
+    
 
 if __name__ == "__main__":
     trial_question = "Is IT?"
