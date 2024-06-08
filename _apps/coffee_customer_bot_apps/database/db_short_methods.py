@@ -1,5 +1,5 @@
-import sqlite3
 from functools import wraps
+import sqlite3
 from _apps.coffee_customer_bot_apps.variables import database_variables as db_var
 
 def sqlite_connections(func):
@@ -17,14 +17,13 @@ def execute_query(func):
         query = func(*args, **kwargs)
         cur = conn.cursor()
         cur.execute(query)
-        return query
+        return query, cur.fetchall()
     return wrapper
 
 @sqlite_connections
 @execute_query
-def create_tables(*args, **kwargs):
-    pass
-    return kwargs['query']
+def create_tables(query):
+    return query
 
 @sqlite_connections
 @execute_query
@@ -33,7 +32,7 @@ def insert_into(data:dict, table_name:str=None) -> str:
 
 @sqlite_connections
 @execute_query
-def select_from(cur, selected_fields, conditions:dict, table_name:str=None) -> str:
+def select_from(cur, selected_fields, conditions:dict, table_name:str) -> str:
     selected_fields = ", ".join(selected_fields) if type(selected_fields) in [set, tuple, list] else selected_fields
     query = f"SELECT {selected_fields} from {table_name} {unpack_conditions(conditions)}"
     cur.execute(query)
@@ -46,9 +45,9 @@ def get_query(data:dict, table:str) -> str:
 
 def unpack_conditions(conditions:dict) -> str:
     if conditions:
-        condition_str = ["WHERE "]
+        condition_str = []
         for key, value in conditions.items():
             condition_str.append(f"{key}={value}") if type(value) in [int] else condition_str.append(f"{key}='{value}'")
-        return " AND ".join(condition_str)
+        return "WHERE " + " AND ".join(condition_str)
     else:
         return ""

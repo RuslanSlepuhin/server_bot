@@ -7,6 +7,8 @@ from _apps.coffee_customer_bot_apps.coffee_horeca_bot.horeca_add_methods_NEW imp
 from _apps.coffee_customer_bot_apps.variables.variables import new_order_endpoint, provide_message_to_horeca_endpoint, is_horeca_active_endpoint
 from _apps.coffee_customer_bot_apps.coffee_horeca_bot.webhook import WebHoock
 from _debug import debug
+from _apps.coffee_customer_bot_apps.database import db_short_methods as db
+from _apps.coffee_customer_bot_apps.variables import database_variables as db_var
 
 config = configparser.ConfigParser()
 
@@ -17,12 +19,18 @@ token = config['Bot']['horeca_token']
 bot = Bot(token=token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
-ngrok_payload = "f240-37-45-159-96"
+ngrok_payload = "9676-178-127-147-229"
 WEBHOOK_URL = f"https://{ngrok_payload}.ngrok-free.app" if debug else "https://4dev.itcoty.ru"
 WEBHOOK_PATH = '/horeca/wh'
 NEW_ORDER_PATH = new_order_endpoint
 MESSAGE_FROM_CUSTOMER = provide_message_to_horeca_endpoint
 IS_HORECA_ACTIVE = is_horeca_active_endpoint
+
+
+# db create tables
+for key in db_var.tables:
+    db.create_tables(query=db_var.tables[key]['create_query'])
+
 
 class HorecaBot:
 
@@ -49,6 +57,7 @@ class HorecaBot:
         self.callbacks = {} #[]
         self.confirm_message = {}
         self.start_message = {}
+        self.service_messages = {}
 
     async def on_startup(self, app):
         await self.bot.set_webhook(WEBHOOK_URL + WEBHOOK_PATH)
@@ -80,11 +89,10 @@ class HorecaBot:
                 response = await self.methods.send_enter_key({"enter_key": enter_key.strip(), "telegram_user_id": message.chat.id})
 
             await self.methods.set_vars(message=message)
-
-            self.start_message[message.chat.id] = await self.bot.send_message(message.chat.id, str(message.chat.id) + f" {variables.updating_message}", reply_markup=types.ReplyKeyboardRemove())
+            self.service_messages[message.chat.id].append(await self.bot.send_message(message.chat.id, str(message.chat.id) + f" {variables.updating_message}", reply_markup=types.ReplyKeyboardRemove()))
+            self.service_messages[message.chat.id].append(message)
             self.user_id = message.chat.id
             await self.methods.start(message)
-            await self.start_message[message.chat.id].delete()
 
         @self.dp.callback_query_handler()
         async def callbacks(callback: types.CallbackQuery):

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Form</title>
+    <style>
+        input[type="text"] {
+            width: 500px;
+            height: 30px;
+            background-color: #f2f2f2;
+            color: #333;
+            margin: 0 auto;
+            display: block;
+            text-align: left;
+        }
+        form {
+            text-align: center;
+        }
+#text2 {
+            width: 500px;
+            height: 300px;
+            background-color: #f2f2f2;
+            color: #fff;
+        }
+<!--        input[type="text"]:focus {-->
+<!--            background-color: #fff;-->
+<!--        }-->
+    </style>
+
+</head>
+<body>
+    <form action="/add_new_vacancy" method="post">
+        <label for="text1">Title:</label><br>
+        <input type="text" id="text1" name="text1"><br>
+        <label for="text2">Body:</label><br>
+        <input type="text" id="text2" name="text2"><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
