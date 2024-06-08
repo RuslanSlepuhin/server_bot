@@ -10,10 +10,7 @@ async def ask_ai(question, text=None):
         question_ai = compose_question(question, text)
     else:
         question_ai = question
-    url = "https://creativeai-68gw.onrender.com/chat"
-    data = {'query': f'{question_ai}', 'model': 'llama-3-70b'}
-    headers = {"Content-Type": "application/json"}
-    response = requests.post(url, headers=headers, json=data)
+    response = await get_ai_response(question_ai)
     byte_response = response.content
     events = byte_response.split(b'\r\n\r\n')
     answers = []
@@ -25,6 +22,13 @@ async def ask_ai(question, text=None):
     for answer in answers:
         if answer['event'] == "final-response":
             return answer["data"]['message']
+
+async def get_ai_response(question_ai):
+    url = "https://creativeai-68gw.onrender.com/chat"
+    data = {'query': f'{question_ai}', 'model': 'llama-3-70b'}
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(url, headers=headers, json=data)
+    return response
 
 
 if __name__ == "__main__":
