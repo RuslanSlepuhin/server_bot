@@ -79,9 +79,22 @@ def run_hh_hr():
 
 def run_hh_threadings():
     items = [
-        'junior', 'backend', 'frontend', 'qa', 'devops', 'designer', 'game',
-        'mobile', 'product', 'pm', 'analyst', 'marketing', 'sales_manager', 'hr'
+        'junior',
+        'backend',
+        'frontend',
+        'qa',
+        'devops',
+        'designer',
+        'game',
+        'mobile',
+        'product',
+        'pm',
+        'analyst',
+        'marketing',
+        'sales_manager',
+        'hr'
     ]
+
     for item in items:
         exec(f"thread_{item} = threading.Thread(target=run_hh_{item})")
 
