@@ -57,11 +57,11 @@ class HelperSite_Parser:
 
         if check_vacancy_not_exists:
 
-            # ai_profession = await self.get_ai_profession()
-            task = asyncio.create_task(self.get_ai_profession())
-            done, pending = await asyncio.wait([task], return_when=asyncio.ALL_COMPLETED)
-            ai_profession = task.result()
-            print(ai_profession)
+            ai_profession = await self.get_ai_profession()
+            # task = asyncio.create_task(self.get_ai_profession())
+            # done, pending = await asyncio.wait([task], return_when=asyncio.ALL_COMPLETED)
+            # ai_profession = task.result()
+            # print(ai_profession)
 
             # get profession's parameters
             try:
