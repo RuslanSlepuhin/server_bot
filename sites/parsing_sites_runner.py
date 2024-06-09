@@ -58,34 +58,34 @@ class SitesParser:
 
     async def call_sites(self):
         # await HHITGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
-        await HHGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
-        await HHKzGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
-        # await GeekGetInformation(bot_dict=self.bot_dict, report=self.report).get_content()
-        # await EpamGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
-        # await DevGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
-        # await СareerjetGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
-        # # await DesignerGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        # await HabrGetInformation(bot_dict=self.bot_dict, report=self.report).get_content()
-        # await FinderGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
-        # # await IngameJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        # await PracaGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
-        # await RemocateGetInformation(bot_dict=self.bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
-        # # await RemotehubGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        # # await RabotaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        # # await SvyaziGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        # # await SuperJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
-        # await RemoteJobGetInformation(bot_dict=self.bot_dict, report=self.report).get_content()
-        # # await CareerSpaceGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
-        # await OttaGetInformation(bot_dict=self.bot_dict, report=self.report).get_content()
-        # await WellFoundGetInformation(bot_dict=self.bot_dict, report=self.report).get_content()
+        # await HHGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
+        # await HHKzGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
+        await GeekGetInformation(bot_dict=self.bot_dict, report=self.report).get_content()
+        await EpamGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
+        await DevGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
+        await СareerjetGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
+        # await DesignerGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await HabrGetInformation(bot_dict=self.bot_dict, report=self.report).get_content()
+        await FinderGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
+        # await IngameJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await PracaGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
+        await RemocateGetInformation(bot_dict=self.bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
+        # await RemotehubGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await RabotaGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await SvyaziGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        # await SuperJobGetInformation(bot_dict=bot_dict, report=self.report).get_content()
+        await RemoteJobGetInformation(bot_dict=self.bot_dict, report=self.report).get_content()
+        # await CareerSpaceGetInformation(bot_dict=bot_dict, report=self.report, db=self.db, helper=self.helper).get_content()
+        await OttaGetInformation(bot_dict=self.bot_dict, report=self.report).get_content()
+        await WellFoundGetInformation(bot_dict=self.bot_dict, report=self.report).get_content()
 
         print(' -----------------------FINAL -------------------------------')
 
     async def run_hh(self):
         await HHGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
 
-    # async def run_asyncio_tasks(self):
-    #     asyncio.run(self.call_sites())
+    async def run_hhkz(self):
+        await HHKzGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
 
     async def common_run_parsers(self):
-        await asyncio.gather(self.run_hh(), self.call_sites())
+        await asyncio.gather(self.run_hh(), self.run_hhkz(), self.call_sites())
