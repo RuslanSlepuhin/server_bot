@@ -21,6 +21,10 @@ class HelperSite_Parser:
         self.find_parameters = FinderAddParameters()
         self.results_dict = {}
         self.profession = {}
+        self.ai_mode = {
+            'Gemini': True,
+            'Llama': False
+        }
 
     async def write_each_vacancy(self, results_dict):
         self.results_dict = results_dict
@@ -56,8 +60,15 @@ class HelperSite_Parser:
         #         continue
 
         if check_vacancy_not_exists:
+            approved_status = None
+            ai_profession = None
+            try:
+                ai_profession, approved_status = await self.get_ai_profession()
+            except Exception as ex:
+                print(ex)
+                pass
 
-            ai_profession = await self.get_ai_profession()
+            print(f"\033[1;32mAI profession: {ai_profession}\033[0m")
             # task = asyncio.create_task(self.get_ai_profession())
             # done, pending = await asyncio.wait([task], return_when=asyncio.ALL_COMPLETED)
             # ai_profession = task.result()
@@ -80,6 +91,7 @@ class HelperSite_Parser:
                 pass
 
             self.profession = self.profession['profession']
+            print(f"\033[1;32mFILTER profession: {', '.join(self.profession['profession'])}\033[0m")
 
 
             if self.report:
@@ -93,7 +105,9 @@ class HelperSite_Parser:
                 pass
 
             if self.profession['profession']:
-                self.results_dict['approved'] = 'approves by filter' if not ai_profession else 'approved by ai'
+                self.results_dict['approved'] = 'approves by filter' if not approved_status else approved_status
+                print(f"\033[1;32mAPPROVED: {self.results_dict['approved']}\033[0m")
+
                 try:
                     response_from_db = self.db.push_to_admin_table(
                     results_dict=self.results_dict,
@@ -142,7 +156,6 @@ class HelperSite_Parser:
         if self.report:
             self.report.parsing_switch_next(switch=True)
 
-        # print('??????????? finish_write_each_vacancy')
 
         return {'response': response, "profession": self.profession, 'response_dict': response_from_db}
 
@@ -197,7 +210,6 @@ class HelperSite_Parser:
         # city and country refactoring
         if self.results_dict['city']:
             city_country = await self.find_parameters.find_city_country(text=self.results_dict['city'])
-            # print(f"city_country: {self.results_dict['city']} -> {city_country}")
             if city_country:
                 self.results_dict['city'] = city_country
             else:
@@ -206,10 +218,52 @@ class HelperSite_Parser:
     async def get_ai_profession(self):
         act_prof = valid_professions.copy()
         act_prof.pop(0)
-        request = f"Если это IT вакансия, то определи ее профессию из списка профессий: {', '.join(act_prof)}. Вакансия: {self.results_dict['title']}\n{self.results_dict['body']}. Ответ выдай одним словом (конкретной профессией из списка). Если это не IT вакансия или если ни одна профессия из списка не соответствует вакансии, то выдай ответ no_sort"
-        answer = await ask_ai(request)
+        request = f"Если это IT вакансия, то определи ее профессию из списка профессий: [{', '.join(act_prof)}]. Вакансия: {self.results_dict['title']}\n{self.results_dict['body']}. Ответ выдай одним словом (конкретной профессией из списка). Если это не IT вакансия или если ни одна профессия из списка не соответствует вакансии, то выдай ответ no_sort"
+        answer = ''
+        approved_status = None
+        status_code = 500
+        ai = "Gemini" if self.ai_mode["Gemini"] else "Llama"
+        for _ in range(0, len(self.ai_mode)*2):
+            answer, status_code, approved_status = await ask_ai(request, ai)
+            if status_code >= 400:
+                ai = await self.next_ai(ai)
+            else:
+                break
         answer = answer.replace("\n", "").strip()
+        if 200 <= status_code < 300:
+            answer = await self.define_more_precisely(answer)
         if answer and answer not in valid_professions:
-            return ""
+            return "", None
         else:
+            return answer, approved_status
+
+    async def next_ai(self, ai, global_switch=False):
+        all_ai = list(self.ai_mode.keys())
+        ai_index = all_ai.index(ai)
+        if ai_index != len(self.ai_mode)-1:
+            self.ai_mode[ai] = False if global_switch else True
+            ai = all_ai[ai_index+1]
+            self.ai_mode[ai] = True if global_switch else False
+        else:
+            self.ai_mode[ai] = False if global_switch else True
+            ai = all_ai[0]
+            self.ai_mode[ai] = True if global_switch else False
+        return ai
+
+    async def define_more_precisely(self, answer):
+        v_prof = valid_professions.copy()
+        v_prof.remove('junior')
+        if answer.lower() in v_prof:
             return answer
+        answer = self.filter.sort_profession(
+            title=answer,
+            body="",
+            get_params=False,
+            check_vacancy=True,
+            check_vacancy_only_mex=True,
+            check_contacts=False,
+            vacancy_dict={'title': answer, "body": None},
+        )
+        if 'junior' in answer['profession']['profession']:
+            answer['profession']['profession'].remove('junior')
+        return ", ".join(answer['profession']['profession'])
