@@ -3305,6 +3305,11 @@ class InviteBot():
             task = asyncio.create_task(sites_parser.common_run_parsers())
             await task
 
+
+            from parsers.check_vacancies_without_AI import redefine_prof_for_vacancies
+            task2 = asyncio.create_task(redefine_prof_for_vacancies())
+            await task2
+
             # digest_parser = DigestParser(client=self.client, bot_dict=bot_dict, report=self.report)
             # try:
             #     await digest_parser.main_start()
