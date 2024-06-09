@@ -225,7 +225,7 @@ class HelperSite_Parser:
         status_code = 500
         ai = "Gemini" if self.ai_mode["Gemini"] else "Llama"
         for _ in range(0, len(self.ai_mode)*2):
-            answer, status_code, approved_status = await ask_ai(request, ai)
+            answer, status_code, approved_status, ai_name_from = await ask_ai(request, ai)
             if status_code >= 400:
                 ai = await self.next_ai(ai)
             else:
@@ -235,6 +235,8 @@ class HelperSite_Parser:
             answer = await self.define_more_precisely(answer)
         if answer and answer not in valid_professions:
             return "", None
+        elif answer == "no_sort":
+            return "no_sort", approved_status
         else:
             return answer, approved_status
 
