@@ -221,7 +221,9 @@ class HelperSite_Parser:
             else:
                 self.results_dict['city'] = ''
 
-    async def get_ai_profession(self):
+    async def get_ai_profession(self, **kwargs):
+        self.results_dict['title'] = kwargs['title'] if kwargs.get('title') else self.results_dict['title']
+        self.results_dict['body'] = kwargs['body'] if kwargs.get('body') else self.results_dict['body']
         act_prof = valid_professions.copy()
         act_prof.pop(0)
         request = f"Если это IT вакансия, то определи ее профессию из списка профессий: [{', '.join(act_prof)}]. Вакансия: {self.results_dict['title']}\n{self.results_dict['body']}. Ответ выдай одним словом (конкретной профессией из списка). Если это не IT вакансия или если ни одна профессия из списка не соответствует вакансии, то выдай ответ no_sort"
