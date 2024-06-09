@@ -922,7 +922,9 @@ class DataBaseOperations:
                                 if self.report:
                                     self.report.parsing_report(found_body=body)
                                     self.report.parsing_report(found_title=title)
+                                print(f"\033[1;33mDB: has been found by title-body\033[0m")
                                 return {"has_been_found": True, "response_dict": response_dict, "id": response_dict['id']}
+        # print(f"\033[1;33mDB: NOT FOUND\033[0m")
         return {"has_been_found": False, "response_dict": {}}
 
         #
@@ -1441,6 +1443,7 @@ class DataBaseOperations:
                     else:
                         self.report.parsing_report(found_title=title, found_body=body, found_id=response[0][0])
                 # print("??????????finish_check_exists_message_by_link_or_url")
+                print(f"\033[1;33mDB: has been found by link\033[0m")
                 return False
         # print("??????????finish_check_exists_message_by_link_or_url")
         return True
