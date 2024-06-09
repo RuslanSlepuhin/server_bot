@@ -818,7 +818,7 @@ class DataBaseOperations:
         # results_dict['body'] = self.clear_title_or_body(results_dict['body'])
 
         if check_or_exists:
-            print('check or exists')
+            # print('check or exists')
             tables_list_for_vacancy_searching = set(profession['profession']).copy()
             tables_list_for_vacancy_searching.discard('no_sort')
             tables_list_for_vacancy_searching = tables_list_for_vacancy_searching.union(additional_elements)
@@ -828,6 +828,7 @@ class DataBaseOperations:
                     title=results_dict['title'],
                     body=results_dict['body'])
             if has_been_found['has_been_found']:
+                print(f"\033[1;33mDB: has_been_found\033[0m")
                 return {"has_been_found": True, "response_dict": has_been_found['response_dict']}
 
             has_been_found = self.check_vacancy_exists_in_db(
@@ -835,6 +836,7 @@ class DataBaseOperations:
                 title=self.clear_title_or_body(results_dict['title']),
                 body=self.clear_title_or_body(results_dict['body']))
             if has_been_found['has_been_found']:
+                print(f"\033[1;33mDB: has_been_found\033[0m")
                 return {"has_been_found": True, "response_dict": has_been_found['response_dict']}
         if results_dict['profession'] == 'no_sort':
             table_name = archive_database
@@ -852,7 +854,7 @@ class DataBaseOperations:
                 print('cur execute')
                 cur.execute(new_post)
                 cur.execute(duplicate_post)
-                print(f'+++++++++++++ The vacancy has been added to DB {table_name}\n')
+                print(f"\033[1;33m+++++++++++++ The vacancy has been added to DB {table_name}\n\033[0m")
                 if self.report:
                     self.report.parsing_report(profession=results_dict['profession'])
                     self.report.parsing_report(has_been_added_to_db=True)
@@ -863,7 +865,7 @@ class DataBaseOperations:
                     self.report.parsing_report(has_been_added_to_db=False)
                     self.report.parsing_report(error=str(e))
 
-                print(f'-------------- Didn\'t push in ADMIN LAST SESSION {e}\n')
+                print(f"\033[1;33m-------------- Didn\'t push in ADMIN LAST SESSION {e}\n\033[0m")
                 return {"has_been_found": False, "response_dict": results_dict}
 
 
