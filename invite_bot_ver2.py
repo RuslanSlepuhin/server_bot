@@ -301,22 +301,8 @@ class InviteBot():
 
             keyboard_list = ['Digest', 'Subscr.statistics', '🦖 Search by link']
             parsing_kb = await self.compose_keyboard_in_bar(buttons=keyboard_list)
-            # parsing_kb = ReplyKeyboardMarkup(resize_keyboard=True)
-            # # parsing_button1 = KeyboardButton('Get news from channels')
-            # parsing_button2 = KeyboardButton('Subscr.statistics')
-            # parsing_button3 = KeyboardButton('Digest')
-            # # parsing_button4 = KeyboardButton('Invite people')
-            # # parsing_button5 = KeyboardButton('Get participants')
-            #
-            # parsing_kb.row(parsing_button3, parsing_button2)
 
             await self.bot_aiogram.send_message(message.chat.id, f'Привет, {message.from_user.first_name}!', reply_markup=parsing_kb)
-            # await self.bot_aiogram.send_message(variable.id_owner, f'User {message.from_user.id} has started')
-            # config2 = configparser.ConfigParser()
-            # config2.read("./settings/config_keys.ini")
-            # if self.token == config2['Token']['token_red']:
-            #     await get_news(message=message)
-            #     pass
 
         @self.dp.message_handler(commands=['help'])
         async def get_logs(message: types.Message):
@@ -3315,7 +3301,8 @@ class InviteBot():
             # await self.report.add_to_excel(report_type='parsing')
             sites_parser = SitesParser(client=self.client, bot_dict=bot_dict, report=self.report)
 
-            task = asyncio.create_task(sites_parser.call_sites())
+            # task = asyncio.create_task(sites_parser.call_sites())
+            task = asyncio.create_task(sites_parser.common_run_parsers())
             await task
 
             # digest_parser = DigestParser(client=self.client, bot_dict=bot_dict, report=self.report)
