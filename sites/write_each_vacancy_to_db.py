@@ -74,6 +74,7 @@ class HelperSite_Parser:
             # ai_profession = task.result()
             # print(ai_profession)
 
+
             # get profession's parameters
             try:
                 self.profession = self.filter.sort_profession(
