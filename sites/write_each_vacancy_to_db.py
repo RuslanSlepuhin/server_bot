@@ -39,14 +39,19 @@ class HelperSite_Parser:
             )
 
         check_vacancy_not_exists = True
-
+        has_been_found_by_title_body = False
         # search this vacancy in database
         if 'vacancy_url' in self.results_dict and self.results_dict['vacancy_url']:
             check_vacancy_not_exists = self.db.check_exists_message_by_link_or_url(
                 vacancy_url=self.results_dict['vacancy_url'],
                 table_list=tables
             )
-
+        if check_vacancy_not_exists:
+            has_been_found_by_title_body = self.db.check_vacancy_exists_in_db(
+                tables_list=['vacancies', 'admin_last_session', 'archive'],
+                title=self.results_dict['title'],
+                body=self.results_dict['body']
+            )['has_been_found']
         # check weather this is a vacancy and, if so, weather it relates to IT using Gemini
         # ai_prompt = results_dict['title'] + results_dict['body']
         # for question in ["Is IT?"]:
@@ -59,7 +64,7 @@ class HelperSite_Parser:
         #     elif answer == "":
         #         continue
 
-        if check_vacancy_not_exists:
+        if check_vacancy_not_exists and not has_been_found_by_title_body:
             approved_status = None
             ai_profession = None
             try:
@@ -153,7 +158,7 @@ class HelperSite_Parser:
 
                 response['vacancy'] = 'no vacancy by anti-tags'
         else:
-            response['vacancy'] = 'found in db by link'
+            response['vacancy'] = 'found in db by link' if not check_vacancy_not_exists else 'found in db by title-body'
         if self.report:
             self.report.parsing_switch_next(switch=True)
 
