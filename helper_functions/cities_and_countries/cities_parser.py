@@ -1,6 +1,6 @@
 import asyncio
-from translate import Translator
-from googletrans import Translator as google_translator
+from translate import Translator as google_translator
+# from googletrans import Translator as google_translator
 import requests
 from db_operations.scraping_db import DataBaseOperations
 from utils.additional_variables.additional_variables import countries_cities_table
