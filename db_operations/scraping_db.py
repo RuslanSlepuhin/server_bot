@@ -34,27 +34,20 @@ class DataBaseOperations:
 
         if not self.con:
             self.con = None
-            if debug and not local_db_connect:
-                database = "postgres"
-                user = "postgres"
-                password = "00000"
-                host = "localhost"
-                port = "5432"
-            else:
-                config.read("./../settings/config.ini")
-                try:
-                    database = config['DB3']['database']
-                    user = config['DB3']['user']
-                    password = config['DB3']['password']
-                    host = config['DB3']['host']
-                    port = config['DB3']['port']
-                except:
-                    config.read("./settings/config.ini")
-                    database = config['DB_local_clone']['database']
-                    user = config['DB_local_clone']['user']
-                    password = config['DB_local_clone']['password']
-                    host = config['DB_local_clone']['host']
-                    port = config['DB_local_clone']['port']
+            config.read("./../settings/config.ini")
+            try:
+                database = config['DB3']['database']
+                user = config['DB3']['user']
+                password = config['DB3']['password']
+                host = config['DB3']['host']
+                port = config['DB3']['port']
+            except:
+                config.read("./settings/config.ini")
+                database = config['DB_local_clone']['database']
+                user = config['DB_local_clone']['user']
+                password = config['DB_local_clone']['password']
+                host = config['DB_local_clone']['host']
+                port = config['DB_local_clone']['port']
 
             try:
                 self.con = psycopg2.connect(
