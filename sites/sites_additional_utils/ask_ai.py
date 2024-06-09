@@ -6,26 +6,28 @@ import requests
 from sites.sites_additional_utils.question import compose_question
 
 
-async def ask_ai(question, text=None):
+def ask_ai(question, text=None):
     if text:
         question_ai = compose_question(question, text)
     else:
         question_ai = question
-    response = await get_ai_response(question_ai)
+
+    response = get_ai_response(question_ai)
+
     byte_response = response.content
     events = byte_response.split(b'\r\n\r\n')
-    answers = []
+    events.reverse()
     for event in events:
         if event:
-            answer = event.decode()
+            answer = event.decode("unicode-escape")
             answer = answer.replace("data: ", "")
-            answers.append(json.loads(answer))
-    for answer in answers:
-        if answer['event'] == "final-response":
-            return answer["data"]['message']
+            item = json.loads(answer)
+            if item['event'] == "final-response":
+                return item['data']['message']
 
-async def get_ai_response(question_ai):
-    url = "https://creativeai-68gw.onrender.com/chat"
+
+def get_ai_response(question_ai):
+    url = "https://creativeai-q3g0.onrender.com/chat"
     data = {'query': f'{question_ai}', 'model': 'llama-3-70b'}
     headers = {"Content-Type": "application/json"}
     for _ in range(3):
@@ -53,4 +55,5 @@ if __name__ == "__main__":
     """
 
     print(ask_ai(trial_question, trial_text))
-    print(ask_ai("What is the capital of the US?"))
+    print(ask_ai("What is the capital og the US?"))
+
