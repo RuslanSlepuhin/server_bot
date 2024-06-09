@@ -21,11 +21,12 @@ async def ask_ai(question, ai:str, text=None):
             print(f"\033[1;31m***** Gemini ***** {response.status_code}\033[0m")
             if 200 <= response.status_code < 300:
                 answer = response.json()['answer']
-                return answer, response.status_code, 'approved by ai Gemini'
-            return "", response.status_code, None
+                return answer, response.status_code, 'approved by ai Gemini', ai
+            return "", response.status_code, None, ai
 
 
         case "Llama":
+            ai_name_from = "Llama"
             url = "https://creativeai-q3g0.onrender.com/chat"
             data = {'query': f'{question_ai}', 'model': 'llama-3-70b'}
             headers = {"Content-Type": "application/json"}
@@ -42,12 +43,12 @@ async def ask_ai(question, ai:str, text=None):
                         item = json.loads(answer)
                         if item['event'] == "final-response":
                             print(f"\033[1;31m***** Llama ***** {response.status_code}\033[0m")
-                            return item['data']['message'], response.status_code, None
-                return "", 500, None
+                            return item['data']['message'], response.status_code, 'approved by ai Llama', ai
+                return "", 500, None, ai
 
             else:
                 print(f"\033[1;31m***** Llama ***** {response.status_code}\033[0m")
-                return "", 500, None
+                return "", 500, None, ai
 
     # for _ in range(0, 3):
     #     response = requests.post(url, headers=headers, json=data, timeout=10)
