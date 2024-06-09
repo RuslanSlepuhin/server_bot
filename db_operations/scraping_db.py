@@ -2,7 +2,6 @@ import configparser
 import json
 import re
 import time
-
 from utils.additional_variables.additional_variables import admin_database, archive_database, admin_table_fields, \
     valid_professions, reject_table as reject_database
 from utils.additional_variables.additional_variables import table_list_for_checking_message_in_db, \
@@ -13,6 +12,7 @@ from collections import Counter
 from logs.logs import Logs
 from helper_functions import helper_functions as helper
 from patterns._export_pattern import export_pattern
+from _debug import debug, local_db_connect
 import pandas as pd
 logs = Logs()
 
@@ -34,20 +34,27 @@ class DataBaseOperations:
 
         if not self.con:
             self.con = None
-            config.read("./../settings/config.ini")
-            try:
-                database = config['DB3']['database']
-                user = config['DB3']['user']
-                password = config['DB3']['password']
-                host = config['DB3']['host']
-                port = config['DB3']['port']
-            except:
-                config.read("./settings/config.ini")
-                database = config['DB_local_clone']['database']
-                user = config['DB_local_clone']['user']
-                password = config['DB_local_clone']['password']
-                host = config['DB_local_clone']['host']
-                port = config['DB_local_clone']['port']
+            if debug and not local_db_connect:
+                database = "postgres"
+                user = "postgres"
+                password = "00000"
+                host = "localhost"
+                port = "5432"
+            else:
+                config.read("./../settings/config.ini")
+                try:
+                    database = config['DB3']['database']
+                    user = config['DB3']['user']
+                    password = config['DB3']['password']
+                    host = config['DB3']['host']
+                    port = config['DB3']['port']
+                except:
+                    config.read("./settings/config.ini")
+                    database = config['DB_local_clone']['database']
+                    user = config['DB_local_clone']['user']
+                    password = config['DB_local_clone']['password']
+                    host = config['DB_local_clone']['host']
+                    port = config['DB_local_clone']['port']
 
             try:
                 self.con = psycopg2.connect(
