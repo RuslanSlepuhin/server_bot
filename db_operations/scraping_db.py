@@ -12,7 +12,6 @@ from collections import Counter
 from logs.logs import Logs
 from helper_functions import helper_functions as helper
 from patterns._export_pattern import export_pattern
-from _debug import debug, local_db_connect
 import pandas as pd
 logs = Logs()
 
