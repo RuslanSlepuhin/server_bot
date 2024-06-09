@@ -2,6 +2,7 @@ import asyncio
 import json.decoder
 import json
 from utils.additional_variables.additional_variables import valid_professions
+import time
 import requests
 from sites.sites_additional_utils.question import compose_question
 
@@ -69,6 +70,18 @@ async def ask_ai(question, ai:str, text=None):
     # for answer in answers:
     #     if answer['event'] == "final-response":
     #         return answer["data"]['message'], response.status_code
+
+async def get_ai_response(question_ai):
+    url = "https://creativeai-68gw.onrender.com/chat"
+    data = {'query': f'{question_ai}', 'model': 'llama-3-70b'}
+    headers = {"Content-Type": "application/json"}
+    for _ in range(3):
+        response = requests.post(url, headers=headers, json=data)
+        if response.status_code == 429:
+            time.sleep(2)
+            continue
+        elif response.status_code == 200:
+            return response
 
 
 if __name__ == "__main__":
