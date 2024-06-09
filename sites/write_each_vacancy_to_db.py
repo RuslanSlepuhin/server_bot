@@ -57,11 +57,11 @@ class HelperSite_Parser:
 
         if check_vacancy_not_exists:
 
-            # ai_profession = await self.get_ai_profession()
-            # task = asyncio.create_task(self.get_ai_profession())
-            # done, pending = await asyncio.wait([task], return_when=asyncio.ALL_COMPLETED)
-            # ai_profession = task.result()
-            # print(ai_profession)
+            ai_profession = await self.get_ai_profession()
+            task = asyncio.create_task(self.get_ai_profession())
+            done, pending = await asyncio.wait([task], return_when=asyncio.ALL_COMPLETED)
+            ai_profession = task.result()
+            print(ai_profession)
 
             # get profession's parameters
             try:
@@ -73,7 +73,7 @@ class HelperSite_Parser:
                 check_vacancy_only_mex=True,
                 check_contacts=False,
                 vacancy_dict=self.results_dict,
-                # ai_profession=ai_profession if ai_profession else None
+                ai_profession=ai_profession if ai_profession else None
             )
             except Exception as ex:
                 print("write_each_vacancy (1) - > ", ex)
@@ -93,7 +93,7 @@ class HelperSite_Parser:
                 pass
 
             if self.profession['profession']:
-                self.results_dict['approved'] = 'approves by filter' #if not ai_profession else 'approved by ai'
+                self.results_dict['approved'] = 'approves by filter' if not ai_profession else 'approved by ai'
                 try:
                     response_from_db = self.db.push_to_admin_table(
                     results_dict=self.results_dict,
