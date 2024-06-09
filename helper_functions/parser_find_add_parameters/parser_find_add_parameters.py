@@ -30,7 +30,7 @@ class FinderAddParameters:
         self.text = kwargs['text'] if 'text' in kwargs else ''
         if not self.text:
             response = ['-', '-', '-', '-']
-            print(response)
+            # print(response)
             return response
 
         self.region = kwargs['region'] if 'region' in kwargs else None
