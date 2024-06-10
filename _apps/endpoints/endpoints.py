@@ -60,6 +60,8 @@ class Endpoints:
             vacancy = request.json
             print(vacancy)
             statistics, vacancy_updated = await refresh_prof_by_AI(vacancies=vacancy)
+            print(f"\033[1;33m{statistics}\033[0m")
+            print(f"\033[1;33m{vacancy_updated}\033[0m")
             return {
                 'vacancy_updated': vacancy_updated,
                 'statistics': statistics
