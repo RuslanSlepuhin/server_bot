@@ -59,7 +59,7 @@ class Endpoints:
         async def ai_profession():
             vacancy = request.json
             print(vacancy)
-            statistics, vacancy_updated = refresh_prof_by_AI(vacancies=vacancy)
+            statistics, vacancy_updated = await refresh_prof_by_AI(vacancies=vacancy)
             return {
                 'vacancy_updated': vacancy_updated,
                 'statistics': statistics
