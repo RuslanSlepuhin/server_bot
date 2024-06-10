@@ -10,7 +10,7 @@ vacancy_filter = VacancyFilter()
 
 async def redefine_prof_for_vacancies():
     vacancies = await get_vacancies_without_AI()
-    statistics = await refresh_prof_by_AI(vacancies)
+    statistics, vacancies_updated = await refresh_prof_by_AI(vacancies)
     print(f"\033[1;31mCRASHED AI: {statistics['crashed_AI']}\033[0m")
     print(f"\033[1;32mAI PROFESSION: {statistics['success_update']}\033[0m")
 
@@ -35,7 +35,11 @@ async def compose_vacancies_to_dict(vacancies:list, fields:list) -> list:
         vacancies_dict.append(vacancy_dict)
     return vacancies_dict
 
-async def refresh_prof_by_AI(vacancies:list) -> dict:
+async def refresh_prof_by_AI(vacancies:list, to_db=True) -> dict:
+    vacancies_updated = {
+        "crashed_AI": [],
+        "success_update": []
+    }
     update_vacancies_status = {
         "crashed_AI": 0,
         "success_update": 0,
@@ -57,8 +61,11 @@ async def refresh_prof_by_AI(vacancies:list) -> dict:
             print(f"\033[1;33mAI PROFESSION: {vacancy['profession']}\033[0m")
             vacancy['approved'] = approved_status
             print(f"\033[1;33mAPPROVED STATUS: {vacancy['approved']}\033[0m")
-            db.update_table_multi(table_name=admin_database, param=f"WHERE id={vacancy['id']}", values_dict=vacancy)
+            if to_db:
+                db.update_table_multi(table_name=admin_database, param=f"WHERE id={vacancy['id']}", values_dict=vacancy)
+            vacancies_updated["success_update"].append(vacancy)
             update_vacancies_status['success_update'] += 1
         else:
+            vacancies_updated["crashed_AI"].append(vacancy)
             update_vacancies_status['crashed_AI'] += 1
     return update_vacancies_status
