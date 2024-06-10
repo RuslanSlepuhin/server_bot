@@ -119,7 +119,7 @@ def ask_gpt():
 if __name__ == "__main__":
     # vacancies bot (red, green) and flask endpoints
     p1 = Process(target=start_endpoints, args=())
-    p15 = Process(target=start_fast_api_endpoints())
+    # p15 = Process(target=start_fast_api_endpoints())
     p2 = Process(target=start_bot, args=())
     p3 = Process(target=start_bot, args=(True, settings.token_red))
 
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     # p14 = Process(target=form_app_start, args=())
 
     p1.start()
-    p15.start()
+    # p15.start()
     p2.start()
     p3.start()
     p4.start()
