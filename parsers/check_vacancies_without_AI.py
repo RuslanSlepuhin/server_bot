@@ -15,10 +15,16 @@ async def redefine_prof_for_vacancies():
     print(f"\033[1;32mAI PROFESSION: {statistics['success_update']}\033[0m")
 
 
-async def get_vacancies_without_AI() -> list:
+async def get_vacancies_without_AI(table_name=admin_database) -> list:
     fields = ['title', 'body', 'approved', 'profession', 'id']
-    vacancies = db.get_all_from_db(table_name=admin_database, param="WHERE approved='approves by filter'", field=', '.join(fields))
+    vacancies = db.get_all_from_db(table_name=table_name, param="WHERE approved='approves by filter'", field=', '.join(fields))
     return await compose_vacancies_to_dict(vacancies, fields)
+
+async def get_vacancies_with_AI(table_name=admin_database) -> list:
+    fields = ['title', 'body', 'approved', 'profession', 'id']
+    vacancies = db.get_all_from_db(table_name=table_name, param="WHERE approved LIKE '%approves by ai%'", field=', '.join(fields))
+    return await compose_vacancies_to_dict(vacancies, fields)
+
 
 async def compose_vacancies_to_dict(vacancies:list, fields:list) -> list:
     vacancies_dict = []
