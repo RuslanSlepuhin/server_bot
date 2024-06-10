@@ -3,11 +3,7 @@ import configparser
 from datetime import date, timedelta
 import json
 import os
-import time
-from multiprocessing import Process
-import time
 import psycopg2
-from aiogram.types import Message, Chat
 from flask import Flask, jsonify
 import random
 import datetime
@@ -20,15 +16,13 @@ from flask import request
 from utils.additional_variables.additional_variables import path_post_request_file, post_request_for_example, \
     valid_professions, preview_fields_for_web, vacancies_database
 from patterns._export_pattern import export_pattern
-from patterns.data_pattern._data_pattern import pattern
 from filters.filter_jan_2023.filter_jan_2023 import VacancyFilter
 from helper_functions import helper_functions as helper
 from utils.additional_variables import additional_variables as variable
-import requests
 from invite_bot_ver2 import InviteBot, start_hardpushing
 from _apps.endpoints.predictive_method import Predictive
 from _apps.endpoints.client_init import ClientTelethon
-
+from parsers.check_vacancies_without_AI import get_vacancies_with_AI
 from _apps.individual_tg_bot.service import db as individual_tg_bot_db
 
 db=DataBaseOperations()
@@ -60,6 +54,11 @@ class Endpoints:
     async def main_endpoints(self):
         app = Flask(__name__)
         CORS(app)
+
+        @app.route("/get_filtered_by_ai", methods=['GET'])
+        async def get_filtered_by_ai():
+            vacancies = get_vacancies_with_AI()
+            return jsonify(vacancies)
 
         @app.route("/user_requests_vacancies", methods=["GET"])
         def get_user_requests_vacancies():
