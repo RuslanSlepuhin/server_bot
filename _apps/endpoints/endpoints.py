@@ -11,8 +11,6 @@ from _apps.individual_tg_bot.text import once_per_day
 from db_operations.scraping_db import DataBaseOperations
 from utils.additional_variables.additional_variables import admin_database, admin_table_fields, preview_fields_for_web
 from helper_functions.helper_functions import to_dict_from_admin_response
-from flask_cors import CORS
-from flask import request
 from utils.additional_variables.additional_variables import path_post_request_file, post_request_for_example, \
     valid_professions, preview_fields_for_web, vacancies_database
 from patterns._export_pattern import export_pattern
@@ -24,6 +22,10 @@ from _apps.endpoints.predictive_method import Predictive
 from _apps.endpoints.client_init import ClientTelethon
 from parsers.check_vacancies_without_AI import get_vacancies_with_AI, refresh_prof_by_AI
 from _apps.individual_tg_bot.service import db as individual_tg_bot_db
+from flask_cors import CORS
+from flask import request
+# from quart import Quart, request
+# from quart_cors import cors
 
 db=DataBaseOperations()
 vacancy_search = VacancyFilter()
@@ -54,14 +56,13 @@ class Endpoints:
     async def main_endpoints(self):
         app = Flask(__name__)
         CORS(app)
+        # app = Quart(__name__)
+        # app = cors(app)
 
         @app.route("/ai_profession", methods=['POST'])
         async def ai_profession():
-            vacancy = request.json
-            print(vacancy)
-            statistics, vacancy_updated = await refresh_prof_by_AI(vacancies=vacancy, to_db=False)
-            print(f"\033[1;33m{statistics}\033[0m")
-            print(f"\033[1;33m{vacancy_updated}\033[0m")
+            vacancies = request.json
+            statistics, vacancy_updated = await refresh_prof_by_AI(vacancies)
             return {
                 'vacancy_updated': vacancy_updated,
                 'statistics': statistics
@@ -747,6 +748,7 @@ class Endpoints:
             return result_dict
 
         app.run(host=localhost, port=int(os.environ.get('PORT', 5000)))
+        # await app.run_task(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
 
         # @app.route("/vacancy", methods=['GET'])
         # async def get_single_vacancy_for_web():
