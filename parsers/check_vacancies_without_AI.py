@@ -22,7 +22,7 @@ async def get_vacancies_without_AI(table_name=admin_database) -> list:
 
 async def get_vacancies_with_AI(table_name=admin_database) -> list:
     fields = ['title', 'body', 'approved', 'profession', 'id']
-    vacancies = db.get_all_from_db(table_name=table_name, param="WHERE approved LIKE '%approves by ai%'", field=', '.join(fields))
+    vacancies = db.get_all_from_db(table_name=table_name, param="WHERE approved LIKE '%approved by ai%'", field=', '.join(fields))
     return await compose_vacancies_to_dict(vacancies, fields)
 
 
