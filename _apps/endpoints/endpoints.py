@@ -22,7 +22,7 @@ from utils.additional_variables import additional_variables as variable
 from invite_bot_ver2 import InviteBot, start_hardpushing
 from _apps.endpoints.predictive_method import Predictive
 from _apps.endpoints.client_init import ClientTelethon
-from parsers.check_vacancies_without_AI import get_vacancies_with_AI
+from parsers.check_vacancies_without_AI import get_vacancies_with_AI, refresh_prof_by_AI
 from _apps.individual_tg_bot.service import db as individual_tg_bot_db
 
 db=DataBaseOperations()
@@ -54,6 +54,16 @@ class Endpoints:
     async def main_endpoints(self):
         app = Flask(__name__)
         CORS(app)
+
+        @app.route("/ai_profession", methods=['POST'])
+        async def ai_profession():
+            vacancy = request.json
+            print(vacancy)
+            statistics, vacancy_updated = refresh_prof_by_AI(vacancies=vacancy)
+            return {
+                'vacancy_updated': vacancy_updated,
+                'statistics': statistics
+            }
 
         @app.route("/get_filtered_by_ai", methods=['GET'])
         async def get_filtered_by_ai():
