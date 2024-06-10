@@ -61,8 +61,8 @@ class Endpoints:
 
         @app.route("/ai_profession", methods=['POST'])
         async def ai_profession():
-            vacancies = request.json
-            statistics, vacancy_updated = await refresh_prof_by_AI(vacancies)
+            vacancies = request.json()
+            statistics, vacancy_updated = await refresh_prof_by_AI(vacancies, to_db=False)
             return {
                 'vacancy_updated': vacancy_updated,
                 'statistics': statistics
