@@ -35,7 +35,7 @@ async def compose_vacancies_to_dict(vacancies:list, fields:list) -> list:
         vacancies_dict.append(vacancy_dict)
     return vacancies_dict
 
-async def refresh_prof_by_AI(vacancies:list, to_db=True) -> dict:
+async def refresh_prof_by_AI(vacancies:list, to_db=True):
     vacancies_updated = {
         "crashed_AI": [],
         "success_update": []
@@ -68,4 +68,4 @@ async def refresh_prof_by_AI(vacancies:list, to_db=True) -> dict:
         else:
             vacancies_updated["crashed_AI"].append(vacancy)
             update_vacancies_status['crashed_AI'] += 1
-    return update_vacancies_status
+    return update_vacancies_status, vacancies_updated
