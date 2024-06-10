@@ -58,7 +58,7 @@ class Endpoints:
         @app.route("/get_filtered_by_ai", methods=['GET'])
         async def get_filtered_by_ai():
             vacancies = get_vacancies_with_AI()
-            return jsonify(vacancies)
+            return vacancies
 
         @app.route("/user_requests_vacancies", methods=["GET"])
         def get_user_requests_vacancies():
