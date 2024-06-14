@@ -70,8 +70,9 @@ class Endpoints:
 
         @app.route("/get_filtered_by_ai", methods=['GET'])
         async def get_filtered_by_ai():
-            vacancies = await get_vacancies_with_AI()
-            return {'vacancies': vacancies}
+            vacancies1 = await get_vacancies_with_AI()
+            vacancies2 = await get_vacancies_with_AI(table_name='vacancies')
+            return {'vacancies': vacancies1+vacancies2}
 
         @app.route("/user_requests_vacancies", methods=["GET"])
         def get_user_requests_vacancies():

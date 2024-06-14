@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from pydantic import BaseModel
 import uvicorn
 
-from parsers.check_vacancies_without_AI import refresh_prof_by_AI
+from parsers.check_vacancies_without_AI import refresh_prof_by_AI, get_vacancies_with_AI
 
 app = FastAPI()
 
@@ -20,6 +20,14 @@ async def ai_profession(request: Request):
         'vacancy_updated': vacancy_updated,
         'statistics': statistics
     }
+
+@app.get("/get_filtered_by_ai")
+async def get_filtered_by_ai():
+    vacancies1 = await get_vacancies_with_AI()
+    vacancies2 = await get_vacancies_with_AI(table_name='vacancies')
+    return {'vacancies': vacancies1 + vacancies2}
+
+
 def start():
     uvicorn.run(app, host="127.0.0.1", port=5000)
 
