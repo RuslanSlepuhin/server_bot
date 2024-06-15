@@ -15,16 +15,17 @@ class Vacancy(BaseModel):
 @app.post("/ai_profession")
 async def ai_profession(request: Request):
     vacancies = await request.json()
-    statistics, vacancy_updated = await refresh_prof_by_AI(vacancies)
+    statistics, vacancy_updated = await refresh_prof_by_AI(vacancies, to_db=False)
     return {
         'vacancy_updated': vacancy_updated,
         'statistics': statistics
     }
 
 @app.get("/get_filtered_by_ai")
-async def get_filtered_by_ai():
-    vacancies1 = await get_vacancies_with_AI()
-    vacancies2 = await get_vacancies_with_AI(table_name='vacancies')
+async def get_filtered_by_ai(request: Request):
+    session_number = request.query_params['session_number'] if request.query_params.get('session_number') else None
+    vacancies1 = await get_vacancies_with_AI(session_number=session_number)
+    vacancies2 = await get_vacancies_with_AI(table_name='vacancies', session_number=session_number)
     return {'vacancies': vacancies1 + vacancies2}
 
 
