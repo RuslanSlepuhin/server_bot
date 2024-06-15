@@ -20,9 +20,13 @@ async def get_vacancies_without_AI(table_name=admin_database) -> list:
     vacancies = db.get_all_from_db(table_name=table_name, param="WHERE approved='approves by filter'", field=', '.join(fields))
     return await compose_vacancies_to_dict(vacancies, fields)
 
-async def get_vacancies_with_AI(table_name=admin_database) -> list:
+async def get_vacancies_with_AI(table_name=admin_database, **kwargs) -> list:
+    session_number = kwargs['session_number'] if kwargs.get('session_number') else None
+    param = f"WHERE approved LIKE '%approved by ai%'"
+    if session_number:
+        param += f" AND session='{session_number}'"
     fields = ['title', 'body', 'approved', 'profession', 'id']
-    vacancies = db.get_all_from_db(table_name=table_name, param="WHERE approved LIKE '%approved by ai%'", field=', '.join(fields))
+    vacancies = db.get_all_from_db(table_name=table_name, param=param, field=', '.join(fields))
     return await compose_vacancies_to_dict(vacancies, fields)
 
 
