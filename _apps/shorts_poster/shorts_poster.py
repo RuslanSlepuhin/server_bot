@@ -232,10 +232,10 @@ class ShortsPoster:
 
 # -------------------------------------------------------------------------------------------
 
-                if self.vacancy['approved'] != 'approves by admin':
-                    self.db.update_table(table_name=self.variable.admin_database, field='approved',
-                                         value='approves by admin', param=f"WHERE id={self.vacancy['id']}")
-                    self.history_messages[self.vacancy['id']]['approved'] = 'approves by admin'
+                # if self.vacancy['approved'] != 'approves by admin':
+                #     self.db.update_table(table_name=self.variable.admin_database, field='approved',
+                #                          value='approves by admin', param=f"WHERE id={self.vacancy['id']}")
+                #     self.history_messages[self.vacancy['id']]['approved'] = 'approves by admin'
         else:
             print('there are not vacancies')
 
