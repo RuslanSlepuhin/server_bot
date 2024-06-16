@@ -158,7 +158,7 @@ class InviteBot():
         self.sub = None
         self.new_start = True
         self.logs = logs
-        logging.basicConfig(level=logging.DEBUG, filename="py_log.log",filemode="w")
+        # logging.basicConfig(level=logging.DEBUG, filename="py_log.log",filemode="w")
 
         if token_in:
             self.token = token_in
