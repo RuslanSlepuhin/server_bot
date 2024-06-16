@@ -71,9 +71,11 @@ class Endpoints:
         @app.route("/get_filtered_by_ai", methods=['GET'])
         async def get_filtered_by_ai():
             session_number = request.args['session_number'] if request.args.get('session_number') else None
-            vacancies1 = await get_vacancies_with_AI(session_number=session_number)
-            vacancies2 = await get_vacancies_with_AI(table_name='vacancies', session_number=session_number)
-            return {'vacancies': vacancies1+vacancies2}
+            date_from = request.args['date_from'] if request.args.get('date_from') else None
+            date_to = request.args['date_to'] if request.args.get('date_to') else None
+            vacancies1 = await get_vacancies_with_AI(session_number=session_number, date_from=date_from, date_to=date_to)
+            vacancies2 = await get_vacancies_with_AI(table_name='vacancies', session_number=session_number, date_from=date_from, date_to=date_to)
+            return {'amount': len(vacancies1 + vacancies2), 'vacancies': vacancies1 + vacancies2}
 
         @app.route("/user_requests_vacancies", methods=["GET"])
         def get_user_requests_vacancies():
