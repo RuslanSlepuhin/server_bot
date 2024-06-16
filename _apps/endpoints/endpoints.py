@@ -75,6 +75,7 @@ class Endpoints:
             date_to = request.args['date_to'] if request.args.get('date_to') else None
             vacancies1 = await get_vacancies_with_AI(session_number=session_number, date_from=date_from, date_to=date_to)
             vacancies2 = await get_vacancies_with_AI(table_name='vacancies', session_number=session_number, date_from=date_from, date_to=date_to)
+            vacancies3 = await get_vacancies_with_AI(table_name='archive', session_number=session_number, date_from=date_from, date_to=date_to)
             return {'amount': len(vacancies1 + vacancies2), 'vacancies': vacancies1 + vacancies2}
 
         @app.route("/user_requests_vacancies", methods=["GET"])

@@ -26,7 +26,7 @@ async def get_vacancies_with_AI(table_name=admin_database, **kwargs) -> list:
     date_from = kwargs['date_from'] if kwargs.get('date_from') else (datetime.now()-timedelta(days=1)).strftime("%Y-%m-%d")
     date_to = kwargs['date_to'] if kwargs.get('date_to') else datetime.now().strftime("%Y-%m-%d")
 
-    param = f"WHERE approved LIKE '%approved by ai%'"
+    param = f"WHERE approved LIKE '%approved by ai%'" if table_name != 'archive' else f"WHERE profession='no_sort'"
     if session_number:
         param += f" AND session='{session_number}'"
     param += f" AND created_at between '{date_from}' AND '{date_to}'"
