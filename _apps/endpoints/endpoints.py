@@ -76,7 +76,7 @@ class Endpoints:
             vacancies1 = await get_vacancies_with_AI(session_number=session_number, date_from=date_from, date_to=date_to)
             vacancies2 = await get_vacancies_with_AI(table_name='vacancies', session_number=session_number, date_from=date_from, date_to=date_to)
             vacancies3 = await get_vacancies_with_AI(table_name='archive', session_number=session_number, date_from=date_from, date_to=date_to)
-            return {'amount': len(vacancies1 + vacancies2), 'vacancies': vacancies1 + vacancies2}
+            return {'amount': len(vacancies1 + vacancies2 + vacancies3), 'vacancies': vacancies1 + vacancies2 + vacancies3}
 
         @app.route("/user_requests_vacancies", methods=["GET"])
         def get_user_requests_vacancies():
