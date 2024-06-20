@@ -37,10 +37,10 @@ from _apps.individual_tg_bot.handlers.callback.new_request_callback import (
 )
 from _apps.individual_tg_bot.handlers.callback.notification_callback import (
     cancel_change_user_notification,
-    cancel_user_notification,
+    #cancel_user_notification,
     confirm_change_user_notification,
-    get_on_getting_notification,
-    get_per_day_notification,
+   # get_on_getting_notification,
+    #get_per_day_notification,
     notification_callback_handler,
 )
 from _apps.individual_tg_bot.handlers.callback.specialization_callback.analyst_specialization import (
@@ -155,15 +155,15 @@ class Handlers:
         self.dp.register_callback_query_handler(
             confirm_change_user_notification, text=text.confirm_change_notification
         )
-        self.dp.register_callback_query_handler(
-            cancel_user_notification, text=text.cancel_notification
-        )
-        self.dp.register_callback_query_handler(
-            get_per_day_notification, text=text.per_day_notification
-        )
-        self.dp.register_callback_query_handler(
-            get_on_getting_notification, text=text.on_getting_notification
-        )
+        # self.dp.register_callback_query_handler(
+        #     cancel_user_notification, text=text.cancel_notification
+        # )
+        # self.dp.register_callback_query_handler(
+        #     get_per_day_notification, text=text.per_day_notification
+        # )
+        # self.dp.register_callback_query_handler(
+        #     get_on_getting_notification, text=text.on_getting_notification
+        # )
         self.dp.register_callback_query_handler(
             cancel_change_user_notification,
             text=[text.cancel_change_notification, text.back_to_menu],

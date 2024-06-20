@@ -4,8 +4,8 @@ import logging
 from _apps.individual_tg_bot.commands import set_default_commands
 from _apps.individual_tg_bot.handlers.main_handler import Handlers
 from _apps.individual_tg_bot.service import (
-    period_get_vacancy_on_getting_task,
-    period_get_vacancy_per_day_task,
+   period_get_vacancy_on_getting_task,
+   period_get_vacancy_per_day_task,
 )
 
 from settings.os_getenv import individual_tg_bot
