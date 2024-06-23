@@ -1186,6 +1186,7 @@ class UserRequests(models.Model):
     work_format = models.CharField(max_length=500, blank=True, null=True)
     keywords = models.CharField(max_length=500, blank=True, null=True)
     selected_notification = models.CharField(max_length=500, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='последнее обновление', blank=True, null=True)
 
     class Meta:
         managed = False

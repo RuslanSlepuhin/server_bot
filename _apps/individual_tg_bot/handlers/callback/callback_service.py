@@ -1,6 +1,7 @@
 from typing import Dict
 
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
+from _apps.individual_tg_bot.text import all_format, fulltime, remote, office, hybrid
 
 
 async def confirm_choice_handler(
@@ -47,6 +48,22 @@ async def user_request_filter(data: Dict) -> str:
         f"Выбранная локация: {(data.get('location', ''))}\n"
         f"Выбранный формат работы: {(data.get('work_format', ''))}\n"
         f"Ключевое слово: {data.get('keywords', '')}\n"
-        f"Периодичность уведомлений: {data.get('selected_notification', '')[2:-2]}\n"
+        f"Периодичность уведомлений: {data.get('selected_notification', '')}\n"
     )
     return res_str
+
+
+async def show_summary(query: CallbackQuery, data: Dict) -> Dict:
+    work_format_ = data.get("selected_work_format", [])
+    work_format = (work_format_ if all_format not in work_format_ else [fulltime, remote, office, hybrid])
+    result = {
+        "user_id": query.from_user.id,
+        "direction": str(data.get("selected_direction", [])),
+        "specialization": ", ".join(data.get("selected_specializations", [])),
+        "level": ", ".join(data.get("selected_level", [])),
+        "location": ", ".join(data.get("selected_location", [])),
+        "work_format": ", ".join(work_format),
+        "keyword": str(data.get("keyword", [])),
+        "selected_notification": str(data.get('selected_notification', []))[2:-2],
+    }
+    return result
