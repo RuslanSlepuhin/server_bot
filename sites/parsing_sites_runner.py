@@ -81,6 +81,9 @@ class SitesParser:
 
         print(' -----------------------FINAL -------------------------------')
 
+    async def run_hh_it(self):
+        await HHITGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
+
     async def run_hh(self):
         await HHGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
 
@@ -88,4 +91,4 @@ class SitesParser:
         await HHKzGetInformation(main_class=self, bot_dict=self.bot_dict, report=self.report).get_content(words_pattern=utils.additional_variables.additional_variables.valid_professions)
 
     async def common_run_parsers(self):
-        await asyncio.gather(self.run_hh(), self.run_hhkz(), self.call_sites())
+        await asyncio.gather(self.run_hh_it(), self.run_hh(), self.run_hhkz(), self.call_sites())

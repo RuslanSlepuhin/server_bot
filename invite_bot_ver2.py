@@ -3303,7 +3303,9 @@ class InviteBot():
 
             # task = asyncio.create_task(sites_parser.call_sites())
             task = asyncio.create_task(sites_parser.common_run_parsers())
-            await task
+            while True:
+                await task
+
 
 
             from parsers.check_vacancies_without_AI import redefine_prof_for_vacancies
