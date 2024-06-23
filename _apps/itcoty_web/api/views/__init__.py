@@ -1,6 +1,8 @@
 from .google_auth import GoogleLoginView, UserRedirectView
 from .profile import ProfileViewSet
 from .vacancies import AllVacanciesView, ThreeVacanciesView, VacanciesViewSet, VacanciesViewSetOLD
+from .user_requests_from_tg_individ_bot import UserRequestsViewSet
+from .vacancy_to_tg_individ_bot import VacancyToTGBotViewSet
 
 __all__ = [
     "GoogleLoginView",
@@ -9,5 +11,7 @@ __all__ = [
     "VacanciesViewSet",
     "ThreeVacanciesView",
     "ProfileViewSet",
-    "VacanciesViewSetOLD"
+    "VacanciesViewSetOLD",
+    "UserRequestsViewSet",
+    "VacancyToTGBotViewSet"
 ]

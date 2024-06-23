@@ -1,19 +1,19 @@
 from urllib.parse import quote
-
 from aiogram.dispatcher import FSMContext
 
 from _apps.individual_tg_bot import text
 from _apps.individual_tg_bot.handlers.callback.callback_service import (
     confirm_choice_handler,
-    user_digest,
+    user_digest, show_summary,
 )
 from _apps.individual_tg_bot.keyboards.inline.main_menu import get_inline_menu
 from _apps.individual_tg_bot.keyboards.inline.notifications import (
     notification_button,
     notification_dict_user,
 )
-from _apps.individual_tg_bot.service import db, show_summary
+from _apps.individual_tg_bot.service import send_post_request
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from _apps.itcoty_web.itcoty_web.settings import URL_USER_REQUEST, URL_VACANCY_TO_TG
 
 
 async def notification_callback_handler(
@@ -32,7 +32,7 @@ async def notification_callback_handler(
         )
 
     data_final = await state.get_data()
-    base_url = "https://4dev.itcoty.ru/user_requests_vacancies"
+    base_url = URL_VACANCY_TO_TG
     link = (base_url + "?" + quote("&".join([f"{key}={value}" for key, value in data_final.items()])))
     keyboard = InlineKeyboardMarkup()
     keyboard.add(InlineKeyboardButton("Перейти к вакансиям", url=link))
@@ -41,35 +41,35 @@ async def notification_callback_handler(
     await query.message.answer(text=f"Выбранные критерии:\n{str(digest)}")
     await query.message.answer(text=text.thanks_text, reply_markup=keyboard)
     await query.message.answer(text=text.menu_user)
-    await show_summary(query=query, data=data_final)
-
+    user_data = await show_summary(query=query, data=data_final)
+    await send_post_request(url=URL_USER_REQUEST, data=user_data)
     await state.finish()
 
 
-async def get_per_day_notification(query: CallbackQuery) -> None:
-    """Обработка per_day_notification callback"""
-    await db.change_user_notification(
-        notification=text.per_day_notification, user_id=query.from_user.id
-    )
-    await query.message.answer(
-        text=text.success_change_notification, reply_markup=get_inline_menu()
-    )
-
-
-async def get_on_getting_notification(query: CallbackQuery) -> None:
-    """Обработка on_getting_notification callback"""
-    await db.change_user_notification(
-        notification=text.on_getting_notification, user_id=query.from_user.id
-    )
-    await query.message.answer(
-        text=text.success_change_notification, reply_markup=get_inline_menu()
-    )
-
-
-async def cancel_user_notification(query: CallbackQuery) -> None:
-    """Обработка cancel_notification callback"""
-    await db.delete_user_request(user_id=query.from_user.id)
-    await query.message.answer(text=text.menu, reply_markup=get_inline_menu())
+# async def get_per_day_notification(query: CallbackQuery) -> None:
+#     """Обработка per_day_notification callback"""
+#     await db.change_user_notification(
+#         notification=text.per_day_notification, user_id=query.from_user.id
+#     )
+#     await query.message.answer(
+#         text=text.success_change_notification, reply_markup=get_inline_menu()
+#     )
+#
+#
+# async def get_on_getting_notification(query: CallbackQuery) -> None:
+#     """Обработка on_getting_notification callback"""
+#     await db.change_user_notification(
+#         notification=text.on_getting_notification, user_id=query.from_user.id
+#     )
+#     await query.message.answer(
+#         text=text.success_change_notification, reply_markup=get_inline_menu()
+#     )
+#
+#
+# async def cancel_user_notification(query: CallbackQuery) -> None:
+#     """Обработка cancel_notification callback"""
+#     await db.delete_user_request(user_id=query.from_user.id)
+#     await query.message.answer(text=text.menu, reply_markup=get_inline_menu())
 
 
 async def confirm_change_user_notification(query: CallbackQuery) -> None:

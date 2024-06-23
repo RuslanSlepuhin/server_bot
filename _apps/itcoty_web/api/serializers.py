@@ -7,7 +7,7 @@ from rest_framework import serializers
 
 from .classes import ProfileCountries
 from .forms import CustomAllAuthPasswordResetForm
-from .models import AdminVacancy, Vacancy, Vacancies
+from .models import AdminVacancy, Vacancy, Vacancies, UserRequests
 
 try:
     from allauth.account import app_settings as allauth_account_settings
@@ -227,3 +227,10 @@ class ProfileSerializer(serializers.ModelSerializer):
             "tg2_subscriber",
             "tgbot_user",
         )
+
+
+class UserRequestsSerializer(serializers.ModelSerializer):
+    """Serializer для модели UserRequests"""
+    class Meta:
+        model = UserRequests
+        fields = "__all__"
