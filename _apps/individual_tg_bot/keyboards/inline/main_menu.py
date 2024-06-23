@@ -10,9 +10,9 @@ def get_inline_menu():
             text=text.vacancy_filter, callback_data=text.vacancy_filter
         )
     )
-    inline_keyboard.add(
-        InlineKeyboardButton(text=text.notification, callback_data=text.notification)
-    )
+    # inline_keyboard.add(
+    #     InlineKeyboardButton(text=text.notification, callback_data=text.notification)
+    # )
     inline_keyboard.add(
         InlineKeyboardButton(
             text=text.filter_history, callback_data=text.filter_history

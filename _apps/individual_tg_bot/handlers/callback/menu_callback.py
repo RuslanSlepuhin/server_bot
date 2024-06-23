@@ -7,22 +7,19 @@ from _apps.individual_tg_bot.keyboards.inline.new_request import new_request_but
 from _apps.individual_tg_bot.keyboards.inline.notifications import (
     change_notification,
 )
-from _apps.individual_tg_bot.service import db
+from _apps.individual_tg_bot.service import send_get_request, get_user_request
 from aiogram.types import CallbackQuery, ReplyKeyboardRemove
 
 
 async def get_vacancy_filter(query: CallbackQuery) -> None:
     """Обработка vacancy_filter callback"""
-    result_all = await db.get_user_request(user_id=query.from_user.id)
+    result_all = await get_user_request(user_id=query.from_user.id)
     if result_all:
-        for result in result_all:
+        for result in result_all.get('results'):
+
             request = {
                 text.chosen_direction: result.get("direction"),
                 text.chosen_specialization: result.get("specialization"),
-                # text.chosen_level: result.get("level"),
-                # text.chosen_location: result.get("location"),
-                # text.chosen_format: result.get("work_format"),
-                # text.add_info: result.get("keywords"),
             }
 
             user_request = text.user_current_request
@@ -48,30 +45,30 @@ async def get_vacancy_filter(query: CallbackQuery) -> None:
 
 async def get_notification_callback(query: CallbackQuery) -> None:
     """Обработка notification callback"""
-
-    result_all = await db.get_user_request(user_id=query.from_user.id)
-    if result_all:
-        for result in result_all:
-            selected_notification = result.get("selected_notification", "")
-
-            title = "/".join(
-                [
-                    result.get("direction", ""),
-                    result.get("specialization", ""),
-                    result.get("level", ""),
-                ]
-            )
-            await query.message.answer(
-                text.chosen_notification.format(
-                    request=title, notification=selected_notification[2:-2]
-                ),
-                reply_markup=change_notification(),
-            )
-    else:
-        await query.message.answer(text=text.make_vacancy_filter)
-        await query.message.answer(
-            text=text.direction, reply_markup=get_direction_button()
-        )
+    pass
+    # result_all = await db.get_user_request(user_id=query.from_user.id)
+    # if result_all:
+    #     for result in result_all:
+    #         selected_notification = result.get("selected_notification", "")
+    #
+    #         title = "/".join(
+    #             [
+    #                 result.get("direction", ""),
+    #                 result.get("specialization", ""),
+    #                 result.get("level", ""),
+    #             ]
+    #         )
+    #         await query.message.answer(
+    #             text.chosen_notification.format(
+    #                 request=title, notification=selected_notification[2:-2]
+    #             ),
+    #             reply_markup=change_notification(),
+    #         )
+    # else:
+    #     await query.message.answer(text=text.make_vacancy_filter)
+    #     await query.message.answer(
+    #         text=text.direction, reply_markup=get_direction_button()
+    #     )
 
 
 #
