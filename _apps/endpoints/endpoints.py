@@ -21,7 +21,7 @@ from invite_bot_ver2 import InviteBot, start_hardpushing
 from _apps.endpoints.predictive_method import Predictive
 from _apps.endpoints.client_init import ClientTelethon
 from parsers.check_vacancies_without_AI import get_vacancies_with_AI, refresh_prof_by_AI
-from _apps.individual_tg_bot.service import db as individual_tg_bot_db
+from _apps.individual_tg_bot import db as individual_tg_bot_db
 from flask_cors import CORS
 from flask import request
 # from quart import Quart, request
