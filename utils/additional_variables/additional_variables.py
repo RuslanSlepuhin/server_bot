@@ -35,7 +35,7 @@ tables_for_search_vacancy_existing = [admin_database, 'archive']
 #                      'marketing', 'devops', 'hr', 'backend', 'qa', 'junior', admin_database, archive_database]
 
 profession_list_for_pushing_by_schedule = ['hr', 'game', 'marketing', 'sales_manager', 'analyst', 'designer', 'pm', 'qa', 'devops',
-                                           'mobile', 'frontend', 'backend']
+                                           'mobile', 'frontend', 'backend', 'product']
 all_tables_for_vacancy_search = []
 all_tables_for_vacancy_search.extend([admin_database, archive_database])
 all_tables_for_vacancy_search.extend(valid_professions)
