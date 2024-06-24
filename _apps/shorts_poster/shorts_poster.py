@@ -72,10 +72,15 @@ class ShortsPoster:
                     # await self.update_shorts_session_vacancies()
 
                     # compose the dict by subs
+
+                    print('This AREA line 76 shorts_poster')
+                    print(self.config["My_channels"]["product_channel"])
+                    print('compose_message_for_send')
                     await self.compose_message_for_send()
 
                     # public shorts to aggregator
                     loop = asyncio.get_event_loop()
+                    print('task = loop.create_task(self.aggregator_vacancies_publisher())')
                     task = loop.create_task(self.aggregator_vacancies_publisher())
                     await task
                     # await self.aggregator_vacancies_publisher()
