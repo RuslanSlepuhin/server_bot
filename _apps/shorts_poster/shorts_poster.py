@@ -73,37 +73,44 @@ class ShortsPoster:
 
                     # compose the dict by subs
 
-                    print('This AREA line 76 shorts_poster')
+                    print('This AREA line 76 shorts_poster: 1')
                     print(self.config["My_channels"]["product_channel"])
                     print('compose_message_for_send')
                     await self.compose_message_for_send()
 
                     # public shorts to aggregator
                     loop = asyncio.get_event_loop()
-                    print('task = loop.create_task(self.aggregator_vacancies_publisher())')
+
+                    print('task = loop.create_task(self.aggregator_vacancies_publisher()): 2')
                     task = loop.create_task(self.aggregator_vacancies_publisher())
                     await task
                     # await self.aggregator_vacancies_publisher()
 
+                    print('await self.check_dictionaries(): 3')
                     await self.check_dictionaries()
 
                     # build several text short vacancy in common sub key
+                    print('await self.rebuild_subs_to_str_dict(): 4')
                     await self.rebuild_subs_to_str_dict()
 
                     if self.profession != self.variable.manual_posting_shorts:
                         # push to the telegraph
+                        print('self.telegraph_poster.telegraph_post_digests: 5')
                         self.telegraph_links_dict = self.telegraph_poster.telegraph_post_digests(
                             self.sub_short_vacancies_dict['shorts_for_publishing'],
                             self.profession
                         )
 
                         # push the final pivot general short
+                        print('await self.send_pivot_shorts(): 6')
                         await self.send_pivot_shorts()
 
                         # spread across prof tables
+                        print('await self.spread_across_prof_tables(): 7')
                         await self.spread_across_prof_tables()
 
                        # remove vacancies from admin_table
+                        print('await self.clean_admin_table(): 8')
                         await self.clean_admin_table()
 
                         markup = InlineKeyboardMarkup()
