@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 
 from sites.write_each_vacancy_to_db import HelperSite_Parser
 from db_operations.scraping_db import DataBaseOperations
@@ -22,10 +23,15 @@ async def get_vacancies_without_AI(table_name=admin_database) -> list:
 
 async def get_vacancies_with_AI(table_name=admin_database, **kwargs) -> list:
     session_number = kwargs['session_number'] if kwargs.get('session_number') else None
-    param = f"WHERE approved LIKE '%approved by ai%'"
+    date_from = kwargs['date_from'] if kwargs.get('date_from') else (datetime.now()-timedelta(days=1)).strftime("%Y-%m-%d")
+    date_to = kwargs['date_to'] if kwargs.get('date_to') else datetime.now().strftime("%Y-%m-%d")
+
+    param = f"WHERE approved LIKE '%approved by ai%'" if table_name != 'archive' else f"WHERE profession='no_sort'"
     if session_number:
         param += f" AND session='{session_number}'"
-    fields = ['title', 'body', 'approved', 'profession', 'id']
+    param += f" AND created_at between '{date_from}' AND '{date_to}'"
+    fields = ['profession', 'title', 'body', 'approved', 'id']
+    # fields = ['profession', 'approved', 'created_at']
     vacancies = db.get_all_from_db(table_name=table_name, param=param, field=', '.join(fields))
     return await compose_vacancies_to_dict(vacancies, fields)
 
