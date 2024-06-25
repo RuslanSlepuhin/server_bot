@@ -21,7 +21,6 @@ from invite_bot_ver2 import InviteBot, start_hardpushing
 from _apps.endpoints.predictive_method import Predictive
 from _apps.endpoints.client_init import ClientTelethon
 from parsers.check_vacancies_without_AI import get_vacancies_with_AI, refresh_prof_by_AI
-from _apps.individual_tg_bot.service import db as individual_tg_bot_db
 from flask_cors import CORS
 from flask import request
 # from quart import Quart, request
@@ -75,53 +74,6 @@ class Endpoints:
             vacancies2 = await get_vacancies_with_AI(table_name='vacancies', session_number=session_number)
             return {'vacancies': vacancies1+vacancies2}
 
-        @app.route("/user_requests_vacancies", methods=["GET"])
-        def get_user_requests_vacancies():
-            if request.args is not None:
-                query_string = list(request.args.keys())[0]
-                query_params = query_string.split("&")
-                params_dict = {}
-                for param in query_params:
-                    key, value = param.split("=")
-                    params_dict[key] = value
-
-                selected_direction = params_dict.get("selected_direction")
-                selected_specializations = params_dict.get("selected_specializations")[2:-2]
-                selected_level = params_dict.get("selected_level")[2:-2]
-                selected_location = params_dict.get("selected_location")[2:-2]
-                selected_work_format = params_dict.get("selected_work_format")[2:-2]
-                keyword = params_dict.get("keyword")
-                vacancies = individual_tg_bot_db.receive_vacancy(
-                    direction=selected_direction,
-                    specialization=selected_specializations,
-                    level=selected_level,
-                    location=selected_location,
-                    work_format=selected_work_format,
-                    keyword=keyword,
-                )
-
-                return jsonify(vacancies)
-
-        @app.route("/user_digest", methods=["GET"])
-        def get_user_digest():
-            if request.args is not None:
-                selected_direction = request.args.get("direction")
-                selected_specializations = request.args.get("specialization")
-                selected_level = request.args.get("level")
-                selected_location = request.args.get("location")
-                selected_work_format = request.args.get("work_format")
-                keyword = request.args.get("keywords")
-                interval = datetime.datetime.now() - timedelta(minutes=once_per_day)
-                vacancies = individual_tg_bot_db.get_periodical_task_vacancies(
-                    direction=selected_direction,
-                    specialization=selected_specializations,
-                    level=selected_level,
-                    location=selected_location,
-                    work_format=selected_work_format,
-                    keyword=keyword,
-                    interval=interval,
-                )
-                return jsonify(vacancies)
 
         @app.route("/get-by-id", methods=['POST'])
         async def get_by_id():
