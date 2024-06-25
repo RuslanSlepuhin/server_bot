@@ -158,7 +158,7 @@ class InviteBot():
         self.sub = None
         self.new_start = True
         self.logs = logs
-        logging.basicConfig(level=logging.DEBUG, filename="py_log.log",filemode="w")
+        # logging.basicConfig(level=logging.DEBUG, filename="py_log.log",filemode="w")
 
         if token_in:
             self.token = token_in
@@ -3303,7 +3303,9 @@ class InviteBot():
 
             # task = asyncio.create_task(sites_parser.call_sites())
             task = asyncio.create_task(sites_parser.common_run_parsers())
-            await task
+            while True:
+                await task
+
 
 
             from parsers.check_vacancies_without_AI import redefine_prof_for_vacancies
