@@ -277,6 +277,8 @@ class ShortsPoster:
                 else:
                     vacancy_text += f"{self.vacancy[key]}\n"
         if vacancy_text:
+            out_of_none_vacancy = [i for i in vacancy_text.split("\n") if ": None" not in i]
+            vacancy_text = "\n".join(out_of_none_vacancy) + "\n"
             for sub in subs_list:
                 self.vacancy_text = vacancy_text
                 await self.check_len_and_add_extra()
