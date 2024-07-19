@@ -16,6 +16,9 @@ import pathlib
 from pathlib import Path
 from _debug import debug
 
+print("DEBUG IS", debug)
+pass
+
 URL_VACANCY_TO_TG = 'http://127.0.0.1:9000/api/v1/vacancy_to_tg/' if debug else 'https://4dev.itcoty.ru/api/v1/vacancy_to_tg/'
 URL_USER_REQUEST = 'http://127.0.0.1:9000/api/v1/users_requests/' if debug else 'https://4dev.itcoty.ru/api/v1/users_requests/'
 
