@@ -119,6 +119,7 @@ class HorecaBot:
 
             if message.text in ['Yes', 'No'] and self.confirm_message:
                 if message.text == "Yes":
+                    print('self.confirm_message', self.confirm_message)
                     data = self.confirm_message['callback_data'].split("|")[1]
                     match data:
                         # case "cancel":
