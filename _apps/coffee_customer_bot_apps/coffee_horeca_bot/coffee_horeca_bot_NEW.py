@@ -125,13 +125,13 @@ class HorecaBot:
                         # case "cancel":
                         #     await self.methods.change_card_visual(message=message, callback_data=self.confirm_message['callback_data'], status_value=variables.cancelled_by_cafe_status, cancel=True)
                         case "canceled_by_cafe":
-                            await self.methods.change_card_visual(message=message, callback_data=self.confirm_message['callback_data'], status_value=variables.cancelled_by_cafe_status, cancel=True)
+                            await self.methods.change_card_visual(message=message, callback_data=self.confirm_message[message.chat.id]['callback_data'], status_value=variables.cancelled_by_cafe_status, cancel=True)
                         case "next_status":
-                            await self.methods.change_card_visual(message=self.confirm_message['message'], callback_data=self.confirm_message['callback_data'], next_status=True)
+                            await self.methods.change_card_visual(message=self.confirm_message[message.chat.id]['message'], callback_data=self.confirm_message['callback_data'], next_status=True)
                         case "previous_status":
-                            await self.methods.change_card_visual(message=self.confirm_message['message'], callback_data=self.confirm_message['callback_data'], previous_status=True)
+                            await self.methods.change_card_visual(message=self.confirm_message[message.chat.id]['message'], callback_data=self.confirm_message['callback_data'], previous_status=True)
                         case "delivered":
-                            await self.methods.change_card_visual(message=self.confirm_message['message'], callback_data=self.confirm_message['callback_data'], close_order=True)
+                            await self.methods.change_card_visual(message=self.confirm_message[message.chat.id]['message'], callback_data=self.confirm_message['callback_data'], close_order=True)
 
                     if data in variables.complete_statuses:
                         await self.methods.complete_the_order(message)
