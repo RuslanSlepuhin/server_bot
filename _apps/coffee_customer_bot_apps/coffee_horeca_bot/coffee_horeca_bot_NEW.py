@@ -125,18 +125,25 @@ class HorecaBot:
                         # case "cancel":
                         #     await self.methods.change_card_visual(message=message, callback_data=self.confirm_message['callback_data'], status_value=variables.cancelled_by_cafe_status, cancel=True)
                         case "canceled_by_cafe":
+                            print('1')
                             await self.methods.change_card_visual(message=message, callback_data=self.confirm_message[message.chat.id]['callback_data'], status_value=variables.cancelled_by_cafe_status, cancel=True)
                         case "next_status":
+                            print('2')
                             await self.methods.change_card_visual(message=self.confirm_message[message.chat.id]['message'], callback_data=self.confirm_message['callback_data'], next_status=True)
                         case "previous_status":
+                            print('3')
                             await self.methods.change_card_visual(message=self.confirm_message[message.chat.id]['message'], callback_data=self.confirm_message['callback_data'], previous_status=True)
                         case "delivered":
+                            print('4')
                             await self.methods.change_card_visual(message=self.confirm_message[message.chat.id]['message'], callback_data=self.confirm_message['callback_data'], close_order=True)
 
                     if data in variables.complete_statuses:
+                        print('5')
                         await self.methods.complete_the_order(message)
 
+                print('6')
                 await self.bot.delete_message(message.chat.id, message.message_id)
+                print('7')
                 await self.methods.reset_confirm_data(message)
 
         web.run_app(app, host='0.0.0.0', port=4000)
