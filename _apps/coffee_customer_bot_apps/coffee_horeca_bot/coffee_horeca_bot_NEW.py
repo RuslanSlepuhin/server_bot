@@ -121,6 +121,7 @@ class HorecaBot:
                 if message.text == "Yes":
                     print('self.confirm_message', self.confirm_message)
                     data = self.confirm_message[message.chat.id]['callback_data'].split("|")[1]
+                    print('data=', data)
                     match data:
                         # case "cancel":
                         #     await self.methods.change_card_visual(message=message, callback_data=self.confirm_message['callback_data'], status_value=variables.cancelled_by_cafe_status, cancel=True)
