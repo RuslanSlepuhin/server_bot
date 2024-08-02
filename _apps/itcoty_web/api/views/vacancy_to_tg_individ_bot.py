@@ -1,73 +1,48 @@
-from django.db.models import Q
-
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
 from ..models import Vacancies
 from ..serializers import VacanciesSerializerOLD
 
 from rest_framework import viewsets, permissions
 
+from ..tg_bot_logics.get_filtered_params import GetFilteredParams
+from ..tg_bot_logics.get_queryset import GetQuerysetToTGBot
+from ..tg_bot_logics.get_request_params import GetRequestParams
+
+
+class StandardResultsSetPagination(PageNumberPagination):
+    """resizable pagination"""
+
+    page_size = 20
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
 
 class VacancyToTGBotViewSet(viewsets.ModelViewSet):
     queryset = Vacancies.objects.all()
     serializer_class = VacanciesSerializerOLD
-    permission_classes = [permissions.AllowAny]
+    permission_classes = (permissions.AllowAny,)
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         """Возвращение записей из бд с полученными фильтрами от запроса пользователя"""
 
-        queryset = Vacancies.objects.all()
-
-        query_params = self.request.query_params
-        query_string = next(iter(query_params.keys()))
-        params_list = query_string.split("&")
-        parsed_params = {}
-
-        for param in params_list:
-            key, value = param.split("=", 1)
-            parsed_params[key] = value
-
-        direction_ = parsed_params.get("selected_direction", "")
-        specialization_ = parsed_params.get("selected_specializations", "")[2:-2]
-        level_ = parsed_params.get("selected_level", "")[2:-2]
-        selected_location_ = parsed_params.get("selected_location", "")[2:-2]
-        work_format_ = parsed_params.get("selected_work_format", "")[2:-2]
-        keyword = parsed_params.get("keyword", "")
-        interval = parsed_params.get("interval", "")
-
-        level = level_.replace("'", "").strip()
-        direction = direction_.replace("'", "").strip()
-        specialization = specialization_.replace("'", "").strip()
-        selected_location = selected_location_.replace("'", "").strip()
-        work_format = work_format_.replace("'", "").strip()
-
-        if level:
-            level_conditions = Q()
-            for word in level.split(", "):
-                level_conditions |= Q(level__icontains=word)
-            queryset = queryset.filter(level_conditions)
-
-        if direction:
-            direction_conditions = Q()
-            for word in direction.split(", "):
-                direction_conditions |= Q(profession__icontains=word)
-            queryset = queryset.filter(direction_conditions)
-
-        if work_format:
-            work_format_conditions = Q()
-            for word in work_format.split(", "):
-                work_format_conditions |= Q(job_type__icontains=word)
-            queryset = queryset.filter(work_format_conditions)
-
-        if specialization:
-            specialization_conditions = Q()
-            for word in specialization.split(", "):
-                specialization_conditions |= Q(body__icontains=word)
-            queryset = queryset.filter(specialization_conditions)
-
-        if keyword:
-            keyword_conditions = Q()
-            for word in keyword.split(", "):
-                keyword_conditions |= Q(body__icontains=word)
-            queryset = queryset.filter(keyword_conditions)
-        if interval:
-            pass
+        queryset_ = Vacancies.objects.all()
+        parsed_params = GetRequestParams.get_request_params(self.request.query_params)
+        filtered_tuple = GetFilteredParams.get_filtered_params(parsed_params)
+        queryset = GetQuerysetToTGBot.get_tg_queryset(queryset_, *filtered_tuple)
         return queryset
+
+    @method_decorator(cache_page(60))
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
