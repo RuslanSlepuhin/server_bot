@@ -273,11 +273,15 @@ class ShortsPoster:
         for key in self.variable.fields_for_agregator_vacancy:
             if key in self.vacancy:
                 if key not in ['title', 'body']:
+                    if key == 'company':
+                        company_name = f"{self.vacancy[key]}"
+                        pass
                     vacancy_text += f"{key.capitalize().replace('_', ' ')}: {self.vacancy[key]}\n" if key != self.variable.double_n_before_field else f"{key.capitalize().replace('_', ' ')}: {self.vacancy[key]}\n\n"
                 else:
                     vacancy_text += f"{self.vacancy[key]}\n"
         if vacancy_text:
             get_out_none = [i for i in vacancy_text.split("\n") if ": None" not in i]
+            vacancy_text.replace(company_name, "компания")
             vacancy_text = "\n".join(get_out_none) + "\n"
             for sub in subs_list:
                 self.vacancy_text = vacancy_text
