@@ -37,6 +37,7 @@ class VacanciesViewSet(
     def get_model(self):
         return Vacancy
 
+
     def get_queryset(self) -> QuerySet:
         date_start = date.today() - timedelta(days=20)
         queryset = (
@@ -57,7 +58,7 @@ class VacanciesViewSet(
 
         return Response(new_response)
 
-class VacanciesViewSetOLD(VacanciesViewSet):
+class VacanciesViewSetOLD(generics.ListAPIView):
     serializer_class = VacanciesSerializerOLD
     permission_classes = [permissions.AllowAny]
     filterset_class = VacancyFilterOLD
@@ -67,6 +68,42 @@ class VacanciesViewSetOLD(VacanciesViewSet):
 
     def get_model(self):
         return Vacancies
+
+    def get_queryset(self):
+        limit = self.request.query_params.get('limit')
+        offset = self.request.query_params.get('offset')
+        if limit and offset:
+            try:
+                limit = int(limit)
+                offset = int(offset)
+            except ValueError:
+                return Vacancies.objects.none()
+            return Vacancies.objects.all()[offset:offset + limit]
+        return Vacancies.objects.all()
+
+    def get(self, request, *args, **kwargs):
+
+        limit = self.request.query_params.get('limit')
+        offset = self.request.query_params.get('offset')
+
+        if limit:
+            try:
+                limit = int(limit)
+            except ValueError:
+                return Response({"error": "Invalid limit parameter"}, status=400)
+
+            if offset:
+                try:
+                    offset = int(offset)
+                except ValueError:
+                    return Response({"error": "Invalid offset parameter"}, status=400)
+
+                queryset = Vacancies.objects.all()[offset:offset + limit]
+            else:
+                queryset = Vacancies.objects.all()[:limit]
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        return self.list(request, *args, **kwargs)
 
 
 class ThreeVacanciesView(generics.GenericAPIView):
