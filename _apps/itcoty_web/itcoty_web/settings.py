@@ -14,6 +14,9 @@ import configparser
 import os
 import pathlib
 from pathlib import Path
+
+from corsheaders.defaults import default_headers
+
 from _debug import debug
 
 print("DEBUG IS", debug)
@@ -46,14 +49,24 @@ CORS_ALLOWED_ORIGINS = [
     'https://4dev.itcoty.ru',
     'https://itcoty.ru',
 ]
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+    'http://localhost:8000',
+    'http://localhost:9000',
+    'https://4dev.itcoty.ru',
+]
 
-CORS_ALLOW_CREDENTIALS: True
+CORS_ALLOW_CREDENTIALS = True
+
+# CORS_ALLOW_HEADERS = list(default_headers) + [
+#     'content-type',
+# ]
 
 AUTH_USER_MODEL = "api.User"
 
 SITE_ID = 1
 
-CSRF_TRUSTED_ORIGINS = ["https://4dev.itcoty.ru"]
+# CSRF_TRUSTED_ORIGINS = ["https://4dev.itcoty.ru"]
 
 
 # Application definition
