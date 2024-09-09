@@ -1,16 +1,17 @@
 import re
 from datetime import datetime
 import pandas as pd
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
+import requests
+# from selenium import webdriver
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.chrome.options import Options
+# from selenium.webdriver.chrome.service import Service
+# from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from db_operations.scraping_db import DataBaseOperations
 from helper_functions.parser_find_add_parameters.parser_find_add_parameters import FinderAddParameters
 from sites.write_each_vacancy_to_db import HelperSite_Parser
-from settings.browser_settings import options, chrome_driver_path
+# from settings.browser_settings import options, chrome_driver_path
 from utils.additional_variables.additional_variables import sites_search_words, till, parsing_report_path, \
     admin_database, archive_database
 from helper_functions.helper_functions import edit_message, send_message, send_file_to_user
@@ -61,17 +62,17 @@ class GeekGetInformation:
                 print(f"{self.main_url}: Error: {ex}")
                 if self.bot:
                     await self.bot.send_message(self.chat_id, f"Error: {ex}")
-        self.browser.quit()
+        # self.browser.quit()
 
     async def get_info(self):
-        try:
-            self.browser = webdriver.Chrome(
-                executable_path=chrome_driver_path,
-                options=options
-            )
-        except:
-            self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-        # -------------------- check what is current session --------------
+        # try:
+        #     self.browser = webdriver.Chrome(
+        #         executable_path=chrome_driver_path,
+        #         options=options
+        #     )
+        # except:
+        #     self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        # # -------------------- check what is current session --------------
         self.current_session = await self.helper_parser_site.get_name_session()
 
         for self.page_number in range(1, till):
@@ -79,10 +80,9 @@ class GeekGetInformation:
                 if self.bot_dict:
                     await self.bot.send_message(self.chat_id, f'https://geekjob.ru/vacancies/{self.page_number}',
                                                 disable_web_page_preview=True)
-                self.browser.get(f'https://geekjob.ru/vacancies/{self.page_number}')
-                self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                vacancies_soup = requests.get(f'https://geekjob.ru/vacancies/{self.page_number}')
 
-                vacancy_exists_on_page = await self.get_link_message(self.browser.page_source)
+                vacancy_exists_on_page = await self.get_link_message(vacancies_soup.text)
                 if not vacancy_exists_on_page:
                     break
             except:
@@ -130,8 +130,9 @@ class GeekGetInformation:
             if check_vacancy_not_exists:
                 links.append(vacancy_url)
                 try:
-                    self.browser.get(vacancy_url)
-                    soup = BeautifulSoup(self.browser.page_source, 'lxml')
+                    req = requests.get(vacancy_url)
+                    soup = BeautifulSoup(req.text, 'lxml')
+                    # vacancy_json = json.loads("".join(soup.find("script", {"type":"application/ld+json"}).contents))
                 except Exception as ex:
                     found_vacancy = False
                     print(f"{self.main_url}: error in browser.get {ex}")
@@ -289,20 +290,20 @@ class GeekGetInformation:
                     msg=self.current_message
                 )
 
-    async def get_content_from_one_link(self, vacancy_url):
-        try:
-            self.browser = webdriver.Chrome(
-                executable_path=chrome_driver_path,
-                options=options
-            )
-        except:
-            self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-        # -------------------- check what is current session --------------
-        self.current_session = await self.helper_parser_site.get_name_session()
-        self.list_links= [vacancy_url]
-        await self.get_content_from_link()
-        self.browser.quit()
-        return self.response
+    # async def get_content_from_one_link(self, vacancy_url):
+    #     try:
+    #         self.browser = webdriver.Chrome(
+    #             executable_path=chrome_driver_path,
+    #             options=options
+    #         )
+    #     except:
+    #         self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    #     # -------------------- check what is current session --------------
+    #     self.current_session = await self.helper_parser_site.get_name_session()
+    #     self.list_links= [vacancy_url]
+    #     await self.get_content_from_link()
+    #     self.browser.quit()
+    #     return self.response
 
 
     def normalize_date(self, date):
