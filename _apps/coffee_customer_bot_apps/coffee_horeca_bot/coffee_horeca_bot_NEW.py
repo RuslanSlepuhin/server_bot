@@ -13,13 +13,13 @@ from _apps.coffee_customer_bot_apps.variables import database_variables as db_va
 config = configparser.ConfigParser()
 
 path = "./_apps/coffee_customer_bot_apps/settings/config.ini"
-print(path)
 config.read(path)
-token = config['Bot']['horeca_token']
+token = config['Bot']['horeca_token'] if not debug else config['Bot']['horeca_test_token']
+
 bot = Bot(token=token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
-ngrok_payload = "9676-178-127-147-229"
+ngrok_payload = "1dc7-37-45-210-246"
 WEBHOOK_URL = f"https://{ngrok_payload}.ngrok-free.app" if debug else "https://4dev.itcoty.ru"
 WEBHOOK_PATH = '/horeca/wh'
 NEW_ORDER_PATH = new_order_endpoint
@@ -43,12 +43,6 @@ class HorecaBot:
         self.user_data = {}
         self.methods = HorecaBotMethods(self)
         self.webhook_methods = WebHoock(self)
-
-        # self.message_dict = {}
-        # self.orders = []
-        # self.orders_dict = {}
-        # self.callbacks = []
-        # self.confirm_message = {}
 
         self.notification = {}
         self.message_dict = {}
