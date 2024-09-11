@@ -32,6 +32,9 @@ class HorecaBotMethods:
     async def get_data_by_user_id(self, user_id) -> list:
         url = variables.server_domain + variables.get_horeca_info + f"?telegram_horeca_id={user_id}&active=true"
         response = requests.get(url)
+        print("GET ORDERS FROM SERVER from get_data_by_user_id")
+        for element in response.json():
+            print(f"Заказ: {element['order_id']}\nСтатус: {element['status']}\n-----")
         return response.json()
 
     async def data_by_user_to_dict_by_order_id(self, order_list:list=None, **kwargs) -> dict:
