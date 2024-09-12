@@ -13,6 +13,10 @@ provide_message_to_user_endpoint = "/provide_message_to_user"
 provide_message_to_horeca_endpoint = "/horeca/provide_message_to_horeca"
 new_order_endpoint = "/horeca/new_order"
 
+# data from form intern
+from_intern_form_data = '/intern'
+recepient_telegram_id = 5884559465
+
 #--------------- server urls ---------------
 # server_status_from_customer = "/client/status_from_user/" # take the POST from customer to send to horeca
 # server_status_from_horeca = "/client/status_from_horeca/" # take the POST from horeca to send to customer
