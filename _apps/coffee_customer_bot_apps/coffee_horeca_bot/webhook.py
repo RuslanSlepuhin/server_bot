@@ -2,6 +2,8 @@ import sys
 
 from aiogram import types
 from aiohttp import web
+from _apps.coffee_customer_bot_apps.variables.variables import recepient_telegram_id
+
 
 class WebHoock:
     def __init__(self, bot_class):
@@ -41,3 +43,11 @@ class WebHoock:
                 return web.json_response(response)
         return web.json_response(
             {'error': 'make sure that horeca_user_id is in the request arguments ?horeca_user_id=<number>'})
+
+    async def intern_from_form(self, request) -> web.json_response:
+        text = ""
+        data = await request.json()
+        for key, value in data.items():
+            text += f"\n{key}: {value}"
+        await self.main.bot.send_message(recepient_telegram_id, text)
+        return web.json_response({'message': 'ok'})
