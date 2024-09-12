@@ -4,11 +4,13 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiohttp import web
 from _apps.coffee_customer_bot_apps.variables import variables
 from _apps.coffee_customer_bot_apps.coffee_horeca_bot.horeca_add_methods_NEW import HorecaBotMethods
-from _apps.coffee_customer_bot_apps.variables.variables import new_order_endpoint, provide_message_to_horeca_endpoint, is_horeca_active_endpoint
+from _apps.coffee_customer_bot_apps.variables.variables import new_order_endpoint, provide_message_to_horeca_endpoint, \
+    is_horeca_active_endpoint, from_intern_form_data
 from _apps.coffee_customer_bot_apps.coffee_horeca_bot.webhook import WebHoock
 from _debug import debug
 from _apps.coffee_customer_bot_apps.database import db_short_methods as db
 from _apps.coffee_customer_bot_apps.variables import database_variables as db_var
+from aiohttp_cors import setup as cors_setup, ResourceOptions
 
 config = configparser.ConfigParser()
 
@@ -19,12 +21,14 @@ token = config['Bot']['horeca_token'] if not debug else config['Bot']['horeca_te
 bot = Bot(token=token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
-ngrok_payload = "1dc7-37-45-210-246"
+ngrok_payload = "2fff-37-45-210-246"
 WEBHOOK_URL = f"https://{ngrok_payload}.ngrok-free.app" if debug else "https://4dev.itcoty.ru"
 WEBHOOK_PATH = '/horeca/wh'
 NEW_ORDER_PATH = new_order_endpoint
 MESSAGE_FROM_CUSTOMER = provide_message_to_horeca_endpoint
 IS_HORECA_ACTIVE = is_horeca_active_endpoint
+
+INTERN_FROM_FORM = from_intern_form_data
 
 
 # db create tables
@@ -68,10 +72,20 @@ class HorecaBot:
         self.methods.print_bot_name()
 
         app = web.Application()
-        app.router.add_post(WEBHOOK_PATH, self.webhook_methods.webhook_handler)
-        app.router.add_post(NEW_ORDER_PATH, self.webhook_methods.get_new_order)
-        app.router.add_post(MESSAGE_FROM_CUSTOMER, self.webhook_methods.provide_message_from_customer)
-        app.router.add_get(IS_HORECA_ACTIVE, self.webhook_methods.is_horeca_active)
+
+        # Настройка CORS
+        cors = cors_setup(app, defaults={
+            "*": ResourceOptions(
+                allow_credentials=True,
+                expose_headers="*",
+                allow_headers="*",
+            )
+        })
+        cors.add(app.router.add_post(WEBHOOK_PATH, self.webhook_methods.webhook_handler))
+        cors.add(app.router.add_post(NEW_ORDER_PATH, self.webhook_methods.get_new_order))
+        cors.add(app.router.add_post(MESSAGE_FROM_CUSTOMER, self.webhook_methods.provide_message_from_customer))
+        cors.add(app.router.add_get(IS_HORECA_ACTIVE, self.webhook_methods.is_horeca_active))
+        cors.add(app.router.add_post(INTERN_FROM_FORM, self.webhook_methods.intern_from_form))
 
         app.on_startup.append(self.on_startup)
         app.on_shutdown.append(self.on_shutdown)
