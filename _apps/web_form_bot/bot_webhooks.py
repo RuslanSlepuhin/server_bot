@@ -65,7 +65,8 @@ async def cmd_start_help(message: types.Message) -> None:
 @dp.message_handler(content_types=['text'])
 async def content_type_text(message: types.Message):
     if message.text in variables.bar_buttons_start:
-        match message.text:
+        message_text = message.text
+        match message_text:
             case "Excel":
                 excel_path = await helper.send_form_excel()
                 if excel_path:
