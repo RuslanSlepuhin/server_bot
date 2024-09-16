@@ -15,7 +15,7 @@ import os
 import pathlib
 from pathlib import Path
 
-from corsheaders.defaults import default_headers
+# from corsheaders.defaults import default_headers
 
 from _debug import debug
 
