@@ -15,7 +15,7 @@ import os
 import pathlib
 from pathlib import Path
 
-from corsheaders.defaults import default_headers
+# from corsheaders.defaults import default_headers
 
 from _debug import debug
 
@@ -23,6 +23,8 @@ print("DEBUG IS", debug)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 URL_VACANCY_TO_TG = 'http://127.0.0.1:9000/api/v1/vacancy_to_tg/' if debug else 'https://4dev.itcoty.ru/api/v1/vacancy_to_tg/'
+print(debug)
+print(URL_VACANCY_TO_TG)
 URL_USER_REQUEST = 'http://127.0.0.1:9000/api/v1/users_requests/' if debug else 'https://4dev.itcoty.ru/api/v1/users_requests/'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
