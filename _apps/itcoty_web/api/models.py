@@ -23,19 +23,30 @@ class AdminCopy(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey('CurrentSession', models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    session = models.ForeignKey(
+        "CurrentSession",
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
     sub = models.CharField(max_length=250, blank=True, null=True)
     tags = models.CharField(max_length=700, blank=True, null=True)
     full_tags = models.CharField(max_length=700, blank=True, null=True)
     full_anti_tags = models.CharField(max_length=700, blank=True, null=True)
-    short_session_numbers = models.CharField(max_length=300, blank=True, null=True)
+    short_session_numbers = models.CharField(
+        max_length=300, blank=True, null=True
+    )
     level = models.CharField(max_length=70, blank=True, null=True)
     approved = models.CharField(max_length=100, blank=True, null=True)
     closed = models.BooleanField(blank=True, null=True)
 
     class Meta:
-        db_table = 'admin_copy'
+        db_table = "admin_copy"
 
 
 class AdminVacancy(models.Model):
@@ -56,13 +67,24 @@ class AdminVacancy(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey('CurrentSession', models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    session = models.ForeignKey(
+        "CurrentSession",
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
     sub = models.CharField(max_length=250, blank=True, null=True)
     tags = models.CharField(max_length=700, blank=True, null=True)
     full_tags = models.CharField(max_length=700, blank=True, null=True)
     full_anti_tags = models.CharField(max_length=700, blank=True, null=True)
-    short_session_numbers = models.CharField(max_length=300, blank=True, null=True)
+    short_session_numbers = models.CharField(
+        max_length=300, blank=True, null=True
+    )
     level = models.CharField(max_length=70, blank=True, null=True)
     approved = models.CharField(max_length=150, blank=True, null=True)
     closed = models.BooleanField(blank=True, null=True)
@@ -75,16 +97,20 @@ class AdminVacancy(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'admin_last_session'
+        db_table = "admin_last_session"
 
 
 class AdminTemporary(models.Model):
     id_admin_channel = models.CharField(max_length=20, blank=True, null=True)
-    id_admin_last_session_table = models.CharField(max_length=20, blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    id_admin_last_session_table = models.CharField(
+        max_length=20, blank=True, null=True
+    )
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
 
     class Meta:
-        db_table = 'admin_temporary'
+        db_table = "admin_temporary"
 
 
 class Analyst(models.Model):
@@ -105,13 +131,24 @@ class Analyst(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey('CurrentSession', models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
+    session = models.ForeignKey(
+        "CurrentSession",
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
     sub = models.CharField(max_length=250, blank=True, null=True)
     tags = models.CharField(max_length=700, blank=True, null=True)
     full_tags = models.CharField(max_length=700, blank=True, null=True)
     full_anti_tags = models.CharField(max_length=700, blank=True, null=True)
-    short_session_numbers = models.CharField(max_length=300, blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    short_session_numbers = models.CharField(
+        max_length=300, blank=True, null=True
+    )
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
     level = models.CharField(max_length=70, blank=True, null=True)
     approved = models.CharField(max_length=150, blank=True, null=True)
     closed = models.BooleanField(blank=True, null=True)
@@ -131,7 +168,7 @@ class Analyst(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'analyst'
+        db_table = "analyst"
 
 
 class Archive(models.Model):
@@ -152,13 +189,24 @@ class Archive(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey('CurrentSession', models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    session = models.ForeignKey(
+        "CurrentSession",
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
     sub = models.CharField(max_length=250, blank=True, null=True)
     tags = models.CharField(max_length=700, blank=True, null=True)
     full_tags = models.CharField(max_length=700, blank=True, null=True)
     full_anti_tags = models.CharField(max_length=700, blank=True, null=True)
-    short_session_numbers = models.CharField(max_length=300, blank=True, null=True)
+    short_session_numbers = models.CharField(
+        max_length=300, blank=True, null=True
+    )
     level = models.CharField(max_length=70, blank=True, null=True)
     approved = models.CharField(max_length=150, blank=True, null=True)
     closed = models.BooleanField(blank=True, null=True)
@@ -171,7 +219,7 @@ class Archive(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'archive'
+        db_table = "archive"
 
 
 class Ba(models.Model):
@@ -192,10 +240,17 @@ class Ba(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey('CurrentSession', models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
+    session = models.ForeignKey(
+        "CurrentSession",
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
 
     class Meta:
-        db_table = 'ba'
+        db_table = "ba"
 
 
 class Backend(models.Model):
@@ -216,13 +271,24 @@ class Backend(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey('CurrentSession', models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
+    session = models.ForeignKey(
+        "CurrentSession",
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
     sub = models.CharField(max_length=250, blank=True, null=True)
     tags = models.CharField(max_length=700, blank=True, null=True)
     full_tags = models.CharField(max_length=700, blank=True, null=True)
     full_anti_tags = models.CharField(max_length=700, blank=True, null=True)
-    short_session_numbers = models.CharField(max_length=300, blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    short_session_numbers = models.CharField(
+        max_length=300, blank=True, null=True
+    )
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
     level = models.CharField(max_length=70, blank=True, null=True)
     approved = models.CharField(max_length=150, blank=True, null=True)
     closed = models.BooleanField(blank=True, null=True)
@@ -254,7 +320,7 @@ class Backend(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'backend'
+        db_table = "backend"
 
 
 class Company(models.Model):
@@ -262,7 +328,7 @@ class Company(models.Model):
     company = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
-        db_table = 'companies'
+        db_table = "companies"
 
 
 class CountriesCities(models.Model):
@@ -270,14 +336,16 @@ class CountriesCities(models.Model):
     city = models.CharField(max_length=150, blank=True, null=True)
 
     class Meta:
-        db_table = 'countries_cities'
+        db_table = "countries_cities"
 
 
 class CurrentSession(models.Model):
-    session = models.CharField(unique=True, max_length=15, blank=True, null=True)
+    session = models.CharField(
+        unique=True, max_length=15, blank=True, null=True
+    )
 
     class Meta:
-        db_table = 'current_session'
+        db_table = "current_session"
 
 
 class Designer(models.Model):
@@ -298,13 +366,24 @@ class Designer(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
+    session = models.ForeignKey(
+        CurrentSession,
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
     sub = models.CharField(max_length=250, blank=True, null=True)
     tags = models.CharField(max_length=700, blank=True, null=True)
     full_tags = models.CharField(max_length=700, blank=True, null=True)
     full_anti_tags = models.CharField(max_length=700, blank=True, null=True)
-    short_session_numbers = models.CharField(max_length=300, blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    short_session_numbers = models.CharField(
+        max_length=300, blank=True, null=True
+    )
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
     level = models.CharField(max_length=70, blank=True, null=True)
     approved = models.CharField(max_length=150, blank=True, null=True)
     closed = models.BooleanField(blank=True, null=True)
@@ -328,7 +407,7 @@ class Designer(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'designer'
+        db_table = "designer"
 
 
 class Devops(models.Model):
@@ -349,13 +428,24 @@ class Devops(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
+    session = models.ForeignKey(
+        CurrentSession,
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
     sub = models.CharField(max_length=250, blank=True, null=True)
     tags = models.CharField(max_length=700, blank=True, null=True)
     full_tags = models.CharField(max_length=700, blank=True, null=True)
     full_anti_tags = models.CharField(max_length=700, blank=True, null=True)
-    short_session_numbers = models.CharField(max_length=300, blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    short_session_numbers = models.CharField(
+        max_length=300, blank=True, null=True
+    )
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
     level = models.CharField(max_length=70, blank=True, null=True)
     approved = models.CharField(max_length=150, blank=True, null=True)
     closed = models.BooleanField(blank=True, null=True)
@@ -371,7 +461,7 @@ class Devops(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'devops'
+        db_table = "devops"
 
 
 class FollowersStatistics(models.Model):
@@ -386,7 +476,7 @@ class FollowersStatistics(models.Model):
     mutual_contact = models.BooleanField(blank=True, null=True)
 
     class Meta:
-        db_table = 'followers_statistics'
+        db_table = "followers_statistics"
 
 
 class Frontend(models.Model):
@@ -407,13 +497,24 @@ class Frontend(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
+    session = models.ForeignKey(
+        CurrentSession,
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
     sub = models.CharField(max_length=250, blank=True, null=True)
     tags = models.CharField(max_length=700, blank=True, null=True)
     full_tags = models.CharField(max_length=700, blank=True, null=True)
     full_anti_tags = models.CharField(max_length=700, blank=True, null=True)
-    short_session_numbers = models.CharField(max_length=300, blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    short_session_numbers = models.CharField(
+        max_length=300, blank=True, null=True
+    )
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
     level = models.CharField(max_length=70, blank=True, null=True)
     approved = models.CharField(max_length=150, blank=True, null=True)
     closed = models.BooleanField(blank=True, null=True)
@@ -437,7 +538,7 @@ class Frontend(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'frontend'
+        db_table = "frontend"
 
 
 class Fullstack(models.Model):
@@ -458,10 +559,17 @@ class Fullstack(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
+    session = models.ForeignKey(
+        CurrentSession,
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
 
     class Meta:
-        db_table = 'fullstack'
+        db_table = "fullstack"
 
 
 class Game(models.Model):
@@ -482,13 +590,24 @@ class Game(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
+    session = models.ForeignKey(
+        CurrentSession,
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
     sub = models.CharField(max_length=250, blank=True, null=True)
     tags = models.CharField(max_length=700, blank=True, null=True)
     full_tags = models.CharField(max_length=700, blank=True, null=True)
     full_anti_tags = models.CharField(max_length=700, blank=True, null=True)
-    short_session_numbers = models.CharField(max_length=300, blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    short_session_numbers = models.CharField(
+        max_length=300, blank=True, null=True
+    )
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
     level = models.CharField(max_length=70, blank=True, null=True)
     approved = models.CharField(max_length=150, blank=True, null=True)
     closed = models.BooleanField(blank=True, null=True)
@@ -504,7 +623,7 @@ class Game(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'game'
+        db_table = "game"
 
 
 class Hr(models.Model):
@@ -525,13 +644,24 @@ class Hr(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
+    session = models.ForeignKey(
+        CurrentSession,
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
     sub = models.CharField(max_length=250, blank=True, null=True)
     tags = models.CharField(max_length=700, blank=True, null=True)
     full_tags = models.CharField(max_length=700, blank=True, null=True)
     full_anti_tags = models.CharField(max_length=700, blank=True, null=True)
-    short_session_numbers = models.CharField(max_length=300, blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    short_session_numbers = models.CharField(
+        max_length=300, blank=True, null=True
+    )
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
     level = models.CharField(max_length=70, blank=True, null=True)
     approved = models.CharField(max_length=150, blank=True, null=True)
     closed = models.BooleanField(blank=True, null=True)
@@ -547,7 +677,7 @@ class Hr(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'hr'
+        db_table = "hr"
 
 
 class Junior(models.Model):
@@ -568,13 +698,24 @@ class Junior(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
+    session = models.ForeignKey(
+        CurrentSession,
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
     sub = models.CharField(max_length=250, blank=True, null=True)
     tags = models.CharField(max_length=700, blank=True, null=True)
     full_tags = models.CharField(max_length=700, blank=True, null=True)
     full_anti_tags = models.CharField(max_length=700, blank=True, null=True)
-    short_session_numbers = models.CharField(max_length=300, blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    short_session_numbers = models.CharField(
+        max_length=300, blank=True, null=True
+    )
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
     level = models.CharField(max_length=70, blank=True, null=True)
     approved = models.CharField(max_length=150, blank=True, null=True)
     closed = models.BooleanField(blank=True, null=True)
@@ -602,14 +743,14 @@ class Junior(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'junior'
+        db_table = "junior"
 
 
 class LastAutopushingTime(models.Model):
     time = models.CharField(max_length=10, blank=True, null=True)
 
     class Meta:
-        db_table = 'last_autopushing_time'
+        db_table = "last_autopushing_time"
 
 
 class Marketing(models.Model):
@@ -630,13 +771,24 @@ class Marketing(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
+    session = models.ForeignKey(
+        CurrentSession,
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
     sub = models.CharField(max_length=250, blank=True, null=True)
     tags = models.CharField(max_length=700, blank=True, null=True)
     full_tags = models.CharField(max_length=700, blank=True, null=True)
     full_anti_tags = models.CharField(max_length=700, blank=True, null=True)
-    short_session_numbers = models.CharField(max_length=300, blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    short_session_numbers = models.CharField(
+        max_length=300, blank=True, null=True
+    )
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
     level = models.CharField(max_length=70, blank=True, null=True)
     approved = models.CharField(max_length=150, blank=True, null=True)
     closed = models.BooleanField(blank=True, null=True)
@@ -661,7 +813,7 @@ class Marketing(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'marketing'
+        db_table = "marketing"
 
 
 class Middle(models.Model):
@@ -682,10 +834,17 @@ class Middle(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
+    session = models.ForeignKey(
+        CurrentSession,
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
 
     class Meta:
-        db_table = 'middle'
+        db_table = "middle"
 
 
 class Mobile(models.Model):
@@ -706,13 +865,24 @@ class Mobile(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
+    session = models.ForeignKey(
+        CurrentSession,
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
     sub = models.CharField(max_length=250, blank=True, null=True)
     tags = models.CharField(max_length=700, blank=True, null=True)
     full_tags = models.CharField(max_length=700, blank=True, null=True)
     full_anti_tags = models.CharField(max_length=700, blank=True, null=True)
-    short_session_numbers = models.CharField(max_length=300, blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    short_session_numbers = models.CharField(
+        max_length=300, blank=True, null=True
+    )
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
     level = models.CharField(max_length=70, blank=True, null=True)
     approved = models.CharField(max_length=150, blank=True, null=True)
     closed = models.BooleanField(blank=True, null=True)
@@ -733,7 +903,7 @@ class Mobile(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'mobile'
+        db_table = "mobile"
 
 
 class NoSort(models.Model):
@@ -754,17 +924,24 @@ class NoSort(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
+    session = models.ForeignKey(
+        CurrentSession,
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
 
     class Meta:
-        db_table = 'no_sort'
+        db_table = "no_sort"
 
 
 class ParserAtWork(models.Model):
     parser_at_work = models.BooleanField(blank=True, null=True)
 
     class Meta:
-        db_table = 'parser_at_work'
+        db_table = "parser_at_work"
 
 
 class Pm(models.Model):
@@ -785,13 +962,24 @@ class Pm(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
+    session = models.ForeignKey(
+        CurrentSession,
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
     sub = models.CharField(max_length=250, blank=True, null=True)
     tags = models.CharField(max_length=700, blank=True, null=True)
     full_tags = models.CharField(max_length=700, blank=True, null=True)
     full_anti_tags = models.CharField(max_length=700, blank=True, null=True)
-    short_session_numbers = models.CharField(max_length=300, blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    short_session_numbers = models.CharField(
+        max_length=300, blank=True, null=True
+    )
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
     level = models.CharField(max_length=70, blank=True, null=True)
     approved = models.CharField(max_length=150, blank=True, null=True)
     closed = models.BooleanField(blank=True, null=True)
@@ -809,7 +997,7 @@ class Pm(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'pm'
+        db_table = "pm"
 
 
 class Product(models.Model):
@@ -830,13 +1018,24 @@ class Product(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
+    session = models.ForeignKey(
+        CurrentSession,
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
     sub = models.CharField(max_length=250, blank=True, null=True)
     tags = models.CharField(max_length=700, blank=True, null=True)
     full_tags = models.CharField(max_length=700, blank=True, null=True)
     full_anti_tags = models.CharField(max_length=700, blank=True, null=True)
-    short_session_numbers = models.CharField(max_length=300, blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    short_session_numbers = models.CharField(
+        max_length=300, blank=True, null=True
+    )
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
     level = models.CharField(max_length=70, blank=True, null=True)
     approved = models.CharField(max_length=150, blank=True, null=True)
     closed = models.BooleanField(blank=True, null=True)
@@ -852,7 +1051,7 @@ class Product(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'product'
+        db_table = "product"
 
 
 class Qa(models.Model):
@@ -873,13 +1072,24 @@ class Qa(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
+    session = models.ForeignKey(
+        CurrentSession,
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
     sub = models.CharField(max_length=250, blank=True, null=True)
     tags = models.CharField(max_length=700, blank=True, null=True)
     full_tags = models.CharField(max_length=700, blank=True, null=True)
     full_anti_tags = models.CharField(max_length=700, blank=True, null=True)
-    short_session_numbers = models.CharField(max_length=300, blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    short_session_numbers = models.CharField(
+        max_length=300, blank=True, null=True
+    )
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
     level = models.CharField(max_length=70, blank=True, null=True)
     approved = models.CharField(max_length=150, blank=True, null=True)
     closed = models.BooleanField(blank=True, null=True)
@@ -898,7 +1108,7 @@ class Qa(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'qa'
+        db_table = "qa"
 
 
 class Reject(models.Model):
@@ -923,13 +1133,24 @@ class Reject(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    session = models.ForeignKey(
+        CurrentSession,
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
     sub = models.CharField(max_length=250, blank=True, null=True)
     tags = models.CharField(max_length=700, blank=True, null=True)
     full_tags = models.CharField(max_length=700, blank=True, null=True)
     full_anti_tags = models.CharField(max_length=700, blank=True, null=True)
-    short_session_numbers = models.CharField(max_length=300, blank=True, null=True)
+    short_session_numbers = models.CharField(
+        max_length=300, blank=True, null=True
+    )
     level = models.CharField(max_length=70, blank=True, null=True)
     approved = models.CharField(max_length=100, blank=True, null=True)
     closed = models.BooleanField(blank=True, null=True)
@@ -938,7 +1159,7 @@ class Reject(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'reject'
+        db_table = "reject"
 
 
 class SalesManager(models.Model):
@@ -959,13 +1180,24 @@ class SalesManager(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
+    session = models.ForeignKey(
+        CurrentSession,
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
     sub = models.CharField(max_length=250, blank=True, null=True)
     tags = models.CharField(max_length=700, blank=True, null=True)
     full_tags = models.CharField(max_length=700, blank=True, null=True)
     full_anti_tags = models.CharField(max_length=700, blank=True, null=True)
-    short_session_numbers = models.CharField(max_length=300, blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    short_session_numbers = models.CharField(
+        max_length=300, blank=True, null=True
+    )
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
     level = models.CharField(max_length=70, blank=True, null=True)
     approved = models.CharField(max_length=150, blank=True, null=True)
     closed = models.BooleanField(blank=True, null=True)
@@ -981,7 +1213,7 @@ class SalesManager(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'sales_manager'
+        db_table = "sales_manager"
 
 
 class Senior(models.Model):
@@ -1002,24 +1234,31 @@ class Senior(models.Model):
     time_of_public = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
-    session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
+    session = models.ForeignKey(
+        CurrentSession,
+        models.DO_NOTHING,
+        db_column="session",
+        to_field="session",
+        blank=True,
+        null=True,
+    )
 
     class Meta:
-        db_table = 'senior'
+        db_table = "senior"
 
 
 class ShortsAtWork(models.Model):
     shorts_at_work = models.BooleanField(blank=True, null=True)
 
     class Meta:
-        db_table = 'shorts_at_work'
+        db_table = "shorts_at_work"
 
 
 class ShortsSessionName(models.Model):
     session_name = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
-        db_table = 'shorts_session_name'
+        db_table = "shorts_session_name"
 
 
 class StatsDb(models.Model):
@@ -1140,7 +1379,7 @@ class StatsDb(models.Model):
     backend_laravel = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'stats_db'
+        db_table = "stats_db"
 
 
 class UserRequests(models.Model):
@@ -1151,11 +1390,18 @@ class UserRequests(models.Model):
     location = models.CharField(max_length=500, blank=True, null=True)
     work_format = models.CharField(max_length=500, blank=True, null=True)
     keywords = models.CharField(max_length=500, blank=True, null=True)
-    selected_notification = models.CharField(max_length=500, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='последнее обновление', blank=True, null=True)
+    selected_notification = models.CharField(
+        max_length=500, blank=True, null=True
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="последнее обновление",
+        blank=True,
+        null=True,
+    )
 
     class Meta:
-        db_table = 'user_requests'
+        db_table = "user_requests"
 
 
 class Vacancies(models.Model):
@@ -1177,12 +1423,16 @@ class Vacancies(models.Model):
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
     session = models.CharField(max_length=15, blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
     sub = models.CharField(max_length=250, blank=True, null=True)
     tags = models.CharField(max_length=700, blank=True, null=True)
     full_tags = models.CharField(max_length=700, blank=True, null=True)
     full_anti_tags = models.CharField(max_length=700, blank=True, null=True)
-    short_session_numbers = models.CharField(max_length=300, blank=True, null=True)
+    short_session_numbers = models.CharField(
+        max_length=300, blank=True, null=True
+    )
     level = models.CharField(max_length=70, blank=True, null=True)
     approved = models.CharField(max_length=150, blank=True, null=True)
     closed = models.BooleanField(blank=True, null=True)
@@ -1195,7 +1445,7 @@ class Vacancies(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'vacancies'
+        db_table = "vacancies"
 
 
 class VacancyStock(models.Model):
@@ -1217,12 +1467,16 @@ class VacancyStock(models.Model):
     created_at = models.DateTimeField(blank=True, null=True)
     agregator_link = models.CharField(max_length=200, blank=True, null=True)
     session = models.CharField(max_length=15, blank=True, null=True)
-    sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
+    sended_to_agregator = models.CharField(
+        max_length=30, blank=True, null=True
+    )
     sub = models.CharField(max_length=250, blank=True, null=True)
     tags = models.CharField(max_length=700, blank=True, null=True)
     full_tags = models.CharField(max_length=700, blank=True, null=True)
     full_anti_tags = models.CharField(max_length=700, blank=True, null=True)
-    short_session_numbers = models.CharField(max_length=300, blank=True, null=True)
+    short_session_numbers = models.CharField(
+        max_length=300, blank=True, null=True
+    )
     level = models.CharField(max_length=70, blank=True, null=True)
     approved = models.CharField(max_length=150, blank=True, null=True)
     closed = models.BooleanField(blank=True, null=True)
@@ -1235,7 +1489,7 @@ class VacancyStock(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'vacancy_stock'
+        db_table = "vacancy_stock"
 
 
 class Currency(models.Model):
@@ -1253,7 +1507,7 @@ class Currency(models.Model):
     date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        db_table = 'api_currency'
+        db_table = "api_currency"
 
 
 class CustomUserManager(BaseUserManager):
@@ -1366,14 +1620,26 @@ class User(AbstractUser):
     )
     taxes = models.BooleanField(blank=True, null=True)
     jobtitle = models.CharField(max_length=64, blank=True, null=True)
-    jobformat = ArrayField(models.CharField(max_length=32), blank=True, null=True)
-    jobtype = ArrayField(models.CharField(max_length=32), blank=True, null=True)
-    hardskills = ArrayField(models.CharField(max_length=256), blank=True, null=True)
-    softskills = ArrayField(models.CharField(max_length=256), blank=True, null=True)
+    jobformat = ArrayField(
+        models.CharField(max_length=32), blank=True, null=True
+    )
+    jobtype = ArrayField(
+        models.CharField(max_length=32), blank=True, null=True
+    )
+    hardskills = ArrayField(
+        models.CharField(max_length=256), blank=True, null=True
+    )
+    softskills = ArrayField(
+        models.CharField(max_length=256), blank=True, null=True
+    )
     volunteer = models.CharField(max_length=2048, blank=True, null=True)
     visibility = models.BooleanField(blank=True, null=True)
-    hidefor = ArrayField(models.CharField(max_length=128), blank=True, null=True)
-    role = models.CharField(max_length=32, blank=True, null=True, choices=Role.choices)
+    hidefor = ArrayField(
+        models.CharField(max_length=128), blank=True, null=True
+    )
+    role = models.CharField(
+        max_length=32, blank=True, null=True, choices=Role.choices
+    )
     qualification = ArrayField(
         models.CharField(max_length=128, choices=Qualification.choices),
         blank=True,
@@ -1393,8 +1659,12 @@ class User(AbstractUser):
     )
     specialization = models.CharField(max_length=32, blank=True, null=True)
     sub = models.CharField(max_length=32, blank=True, null=True)
-    pr_languages = ArrayField(models.CharField(max_length=64), blank=True, null=True)
-    skills = ArrayField(models.CharField(max_length=256), blank=True, null=True)
+    pr_languages = ArrayField(
+        models.CharField(max_length=64), blank=True, null=True
+    )
+    skills = ArrayField(
+        models.CharField(max_length=256), blank=True, null=True
+    )
     tools = ArrayField(models.CharField(max_length=256), blank=True, null=True)
     job_format = models.CharField(
         max_length=32, blank=True, null=True, choices=JobFormat.choices
@@ -1414,7 +1684,7 @@ class User(AbstractUser):
     class Meta:
         verbose_name = "User"
         verbose_name_plural = "Users"
-        db_table = 'api_user'
+        db_table = "api_user"
 
 
 class Source(models.Model):
@@ -1552,18 +1822,24 @@ class Quizz(models.Model):
     vacancy = models.ForeignKey(
         Vacancy, on_delete=models.SET_NULL, blank=True, null=True
     )
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, blank=True, null=True
+    )
     questions = models.JSONField(blank=True, null=True)
 
 
 class Follower(models.Model):
-    source = models.ForeignKey(Source, on_delete=models.SET_NULL, blank=True, null=True)
+    source = models.ForeignKey(
+        Source, on_delete=models.SET_NULL, blank=True, null=True
+    )
     stat_date = models.DateField(blank=True, null=True)
     followers_total = models.IntegerField(blank=True, null=True)
 
 
 class Certificate(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, blank=True, null=True
+    )
     image = models.ImageField(blank=True, null=True)
     company = models.CharField(max_length=200, blank=True, null=True)
     date = models.DateField(blank=True, null=True)
@@ -1583,7 +1859,9 @@ class Filter(models.Model):
 
 
 class Review(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, blank=True, null=True
+    )
     company = models.ForeignKey(
         Company, on_delete=models.SET_NULL, blank=True, null=True
     )
@@ -1592,7 +1870,9 @@ class Review(models.Model):
 
 
 class Recruiter(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, blank=True, null=True
+    )
     companies_id = ArrayField(models.IntegerField(), blank=True, null=True)
     vacancies_id = ArrayField(models.IntegerField(), blank=True, null=True)
 
@@ -1605,5 +1885,4 @@ class Users(models.Model):
     password = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
-        db_table = 'users'
-
+        db_table = "users"
