@@ -121,11 +121,10 @@ DATABASES = {
         "NAME": env.database.name,
         "USER": env.database.user,
         "PASSWORD": env.database.password,
-        "HOST": env.database.host,
+        "HOST": "itcoty_web.postgres",
         "PORT": env.database.port,
     },
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
