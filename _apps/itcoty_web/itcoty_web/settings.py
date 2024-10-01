@@ -2,14 +2,13 @@
 
 import configparser
 import os
-from pathlib import Path
-from .envs import load_config
+
+from envs import load_config
+from dirs import BASE_DIR, MAIN_DIR, STATIC_DIR
 
 env = load_config()
 debug = env.django.debug
-print("DEBUG IS", debug)
 
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 URL_VACANCY_TO_TG = (
     f"{env.server.localhost}:9000/api/v1/vacancy_to_tg/"
@@ -48,10 +47,6 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True
-
-# CORS_ALLOW_HEADERS = list(default_headers) + [
-#     'content-type',
-# ]
 
 AUTH_USER_MODEL = "api.User"
 
@@ -95,7 +90,7 @@ ROOT_URLCONF = "itcoty_web.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "itcoty_web/templates")],
+        "DIRS": [BASE_DIR / "itcoty_web" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -110,9 +105,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "itcoty_web.wsgi.application"
 
-
 config = configparser.ConfigParser()
-config_path = f"{BASE_DIR.parent.parent}/settings/config.ini"
+config_path = MAIN_DIR / "settings" / "config.ini"
 config.read(config_path)
 
 DATABASES = {
@@ -121,14 +115,10 @@ DATABASES = {
         "NAME": env.database.name,
         "USER": env.database.user,
         "PASSWORD": env.database.password,
-        "HOST": env.database.host,
+        "HOST": "itcoty_web.postgres",
         "PORT": env.database.port,
     },
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -145,26 +135,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/4.1/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "UTC"
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
-
 STATIC_URL = "static/"
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
+STATIC_ROOT = STATIC_DIR
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -201,7 +178,7 @@ EMAIL_PORT = os.environ.get("EMAIL_PORT")
 EMAIL_USE_SSL = True
 
 SERVER_EMAIL = EMAIL_HOST_USER
-DEFAULT_FROM_EMAIL = "notification@itcoty.ru"
+DEFAULT_FROM_EMAIL = env.server.notymail
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
