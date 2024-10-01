@@ -25,6 +25,7 @@ class ServerConfig:
     dev4: str
     prod: str
     localhost: str
+    notymail: str
 
 
 @dataclass
@@ -37,7 +38,6 @@ class Config:
 def load_config() -> Config:
     env: Env = Env()
     env.read_env("./.env")
-
     return Config(
         django=DjangoConfig(
             secret_key=env.str("DJANGO_SECRET_KEY"),
@@ -56,5 +56,6 @@ def load_config() -> Config:
             dev4=env.str("DEV_4SERVER"),
             prod=env.str("PROD_SERVER"),
             localhost=env.str("LOCALHOST"),
+            notymail=env.str("NOTIFICATION_EMAIL"),
         ),
     )
