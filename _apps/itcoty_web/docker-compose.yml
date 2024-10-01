@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+
+  postgresql:
+    image: postgres:16.0-alpine3.18
+    container_name: itcoty_web.postgres
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DEV_DB_NAME}
+      POSTGRES_USER: ${DEV_DB_USER}
+      POSTGRES_PASSWORD: ${DEV_DB_PASSWORD}
+    init: true
+    ports:
+      - "5432:5432"
+    networks:
+      - bac_net
+    volumes:
+      - ./.local/postgresql/data/:/var/lib/postgresql/data/:rw
+    healthcheck:
+      test: pg_isready -U "${DEV_DB_USER}" || exit 1
+      interval: 15s
+      retries: 5
+      start_period: 5s
+      timeout: 5s
+
+  api:
+    image: itcoty_web
+    container_name: itcoty_web.api
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NO_CACHE=true
+    volumes:
+      - .:/app
+    init: true
+    networks:
+      - bac_net
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+
+networks:
+
+  bac_net:
+    name: itcoty_web.backend
+    driver: bridge
+
+
