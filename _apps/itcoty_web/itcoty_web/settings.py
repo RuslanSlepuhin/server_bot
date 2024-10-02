@@ -111,7 +111,6 @@ DATABASES = {
         "USER": env.database.user,
         "PASSWORD": env.database.password,
         "HOST": "itcoty_web.postgres",
-        # "HOST": "localhost",
         "PORT": env.database.port,
     },
 }
