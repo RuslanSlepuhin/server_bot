@@ -8,6 +8,7 @@ class DjangoConfig:
     secret_key: str
     su_username: str
     su_password: str
+    su_email: str
     debug: bool
 
 
@@ -43,6 +44,7 @@ def load_config() -> Config:
             secret_key=env.str("DJANGO_SECRET_KEY"),
             su_username=env.str("DJANGO_SU_USERNAME"),
             su_password=env.str("DJANGO_SU_PASSWORD"),
+            su_email=env.str("DJANGO_SU_EMAIL"),
             debug=env.bool("DJANGO_DEBUG"),
         ),
         database=DevDatabaseConfig(
