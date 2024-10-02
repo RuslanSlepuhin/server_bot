@@ -1,10 +1,9 @@
 """Django settings for itcoty_web project."""
 
-import configparser
 import os
 
-from envs import load_config
-from dirs import BASE_DIR, MAIN_DIR, STATIC_DIR
+from .envs import load_config
+from .dirs import BASE_DIR, STATIC_DIR
 
 env = load_config()
 debug = env.django.debug
@@ -105,10 +104,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "itcoty_web.wsgi.application"
 
-config = configparser.ConfigParser()
-config_path = MAIN_DIR / "settings" / "config.ini"
-config.read(config_path)
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -140,7 +135,7 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 STATIC_ROOT = STATIC_DIR
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
