@@ -1,7 +1,9 @@
+from typing import Any
+
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
-from _apps.itcoty_web.itcoty_web.envs import load_config
+from itcoty_web.envs import load_config
 
 User = get_user_model()
 env = load_config()
@@ -11,7 +13,7 @@ class Command(BaseCommand):
     Handle a superuser creating.
     """
 
-    def handle(self) -> None:
+    def handle(self, *args: Any, **options: Any) -> None:
         """
         Checks if a superuser exists.
         If not, creates a superuser
@@ -21,8 +23,8 @@ class Command(BaseCommand):
         password = env.django.su_password
         email = env.django.su_email
 
-        if User.objects(username=username).exists():
-            self.stdout.write(f"Superuser {username} exists.")
+        if User.objects.filter(username=username).exists():
+            self.stdout.write(f"Superuser '{username}' exists.")
             return
 
         User.objects.create_superuser(
@@ -30,6 +32,6 @@ class Command(BaseCommand):
             password=password,
             email=email
         )
-        if User.objects(username=username).exists():
-            self.stdout.write(f"Superuser {username} has been created.")
+        if User.objects.filter(username=username).exists():
+            self.stdout.write(f"Superuser '{username}' has been created.")
             return
