@@ -19,9 +19,11 @@ To launch the backend part of the project please do as follows:
 1. Clone the project.
 2. Save the 'example.env' file  as '.env' in the same directory.
 3. Fill the '.env' file with your data.
-4. [Download](https://www.docker.com/products/docker-desktop/) Docker Desktop.
-5. Register and start Docker Desktop.
-6. Go to the project directory.
-7. Run the ```docker-compose build``` command.
-8. Run the ```docker-compose up``` command.
-9. Open the app in your browser at ```localhost:8000```. 
+4. If you rare on Windows Make sure you have WSL installed.
+5. If not, install it.
+6. [Download](https://www.docker.com/products/docker-desktop/) Docker Desktop.
+7. Register and start Docker Desktop.
+8. Go to the project directory.
+9. Run the ```docker compose build``` command.
+10. Run the ```docker compose up``` command.
+11. Open the app in your browser at ```localhost:8000```. 
