@@ -1,9 +1,9 @@
 
 ### About
 
-This Django project is about helping people get a job in IT.\
-It will contain a lot of functionality to make the process better, faster and more convenient.
-
+This Django project aims yo help people secure jobs in IT.\
+It will include various features to make the process more efficient, faster,\
+and convenient.
 
 ### Technologies used
 
@@ -19,7 +19,7 @@ To launch the backend part of the project please do as follows:
 1. Clone the project.
 2. Save the 'example.env' file  as '.env' in the same directory.
 3. Fill the '.env' file with your data.
-4. If you rare on Windows Make sure you have WSL installed.
+4. If you're on Windows Make sure you have WSL installed.
 5. If not, install it.
 6. [Download](https://www.docker.com/products/docker-desktop/) Docker Desktop.
 7. Register and start Docker Desktop.
