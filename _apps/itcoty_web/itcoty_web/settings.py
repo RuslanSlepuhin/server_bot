@@ -164,13 +164,12 @@ ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
 
 GOOGLE_REDIRECT_URL = "http://127.0.0.1:8000/"
 
-# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = os.environ.get("EMAIL_HOST")
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
-EMAIL_PORT = os.environ.get("EMAIL_PORT")
-EMAIL_USE_SSL = True
+EMAIL_HOST = env.email.smtp_host
+EMAIL_HOST_USER = env.email.smtp_user
+EMAIL_HOST_PASSWORD = env.email.smtp_password
+EMAIL_PORT = env.email.smtp_port
+EMAIL_USE_TLS = True
 
 SERVER_EMAIL = EMAIL_HOST_USER
 DEFAULT_FROM_EMAIL = env.server.notymail

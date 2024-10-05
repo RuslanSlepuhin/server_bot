@@ -30,10 +30,21 @@ class ServerConfig:
 
 
 @dataclass
+class EmailConfig:
+    smtp_host: str
+    smtp_port: int
+    smtp_user: str
+    smtp_password: str
+    smtp_sender: str
+    smtp_theme: str
+
+
+@dataclass
 class Config:
     django: DjangoConfig
     database: DevDatabaseConfig
     server: ServerConfig
+    email: EmailConfig
 
 
 def load_config() -> Config:
@@ -59,5 +70,13 @@ def load_config() -> Config:
             prod=env.str("PROD_SERVER"),
             localhost=env.str("LOCALHOST"),
             notymail=env.str("NOTIFICATION_EMAIL"),
+        ),
+        email=EmailConfig(
+            smtp_host=env.str("EMAIL_SMTP_HOST"),
+            smtp_port=env.int("EMAIL_SMTP_PORT"),
+            smtp_user=env.str("EMAIL_SMTP_USER"),
+            smtp_password=env.str("EMAIL_SMTP_PASSWORD"),
+            smtp_sender=env.str("EMAIL_DEFAULT_SENDER"),
+            smtp_theme=env.str("EMAIL_DEFAULT_THEME"),
         ),
     )
