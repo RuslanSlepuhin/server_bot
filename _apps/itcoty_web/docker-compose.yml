@@ -18,7 +18,7 @@ services:
     volumes:
       - ./.local/postgresql/data/:/var/lib/postgresql/data/:rw
     healthcheck:
-      test: pg_isready -U "${DEV_DB_USER}" || exit 1
+      test: pg_isready -d "${DEV_DB_NAME}" -U "${DEV_DB_USER}" || exit 1
       interval: 15s
       retries: 5
       start_period: 5s
@@ -30,8 +30,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-#      args:
-#        - NO_CACHE=true
     volumes:
       - .:/app
     init: true
