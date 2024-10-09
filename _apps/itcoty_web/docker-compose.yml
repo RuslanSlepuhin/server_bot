@@ -1,5 +1,7 @@
 
 services:
+  nginx:
+    image:
 
   postgresql:
     image: postgres:16.0-alpine3.18
@@ -26,10 +28,10 @@ services:
 
   api:
     image: itcoty_web
-    container_name: itcoty_web.api
+    container_name: itcoty_web.backend
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile_DRF
     volumes:
       - .:/app
     init: true
@@ -40,6 +42,19 @@ services:
     depends_on:
       postgresql:
         condition: service_healthy
+  dev:
+    image: itcoty_front
+    container_name: itcoty_web.frontend
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile_DEV
+      args:
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+        GITHUB_REPO: ${GITHUB_REPO}
+    ports:
+      - "80:80"
 
 networks:
 
