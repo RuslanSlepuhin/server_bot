@@ -1,7 +1,18 @@
 
 services:
   nginx:
-    image:
+    image: nginx:alpine
+    container_name: itcoty_web.nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "./nginx.conf:/etc/nginx/nginx.conf"
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - bac_net
 
   postgresql:
     image: postgres:16.0-alpine3.18
@@ -26,12 +37,12 @@ services:
       start_period: 5s
       timeout: 5s
 
-  api:
+  backend:
     image: itcoty_web
     container_name: itcoty_web.backend
     build:
       context: .
-      dockerfile: Dockerfile_DRF
+      dockerfile: Dockerfile
     volumes:
       - .:/app
     init: true
@@ -42,22 +53,19 @@ services:
     depends_on:
       postgresql:
         condition: service_healthy
-  dev:
-    image: itcoty_front
+    entrypoint: [ sh, ./docker-entrypoint.sh ]
+
+  frontend:
+    image: ghcr.io/mixail132/itcoty_react_app:latest
     container_name: itcoty_web.frontend
-    env_file:
-      - .env
-    build:
-      context: .
-      dockerfile: Dockerfile_DEV
-      args:
-        GITHUB_TOKEN: ${GITHUB_TOKEN}
-        GITHUB_REPO: ${GITHUB_REPO}
+    volumes:
+      - .:/app
     ports:
-      - "80:80"
+      - "3000:80"
+    networks:
+      - bac_net
 
 networks:
-
   bac_net:
     name: itcoty_web.backend
     driver: bridge
