@@ -5,7 +5,7 @@
 .local
 .gitignore
 
-Dockerfile_DRF
+Dockerfile
 venv
 
 __pycache__
