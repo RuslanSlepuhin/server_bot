@@ -16,12 +16,12 @@ config = configparser.ConfigParser()
 
 path = "./_apps/coffee_customer_bot_apps/settings/config.ini"
 config.read(path)
-token = config['Bot']['horeca_token'] if not debug else config['Bot']['horeca_test_token']
-
-bot = Bot(token=token)
+bot_token = config['Bot']['horeca_token'] if not debug else config['Bot']['horeca_test_token']
+print('token:', bot_token)
+bot = Bot(token=bot_token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
-ngrok_payload = "2fff-37-45-210-246"
+ngrok_payload = "cf09-37-45-210-69"
 WEBHOOK_URL = f"https://{ngrok_payload}.ngrok-free.app" if debug else "https://4dev.itcoty.ru"
 WEBHOOK_PATH = '/horeca/wh'
 NEW_ORDER_PATH = new_order_endpoint
@@ -39,7 +39,8 @@ for key in db_var.tables:
 class HorecaBot:
 
     def __init__(self, token=None, bot=None):
-        self.__token = token if token else config['Bot']['horeca_token']
+        self.__token = token if token else bot_token
+        print('self.token:', self.__token)
         self.bot = Bot(token=self.__token) if not bot else bot
         self.dp = Dispatcher(self.bot, storage=MemoryStorage())
         Bot.set_current(self.bot)
@@ -92,6 +93,8 @@ class HorecaBot:
 
         @self.dp.message_handler(commands=['start'])
         async def start(message: types.Message):
+            print('*'*10)
+            pass
             enter_key = message.text.split("/start", 1)[1]
             if enter_key:
                 response = await self.methods.send_enter_key({"enter_key": enter_key.strip(), "telegram_user_id": message.chat.id})
