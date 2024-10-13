@@ -18,7 +18,7 @@ class HorecaBotMethods:
 
     async def start(self, message) -> bool:
         # utm_bot = message.text.split(' ')[1] if message.text else None
-
+        print('start has been pressed')
 
         self.main_class.orders[message.chat.id] = await self.get_data_by_user_id(user_id=message.chat.id)
         if not self.main_class.orders[message.chat.id]:
@@ -31,6 +31,7 @@ class HorecaBotMethods:
 
     async def get_data_by_user_id(self, user_id) -> list:
         url = variables.server_domain + variables.get_horeca_info + f"?telegram_horeca_id={user_id}&active=true"
+        print(url)
         response = requests.get(url)
         print("GET ORDERS FROM SERVER from get_data_by_user_id")
         for element in response.json():
@@ -327,6 +328,7 @@ class HorecaBotMethods:
 
     async def new_order(self, order:dict) -> dict:
         try:
+            print('order:', order)
             user_id = order['telegram_horeca_id']
             await self.set_vars(chat_id=user_id)
             print("NEW_OREDR")

@@ -24,6 +24,7 @@ class WebHoock:
 
     async def get_new_order(self, request):
         data = await request.json()
+        print("data:", data)
         data = [data] if type(data) not in [tuple, list, set] else data
         for object in data:
             await self.main.methods.new_order(order=object)
