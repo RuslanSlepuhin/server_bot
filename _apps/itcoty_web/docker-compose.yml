@@ -1,20 +1,7 @@
 
 services:
-  nginx:
-    image: nginx:alpine
-    container_name: itcoty_web.nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - "./nginx.conf:/etc/nginx/nginx.conf"
-    depends_on:
-      - frontend
-      - backend
-    networks:
-      - bac_net
 
-  postgresql:
+  base:
     image: postgres:16.0-alpine3.18
     container_name: itcoty_web.postgres
     env_file:
@@ -37,12 +24,28 @@ services:
       start_period: 5s
       timeout: 5s
 
-  backend:
+  api:
     image: itcoty_web
-    container_name: itcoty_web.backend
+    container_name: itcoty_web.api
     build:
       context: .
-      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    init: true
+    networks:
+      - bac_net
+    ports:
+      - "8008:8000"
+    depends_on:
+      base:
+        condition: service_healthy
+    entrypoint: [ sh, ./docker-entrypoint.sh ]
+
+  django:
+    image: itcoty_web
+    container_name: itcoty_web.django
+    build:
+      context: .
     volumes:
       - .:/app
     init: true
@@ -51,23 +54,51 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      postgresql:
+      api:
+        condition: service_started
+      base:
         condition: service_healthy
-    entrypoint: [ sh, ./docker-entrypoint.sh ]
+    command: [ python, manage.py, runserver, 0.0.0.0:8000, --settings=itcoty_web.drfout ]
 
-  frontend:
+  node:
     image: ghcr.io/mixail132/itcoty_react_app:latest
-    container_name: itcoty_web.frontend
-    volumes:
-      - .:/app
+    container_name: itcoty_web.node
     ports:
-      - "3000:80"
+      - "3000:3000"
+    networks:
+      - bac_net
+    depends_on:
+      - api
+
+  server:
+    image: nginx:alpine
+    container_name: itcoty_web.server
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./.local/static:/static
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    command: >
+      sh -c "
+      apk add --no-cache openssl &&
+      mkdir -p /etc/ssl/private /etc/ssl/certs &&
+      openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx.key -out /etc/ssl/certs/nginx.crt -subj '/CN=localhost' &&
+      nginx -g 'daemon off;'
+      "
+    depends_on:
+      - node
+      - api
     networks:
       - bac_net
 
 networks:
   bac_net:
-    name: itcoty_web.backend
+    name: itcoty_web.network
     driver: bridge
+
+volumes:
+  static_volume:
 
 
