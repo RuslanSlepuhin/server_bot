@@ -25,7 +25,7 @@ services:
       timeout: 5s
 
   api:
-    image: itcoty_web
+    image: api
     container_name: itcoty_web.api
     build:
       context: .
@@ -42,7 +42,7 @@ services:
     entrypoint: [ sh, ./docker-entrypoint.sh ]
 
   django:
-    image: itcoty_web
+    image: django
     container_name: itcoty_web.django
     build:
       context: .
@@ -61,7 +61,7 @@ services:
     command: [ python, manage.py, runserver, 0.0.0.0:8000, --settings=itcoty_web.drfout ]
 
   node:
-    image: ghcr.io/mixail132/itcoty_react_app:latest
+    image: ghcr.io/zheniagnedchik/itcoty:latest
     container_name: itcoty_web.node
     ports:
       - "3000:3000"
@@ -70,9 +70,9 @@ services:
     depends_on:
       - api
 
-  server:
+  nginx:
     image: nginx:alpine
-    container_name: itcoty_web.server
+    container_name: itcoty_web.nginx
     ports:
       - "80:80"
       - "443:443"
@@ -80,13 +80,7 @@ services:
       - ./.local/static:/static
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    command: >
-      sh -c "
-      apk add --no-cache openssl &&
-      mkdir -p /etc/ssl/private /etc/ssl/certs &&
-      openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx.key -out /etc/ssl/certs/nginx.crt -subj '/CN=localhost' &&
-      nginx -g 'daemon off;'
-      "
+    command: sh -c "nginx -g 'daemon off;'"
     depends_on:
       - node
       - api
