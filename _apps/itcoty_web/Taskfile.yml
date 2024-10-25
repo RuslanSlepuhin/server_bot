@@ -1,10 +1,23 @@
 version: "3"
 dotenv: [".env"]
 tasks:
+
   docker-up:
     cmds:
       - echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
       - docker compose up -d --build
+
   docker-down:
     cmds:
       - docker compose down
+
+  docker-update:
+    cmds:
+      - docker compose down
+      - |
+        if docker images | grep -q ghcr.io/zheniagnedchik/itcoty:latest; then
+        docker rmi ghcr.io/zheniagnedchik/itcoty:latest
+        else
+        echo "Image ghcr.io/zheniagnedchik/itcoty does not exist."
+        fi
+      - docker compose up -d --build
