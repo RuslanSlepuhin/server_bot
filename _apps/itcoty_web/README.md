@@ -11,6 +11,7 @@ These are a few of the main technologies that have been used in the project:
 - Python (3.10)
 - Django Rest Framework (3.14.0)
 - Docker (26.0.0)
+- Nginx (1.27.0)
 
 ## Tools installation:
 - If you're on Windows please install ```WSL```. To ensure you already have it type:
