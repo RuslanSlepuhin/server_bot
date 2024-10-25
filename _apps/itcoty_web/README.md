@@ -1,7 +1,7 @@
 
 ## About
 
-This Django project aims yo help people secure jobs in IT.\
+This Django project aims to help people secure jobs in IT.\
 It will include various features to make the process more efficient, faster,\
 and convenient.
 
