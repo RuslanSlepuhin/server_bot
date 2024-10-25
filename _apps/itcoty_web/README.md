@@ -62,13 +62,13 @@ git config core.autocrlf false
 - Fill out the ```.env``` file with your data.
 
 ## Project launching:
-- To build and start:
+- To build and start the Docker containers:
 ```
 task docker-up
 ```
 <i class="fas fa-copy"></i>
 
-- To stop:
+- To stop the Docker containers:
 ```
 task docker-down
 ``` 
