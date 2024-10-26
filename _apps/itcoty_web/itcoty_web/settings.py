@@ -1,5 +1,7 @@
 """Django settings for itcoty_web project."""
 
+from corsheaders.defaults import default_headers
+
 from .envs import load_config
 from .dirs import BASE_DIR, STATIC_DIR
 
@@ -32,6 +34,8 @@ CORS_ALLOWED_ORIGINS = [
     env.server.dev4,
     env.server.prod,
 ]
+
+CORS_ALLOW_HEADERS = list(default_headers) + ["Access-Control-Allow-Methods",]
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
