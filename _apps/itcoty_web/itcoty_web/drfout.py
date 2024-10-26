@@ -1,9 +1,10 @@
 """Django settings for itcoty_web project."""
 
-import os
+from corsheaders.defaults import default_headers
 
 from .envs import load_config
 from .dirs import BASE_DIR, STATIC_DIR
+
 
 env = load_config()
 debug = env.django.debug
@@ -41,6 +42,8 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:9000',
     env.server.dev4,
 ]
+
+CORS_ALLOW_HEADERS = list(default_headers) + ["Access-Control-Allow-Methods",]
 
 CORS_ALLOW_CREDENTIALS = True
 
