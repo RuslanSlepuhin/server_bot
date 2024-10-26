@@ -1,7 +1,7 @@
 
 services:
 
-  postgresql:
+  base:
     image: postgres:16.0-alpine3.18
     container_name: itcoty_web.postgres
     env_file:
@@ -25,11 +25,27 @@ services:
       timeout: 5s
 
   api:
-    image: itcoty_web
+    image: api
     container_name: itcoty_web.api
     build:
       context: .
-      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    init: true
+    networks:
+      - bac_net
+    ports:
+      - "8008:8000"
+    depends_on:
+      base:
+        condition: service_healthy
+    entrypoint: [ sh, ./docker-entrypoint.sh ]
+
+  django:
+    image: django
+    container_name: itcoty_web.django
+    build:
+      context: .
     volumes:
       - .:/app
     init: true
@@ -38,13 +54,45 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      postgresql:
+      api:
+        condition: service_started
+      base:
         condition: service_healthy
+    command: [ python, manage.py, runserver, 0.0.0.0:8000, --settings=itcoty_web.drfout ]
+
+  node:
+    image: ghcr.io/zheniagnedchik/itcoty:latest
+    container_name: itcoty_web.node
+    ports:
+      - "3000:3000"
+    networks:
+      - bac_net
+    depends_on:
+      - api
+
+  nginx:
+    image: nginx:alpine
+    container_name: itcoty_web.nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./.local/static:/static
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    command: sh -c "nginx -g 'daemon off;'"
+    depends_on:
+      - node
+      - api
+    networks:
+      - bac_net
 
 networks:
-
   bac_net:
-    name: itcoty_web.backend
+    name: itcoty_web.network
     driver: bridge
+
+volumes:
+  static_volume:
 
 

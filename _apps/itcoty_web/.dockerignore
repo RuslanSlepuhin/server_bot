@@ -1,11 +1,13 @@
 .git
-.env
 .venv
 .idea
 .local
 .gitignore
 
 Dockerfile
+Taskfile.yml
+docker-compose.yml
+
 venv
 
 __pycache__
