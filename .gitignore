@@ -20,6 +20,7 @@ main_start.py
 
 *.backup
 *.log
+*.save
 *.session-journal
 *.session
 *.se2
