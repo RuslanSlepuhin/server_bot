@@ -22,7 +22,9 @@ main_start.py
 *.log
 *.session-journal
 *.session
+*.se2
 *.sqlite3
+*.tmp
 *.txt
 *.xlsx
 
