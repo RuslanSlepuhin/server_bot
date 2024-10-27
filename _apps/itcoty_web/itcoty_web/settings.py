@@ -14,8 +14,6 @@ import configparser
 import os
 import pathlib
 from pathlib import Path
-from corsheaders.defaults import default_headers
-
 
 # from corsheaders.defaults import default_headers
 
@@ -51,14 +49,6 @@ CORS_ALLOWED_ORIGINS = [
     'https://4dev.itcoty.ru',
     'https://itcoty.ru',
 ]
-
-CORS_ALLOW_HEADERS = list(default_headers) + [
-    "access-control-allow-credentials",
-    "access-control-allow-headers",
-    "access-control-allow-methods",
-    "access-control-allow-origin",
-    ]
-
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
     'http://localhost:8000',
@@ -89,7 +79,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
-    # "api",
+    "api",
     "rest_framework",
     "rest_framework.authtoken",
     "dj_rest_auth",
@@ -99,7 +89,6 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
     "dj_rest_auth.registration",
     "rest_framework_simplejwt",
-    "api",
     "corsheaders",
 ]
 

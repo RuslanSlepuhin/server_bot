@@ -29,6 +29,9 @@ main_start.py
 *.txt
 *.xlsx
 
+!/logs/logs.py
+!/other_operations/other_operations.py
+
 settings/server/
 settings/local/
 settings/database_settings.py
