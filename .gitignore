@@ -4,15 +4,16 @@
 .git
 .idea
 
-localhost.env
+_apps/itcoty_web/.env
 devserver.env
 prodserver.env
 
 __backup__
 __pycache__
 
-venv
+envs
 excel
+venv
 logs
 messages
 participants
