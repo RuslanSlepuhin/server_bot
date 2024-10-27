@@ -30,7 +30,7 @@ main_start.py
 *.xlsx
 
 !/logs/logs.py
-!other_operations/other_operations.py
+!/other_operations/other_operations.py
 
 settings/server/
 settings/local/
