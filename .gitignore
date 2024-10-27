@@ -4,6 +4,10 @@
 .git
 .idea
 
+localhost.env
+devserver.env
+prodserver.env
+
 __backup__
 __pycache__
 
