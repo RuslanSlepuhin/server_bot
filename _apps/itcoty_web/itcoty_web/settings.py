@@ -35,7 +35,12 @@ CORS_ALLOWED_ORIGINS = [
     env.server.prod,
 ]
 
-CORS_ALLOW_HEADERS = list(default_headers) + ["Access-Control-Allow-Methods",]
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "access-control-allow-credentials",
+    "access-control-allow-headers",
+    "access-control-allow-methods",
+    "access-control-allow-origin",
+    ]
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
