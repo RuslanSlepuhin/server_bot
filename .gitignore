@@ -18,11 +18,13 @@ other_operations
 delete*.py
 main_start.py
 
+*.backup
+*.log
 *.session-journal
 *.session
-*.xlsx
-*.txt
 *.sqlite3
+*.txt
+*.xlsx
 
 settings/server/
 settings/local/
