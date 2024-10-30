@@ -36,7 +36,6 @@ class AdminCopy(models.Model):
     closed = models.BooleanField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'admin_copy'
 
 
@@ -77,7 +76,6 @@ class AdminVacancy(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'admin_last_session'
 
 
@@ -87,7 +85,6 @@ class AdminTemporary(models.Model):
     sended_to_agregator = models.CharField(max_length=30, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'admin_temporary'
 
 
@@ -135,7 +132,6 @@ class Analyst(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'analyst'
 
 
@@ -176,7 +172,6 @@ class Archive(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'archive'
 
 
@@ -201,7 +196,6 @@ class Ba(models.Model):
     session = models.ForeignKey('CurrentSession', models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'ba'
 
 
@@ -261,7 +255,6 @@ class Backend(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'backend'
 
 
@@ -270,7 +263,6 @@ class Company(models.Model):
     company = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'companies'
 
 
@@ -279,7 +271,6 @@ class CountriesCities(models.Model):
     city = models.CharField(max_length=150, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'countries_cities'
 
 
@@ -287,7 +278,6 @@ class CurrentSession(models.Model):
     session = models.CharField(unique=True, max_length=15, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'current_session'
 
 
@@ -339,7 +329,6 @@ class Designer(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'designer'
 
 
@@ -383,7 +372,6 @@ class Devops(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'devops'
 
 
@@ -399,7 +387,6 @@ class FollowersStatistics(models.Model):
     mutual_contact = models.BooleanField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'followers_statistics'
 
 
@@ -451,7 +438,6 @@ class Frontend(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'frontend'
 
 
@@ -476,7 +462,6 @@ class Fullstack(models.Model):
     session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'fullstack'
 
 
@@ -520,7 +505,6 @@ class Game(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'game'
 
 
@@ -564,7 +548,6 @@ class Hr(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'hr'
 
 
@@ -620,7 +603,6 @@ class Junior(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'junior'
 
 
@@ -628,7 +610,6 @@ class LastAutopushingTime(models.Model):
     time = models.CharField(max_length=10, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'last_autopushing_time'
 
 
@@ -681,7 +662,6 @@ class Marketing(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'marketing'
 
 
@@ -706,7 +686,6 @@ class Middle(models.Model):
     session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'middle'
 
 
@@ -755,7 +734,6 @@ class Mobile(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'mobile'
 
 
@@ -780,7 +758,6 @@ class NoSort(models.Model):
     session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'no_sort'
 
 
@@ -788,7 +765,6 @@ class ParserAtWork(models.Model):
     parser_at_work = models.BooleanField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'parser_at_work'
 
 
@@ -834,7 +810,6 @@ class Pm(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'pm'
 
 
@@ -878,7 +853,6 @@ class Product(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'product'
 
 
@@ -925,7 +899,6 @@ class Qa(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'qa'
 
 
@@ -966,7 +939,6 @@ class Reject(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'reject'
 
 
@@ -1010,7 +982,6 @@ class SalesManager(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'sales_manager'
 
 
@@ -1035,7 +1006,6 @@ class Senior(models.Model):
     session = models.ForeignKey(CurrentSession, models.DO_NOTHING, db_column='session', to_field='session', blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'senior'
 
 
@@ -1043,7 +1013,6 @@ class ShortsAtWork(models.Model):
     shorts_at_work = models.BooleanField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'shorts_at_work'
 
 
@@ -1051,7 +1020,6 @@ class ShortsSessionName(models.Model):
     session_name = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'shorts_session_name'
 
 
@@ -1173,7 +1141,6 @@ class StatsDb(models.Model):
     backend_laravel = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'stats_db'
 
 
@@ -1189,7 +1156,6 @@ class UserRequests(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='последнее обновление', blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'user_requests'
 
 
@@ -1201,7 +1167,6 @@ class Users(models.Model):
     password = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'users'
 
 
@@ -1243,7 +1208,6 @@ class Vacancies(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'vacancies'
 
 
@@ -1285,7 +1249,6 @@ class VacancyStock(models.Model):
     salary_to_usd_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'vacancy_stock'
 
 #---------------------- old models end --------------------------
@@ -1299,8 +1262,7 @@ class VacancyStock(models.Model):
 #     user = models.ForeignKey(ApiUser, models.DO_NOTHING)
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'socialaccount_socialaccount'
+# #         db_table = 'socialaccount_socialaccount'
 #         unique_together = (('provider', 'uid'),)
 #
 #
@@ -1314,8 +1276,7 @@ class VacancyStock(models.Model):
 #     settings = models.JSONField()
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'socialaccount_socialapp'
+# #         db_table = 'socialaccount_socialapp'
 #
 #
 # class SocialaccountSocialappSites(models.Model):
@@ -1324,8 +1285,7 @@ class VacancyStock(models.Model):
 #     site = models.ForeignKey(DjangoSite, models.DO_NOTHING)
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'socialaccount_socialapp_sites'
+# #         db_table = 'socialaccount_socialapp_sites'
 #         unique_together = (('socialapp', 'site'),)
 #
 #
@@ -1337,8 +1297,7 @@ class VacancyStock(models.Model):
 #     app = models.ForeignKey(SocialaccountSocialapp, models.DO_NOTHING, blank=True, null=True)
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'socialaccount_socialtoken'
+# #         db_table = 'socialaccount_socialtoken'
 #         unique_together = (('app', 'account'),)
 #
 #
@@ -1351,8 +1310,7 @@ class VacancyStock(models.Model):
 #     istarget = models.BooleanField(blank=True, null=True)
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'sources'
+# #         db_table = 'sources'
 #
 #
 # class DjangoAdminLog(models.Model):
@@ -1365,8 +1323,7 @@ class VacancyStock(models.Model):
 #     user = models.ForeignKey(ApiUser, models.DO_NOTHING)
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'django_admin_log'
+# #         db_table = 'django_admin_log'
 #
 #
 # class DjangoContentType(models.Model):
@@ -1374,8 +1331,7 @@ class VacancyStock(models.Model):
 #     model = models.CharField(max_length=100)
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'django_content_type'
+# #         db_table = 'django_content_type'
 #         unique_together = (('app_label', 'model'),)
 #
 #
@@ -1386,8 +1342,7 @@ class VacancyStock(models.Model):
 #     applied = models.DateTimeField()
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'django_migrations'
+# #         db_table = 'django_migrations'
 #
 #
 # class DjangoSession(models.Model):
@@ -1396,8 +1351,7 @@ class VacancyStock(models.Model):
 #     expire_date = models.DateTimeField()
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'django_session'
+# #         db_table = 'django_session'
 #
 #
 # class DjangoSite(models.Model):
@@ -1405,8 +1359,7 @@ class VacancyStock(models.Model):
 #     name = models.CharField(max_length=50)
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'django_site'
+# #         db_table = 'django_site'
 #
 #
 # class AccountEmailaddress(models.Model):
@@ -1416,8 +1369,7 @@ class VacancyStock(models.Model):
 #     user = models.ForeignKey('ApiUser', models.DO_NOTHING)
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'account_emailaddress'
+# #         db_table = 'account_emailaddress'
 #         unique_together = (('user', 'email'),)
 #
 #
@@ -1428,8 +1380,7 @@ class VacancyStock(models.Model):
 #     email_address = models.ForeignKey(AccountEmailaddress, models.DO_NOTHING)
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'account_emailconfirmation'
+# #         db_table = 'account_emailconfirmation'
 #
 #
 #
@@ -1441,8 +1392,7 @@ class VacancyStock(models.Model):
 #     date = models.DateTimeField(blank=True, null=True)
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'api_currency'
+# #         db_table = 'api_currency'
 #
 #
 # class ApiUser(models.Model):
@@ -1508,8 +1458,7 @@ class VacancyStock(models.Model):
 #     company_id = models.ForeignKey('Company', models.DO_NOTHING, blank=True, null=True)
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'api_user'
+# #         db_table = 'api_user'
 #
 #
 # class ApiUserGroups(models.Model):
@@ -1518,8 +1467,7 @@ class VacancyStock(models.Model):
 #     group = models.ForeignKey('AuthGroup', models.DO_NOTHING)
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'api_user_groups'
+# #         db_table = 'api_user_groups'
 #         unique_together = (('user', 'group'),)
 #
 #
@@ -1529,8 +1477,7 @@ class VacancyStock(models.Model):
 #     permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'api_user_user_permissions'
+# #         db_table = 'api_user_user_permissions'
 #         unique_together = (('user', 'permission'),)
 #
 #
@@ -1538,8 +1485,7 @@ class VacancyStock(models.Model):
 #     name = models.CharField(unique=True, max_length=150)
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'auth_group'
+# #         db_table = 'auth_group'
 #
 #
 # class AuthGroupPermissions(models.Model):
@@ -1548,8 +1494,7 @@ class VacancyStock(models.Model):
 #     permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'auth_group_permissions'
+# #         db_table = 'auth_group_permissions'
 #         unique_together = (('group', 'permission'),)
 #
 #
@@ -1559,8 +1504,7 @@ class VacancyStock(models.Model):
 #     codename = models.CharField(max_length=100)
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'auth_permission'
+# #         db_table = 'auth_permission'
 #         unique_together = (('content_type', 'codename'),)
 #
 #
@@ -1570,8 +1514,7 @@ class VacancyStock(models.Model):
 #     user = models.OneToOneField(ApiUser, models.DO_NOTHING)
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'authtoken_token'
+# #         db_table = 'authtoken_token'
 #
 #
 # class FullVacancies(models.Model):
@@ -1626,8 +1569,7 @@ class VacancyStock(models.Model):
 #     source_id = models.ForeignKey('Sources', models.DO_NOTHING, blank=True, null=True)
 #
 #     class Meta:
-#         managed = False
-#         db_table = 'full_vacancies'
+# #         db_table = 'full_vacancies'
 
 
 
@@ -2068,8 +2010,7 @@ class Recruiter(models.Model):
 #     approved = models.CharField(max_length=100, blank=True, null=True)
 #
 #     class Meta:
-#         managed = False
-#         db_table = "admin_last_session"
+# #         db_table = "admin_last_session"
 #         verbose_name = "Admin vacancy"
 #         verbose_name_plural = "Admin vacancies"
 #
@@ -2082,8 +2023,7 @@ class Recruiter(models.Model):
 #     session = models.CharField(max_length=15, unique=True)
 #
 #     class Meta:
-#         managed = False
-#         db_table = "current_session"
+# #         db_table = "current_session"
 
 
 
