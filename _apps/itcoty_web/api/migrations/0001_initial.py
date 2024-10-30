@@ -50,7 +50,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'admin_copy',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -93,7 +92,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'admin_last_session',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -106,7 +104,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'admin_temporary',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -150,7 +147,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'vacancies',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -200,7 +196,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'analyst',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -243,7 +238,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'archive',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -270,7 +264,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'ba',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -332,7 +325,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'backend',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -355,7 +347,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'countries_cities',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -366,7 +357,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'current_session',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -420,7 +410,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'designer',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -466,7 +455,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'devops',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -485,7 +473,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'followers_statistics',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -539,7 +526,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'frontend',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -566,7 +552,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'fullstack',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -612,7 +597,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'game',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -658,7 +642,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'hr',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -716,7 +699,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'junior',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -727,7 +709,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'last_autopushing_time',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -782,7 +763,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'marketing',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -809,7 +789,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'middle',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -860,7 +839,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'mobile',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -887,7 +865,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'no_sort',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -898,7 +875,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'parser_at_work',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -946,7 +922,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'pm',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -992,7 +967,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'product',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -1041,7 +1015,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'qa',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -1084,7 +1057,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'reject',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -1130,7 +1102,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'sales_manager',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -1157,7 +1128,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'senior',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -1168,7 +1138,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'shorts_at_work',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -1179,7 +1148,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'shorts_session_name',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -1304,7 +1272,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'stats_db',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -1322,7 +1289,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'user_requests',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -1337,7 +1303,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'users',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -1381,7 +1346,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'vacancy_stock',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
