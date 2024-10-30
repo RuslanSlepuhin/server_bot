@@ -54,7 +54,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'vacancies',
-                'managed': False,
             },
         ),
         migrations.CreateModel(
