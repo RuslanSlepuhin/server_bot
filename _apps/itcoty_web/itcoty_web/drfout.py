@@ -110,7 +110,7 @@ DATABASES = {
         "NAME": env.database.name,
         "USER": env.database.user,
         "PASSWORD": env.database.password,
-        "HOST": "itcoty_web.postgres",
+        "HOST": env.database.host,
         "PORT": env.database.port,
     },
 }
