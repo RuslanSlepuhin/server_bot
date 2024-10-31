@@ -18,6 +18,14 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
+            name='CurrentSession',
+            fields=[
+            ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+            ('session', models.CharField(blank=True, max_length=15, null=True, unique=True)),
+            ],
+            options={'db_table': 'current_session', },
+        ),
+        migrations.CreateModel(
             name='Company',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -138,7 +146,7 @@ class Migration(migrations.Migration):
                 )
                  ),
             ],
-            options={'verbose_name': 'User', 'verbose_name_plural': 'Users', },
+            options={'verbose_name': 'User', 'verbose_name_plural': 'Users'},
             managers=[('objects', api.models.CustomUserManager()), ],
         ),
 
@@ -421,16 +429,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'countries_cities',
-            },
-        ),
-        migrations.CreateModel(
-            name='CurrentSession',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('session', models.CharField(blank=True, max_length=15, null=True, unique=True)),
-            ],
-            options={
-                'db_table': 'current_session',
             },
         ),
         migrations.CreateModel(
