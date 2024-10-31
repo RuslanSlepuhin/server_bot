@@ -1,8 +1,5 @@
 
-echo "Apply migrations for api."
-python manage.py migrate api
-
-echo "Apply migrations for other apps."
+echo "Apply migrations."
 python manage.py migrate
 
 echo "Create a superuser."

@@ -25,7 +25,10 @@ SECRET_KEY = env.django.secret_key
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['itcoty_web.backend', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [
+    'itcoty_web.backend',
+    'localhost', '127.0.0.1'
+]
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
@@ -114,23 +117,27 @@ DATABASES = {
         "NAME": env.database.name,
         "USER": env.database.user,
         "PASSWORD": env.database.password,
-        "HOST": "itcoty_web.postgres",
+        "HOST": env.database.host,
         "PORT": env.database.port,
     },
 }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME":
+            "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "NAME":
+            "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+        "NAME":
+            "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+        "NAME":
+            "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -145,11 +152,16 @@ STATIC_ROOT = STATIC_DIR
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": ("dj_rest_auth.jwt_auth.JWTAuthentication",),
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "dj_rest_auth.jwt_auth.JWTAuthentication",
+    ),
+    "DEFAULT_PAGINATION_CLASS":
+        "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 1000,
     "PAGE_SIZE_QUERY_PARAM": "page_size",
-    "MAX_PAGE_SIZE": 10000, "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
+    "MAX_PAGE_SIZE": 10000, "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer"
+    ],
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
 
@@ -158,7 +170,8 @@ REST_AUTH = {
     "USE_JWT": True,
     "JWT_AUTH_HTTPONLY": False,
     "REGISTER_SERIALIZER": "api.serializers.RegisterSerializer",
-    "PASSWORD_RESET_SERIALIZER": "api.serializers.CustomPasswordResetSerializer",
+    "PASSWORD_RESET_SERIALIZER":
+        "api.serializers.CustomPasswordResetSerializer",
     "UNIQUE_EMAIL": True,
     "OLD_PASSWORD_FIELD_ENABLED": True,
 }
