@@ -45,6 +45,7 @@ scoop install task
 <i class="fas fa-copy"></i>
 - Lastly [Download Docker Desktop](https://www.docker.com/products/docker-desktop/), register and start it.\
 Make sure you have ```Docker Desktop``` running every time you're launching the project in ```Docker```
+- Install ```Postgres``` to run the Django app on a localhost.
 
 ## Project installation:
 - Clone the project.
@@ -62,7 +63,7 @@ git config core.autocrlf false
 - Save the ```example.env``` file  as ```.env``` in the same directory.
 - Fill out the ```.env``` file with your data.
 
-## Project launching:
+## Project launching in Docker:
 - To build and start the Docker containers:
 ```
 task docker-up
@@ -83,4 +84,12 @@ http://localhost
 ```
 http://localhost:8000
 ```
+<i class="fas fa-copy"></i>
+
+## Project launching on a localhost:
+
+- In the project directory type:
+```
+task run-server
+``` 
 <i class="fas fa-copy"></i>
