@@ -21,3 +21,10 @@ tasks:
         echo "Image ghcr.io/zheniagnedchik/itcoty does not exist."
         fi
       - docker compose up -d --build
+
+  run-server:
+    cmds:
+      - python manage.py run-database
+      - python manage.py makemigrations
+      - python manage.py migrate
+      - python manage.py runserver --settings=itcoty_web.drfout
