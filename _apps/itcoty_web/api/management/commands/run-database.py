@@ -1,9 +1,8 @@
-import psycopg2
 import platform
+import psycopg2
 import subprocess
 
 from django.core.management.base import BaseCommand
-
 from psycopg2 import sql
 from typing import Any
 
@@ -13,15 +12,27 @@ from itcoty_web.dirs import DB_DATA, DB_CTL
 
 env = load_config()
 
-def start_server():
+
+def start_server() -> bool:
     """ Starts the database server if it's not running. """
 
-    this_platform = platform.system()
+    if (DB_DATA / "postmaster.pid").exists():
+        return True
 
-    if this_platform == "Windows":
-        subprocess.run([str(DB_CTL), "start", "-D", str(DB_DATA)])
-    elif this_platform == "Linux":
-        subprocess.run(["sudo", "systemctl", ]) #????????????
+    try:
+        this_platform = platform.system()
+
+        if this_platform == "Windows":
+            subprocess.run([DB_CTL, "start", "-D", DB_DATA])
+
+        elif this_platform == "Linux":
+            subprocess.run(["sudo", "systemctl", "start", "postgresql"])
+
+    except psycopg2.OperationalError:
+        return False
+
+    else:
+        return True
 
 
 def create_database(dbname):
@@ -38,27 +49,21 @@ def create_database(dbname):
             host=env.database.host,
             port=env.database.port,
         )
+
         conn.autocommit = True
         cursor = conn.cursor()
 
-        cursor.execute(
-            sql.SQL("CREATE DATABASE {}").format(
-                sql.Identifier(dbname)
-            )
-        )
-        print(f"The database {dbname} has been created.")
-
+        cursor.execute(sql.SQL(
+            "CREATE DATABASE {}").format(sql.Identifier(dbname)
+                                         )
+                       )
     except psycopg2.errors.DuplicateDatabase:
-        print(f"The database {dbname} already exists.")
+        cursor.close()
+        conn.close()
 
-    except psycopg2.OperationalError:
-        start_server()
-
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
+    else:
+        cursor.close()
+        conn.close()
 
 
 class Command(BaseCommand):
@@ -66,26 +71,8 @@ class Command(BaseCommand):
 
     def handle(self, *args: Any, **options: Any) -> None:
         """ Runs the database creating. """
-        create_database(env.database.name)
 
+        server_is_running = start_server()
 
-def start_postgres():
-    """ Starts the database server if it's not running. """
-    conn = None
-
-    try:
-        conn = psycopg2.connect(
-            dbname=env.database.default,
-            user=env.database.user,
-            password=env.database.password,
-            host=env.database.host,
-            port=env.database.port,
-        )
-
-    except psycopg2.errors.OperationalError:
-        ...
-
-    finally:
-        if conn:
-            conn.close()
-
+        if server_is_running:
+            create_database(env.database.name)
