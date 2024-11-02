@@ -19,6 +19,9 @@ class DevDatabaseConfig:
     port: int
     user: str
     password: str
+    default: str
+    version: int
+    winpath: str
 
 
 @dataclass
@@ -64,6 +67,9 @@ def load_config() -> Config:
             port=env.int("DEV_DB_PORT"),
             user=env.str("DEV_DB_USER"),
             password=env.str("DEV_DB_PASSWORD"),
+            default=env.str("DEFAULT_DB_NAME"),
+            version=env.int("LOCAL_DB_VERSION"),
+            winpath=env.str("WINDOWS_DB_PATH"),
         ),
         server=ServerConfig(
             dev4=env.str("DEV_4SERVER"),
@@ -79,4 +85,5 @@ def load_config() -> Config:
             smtp_sender=env.str("EMAIL_DEFAULT_SENDER"),
             smtp_theme=env.str("EMAIL_DEFAULT_THEME"),
         ),
+
     )
