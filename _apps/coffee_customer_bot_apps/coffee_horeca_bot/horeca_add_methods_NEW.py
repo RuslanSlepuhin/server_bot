@@ -20,23 +20,30 @@ class HorecaBotMethods:
         # utm_bot = message.text.split(' ')[1] if message.text else None
         print('start has been pressed')
 
-        self.main_class.orders[message.chat.id] = await self.get_data_by_user_id(user_id=message.chat.id)
-        if not self.main_class.orders[message.chat.id]:
-            self.main_class.service_messages[message.chat.id].append(await self.main_class.bot.send_message(message.chat.id, "You have not the active current orders"))
-            return False
-        self.main_class.orders_dict[message.chat.id] = await self.data_by_user_to_dict_by_order_id(message=message)
-        await self.send_short_cards(message=message)
-        await self.delete_messages(message=message)
-        return True
+        response, status_code = await self.get_data_by_user_id(user_id=message.chat.id)
+        if status_code == 200:
+            self.main_class.orders[message.chat.id] = response
+            if not self.main_class.orders[message.chat.id]:
+                self.main_class.service_messages[message.chat.id].append(await self.main_class.bot.send_message(message.chat.id, "You have not the active current orders"))
+                return False
+            self.main_class.orders_dict[message.chat.id] = await self.data_by_user_to_dict_by_order_id(message=message)
+            await self.send_short_cards(message=message)
+            await self.delete_messages(message=message)
+            return True
+        else:
+            self.main_class.service_messages[message.chat.id].append(
+                await self.main_class.bot.send_message(message.chat.id, f"Server responded with {status_code} status code"))
 
-    async def get_data_by_user_id(self, user_id) -> list:
+    async def get_data_by_user_id(self, user_id) -> [list, int]:
         url = variables.server_domain + variables.get_horeca_info + f"?telegram_horeca_id={user_id}&active=true"
         print(url)
         response = requests.get(url)
         print("GET ORDERS FROM SERVER from get_data_by_user_id")
+        if response.status_code != 200:
+            return {}, response.status_code
         for element in response.json():
             print(f"Заказ: {element['order_id']}\nСтатус: {element['status']}\n-----")
-        return response.json()
+        return response.json(), response.status_code
 
     async def data_by_user_to_dict_by_order_id(self, order_list:list=None, **kwargs) -> dict:
         chat_id = kwargs['chat_id'] if kwargs.get('chat_id') else kwargs['message'].chat.id
@@ -319,7 +326,7 @@ class HorecaBotMethods:
         return {"bot_is_available": True}
 
     def print_bot_name(self) -> None:
-        bot_name = asyncio.run(self.main_class.bot.get_me())['username']
+        bot_name = asyncio.run(self.main_class.bot.get_me()['username'])
         print(f"https://t.me/{bot_name}")
 
     async def async_print_bot_name(self) -> None:
