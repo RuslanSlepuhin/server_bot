@@ -47,7 +47,7 @@ main_endpoint = "http://127.0.0.1:5000/is_user_active"
 
 # server_domain = "http://127.0.0.1:7000"
 # server_domain = "http://127.0.0.1:7000"
-# server_domain = "https://be59-46-53-250-242.ngrok-free.app"
+# server_domain = "https://68bb-178-122-225-233.ngrok-free.app"
 server_domain = "https://dev.fcm.by" # tunnel
 customer_bot_domain = "http://127.0.0.1:5000"
 horeca_bot_domain = "http://127.0.0.1:5000"

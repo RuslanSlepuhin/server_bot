@@ -21,7 +21,7 @@ print('token:', bot_token)
 bot = Bot(token=bot_token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
-ngrok_payload = "cf09-37-45-210-69"
+ngrok_payload = "68bb-178-122-225-233"
 WEBHOOK_URL = f"https://{ngrok_payload}.ngrok-free.app" if debug else "https://4dev.itcoty.ru"
 WEBHOOK_PATH = '/horeca/wh'
 NEW_ORDER_PATH = new_order_endpoint

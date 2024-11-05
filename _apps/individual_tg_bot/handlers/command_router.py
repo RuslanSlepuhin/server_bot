@@ -6,6 +6,8 @@ from aiogram.types import Message
 
 async def start_handler(msg: Message) -> None:
     """Обработка команды start"""
+    print('start')
+
     await msg.answer(
         text.greet.format(name=msg.from_user.full_name), reply_markup=get_inline_menu()
     )

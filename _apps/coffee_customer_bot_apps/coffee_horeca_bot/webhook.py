@@ -23,12 +23,23 @@ class WebHoock:
         return web.Response()
 
     async def get_new_order(self, request):
-        data = await request.json()
-        print("data:", data)
-        data = [data] if type(data) not in [tuple, list, set] else data
-        for object in data:
-            await self.main.methods.new_order(order=object)
-        return web.Response()
+        try:
+            data = await request.json()
+            print("data:", data)
+            data = [data] if type(data) not in [tuple, list, set] else data
+
+
+            # data = data[0]
+            # key = list(data.keys())
+            # key = key[0]
+            # data = [data[key]]
+
+            d = data.copy()
+            for object in data:
+                await self.main.methods.new_order(order=object)
+            return web.Response()
+        except Exception as ex:
+            return web.Response(body=f'не доставлено в телеграм: {ex}', status=500)
 
     async def provide_message_from_customer(self, request):
         data = await request.json()
