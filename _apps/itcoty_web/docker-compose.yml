@@ -35,7 +35,7 @@ services:
     networks:
       - bac_net
     ports:
-      - "8008:8000"
+      - "8006:8000"
     depends_on:
       base:
         condition: service_healthy
@@ -52,7 +52,7 @@ services:
     networks:
       - bac_net
     ports:
-      - "8000:8000"
+      - "8008:8000"
     depends_on:
       api:
         condition: service_started
@@ -64,7 +64,7 @@ services:
     image: ghcr.io/zheniagnedchik/itcoty:latest
     container_name: itcoty_web.node
     ports:
-      - "3000:3000"
+      - "3003:3000"
     networks:
       - bac_net
     depends_on:
@@ -73,9 +73,11 @@ services:
   nginx:
     image: nginx:alpine
     container_name: itcoty_web.nginx
+    env_file:
+      - ".env"
     ports:
-      - "80:80"
-      - "443:443"
+      - "${NGINX_HTTP_PORT}:80"
+      - "${NGINX_HTTPS_PORT}:443"
     volumes:
       - ./.local/static:/static
       - ./nginx.conf:/etc/nginx/nginx.conf
