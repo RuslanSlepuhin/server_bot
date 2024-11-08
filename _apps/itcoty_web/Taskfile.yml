@@ -20,7 +20,7 @@ tasks:
     cmds:
       - docker compose down
       - |
-        if docker images | grep -q ghcr.io/zheniagnedchik/itcoty:latest; then
+        if docker images ghcr.io/zheniagnedchik/itcoty; then
         docker rmi ghcr.io/zheniagnedchik/itcoty:latest
         else
         echo "Image ghcr.io/zheniagnedchik/itcoty does not exist."
