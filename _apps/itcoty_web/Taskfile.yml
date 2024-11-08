@@ -5,7 +5,12 @@ tasks:
   docker-up:
     cmds:
       - echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
-      - docker compose up --build
+      - docker compose up -d --build
+
+  docker-up-dev:
+    cmds:
+      - echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
+      - docker compose up base api nginx node -d --build
 
   docker-down:
     cmds:
@@ -15,7 +20,7 @@ tasks:
     cmds:
       - docker compose down
       - |
-        if docker images | grep -q ghcr.io/zheniagnedchik/itcoty:latest; then
+        if docker images ghcr.io/zheniagnedchik/itcoty; then
         docker rmi ghcr.io/zheniagnedchik/itcoty:latest
         else
         echo "Image ghcr.io/zheniagnedchik/itcoty does not exist."
