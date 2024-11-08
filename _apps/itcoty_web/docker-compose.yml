@@ -61,7 +61,7 @@ services:
     command: [ python, manage.py, runserver, 0.0.0.0:8000, --settings=itcoty_web.drfout ]
 
   node:
-    image: ghcr.io/zheniagnedchik/itcoty:latest
+    image: ghcr.io/zheniagnedchik/itcoty:${PLACEMENT}
     container_name: itcoty_web.node
     ports:
       - "3003:3000"
