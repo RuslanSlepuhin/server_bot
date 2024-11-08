@@ -5,7 +5,12 @@ tasks:
   docker-up:
     cmds:
       - echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
-      - docker compose up --build
+      - docker compose up -d --build
+
+  docker-up-dev:
+    cmds:
+      - echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
+      - docker compose up base api nginx node -d --build
 
   docker-down:
     cmds:
