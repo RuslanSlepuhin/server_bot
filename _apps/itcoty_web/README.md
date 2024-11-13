@@ -82,7 +82,7 @@ http://localhost
 <i class="fas fa-copy"></i>
 - To use just the backend open in your browser:
 ```
-http://localhost:8000
+http://localhost:8008
 ```
 <i class="fas fa-copy"></i>
 
@@ -90,6 +90,6 @@ http://localhost:8000
 
 - In the project directory type:
 ```
-task run-server
+task localhost-runserver
 ``` 
 <i class="fas fa-copy"></i>
