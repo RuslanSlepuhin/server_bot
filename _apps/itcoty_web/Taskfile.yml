@@ -16,18 +16,58 @@ tasks:
     cmds:
       - docker compose down
 
+  docker-stop:
+    cmds:
+      - docker compose stop
+  
+  docker-statrt:
+    cmds:
+      - docker compose start 
+
+  docker-start-dev:
+    cmds:
+      - docker compose start base api nginx node
+
   docker-update:
     cmds:
-      - docker compose down
+      - docker compose stop
+      - |
+        if docker inspect itcoty_web.node; then
+        docker rm itcoty_web.node
+        else
+        echo "Container itcoty_web.node does not exist."
+        fi
       - |
         if docker images ghcr.io/zheniagnedchik/itcoty; then
         docker rmi ghcr.io/zheniagnedchik/itcoty:$PLACEMENT
         else
         echo "Image ghcr.io/zheniagnedchik/itcoty does not exist."
         fi
-      - docker compose up -d --build
+      - echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
+      - docker compose build itcoty_web.node
+      - docker compose start
 
-  run-server:
+  docker-update-dev:
+    cmds:
+      - docker compose stop
+      - |
+        if docker inspect itcoty_web.node; then
+        docker rm itcoty_web.node
+        else
+        echo "Container itcoty_web.node does not exist."
+        fi
+      - |
+        if docker images ghcr.io/zheniagnedchik/itcoty; then
+        docker rm itcoty_web.node        
+        docker rmi ghcr.io/zheniagnedchik/itcoty:$PLACEMENT
+        else
+        echo "Image ghcr.io/zheniagnedchik/itcoty does not exist."
+        fi
+      - echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
+      - docker compose build itcoty_web.node
+      - docker compose start base api nginx node
+
+  localhost-runserver:
     cmds:
       - python manage.py run-database
       - python manage.py makemigrations
