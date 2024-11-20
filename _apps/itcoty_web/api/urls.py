@@ -1,7 +1,6 @@
 from django.urls import path, re_path
 from django.conf.urls import include
 
-from dj_rest_auth.registration.views import VerifyEmailView
 from rest_framework.routers import SimpleRouter
 from .views import (
     AllVacanciesView,
@@ -13,6 +12,7 @@ from .views import (
     VacancyToTGBotViewSet,
     GoogleLoginView,
     UserRedirectView,
+    CustomVerifyEmailView,
 )
 
 router = SimpleRouter()
@@ -31,10 +31,11 @@ router.register(
 
 urlpatterns = [
     path("", include("dj_rest_auth.urls")),
+    path("accounts/", include("allauth.urls")),
     path("registration/", include("dj_rest_auth.registration.urls")),
     re_path(
-            r"^verify_email/(?P<key>[-:\w]+)/$",
-            VerifyEmailView.as_view(),
+            r"^account-confirm-email/ (?P<key>[-:\w]+)/$",
+            CustomVerifyEmailView.as_view(),
             name="account_confirm_email"),
     path("google/login/", GoogleLoginView.as_view(), name="google_login"),
     path("~redirect/", view=UserRedirectView.as_view(), name="redirect"),
