@@ -30,6 +30,7 @@ class ServerConfig:
     prod: str
     localhost: str
     notymail: str
+    this: str
 
 
 @dataclass
@@ -76,6 +77,7 @@ def load_config() -> Config:
             prod=env.str("PROD_SERVER"),
             localhost=env.str("LOCALHOST"),
             notymail=env.str("NOTIFICATION_EMAIL"),
+            this=env.str("THIS_SERVER"),
         ),
         email=EmailConfig(
             smtp_host=env.str("EMAIL_SMTP_HOST"),
