@@ -1,5 +1,5 @@
 from allauth.account.adapter import DefaultAccountAdapter
-from ..itcoty_web.envs import load_config
+from itcoty_web.envs import load_config
 # <<<<<<< HEAD
 # from django.conf import settings
 #
