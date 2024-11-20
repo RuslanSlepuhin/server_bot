@@ -1,11 +1,11 @@
 from allauth.account.adapter import DefaultAccountAdapter
-from django.conf import settings
+from itcoty_web.envs import load_config
 
-
+env = load_config()
 class CustomAccountAdapter(DefaultAccountAdapter):
     def get_email_confirmation_url(self, request, emailconfirmation):
         """Customizing an URL for the email confirmation."""
 
         url = super().get_email_confirmation_url(request, emailconfirmation)
-
-        return url.replace("localhost", "4dev.itcoty.ru")
+    
+        return url.replace("http://localhost", env.server.this)
