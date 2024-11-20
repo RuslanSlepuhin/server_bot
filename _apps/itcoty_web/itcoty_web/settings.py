@@ -27,7 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'itcoty_web.backend',
-    'localhost', '127.0.0.1'
+    'localhost', '127.0.0.1',
+    '4dev.itcoty.ru',
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -57,6 +58,10 @@ CORS_ALLOW_CREDENTIALS = True
 AUTH_USER_MODEL = "api.User"
 
 SITE_ID = 1
+SITE_DOMAIN = "4dev.itcoty.ru"
+SITE_NAME = "itcoty.ru"
+DEFAULT_DOMAIN = "4dev.itcoty.ru"
+
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -185,7 +190,6 @@ ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = env.server.this
 LOGIN_ON_EMAIL_CONFIRMATION = True
 
-
 GOOGLE_REDIRECT_URL = "http://127.0.0.1:8000/"
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
@@ -195,7 +199,7 @@ EMAIL_HOST_PASSWORD = env.email.smtp_password
 EMAIL_PORT = env.email.smtp_port
 EMAIL_USE_TLS = True
 
-SERVER_EMAIL = EMAIL_HOST_USER
+SERVER_EMAIL = env.server.notymail
 DEFAULT_FROM_EMAIL = env.server.notymail
 
 MEDIA_URL = "/media/"
