@@ -3,6 +3,7 @@ from .profile import ProfileViewSet
 from .vacancies import AllVacanciesView, ThreeVacanciesView, VacanciesViewSet, VacanciesViewSetOLD
 from .user_requests_from_tg_individ_bot import UserRequestsViewSet
 from .vacancy_to_tg_individ_bot import VacancyToTGBotViewSet
+from .registration import CustomVerifyEmailView
 
 __all__ = [
     "GoogleLoginView",
@@ -13,5 +14,6 @@ __all__ = [
     "ProfileViewSet",
     "VacanciesViewSetOLD",
     "UserRequestsViewSet",
-    "VacancyToTGBotViewSet"
+    "VacancyToTGBotViewSet",
+    "CustomVerifyEmailView",
 ]
