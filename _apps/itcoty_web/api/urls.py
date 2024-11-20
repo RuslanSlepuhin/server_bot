@@ -12,7 +12,7 @@ from .views import (
     UserRequestsViewSet,
     VacancyToTGBotViewSet,
     GoogleLoginView,
-    UserRedirectView
+    UserRedirectView,
 )
 
 router = SimpleRouter()
