@@ -55,10 +55,6 @@ CORS_ALLOW_CREDENTIALS = True
 AUTH_USER_MODEL = "api.User"
 
 SITE_ID = 1
-SITE_DOMAIN = "4dev.itcoty.ru"
-DEFAULT_DOMAIN = "4dev.itcoty.ru"
-SITE_NAME = "itcoty.ru"
-
 
 INSTALLED_APPS = [
     "django.contrib.admin",
