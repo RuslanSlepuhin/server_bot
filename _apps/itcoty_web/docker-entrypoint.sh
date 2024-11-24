@@ -1,3 +1,5 @@
+echo "Set dev settings"
+python manage.py set-devsettings
 
 echo "Apply migrations."
 python manage.py migrate
