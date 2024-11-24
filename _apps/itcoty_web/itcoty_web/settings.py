@@ -160,9 +160,8 @@ REST_FRAMEWORK = {
         "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 1000,
     "PAGE_SIZE_QUERY_PARAM": "page_size",
-    "MAX_PAGE_SIZE": 10000, "DEFAULT_RENDERER_CLASSES": [
-        "rest_framework.renderers.JSONRenderer"
-    ],
+    "MAX_PAGE_SIZE": 10000,
+    "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
 
