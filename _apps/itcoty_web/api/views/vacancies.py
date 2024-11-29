@@ -34,16 +34,18 @@ class VacanciesViewSet(
     filterset_class = VacancyFilter
     pagination_class = LimitOffsetPagination
 
-    def get_model(self):
-        return Vacancy
-
+    @staticmethod
+    def get_model():
+        return Vacancies
 
     def get_queryset(self) -> QuerySet:
-        date_start = date.today() - timedelta(days=20)
+        date_start = date.today() - timedelta(days=200)
         queryset = (
-            self.get_model().objects.filter(created_at__gt=date_start)
-            .order_by("-id")
-            .distinct("id", "body")
+            self.get_model()
+                .objects
+                .filter(created_at__gt=date_start)
+                .order_by("-id")
+                .distinct("id", "body")
         )
         return queryset
 
@@ -66,7 +68,8 @@ class VacanciesViewSetOLD(generics.ListAPIView):
     # filter_backends = [filters.DjangoFilterBackend]
     pagination_class = LimitOffsetPagination
 
-    def get_model(self):
+    @staticmethod
+    def get_model():
         return Vacancies
 
     def get_queryset(self):
@@ -109,7 +112,8 @@ class VacanciesViewSetOLD(generics.ListAPIView):
 class ThreeVacanciesView(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
 
-    def get(self, request: Request) -> Response:
+    @staticmethod
+    def get(request: Request) -> Response:
         trainees_vacancies = (
             Vacancy.objects.values(
                 "id",
