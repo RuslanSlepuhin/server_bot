@@ -36,7 +36,7 @@ class VacanciesViewSet(
 
     @staticmethod
     def get_model():
-        return Vacancy
+        return Vacancies
 
     def get_queryset(self) -> QuerySet:
         date_start = date.today() - timedelta(days=200)
