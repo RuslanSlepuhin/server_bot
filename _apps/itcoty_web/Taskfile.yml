@@ -12,6 +12,10 @@ tasks:
       - echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
       - docker compose up base api nginx node -d --build
 
+  docker-up-backend:
+    cmds:
+      - docker compose up base django -d --build
+
   docker-down:
     cmds:
       - docker compose down
