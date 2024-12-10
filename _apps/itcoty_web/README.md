@@ -64,7 +64,7 @@ git config core.autocrlf false
 - Fill out the ```.env``` file with your data.
 
 ## Project launching in Docker:
-- To build and start the Docker containers:
+- To build and start both the backend and the frontend in Docker containers:
 ```
 task docker-up
 ```
@@ -80,6 +80,10 @@ task docker-down
 http://localhost
 ```
 <i class="fas fa-copy"></i>
+- To build and start only the backend in Docker:
+```
+task docker-up-backend
+```
 - To use just the backend open in your browser:
 ```
 http://localhost:8008
